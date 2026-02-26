@@ -1,71 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unbranding Coca-Cola</title>
-    <style>
-        /* Set overall page styles to mimic a simple corporate landing page, using red and white for Coca-Cola branding */
-        body {
-            background-color: #f40000; /* Coca-Cola's signature red */
-            color: white;
-            font-family: Arial, sans-serif; /* Simple, web-safe font */
-            text-align: center;
-            margin: 0;
-            padding: 50px 20px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unbranding Amazon - Worker Exploitation Critique</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #eee;
+      text-align: center;
+    }
 
-        /* Header styling for the main title */
-        h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
+    header {
+      background: #232f3e; /* Amazon dark blue-gray */
+      padding: 20px;
+    }
 
-        /* Paragraph styling for body text */
-        p {
-            font-size: 24px;
-            max-width: 800px;
-            margin: 0 auto 40px;
-        }
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #ff9900; /* Amazon orange */
+    }
 
-        /* Logo image styling: centered, sized appropriately, with a subtle shadow for depth */
-        #logo {
-            width: 400px; /* Scalable size for visibility */
-            height: auto;
-            display: block;
-            margin: 0 auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Adds a subtle 3D effect */
-            transition: transform 0.3s ease; /* Smooth hover transition for interactivity feel */
-        }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+    }
 
-        /* Additional hover effect on the logo container for visual feedback */
-        #logo:hover {
-            transform: scale(1.05); /* Slight zoom on hover to enhance engagement */
-        }
-    </style>
+    .design-wrapper {
+      position: relative;
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      border: 4px solid #ff9900;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .design-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Original starts visible */
+    #original {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 1;
+    }
+
+    #unbranded {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+    }
+
+    .hover-info {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 20px;
+      background: #111;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
-    <h1>Coca-Cola: The Real Thing</h1>
-    <img id="logo" src="original.png" alt="Original Poison-Cola Logo">
-    <p>Refresh yourself with the world's favorite beverage. Happiness in every sip.</p>
 
-    <!-- Statement explaining the meaning and motivation: This unbranding project parodies Coca-Cola to critique its role in promoting high-sugar drinks that contribute to global health crises like obesity, diabetes, and tooth decay. The original logo is swapped on hover with an unbranded version (e.g., modified to read "Coca-Coma" with imagery suggesting health risks) to juxtapose the glossy corporate image with the harsh reality of its impact on public health and corporate profiteering from addiction. The motivation is to challenge how corporations use design and marketing to mask harmful practices and maintain hegemony over consumer habits. I chose Coca-Cola as it's an iconic brand symbolizing consumerism. -->
+  <header>
+    <h1>Unbranding Amazon</h1>
+  </header>
 
-    <script>
-        // Get the logo element by its ID
-        const logo = document.getElementById('logo');
+  <div class="container">
+    <p>Hover over the design to reveal the critique: Amazon's polished smile hides warehouse exploitation, surveillance, and burnout culture.</p>
 
-        // Add mouseover event to swap to the unbranded image
-        logo.addEventListener('mouseover', () => {
-            logo.src = 'unbranded.png'; // Changes the image source to the parody version for critique reveal
-        });
+    <div class="design-wrapper"
+         onmouseover="showUnbranded()"
+         onmouseout="showOriginal()">
 
-        // Add mouseout event to revert to the original image
-        logo.addEventListener('mouseout', () => {
-            logo.src = 'original.png'; // Restores the original corporate image
-        });
+      <img id="original" class="design-img" src="amazon-original.png" alt="Original Amazon design">
+      <img id="unbranded" class="design-img" src="amazon-unbranded.png" alt="Unbranded critique version">
+    </div>
 
-        // Explanation for JavaScript code: This code uses event listeners to handle mouseover and mouseout events on the image element, swapping the 'src' attribute between the original and unbranded images. I'm using it to create the required interactive rollover effect that juxtaposes the corporate identity with the critique. This is standard DOM manipulation in JavaScript, based on examples from MDN Web Docs (https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseover_event and https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseout_event). It's not from the book or class examples, so I'm documenting it here.
-    </script>
+    <div class="hover-info">Hover to see the real story →</div>
+  </div>
+
+  <footer>
+    Made for Critical Web Design – Unit 2
+  </footer>
+
+  <!-- 
+  Statement / Artist's Note:
+  This unbranding targets Amazon's corporate identity, which uses friendly orange, clean sans-serif typography, and smiling arrows to project convenience and customer love. 
+  In reality, the company relies on intense worker surveillance, punishing productivity quotas, and anti-union tactics while generating massive wealth for executives. 
+  By swapping to a grim, distorted version on hover — with surveillance cameras, exhausted worker silhouettes, broken boxes, and text like "Treats Humans Like Robots" — the piece forces a quick confrontation between brand myth and labor reality. 
+  The hover mechanic mimics how the company's glossy surface hides exploitation until you look closer.
+  -->
+
+  <script>
+    // Get the image elements
+    const originalImg = document.getElementById('original');
+    const unbrandedImg = document.getElementById('unbranded');
+
+    // Function to show unbranded version (fade original out, unbranded in)
+    function showUnbranded() {
+      originalImg.style.opacity = '0';
+      unbrandedImg.style.opacity = '1';
+    }
+
+    // Function to show original again
+    function showOriginal() {
+      originalImg.style.opacity = '1';
+      unbrandedImg.style.opacity = '0';
+    }
+  </script>
+
 </body>
 </html>
