@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shapes Layout</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #0d1b46;     /* dark blue */
+      display: grid;
+      place-items: center;
+      font-family: system-ui, sans-serif;
+    }
+
+    .container {
+      width:  90vmin;
+      height: 50vmin;
+      max-width:  800px;
+      max-height: 700px;
+      display: grid;
+      grid-template-rows: 1fr auto 1fr;
+      gap: 4vmin;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .shape {
+      width:  14vmin;
+      height: 14vmin;
+      border-radius: 50%;
+      background: #ff69b4;     /* hot pink */
+    }
+
+    .square {
+      width:  14vmin;
+      height: 14vmin;
+      background: #40e0d0;     /* turquoise */
+      border-radius: 0;
+    }
+
+    /* middle row is a bit smaller */
+    .middle .shape,
+    .middle .square {
+      width:  14vmin;
+      height: 14vmin;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="row">
+    <div class="shape"></div>
+    <div class="square"></div>
+    <div class="shape"></div>
+    <div class="square"></div>
+  </div>
+
+  <div class="row middle">
+    <div class="shape"></div>
+    <div class="square"></div>
+    <div class="shape"></div>
+    <div class="square"></div>
+  </div>
+
+  <div class="row">
+    <div class="shape"></div>
+    <div class="square"></div>
+    <div class="shape"></div>
+    <div class="square"></div>
+  </div>
+</div>
+
+</body>
+</html>
