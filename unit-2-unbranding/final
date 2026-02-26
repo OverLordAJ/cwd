@@ -1,1 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unbranding Coca-Cola</title>
+    <style>
 
+        body {
+            background-color: #f40000; 
+            color: white;
+            font-family: Arial, sans-serif; 
+            text-align: center;
+            margin: 0;
+            padding: 50px 20px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 24px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        #logo {
+            width: 400px; 
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+            transition: transform 0.3s ease;
+        }
+
+        #logo:hover {
+            transform: scale(1.05); 
+        }
+    </style>
+</head>
+<body>
+    <h1>Coca-Cola: The Real Thing</h1>
+    <img id="logo" src="original.png" alt="Original Poison-Cola Logo">
+    <p>Refresh yourself with the world's favorite beverage. Happiness in every sip.</p>
+
+ <script>
+        const logo = document.getElementById('logo');
+
+        logo.addEventListener('mouseover', () => {
+            logo.src = 'unbranded.png'; 
+        });
+
+        logo.addEventListener('mouseout', () => {
+            logo.src = 'original.png'; 
+        });
+
+    </script>
+</body>
+</html>
