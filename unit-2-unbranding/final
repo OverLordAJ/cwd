@@ -5,57 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unbranding Coca-Cola</title>
     <style>
-
         body {
-            background-color: #f40000; 
+            background-color: #f40000;
             color: white;
-            font-family: Arial, sans-serif; 
+            font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
             padding: 50px 20px;
         }
-
         h1 {
             font-size: 48px;
             margin-bottom: 20px;
         }
-
         p {
             font-size: 24px;
             max-width: 800px;
             margin: 0 auto 40px;
         }
-
         #logo {
-            width: 400px; 
+            width: 400px;
             height: auto;
             display: block;
             margin: 0 auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease;
         }
-
         #logo:hover {
-            transform: scale(1.05); 
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
     <h1>Coca-Cola: The Real Thing</h1>
-    <img id="logo" src="original.png" alt="Original Poison-Cola Logo">
-    <p>Refresh yourself with the world's favorite beverage. Happiness in every sip.</p>
+    <img id="logo" src="original.png" alt="Original Coca-Cola Logo">
+    <p>Refresh yourself with the world's favorite beverage. Happiness in every sip... or maybe just slow poison?</p>
 
- <script>
+    <!-- Statement explaining the meaning and motivation: 
+    This unbranding parodies Coca-Cola by revealing it as "Poison-Cola" on hover—swapping the shiny logo for a toxic/skull version to mock how the brand hides massive sugar content and health damage behind fun marketing. The joke is the "refreshment" is really just addictive junk slowly killing you. Motivation: call out corporate design/gaslighting that keeps people hooked on bad stuff while profiting huge. Coca-Cola is peak consumerist icon, perfect target. -->
+
+    <script>
         const logo = document.getElementById('logo');
 
         logo.addEventListener('mouseover', () => {
-            logo.src = 'unbranded.png'; 
+            logo.src = 'poison.png';  // swaps to the funny/poison parody version
         });
 
         logo.addEventListener('mouseout', () => {
-            logo.src = 'original.png'; 
+            logo.src = 'original.png';  // back to clean corporate look
         });
 
+        // Explanation: Standard mouseover/mouseout to swap img src for rollover effect. From MDN docs on mouse events. Not from class/book, so documenting.
     </script>
 </body>
 </html>
