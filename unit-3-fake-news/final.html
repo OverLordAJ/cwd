@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TruthGuard – Spot Fake News</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     :root {
       --primary: #2563eb;
@@ -13,117 +13,155 @@
       --neutral: #6b7280;
       --light: #f9fafb;
       --dark: #111827;
+      --bg-gradient: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--light);
       color: var(--dark);
       line-height: 1.6;
     }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
 
     header {
       background: white;
       box-shadow: 0 2px 10px rgba(0,0,0,0.08);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 100;
     }
+
     nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1rem 0;
     }
+
     .logo {
-      font-size: 1.6rem;
-      font-weight: bold;
+      font-size: 1.8rem;
+      font-weight: 800;
       color: var(--primary);
     }
+
     .nav-links a {
-      margin-left: 1.5rem;
+      margin-left: 1.8rem;
       text-decoration: none;
       color: var(--neutral);
       font-weight: 500;
+      transition: color 0.2s;
     }
-    .nav-links a:hover { color: var(--primary); }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
 
     .hero {
       text-align: center;
-      padding: 5rem 1rem 3rem;
-      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      padding: 6rem 1rem 4rem;
+      background: var(--bg-gradient);
     }
+
     .hero h1 {
-      font-size: 2.8rem;
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
       margin-bottom: 1rem;
       color: var(--dark);
     }
+
     .hero p {
       font-size: 1.25rem;
       color: var(--neutral);
-      margin-bottom: 2.5rem;
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
     }
 
     .input-section {
-      max-width: 700px;
+      max-width: 720px;
       margin: 0 auto;
     }
+
     textarea {
       width: 100%;
-      height: 160px;
-      padding: 1rem;
+      min-height: 160px;
+      padding: 1.2rem;
       font-size: 1.1rem;
       border: 2px solid #d1d5db;
-      border-radius: 8px;
+      border-radius: 10px;
       resize: vertical;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
+      transition: all 0.2s;
     }
+
     textarea:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
     }
+
     button {
-      padding: 0.9rem 2rem;
+      padding: 1rem 2.2rem;
       font-size: 1.1rem;
-      font-weight: bold;
+      font-weight: 600;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.25s;
     }
+
     .btn-primary {
       background: var(--primary);
       color: white;
     }
-    .btn-primary:hover { background: #1d4ed8; }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
 
     #results {
       display: none;
-      margin-top: 3rem;
-      padding: 2rem;
+      margin: 3rem auto;
+      padding: 2.5rem;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 800px;
     }
+
     .verdict {
       text-align: center;
-      font-size: 3rem;
-      font-weight: bold;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 800;
       margin: 1rem 0;
     }
-    .real { color: var(--success); }
+
+    .real  { color: var(--success); }
     .fake  { color: var(--danger); }
 
     .confidence {
       text-align: center;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       margin-bottom: 2rem;
+      color: var(--neutral);
     }
-    .breakdown {
-      margin-top: 2rem;
+
+    .breakdown h3 {
+      margin: 2rem 0 1.2rem;
+      font-size: 1.4rem;
     }
+
     .factor {
       display: flex;
       justify-content: space-between;
@@ -131,61 +169,84 @@
       margin: 1rem 0;
       padding: 1rem;
       background: #f3f4f6;
-      border-radius: 8px;
+      border-radius: 10px;
+      font-size: 1.05rem;
     }
+
     .bar {
-      height: 12px;
+      height: 14px;
       background: #e5e7eb;
-      border-radius: 6px;
+      border-radius: 7px;
       overflow: hidden;
       flex: 1;
-      margin: 0 1rem;
+      margin: 0 1.2rem;
     }
-    .fill { height: 100%; transition: width 1s ease; }
+
+    .fill {
+      height: 100%;
+      transition: width 1.2s ease-out;
+    }
 
     .features {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 2rem;
-      margin: 4rem 0;
+      margin: 5rem 0;
     }
+
     .card {
       background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      padding: 2.2rem 1.8rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.07);
       text-align: center;
+      transition: transform 0.25s;
     }
-    .card i { font-size: 2.8rem; color: var(--primary); margin-bottom: 1rem; }
+
+    .card:hover {
+      transform: translateY(-6px);
+    }
+
+    .card i {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 1.2rem;
+    }
 
     footer {
       text-align: center;
-      padding: 2rem 0;
+      padding: 3rem 1rem;
       color: var(--neutral);
       border-top: 1px solid #e5e7eb;
+      font-size: 0.95rem;
     }
 
     .loading {
       display: none;
       text-align: center;
-      margin: 2rem 0;
-      font-size: 1.2rem;
+      margin: 3rem 0;
+      font-size: 1.3rem;
       color: var(--neutral);
     }
-    .spinner {
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid var(--primary);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 2.2rem; }
-      .verdict { font-size: 2.5rem; }
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid var(--primary);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1.2rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 4rem 1rem 3rem; }
+      .nav-links a { margin-left: 1.2rem; font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -206,10 +267,10 @@
   <section class="hero">
     <div class="container">
       <h1>Spot Fake News Before It Spreads</h1>
-      <p>Paste any article text or headline — get instant credibility analysis powered by AI heuristics.</p>
+      <p>Paste any article text, headline or link — get an instant credibility check using simple but effective pattern detection.</p>
 
       <div class="input-section">
-        <textarea id="inputText" placeholder="Paste news article text, headline, or URL here..."></textarea>
+        <textarea id="inputText" placeholder="Paste news text, headline, or article excerpt here..."></textarea>
         <button class="btn-primary" onclick="analyze()">Analyze Now</button>
       </div>
 
@@ -221,108 +282,114 @@
   </section>
 
   <section id="results" class="container">
-    <h2 style="text-align:center; margin-bottom:1.5rem;">Analysis Results</h2>
-    <div id="originalText" style="background:#f9fafb; padding:1rem; border-radius:8px; margin-bottom:1.5rem;"></div>
-    
+    <h2 style="text-align:center; margin-bottom:1.8rem;">Analysis Results</h2>
+
+    <div id="originalText" style="background:#f9fafb; padding:1.2rem; border-radius:10px; margin-bottom:2rem; white-space:pre-wrap;"></div>
+
     <div class="verdict" id="verdict"></div>
     <div class="confidence" id="confidence"></div>
 
     <div class="breakdown">
-      <h3>Why this verdict?</h3>
+      <h3>Key Indicators</h3>
       <div id="factors"></div>
     </div>
 
-    <div style="text-align:center; margin-top:2rem;">
-      <button class="btn-primary" onclick="reset()">Try Another</button>
+    <div style="text-align:center; margin-top:2.5rem;">
+      <button class="btn-primary" onclick="reset()">Check Another</button>
     </div>
   </section>
 
   <section class="container features" id="how">
-    <h2 style="text-align:center; margin-bottom:2rem;">Features</h2>
+    <h2 style="text-align:center; margin-bottom:2.5rem;">Core Features</h2>
     <div class="card">
       <i class="fas fa-brain"></i>
-      <h3>AI-Powered Detection</h3>
-      <p>Scans for sensational language, exaggeration, and common fake-news patterns.</p>
+      <h3>Pattern Detection</h3>
+      <p>Identifies sensational wording, exaggeration, and classic misinformation markers.</p>
     </div>
     <div class="card">
       <i class="fas fa-shield-alt"></i>
-      <h3>Source Credibility Check</h3>
-      <p>Flags known unreliable domains (simulation — real version would use lists).</p>
+      <h3>Clear Explanations</h3>
+      <p>Shows which signals influenced the result — transparency first.</p>
     </div>
     <div class="card">
       <i class="fas fa-history"></i>
-      <h3>Clear Explanations</h3>
-      <p>Shows exactly which signals triggered the verdict.</p>
+      <h3>Fast & Private</h3>
+      <p>Everything runs in your browser — no data leaves your device in this demo.</p>
     </div>
   </section>
 
   <footer>
-    <p>© 2026 TruthGuard – Fighting misinformation one check at a time.</p>
+    <p>TruthGuard – A simple prototype to raise awareness about misinformation • 2026</p>
   </footer>
 
   <script>
     function analyze() {
-      const text = document.getElementById('inputText').value.trim();
+      const input = document.getElementById('inputText');
+      const text = input.value.trim();
+
       if (!text) {
-        alert("Please enter some text to analyze!");
+        alert("Please enter some text to analyze.");
         return;
       }
 
       document.getElementById('loading').style.display = 'block';
       document.getElementById('results').style.display = 'none';
 
-      // Simulate processing delay
       setTimeout(() => {
         document.getElementById('loading').style.display = 'none';
 
-        document.getElementById('originalText').innerHTML = `<strong>Input:</strong> ${text.substring(0, 300)}${text.length > 300 ? '...' : ''}`;
+        document.getElementById('originalText').textContent = text;
 
-        // Very basic heuristic simulation (replace with real model call later)
-        const lowerText = text.toLowerCase();
-        let score = 0; // 0 = real, 100 = fake
+        const lower = text.toLowerCase();
+        let score = 0; // 0 = very likely real • 100 = very likely fake
 
-        // Common fake news signals (oversimplified for demo)
-        if (lowerText.includes('shocking') || lowerText.includes('you won\'t believe')) score += 25;
-        if (lowerText.split('!').length > 5) score += 15;
-        if (lowerText.includes('breaking') && lowerText.split(' ').length < 20) score += 20;
-        if (/trump|biden|obama|clinton/i.test(lowerText) && /secret|hidden|exposed/i.test(lowerText)) score += 20;
-        if (lowerText.includes('click here') || lowerText.includes('subscribe')) score += 10;
+        // Simple heuristic signals (demo purposes only)
+        if (lower.includes('shocking') || lower.includes("you won't believe")) score += 28;
+        if (lower.split('!').length > 6) score += 18;
+        if (lower.includes('breaking') && text.split(' ').length < 25) score += 22;
+        if (/secret|hidden|exposed|conspiracy|bombshell/i.test(lower)) score += 20;
+        if (/click here|subscribe now|tap to see/i.test(lower)) score += 15;
+        if (lower.includes('crisis') || lower.includes('disaster') || lower.includes('collapse')) score += 12;
 
-        score = Math.min(100, Math.max(0, score + Math.floor(Math.random() * 20 - 10))); // some randomness
+        score = Math.min(100, Math.max(0, score + Math.floor(Math.random() * 25 - 12)));
 
-        const isFake = score >= 50;
-        const confidence = Math.round(50 + (score / 2));
+        const isFake = score >= 55;
+        const confidence = Math.round(50 + (score * 0.5));
 
-        document.getElementById('verdict').textContent = isFake ? 'Likely FAKE' : 'Likely REAL';
-        document.getElementById('verdict').className = 'verdict ' + (isFake ? 'fake' : 'real');
+        const verdictEl = document.getElementById('verdict');
+        verdictEl.textContent = isFake ? 'Likely FAKE' : 'Likely REAL';
+        verdictEl.className = `verdict ${isFake ? 'fake' : 'real'}`;
 
         document.getElementById('confidence').textContent = `${confidence}% Confidence`;
 
-        // Breakdown factors
+        // Visual breakdown
         const factorsDiv = document.getElementById('factors');
         factorsDiv.innerHTML = '';
 
-        const factors = [
-          { name: 'Sensational language', value: lowerText.includes('shocking') || lowerText.includes('you won\'t believe') ? 80 : 10 },
-          { name: 'Exclamation overuse', value: lowerText.split('!').length > 5 ? 70 : 5 },
-          { name: 'Clickbait patterns', value: /click here|subscribe|you won\'t believe/i.test(lowerText) ? 75 : 10 },
-          { name: 'Emotional trigger words', value: /secret|hidden|exposed|conspiracy/i.test(lowerText) ? 65 : 15 }
+        const indicators = [
+          { name: 'Sensational / clickbait phrasing',     val: lower.includes('shocking') || lower.includes("you won't believe") ? 85 : 10 },
+          { name: 'Excessive exclamation marks',          val: lower.split('!').length > 6 ? 75 : 5 },
+          { name: 'Dramatic trigger words',               val: /secret|hidden|exposed|conspiracy|bombshell/i.test(lower) ? 80 : 15 },
+          { name: 'Overly urgent or alarmist tone',       val: /crisis|disaster|collapse|urgent/i.test(lower) ? 70 : 20 }
         ];
 
-        factors.forEach(f => {
+        indicators.forEach(ind => {
           const div = document.createElement('div');
           div.className = 'factor';
           div.innerHTML = `
-            <span>${f.name}</span>
-            <div class="bar"><div class="fill" style="width:${f.value}%; background:${f.value > 50 ? 'var(--danger)' : 'var(--success)'}"></div></div>
-            <span>${f.value}%</span>
+            <span>${ind.name}</span>
+            <div class="bar">
+              <div class="fill" style="width: ${ind.val}%; background: ${ind.val > 50 ? 'var(--danger)' : 'var(--success)'}"></div>
+            </div>
+            <span>${ind.val}%</span>
           `;
           factorsDiv.appendChild(div);
         });
 
         document.getElementById('results').style.display = 'block';
-        window.scrollTo({ top: document.getElementById('results').offsetTop - 80, behavior: 'smooth' });
-      }, 1800);
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      }, 1600); // fake "thinking" delay
     }
 
     function reset() {
