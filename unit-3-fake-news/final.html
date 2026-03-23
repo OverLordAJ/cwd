@@ -1,402 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TruthGuard – Spot Fake News</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <style>
-    :root {
-      --primary: #2563eb;
-      --success: #10b981;
-      --danger: #ef4444;
-      --neutral: #6b7280;
-      --light: #f9fafb;
-      --dark: #111827;
-      --bg-gradient: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Daily Grin | All Good News</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Lora', serif; background-color: #f8f9fa; }
+        .masthead { font-family: 'Playfair Display', serif; border-bottom: 4px double #333; }
+        .article-title { font-family: 'Playfair Display', serif; font-weight: bold; text-decoration: none; color: #212529; }
+        .sidebar { background-color: #fff; border-left: 1px solid #dee2e6; height: 100%; }
+        .card { border: none; border-bottom: 1px solid #dee2e6; border-radius: 0; }
+        .featured-img { height: 400px; object-fit: cover; width: 100%; }
+    </style>
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--light);
-      color: var(--dark);
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-
-    header {
-      background: white;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 0;
-    }
-
-    .logo {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-
-    .nav-links a {
-      margin-left: 1.8rem;
-      text-decoration: none;
-      color: var(--neutral);
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover {
-      color: var(--primary);
-    }
-
-    .hero {
-      text-align: center;
-      padding: 6rem 1rem 4rem;
-      background: var(--bg-gradient);
-    }
-
-    .hero h1 {
-      font-size: clamp(2.2rem, 5vw, 3.2rem);
-      margin-bottom: 1rem;
-      color: var(--dark);
-    }
-
-    .hero p {
-      font-size: 1.25rem;
-      color: var(--neutral);
-      max-width: 600px;
-      margin: 0 auto 2.5rem;
-    }
-
-    .input-section {
-      max-width: 720px;
-      margin: 0 auto;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 160px;
-      padding: 1.2rem;
-      font-size: 1.1rem;
-      border: 2px solid #d1d5db;
-      border-radius: 10px;
-      resize: vertical;
-      margin-bottom: 1.2rem;
-      transition: all 0.2s;
-    }
-
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
-    }
-
-    button {
-      padding: 1rem 2.2rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.25s;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #1d4ed8;
-      transform: translateY(-1px);
-    }
-
-    #results {
-      display: none;
-      margin: 3rem auto;
-      padding: 2.5rem;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      max-width: 800px;
-    }
-
-    .verdict {
-      text-align: center;
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: 800;
-      margin: 1rem 0;
-    }
-
-    .real  { color: var(--success); }
-    .fake  { color: var(--danger); }
-
-    .confidence {
-      text-align: center;
-      font-size: 1.5rem;
-      margin-bottom: 2rem;
-      color: var(--neutral);
-    }
-
-    .breakdown h3 {
-      margin: 2rem 0 1.2rem;
-      font-size: 1.4rem;
-    }
-
-    .factor {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 1rem 0;
-      padding: 1rem;
-      background: #f3f4f6;
-      border-radius: 10px;
-      font-size: 1.05rem;
-    }
-
-    .bar {
-      height: 14px;
-      background: #e5e7eb;
-      border-radius: 7px;
-      overflow: hidden;
-      flex: 1;
-      margin: 0 1.2rem;
-    }
-
-    .fill {
-      height: 100%;
-      transition: width 1.2s ease-out;
-    }
-
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin: 5rem 0;
-    }
-
-    .card {
-      background: white;
-      padding: 2.2rem 1.8rem;
-      border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.07);
-      text-align: center;
-      transition: transform 0.25s;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-    }
-
-    .card i {
-      font-size: 3rem;
-      color: var(--primary);
-      margin-bottom: 1.2rem;
-    }
-
-    footer {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--neutral);
-      border-top: 1px solid #e5e7eb;
-      font-size: 0.95rem;
-    }
-
-    .loading {
-      display: none;
-      text-align: center;
-      margin: 3rem 0;
-      font-size: 1.3rem;
-      color: var(--neutral);
-    }
-
-    .spinner {
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid var(--primary);
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1.2rem;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @media (max-width: 640px) {
-      .hero { padding: 4rem 1rem 3rem; }
-      .nav-links a { margin-left: 1.2rem; font-size: 0.95rem; }
-    }
-  </style>
-</head>
+    </head>
 <body>
 
-  <header>
-    <div class="container">
-      <nav>
-        <div class="logo">TruthGuard</div>
-        <div class="nav-links">
-          <a href="#how">How It Works</a>
-          <a href="#about">About</a>
-        </div>
-      </nav>
+<header class="container py-4">
+    <div class="masthead text-center pb-3">
+        <h1 class="display-1">The Daily Grin</h1>
+        <p class="text-uppercase fw-bold">Vol. 1 • Edition 1 • March 23, 2026 • 100% Good Vibes</p>
     </div>
-  </header>
+    <nav class="nav justify-content-center border-bottom mb-4">
+        <a class="nav-link link-dark" href="#">LOCAL HEROES</a>
+        <a class="nav-link link-dark" href="#">GOOD BOYS</a>
+        <a class="nav-link link-dark" href="#">TECH WINS</a>
+        <a class="nav-link link-dark" href="#">PUZZLES</a>
+    </nav>
+</header>
 
-  <section class="hero">
-    <div class="container">
-      <h1>Spot Fake News Before It Spreads</h1>
-      <p>Paste any article text, headline or link — get an instant credibility check using simple but effective pattern detection.</p>
+<main class="container">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <article class="mb-5">
+                <img src="images/hero-firefighter.jpg" class="featured-img rounded mb-3" alt="A smiling firefighter holding a rescued kitten">
+                <h2 class="article-title display-5">Local Station 14 Welcomes Newest "Purr-medic"</h2>
+                <p class="lead">After a daring rescue in a Fredericksburg oak tree, a local kitten has officially joined the fire department as the morale officer.</p>
+                <p>The Fairfax County Fire and Rescue Department (FCFRD) reported today that the kitten, now named "Sparky," has mastered the art of napping on top of the fire engine. Personnel report a 200% increase in station smiles since his arrival...</p>
+                <hr>
+            </article>
 
-      <div class="input-section">
-        <textarea id="inputText" placeholder="Paste news text, headline, or article excerpt here..."></textarea>
-        <button class="btn-primary" onclick="analyze()">Analyze Now</button>
-      </div>
-
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        Analyzing content...
-      </div>
-    </div>
-  </section>
-
-  <section id="results" class="container">
-    <h2 style="text-align:center; margin-bottom:1.8rem;">Analysis Results</h2>
-
-    <div id="originalText" style="background:#f9fafb; padding:1.2rem; border-radius:10px; margin-bottom:2rem; white-space:pre-wrap;"></div>
-
-    <div class="verdict" id="verdict"></div>
-    <div class="confidence" id="confidence"></div>
-
-    <div class="breakdown">
-      <h3>Key Indicators</h3>
-      <div id="factors"></div>
-    </div>
-
-    <div style="text-align:center; margin-top:2.5rem;">
-      <button class="btn-primary" onclick="reset()">Check Another</button>
-    </div>
-  </section>
-
-  <section class="container features" id="how">
-    <h2 style="text-align:center; margin-bottom:2.5rem;">Core Features</h2>
-    <div class="card">
-      <i class="fas fa-brain"></i>
-      <h3>Pattern Detection</h3>
-      <p>Identifies sensational wording, exaggeration, and classic misinformation markers.</p>
-    </div>
-    <div class="card">
-      <i class="fas fa-shield-alt"></i>
-      <h3>Clear Explanations</h3>
-      <p>Shows which signals influenced the result — transparency first.</p>
-    </div>
-    <div class="card">
-      <i class="fas fa-history"></i>
-      <h3>Fast & Private</h3>
-      <p>Everything runs in your browser — no data leaves your device in this demo.</p>
-    </div>
-  </section>
-
-  <footer>
-    <p>TruthGuard – A simple prototype to raise awareness about misinformation • 2026</p>
-  </footer>
-
-  <script>
-    function analyze() {
-      const input = document.getElementById('inputText');
-      const text = input.value.trim();
-
-      if (!text) {
-        alert("Please enter some text to analyze.");
-        return;
-      }
-
-      document.getElementById('loading').style.display = 'block';
-      document.getElementById('results').style.display = 'none';
-
-      setTimeout(() => {
-        document.getElementById('loading').style.display = 'none';
-
-        document.getElementById('originalText').textContent = text;
-
-        const lower = text.toLowerCase();
-        let score = 0; // 0 = very likely real • 100 = very likely fake
-
-        // Simple heuristic signals (demo purposes only)
-        if (lower.includes('shocking') || lower.includes("you won't believe")) score += 28;
-        if (lower.split('!').length > 6) score += 18;
-        if (lower.includes('breaking') && text.split(' ').length < 25) score += 22;
-        if (/secret|hidden|exposed|conspiracy|bombshell/i.test(lower)) score += 20;
-        if (/click here|subscribe now|tap to see/i.test(lower)) score += 15;
-        if (lower.includes('crisis') || lower.includes('disaster') || lower.includes('collapse')) score += 12;
-
-        score = Math.min(100, Math.max(0, score + Math.floor(Math.random() * 25 - 12)));
-
-        const isFake = score >= 55;
-        const confidence = Math.round(50 + (score * 0.5));
-
-        const verdictEl = document.getElementById('verdict');
-        verdictEl.textContent = isFake ? 'Likely FAKE' : 'Likely REAL';
-        verdictEl.className = `verdict ${isFake ? 'fake' : 'real'}`;
-
-        document.getElementById('confidence').textContent = `${confidence}% Confidence`;
-
-        // Visual breakdown
-        const factorsDiv = document.getElementById('factors');
-        factorsDiv.innerHTML = '';
-
-        const indicators = [
-          { name: 'Sensational / clickbait phrasing',     val: lower.includes('shocking') || lower.includes("you won't believe") ? 85 : 10 },
-          { name: 'Excessive exclamation marks',          val: lower.split('!').length > 6 ? 75 : 5 },
-          { name: 'Dramatic trigger words',               val: /secret|hidden|exposed|conspiracy|bombshell/i.test(lower) ? 80 : 15 },
-          { name: 'Overly urgent or alarmist tone',       val: /crisis|disaster|collapse|urgent/i.test(lower) ? 70 : 20 }
-        ];
-
-        indicators.forEach(ind => {
-          const div = document.createElement('div');
-          div.className = 'factor';
-          div.innerHTML = `
-            <span>${ind.name}</span>
-            <div class="bar">
-              <div class="fill" style="width: ${ind.val}%; background: ${ind.val > 50 ? 'var(--danger)' : 'var(--success)'}"></div>
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="images/dog-park.jpg" class="img-fluid mb-2" alt="A group of dogs playing together">
+                    <h4><a href="#" class="article-title">Neighborhood Park Voted "Best Scents" of 2026</a></h4>
+                    <p class="small text-muted">By Amiel Russell</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="images/coding-win.jpg" class="img-fluid mb-2" alt="A student looking happy at a laptop">
+                    <h4><a href="#" class="article-title">CS Student Solves Bug on First Try</a></h4>
+                    <p class="small text-muted">In a rare feat of logic and luck...</p>
+                </div>
             </div>
-            <span>${ind.val}%</span>
-          `;
-          factorsDiv.appendChild(div);
-        });
+        </div>
 
-        document.getElementById('results').style.display = 'block';
-        document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        <aside class="col-lg-4 sidebar ps-lg-5">
+            <h3 class="article-title border-bottom pb-2">Quick Sniffs</h3>
+            <div class="py-3">
+                <h5>Elden Ring Update: Everyone Wins</h5>
+                <p class="small">A new patch makes it so the bosses just want to shake hands and share lore.</p>
+            </div>
+            <div class="py-3">
+                <h5>Skyrim Modder Fixes Everything</h5>
+                <p class="small">Local hero releases "The Ultimate Fix" mod; game has officially stopped crashing forever.</p>
+            </div>
+            <div class="py-3 bg-light p-3 border">
+                <h5 class="text-success">Today's Weather</h5>
+                <p class="mb-0"><strong>72°F and Sunny</strong></p>
+                <p class="small">Ideal conditions for a walk or a nap in a sunbeam.</p>
+            </div>
+        </aside>
+    </div>
+</main>
 
-      }, 1600); // fake "thinking" delay
-    }
+<footer class="container text-center py-5 border-top mt-5">
+    <p class="text-muted">© 2026 The Daily Grin • Built for CWD Unit 3</p>
+</footer>
 
-    function reset() {
-      document.getElementById('inputText').value = '';
-      document.getElementById('results').style.display = 'none';
-      document.getElementById('inputText').focus();
-    }
-  </script>
 </body>
 </html>
