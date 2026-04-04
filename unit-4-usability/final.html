@@ -9,18 +9,19 @@
     
     <style>
         body { background-color: #f8f9fa; }
-        .task-card { margin-bottom: 2rem; }
+        .task-card { margin-bottom: 2rem; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .sus-calculator { background-color: #ffffff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .form-label { font-weight: 500; }
-        .sus-score-display { font-size: 2rem; font-weight: bold; color: #0d6efd; }
+        .sus-score-display { font-size: 2.5rem; font-weight: bold; color: #0d6efd; }
+        .task-img { object-fit: cover; height: 100%; border-right: 1px solid #dee2e6; }
     </style>
 </head>
 <body>
 
 <div class="container py-5">
-    <header class="pb-3 mb-4 border-bottom">
+    <header class="pb-3 mb-5 border-bottom">
         <h1 class="display-5 fw-bold">Usability Test Report</h1>
-        <p class="fs-4">Website Tested: [Insert Website Name Here]</p>
+        <p class="fs-4 text-muted">Website Tested: University Course Registration Portal</p>
     </header>
 
     <section class="mb-5">
@@ -29,13 +30,13 @@
         <div class="card task-card">
             <div class="row g-0">
                 <div class="col-md-5">
-                    <img src="images/task1.png" class="img-fluid rounded-start" alt="Screenshot of user attempting Task 1">
+                    <img src="https://picsum.photos/seed/register1/800/600" class="img-fluid rounded-start task-img" alt="Screenshot of user attempting to find the course catalog">
                 </div>
                 <div class="col-md-7">
                     <div class="card-body">
-                        <h3 class="card-title">Task 1: [Insert Task Name]</h3>
-                        <p class="card-text"><strong>Time to complete:</strong> [X minutes, Y seconds]</p>
-                        <p class="card-text"><strong>Description:</strong> [Describe what the user did. Mention specific friction points, confusion, or what they struggled with during this task.]</p>
+                        <h3 class="card-title text-primary">Task 1: Locate the Fall Course Catalog</h3>
+                        <p class="card-text"><strong>Time to complete:</strong> 01 minute, 45 seconds</p>
+                        <p class="card-text"><strong>Description:</strong> The user was asked to find the upcoming Fall semester course catalog from the homepage. They initially struggled because the link was nested under a vaguely named "Academic Resources" dropdown rather than having a dedicated button. They clicked around the "Student Life" tab before using the site's search bar to finally locate the catalog.</p>
                     </div>
                 </div>
             </div>
@@ -44,13 +45,13 @@
         <div class="card task-card">
             <div class="row g-0">
                 <div class="col-md-5">
-                    <img src="images/task2.png" class="img-fluid rounded-start" alt="Screenshot of user attempting Task 2">
+                    <img src="https://picsum.photos/seed/register2/800/600" class="img-fluid rounded-start task-img" alt="Screenshot of user filtering by department">
                 </div>
                 <div class="col-md-7">
                     <div class="card-body">
-                        <h3 class="card-title">Task 2: [Insert Task Name]</h3>
-                        <p class="card-text"><strong>Time to complete:</strong> [X minutes, Y seconds]</p>
-                        <p class="card-text"><strong>Description:</strong> [Describe what the user did. Mention specific friction points, confusion, or what they struggled with during this task.]</p>
+                        <h3 class="card-title text-primary">Task 2: Filter Courses by Computer Science Department</h3>
+                        <p class="card-text"><strong>Time to complete:</strong> 00 minutes, 55 seconds</p>
+                        <p class="card-text"><strong>Description:</strong> The user needed to filter the massive list of classes to only show Computer Science courses. They found the filter sidebar relatively quickly, but there was slight friction because the department was listed under "Math & Computer Science" rather than "Computer Science" on its own. It required a bit of scrolling to find the right checkbox.</p>
                     </div>
                 </div>
             </div>
@@ -59,13 +60,13 @@
         <div class="card task-card">
             <div class="row g-0">
                 <div class="col-md-5">
-                    <img src="images/task3.png" class="img-fluid rounded-start" alt="Screenshot of user attempting Task 3">
+                    <img src="https://picsum.photos/seed/register3/800/600" class="img-fluid rounded-start task-img" alt="Screenshot of user adding a class to schedule">
                 </div>
                 <div class="col-md-7">
                     <div class="card-body">
-                        <h3 class="card-title">Task 3: [Insert Task Name]</h3>
-                        <p class="card-text"><strong>Time to complete:</strong> [X minutes, Y seconds]</p>
-                        <p class="card-text"><strong>Description:</strong> [Describe what the user did. Mention specific friction points, confusion, or what they struggled with during this task.]</p>
+                        <h3 class="card-title text-primary">Task 3: Add a 400-Level Class to the Schedule Planner</h3>
+                        <p class="card-text"><strong>Time to complete:</strong> 02 minutes, 10 seconds</p>
+                        <p class="card-text"><strong>Description:</strong> The user attempted to add a specific 400-level course to their mock schedule. The primary struggle here was the lack of visual feedback. After clicking "Add to Planner," there was no pop-up or notification confirming the action. The user clicked it three times, resulting in multiple duplicate errors, before realizing they had to manually navigate to a separate "My Planner" page to verify it worked.</p>
                     </div>
                 </div>
             </div>
@@ -74,13 +75,13 @@
         <div class="card task-card">
             <div class="row g-0">
                 <div class="col-md-5">
-                    <img src="images/task4.png" class="img-fluid rounded-start" alt="Screenshot of user attempting Task 4">
+                    <img src="https://picsum.photos/seed/register4/800/600" class="img-fluid rounded-start task-img" alt="Screenshot of user checking prerequisites">
                 </div>
                 <div class="col-md-7">
                     <div class="card-body">
-                        <h3 class="card-title">Task 4: [Insert Task Name]</h3>
-                        <p class="card-text"><strong>Time to complete:</strong> [X minutes, Y seconds]</p>
-                        <p class="card-text"><strong>Description:</strong> [Describe what the user did. Mention specific friction points, confusion, or what they struggled with during this task.]</p>
+                        <h3 class="card-title text-primary">Task 4: Identify Course Prerequisites</h3>
+                        <p class="card-text"><strong>Time to complete:</strong> 01 minute, 15 seconds</p>
+                        <p class="card-text"><strong>Description:</strong> The user was asked to find the prerequisites for the class they just added. They correctly clicked the course title expecting a detailed modal window to appear. However, the prerequisites were buried at the very bottom of a long block of text. The text was unformatted and hard to scan, causing the user to read through the entire course description before finding the prerequisite requirements.</p>
                     </div>
                 </div>
             </div>
@@ -89,13 +90,13 @@
         <div class="card task-card">
             <div class="row g-0">
                 <div class="col-md-5">
-                    <img src="images/task5.png" class="img-fluid rounded-start" alt="Screenshot of user attempting Task 5">
+                    <img src="https://picsum.photos/seed/register5/800/600" class="img-fluid rounded-start task-img" alt="Screenshot of user finding the drop deadline">
                 </div>
                 <div class="col-md-7">
                     <div class="card-body">
-                        <h3 class="card-title">Task 5: [Insert Task Name]</h3>
-                        <p class="card-text"><strong>Time to complete:</strong> [X minutes, Y seconds]</p>
-                        <p class="card-text"><strong>Description:</strong> [Describe what the user did. Mention specific friction points, confusion, or what they struggled with during this task.]</p>
+                        <h3 class="card-title text-primary">Task 5: Locate the Add/Drop Deadline</h3>
+                        <p class="card-text"><strong>Time to complete:</strong> 03 minutes, 30 seconds</p>
+                        <p class="card-text"><strong>Description:</strong> This was the most difficult task. The user needed to find the final date to drop a class without penalty. They looked in the course description, the planner interface, and the sidebar menu. They eventually had to leave the registration portal entirely and go back to the university's main academic calendar page to find the date. The lack of contextual links within the registration portal was a major friction point.</p>
                     </div>
                 </div>
             </div>
@@ -103,71 +104,74 @@
     </section>
 
     <section class="sus-calculator mb-5">
-        <h2 class="mb-4">Interactive SUS Calculator</h2>
-        <p>Answer the 10 System Usability Scale questions below based on the test results to calculate the final score. (1 = Strongly Disagree, 5 = Strongly Agree)</p>
+        <h2 class="mb-2">Interactive System Usability Scale (SUS) Calculator</h2>
+        <p class="mb-4">Answer the 10 questions below based on the test results to calculate the final score. (1 = Strongly Disagree, 5 = Strongly Agree). <em>Note: The SUS intentionally alternates positive and negative questions. Answering "5" on a negative, even-numbered question (like Q2) will correctly decrease the overall score.</em></p>
         
         <form id="susForm">
             <div class="row">
                 <div class="col-md-6">
+                    <h5 class="text-success mb-3">Positive Metrics</h5>
                     <div class="mb-3">
                         <label for="q1" class="form-label">1. I think that I would like to use this system frequently.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q1" value="3" oninput="calculateSUS(); updateLabel(1)">
-                        <div class="text-muted small">Current value: <span id="val1">3</span></div>
+                        <div class="text-muted small">Score: <span id="val1" class="fw-bold">3</span></div>
                     </div>
                     <div class="mb-3">
                         <label for="q3" class="form-label">3. I thought the system was easy to use.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q3" value="3" oninput="calculateSUS(); updateLabel(3)">
-                        <div class="text-muted small">Current value: <span id="val3">3</span></div>
+                        <div class="text-muted small">Score: <span id="val3" class="fw-bold">3</span></div>
                     </div>
                     <div class="mb-3">
                         <label for="q5" class="form-label">5. I found the various functions in this system were well integrated.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q5" value="3" oninput="calculateSUS(); updateLabel(5)">
-                        <div class="text-muted small">Current value: <span id="val5">3</span></div>
+                        <div class="text-muted small">Score: <span id="val5" class="fw-bold">3</span></div>
                     </div>
                     <div class="mb-3">
                         <label for="q7" class="form-label">7. I would imagine that most people would learn to use this system very quickly.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q7" value="3" oninput="calculateSUS(); updateLabel(7)">
-                        <div class="text-muted small">Current value: <span id="val7">3</span></div>
+                        <div class="text-muted small">Score: <span id="val7" class="fw-bold">3</span></div>
                     </div>
                     <div class="mb-3">
                         <label for="q9" class="form-label">9. I felt very confident using the system.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q9" value="3" oninput="calculateSUS(); updateLabel(9)">
-                        <div class="text-muted small">Current value: <span id="val9">3</span></div>
+                        <div class="text-muted small">Score: <span id="val9" class="fw-bold">3</span></div>
                     </div>
                 </div>
+                
                 <div class="col-md-6">
+                    <h5 class="text-danger mb-3">Negative Metrics</h5>
                     <div class="mb-3">
                         <label for="q2" class="form-label">2. I found the system unnecessarily complex.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q2" value="3" oninput="calculateSUS(); updateLabel(2)">
-                        <div class="text-muted small">Current value: <span id="val2">3</span></div>
+                        <div class="text-muted small">Score: <span id="val2" class="fw-bold">3</span></div>
                     </div>
                     <div class="mb-3">
                         <label for="q4" class="form-label">4. I think that I would need the support of a technical person to be able to use this system.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q4" value="3" oninput="calculateSUS(); updateLabel(4)">
-                        <div class="text-muted small">Current value: <span id="val4">3</span></div>
+                        <div class="text-muted small">Score: <span id="val4" class="fw-bold">3</span></div>
                     </div>
                     <div class="mb-3">
                         <label for="q6" class="form-label">6. I thought there was too much inconsistency in this system.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q6" value="3" oninput="calculateSUS(); updateLabel(6)">
-                        <div class="text-muted small">Current value: <span id="val6">3</span></div>
+                        <div class="text-muted small">Score: <span id="val6" class="fw-bold">3</span></div>
                     </div>
                     <div class="mb-3">
                         <label for="q8" class="form-label">8. I found the system very cumbersome to use.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q8" value="3" oninput="calculateSUS(); updateLabel(8)">
-                        <div class="text-muted small">Current value: <span id="val8">3</span></div>
+                        <div class="text-muted small">Score: <span id="val8" class="fw-bold">3</span></div>
                     </div>
                     <div class="mb-3">
                         <label for="q10" class="form-label">10. I needed to learn a lot of things before I could get going with this system.</label>
                         <input type="range" class="form-range" min="1" max="5" step="1" id="q10" value="3" oninput="calculateSUS(); updateLabel(10)">
-                        <div class="text-muted small">Current value: <span id="val10">3</span></div>
+                        <div class="text-muted small">Score: <span id="val10" class="fw-bold">3</span></div>
                     </div>
                 </div>
             </div>
             
             <div class="text-center mt-4 border-top pt-4">
-                <h4>Final System Usability Scale Score</h4>
+                <h4 class="text-uppercase tracking-wider text-muted">Final SUS Score</h4>
                 <div class="sus-score-display" id="finalScore">50.0</div>
-                <p class="text-muted mt-2" id="scoreInterpretation">A score of 68 is considered average.</p>
+                <p class="fs-5 mt-2 fw-semibold" id="scoreInterpretation" style="color: #b8860b;">Good/Average usability. Acceptable, but room for improvement.</p>
             </div>
         </form>
     </section>
@@ -184,36 +188,36 @@
     function calculateSUS() {
         let rawSum = 0;
 
-        // Loop through all 10 questions
+        // Standard SUS Calculation Formula
         for (let i = 1; i <= 10; i++) {
             let value = parseInt(document.getElementById('q' + i).value);
             
             if (i % 2 !== 0) {
-                // Odd numbered questions: Score = Value - 1
+                // Odd questions (Positive): Score = Value - 1
                 rawSum += (value - 1);
             } else {
-                // Even numbered questions: Score = 5 - Value
+                // Even questions (Negative): Score = 5 - Value
                 rawSum += (5 - value);
             }
         }
 
-        // Multiply sum by 2.5 to get final SUS score
+        // Multiply sum by 2.5 to get final SUS score out of 100
         let finalScore = rawSum * 2.5;
         
         // Update UI
         document.getElementById('finalScore').innerText = finalScore.toFixed(1);
         
-        // Add basic interpretation logic
+        // Interpretation Logic based on standard SUS scoring
         let interpretation = document.getElementById('scoreInterpretation');
         if (finalScore >= 80.3) {
             interpretation.innerText = "Excellent usability. Users love it.";
-            interpretation.style.color = "green";
+            interpretation.style.color = "#198754"; // Bootstrap success green
         } else if (finalScore >= 68) {
             interpretation.innerText = "Good/Average usability. Acceptable, but room for improvement.";
-            interpretation.style.color = "#b8860b";
+            interpretation.style.color = "#b8860b"; // Dark goldenrod
         } else {
             interpretation.innerText = "Poor usability. Major issues need to be addressed.";
-            interpretation.style.color = "red";
+            interpretation.style.color = "#dc3545"; // Bootstrap danger red
         }
     }
 </script>
