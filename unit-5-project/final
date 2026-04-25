@@ -1,1 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who Actually Uses What — America's Social Media Divide</title>
+  <meta name="description" content="A data-driven visual essay exploring how social media platform usage splits sharply across age groups in America, using Pew Research 2023 data." />
 
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Google Fonts: Playfair Display + IBM Plex Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0e0e0e;
+      --bg-card: #161616;
+      --bg-muted: #1c1c1c;
+      --text: #f0ece3;
+      --text-muted: #8a8480;
+      --accent: #e8c97e;
+      --accent-dim: #5a4b2a;
+      --border: #2a2a2a;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'IBM Plex Sans', sans-serif;
+      --youtube:  #ff4e4e;
+      --facebook: #4e8cff;
+      --instagram:#c96dcc;
+      --tiktok:   #4ecfb5;
+      --snapchat: #f5d64e;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+
+    /* ── SKIP LINK (accessibility) ── */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      background: var(--accent);
+      color: #000;
+      padding: .4rem .8rem;
+      font-weight: 600;
+      z-index: 9999;
+      border-radius: 4px;
+      transition: top .2s;
+    }
+    .skip-link:focus { top: 1rem; }
+
+    /* ── NAVIGATION ── */
+    nav.top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(14,14,14,.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: .75rem 0;
+    }
+    nav.top-nav .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    nav.top-nav .site-label {
+      font-size: .7rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    nav.top-nav .section-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+    nav.top-nav .section-links a {
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    nav.top-nav .section-links a:hover,
+    nav.top-nav .section-links a:focus { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 6rem 1.5rem 4rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .hero .kicker {
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+      display: block;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 6vw, 4.8rem);
+      font-weight: 900;
+      line-height: 1.08;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero .deck {
+      max-width: 560px;
+      font-size: 1.15rem;
+      color: #b8b2a9;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+    .hero .byline {
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+    .hero .byline span { color: var(--accent); }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── PROSE SECTION ── */
+    .prose-section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 1.5rem;
+    }
+    .prose-section .section-number {
+      display: block;
+      font-size: .68rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .75rem;
+    }
+    .prose-section h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+    .prose-section p {
+      max-width: 640px;
+      color: #b8b2a9;
+      font-size: 1.05rem;
+      margin-bottom: 1.1rem;
+    }
+    .prose-section p strong { color: var(--text); font-weight: 600; }
+
+    /* ── CHART CONTAINERS ── */
+    .chart-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-top: 2.5rem;
+    }
+    .chart-wrap .chart-title {
+      font-size: .72rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .chart-wrap canvas { max-height: 480px; }
+
+    /* ── STAT CALLOUTS ── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    .stat-card {
+      background: var(--bg-muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem 1.25rem 1rem;
+    }
+    .stat-card .stat-val {
+      font-family: var(--font-display);
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+      display: block;
+    }
+    .stat-card .stat-label {
+      font-size: .78rem;
+      color: var(--text-muted);
+      margin-top: .4rem;
+      line-height: 1.4;
+    }
+
+    /* ── PLATFORM LEGEND BADGES ── */
+    .platform-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin: 1rem 0 0;
+    }
+    .platform-badge {
+      font-size: .72rem;
+      letter-spacing: .06em;
+      padding: .25rem .65rem;
+      border-radius: 20px;
+      border: 1px solid;
+      font-weight: 500;
+    }
+    .pb-yt  { color: var(--youtube);   border-color: var(--youtube); }
+    .pb-fb  { color: var(--facebook);  border-color: var(--facebook); }
+    .pb-ig  { color: var(--instagram); border-color: var(--instagram); }
+    .pb-tt  { color: var(--tiktok);    border-color: var(--tiktok); }
+    .pb-sc  { color: var(--snapchat);  border-color: var(--snapchat); }
+
+    /* ── SOURCE NOTE ── */
+    .source-note {
+      font-size: .72rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      border-top: 1px solid var(--border);
+      padding-top: .75rem;
+    }
+    .source-note a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── PULLQUOTE ── */
+    .pullquote {
+      border-left: 3px solid var(--accent);
+      padding: 1rem 1.5rem;
+      margin: 2rem 0;
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.45;
+      background: var(--bg-muted);
+      border-radius: 0 6px 6px 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+      border-top: 1px solid var(--border);
+    }
+    footer .footer-label {
+      font-size: .68rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: block;
+    }
+    footer p { font-size: .88rem; color: var(--text-muted); max-width: 600px; margin-bottom: .6rem; }
+    footer a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── RESPONSIVE TWEAKS ── */
+    @media (max-width: 600px) {
+      nav.top-nav .section-links { display: none; }
+      .chart-wrap { padding: 1.25rem; }
+      .stat-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── FADE-IN ANIMATION ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Skip to main content (WCAG 2.4.1) -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- ── NAVIGATION ── -->
+  <nav class="top-nav" aria-label="Page sections">
+    <div class="nav-inner">
+      <span class="site-label">Data Essay &bull; 2025</span>
+      <ul class="section-links">
+        <li><a href="#section-1">The Landscape</a></li>
+        <li><a href="#section-2">The Age Gap</a></li>
+        <li><a href="#section-3">Over Time</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <header>
+    <div class="hero">
+      <span class="kicker">A Visual Essay on Platform Usage in America</span>
+      <h1>Who Actually Uses <em>What</em></h1>
+      <p class="deck">
+        Everyone thinks they know social media. But the platforms different generations
+        actually rely on tell a more fractured story — one that reveals not just taste,
+        but entirely separate digital worlds.
+      </p>
+      <p class="byline">
+        Data: <span>Pew Research Center, Social Media Use in 2023</span>
+        &nbsp;&bull;&nbsp; Visualization: Charts using Chart.js
+      </p>
+    </div>
+  </header>
+
+  <hr class="section-divider" />
+
+  <!-- ── MAIN CONTENT ── -->
+  <main id="main-content">
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1 — THE LANDSCAPE
+    ═══════════════════════════════════════ -->
+    <section id="section-1" class="prose-section" aria-labelledby="s1-heading">
+      <span class="section-number">01 — The Landscape</span>
+      <h2 id="s1-heading">YouTube Reigns. Facebook Holds.<br>Everything Else Is a Scramble.</h2>
+
+      <p>
+        In spring 2023, the Pew Research Center asked a nationally representative sample of
+        American adults which social media platforms they use. The results confirm some assumptions
+        and shatter others.
+      </p>
+      <p>
+        <strong>YouTube sits at 83%</strong> — nearly universal among American adults. It's barely
+        thought of as "social media" by most users, yet it dwarfs every competitor. Facebook, despite
+        years of "it's dying" headlines, holds firm at 68%. Below them, a long tail: Instagram,
+        Pinterest, TikTok, LinkedIn, and Snapchat all battling for the 20–50% band.
+      </p>
+
+      <!-- STAT CALLOUTS -->
+      <div class="stat-row" aria-label="Key statistics">
+        <div class="stat-card">
+          <span class="stat-val">83%</span>
+          <p class="stat-label">of US adults use YouTube</p>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val">68%</span>
+          <p class="stat-label">still use Facebook regularly</p>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val">33%</span>
+          <p class="stat-label">are now on TikTok — up 57% since 2020</p>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val">31%</span>
+          <p class="stat-label">use 5 or more platforms</p>
+        </div>
+      </div>
+
+      <!-- CHART 1 -->
+      <div class="chart-wrap fade-in" aria-label="Bar chart: Platform adoption among US adults 2023">
+        <p class="chart-title">Chart 1 — Platform adoption among US adults (% who use each platform)</p>
+        <canvas id="chart1" role="img" aria-label="Horizontal bar chart showing social media platform adoption rates. YouTube leads at 83%, followed by Facebook at 68%, Instagram at 47%, Pinterest at 35%, TikTok at 33%, LinkedIn at 30%, Snapchat at 27%, WhatsApp at 23%, Twitter at 22%, and Reddit at 22%."></canvas>
+        <p class="source-note">
+          Source: <a href="https://www.pewresearch.org/internet/2023/04/24/social-media-use-in-2023/" target="_blank" rel="noopener">Pew Research Center, "Social Media Use in 2023" (April 2023)</a>.
+          Based on a survey of 5,733 U.S. adults.
+        </p>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2 — THE AGE GAP
+    ═══════════════════════════════════════ -->
+    <section id="section-2" class="prose-section" aria-labelledby="s2-heading">
+      <span class="section-number">02 — The Age Gap</span>
+      <h2 id="s2-heading">Same Platform. Completely Different Crowd.</h2>
+
+      <p>
+        Aggregate numbers hide the real story. When you break platform usage down by age,
+        the picture splits dramatically. Americans aged 18–29 and those 65+ are not just
+        using different amounts of social media — they are using <strong>fundamentally
+        different platforms</strong>.
+      </p>
+
+      <div class="pullquote" role="blockquote">
+        "62% of Americans aged 18–29 use TikTok.
+        Among those 65 and older, that number is 10%."
+      </div>
+
+      <p>
+        Snapchat illustrates the divide most sharply: 65% penetration among young adults,
+        against just 4% of seniors. Facebook runs in the opposite direction — it's one of the
+        few platforms where older adults approach parity with younger ones. For the 65+ group,
+        Facebook and YouTube are essentially the whole internet.
+      </p>
+
+      <div class="platform-legend" aria-label="Platform color legend">
+        <span class="platform-badge pb-yt">YouTube</span>
+        <span class="platform-badge pb-fb">Facebook</span>
+        <span class="platform-badge pb-ig">Instagram</span>
+        <span class="platform-badge pb-tt">TikTok</span>
+        <span class="platform-badge pb-sc">Snapchat</span>
+      </div>
+
+      <!-- CHART 2 -->
+      <div class="chart-wrap fade-in" aria-label="Grouped bar chart: Platform usage by age group">
+        <p class="chart-title">Chart 2 — Platform usage by age group (% who use each, 2023)</p>
+        <canvas id="chart2" role="img" aria-label="Grouped bar chart comparing usage of YouTube, Facebook, Instagram, TikTok, and Snapchat across four age groups: 18-29, 30-49, 50-64, and 65 and older. Younger adults dominate TikTok, Instagram, and Snapchat. Facebook remains relatively stable across age groups. YouTube is near-universal for younger adults and still high among seniors."></canvas>
+        <p class="source-note">
+          Source: <a href="https://www.pewresearch.org/internet/2023/04/24/social-media-use-in-2023/" target="_blank" rel="noopener">Pew Research Center, "Social Media Use in 2023" (April 2023)</a>.
+        </p>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3 — OVER TIME
+    ═══════════════════════════════════════ -->
+    <section id="section-3" class="prose-section" aria-labelledby="s3-heading">
+      <span class="section-number">03 — Over Time</span>
+      <h2 id="s3-heading">Facebook Plateaued. Instagram Climbed.<br>TikTok Arrived.</h2>
+
+      <p>
+        Social media has never been a stable market. Platforms that felt permanent have
+        stalled, while newcomers have surged seemingly overnight. Tracking Pew's longitudinal
+        data from 2012 to 2023 makes the shifts unmistakable.
+      </p>
+      <p>
+        <strong>Facebook's story is a plateau</strong>, not a collapse. After explosive
+        growth through 2016, it leveled off and has barely moved since. Instagram's steady
+        climb — from 13% in 2012 to 47% in 2023 — is the quieter success story of the
+        decade. And then there is TikTok: barely a blip in 2020, sitting at 33% just three
+        years later.
+      </p>
+      <p>
+        Twitter's story is perhaps the most telling: modest adoption, a decade of slow growth,
+        and in 2023 — under its new ownership — usage actually declined.
+      </p>
+
+      <!-- CHART 3 -->
+      <div class="chart-wrap fade-in" aria-label="Line chart: Platform growth over time 2012 to 2023">
+        <p class="chart-title">Chart 3 — Platform growth over time (% of US adults, 2012–2023)</p>
+        <canvas id="chart3" role="img" aria-label="Line chart showing trends for Facebook, Instagram, YouTube, TikTok, and Twitter from 2012 to 2023. Facebook peaked around 2016 and has since plateaued. Instagram has grown steadily. TikTok emerged rapidly from 2020 onward. Twitter has remained flat and dipped slightly in 2023. YouTube data begins in 2018 and shows modest growth to 83%."></canvas>
+        <p class="source-note">
+          Source: <a href="https://www.pewresearch.org/internet/2023/04/24/social-media-use-in-2023/" target="_blank" rel="noopener">Pew Research Center, "Social Media Use in 2023"</a>;
+          Pew longitudinal social media tracking data (2012–2023).
+          YouTube tracking begins 2018. TikTok tracking begins 2020.
+        </p>
+      </div>
+
+      <p style="margin-top: 2.5rem;">
+        What comes next is anyone's guess. The history of social media is littered with
+        platforms that seemed unassailable — MySpace, Vine, Google+ — and newcomers that
+        no one predicted. The one constant: the platforms that win aren't always the ones
+        that are objectively best. They're the ones that find their crowd first.
+      </p>
+    </section>
+
+  </main>
+
+  <hr class="section-divider" />
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <span class="footer-label">About this project</span>
+    <p>
+      This visual essay was created as a final project for a web design course. All data
+      is drawn from publicly available survey research published by the
+      <a href="https://www.pewresearch.org/internet/2023/04/24/social-media-use-in-2023/" target="_blank" rel="noopener">Pew Research Center</a>.
+    </p>
+    <p>
+      <strong>AI disclosure:</strong> Claude (Anthropic) was used to assist with
+      code structure, chart configuration, and layout. All written analysis and editorial
+      framing was written independently. Prompts used included requests for a Bootstrap 5
+      layout with Chart.js visualizations, accessible markup, and Pudding-inspired styling.
+    </p>
+    <p>
+      Visualizations built with <a href="https://www.chartjs.org/" target="_blank" rel="noopener">Chart.js</a>.
+      Layout powered by <a href="https://getbootstrap.com/" target="_blank" rel="noopener">Bootstrap 5</a>.
+      Fonts: Playfair Display &amp; IBM Plex Sans via Google Fonts.
+    </p>
+  </footer>
+
+  <!-- Bootstrap JS bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    /* ─────────────────────────────────────────
+       CHART DEFAULTS
+    ───────────────────────────────────────── */
+    Chart.defaults.color = '#8a8480';
+    Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+    Chart.defaults.font.size = 12;
+
+    const accent  = '#e8c97e';
+    const muted   = '#2a2a2a';
+    const gridCol = 'rgba(255,255,255,0.05)';
+
+    /* ─────────────────────────────────────────
+       CHART 1 — OVERALL ADOPTION (horizontal bar)
+    ───────────────────────────────────────── */
+    const ctx1 = document.getElementById('chart1').getContext('2d');
+    new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: ['YouTube','Facebook','Instagram','Pinterest','TikTok','LinkedIn','Snapchat','WhatsApp','Twitter / X','Reddit'],
+        datasets: [{
+          label: '% of US adults',
+          data: [83, 68, 47, 35, 33, 30, 27, 23, 22, 22],
+          backgroundColor: [
+            '#ff4e4e','#4e8cff','#c96dcc','#e87e7e','#4ecfb5',
+            '#6e9fff','#f5d64e','#6bde8f','#9a9aff','#ff9a4e'
+          ],
+          borderRadius: 4,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.parsed.x}% of US adults`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: gridCol },
+            ticks: { callback: v => v + '%' },
+            max: 100
+          },
+          y: {
+            grid: { display: false },
+            ticks: { color: '#c4bfb8' }
+          }
+        }
+      }
+    });
+
+    /* ─────────────────────────────────────────
+       CHART 2 — BY AGE GROUP (grouped bar)
+    ───────────────────────────────────────── */
+    const ctx2 = document.getElementById('chart2').getContext('2d');
+    new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: ['18–29', '30–49', '50–64', '65+'],
+        datasets: [
+          {
+            label: 'YouTube',
+            data: [93, 87, 75, 53],
+            backgroundColor: '#ff4e4e',
+            borderRadius: 3,
+          },
+          {
+            label: 'Facebook',
+            data: [67, 75, 68, 58],
+            backgroundColor: '#4e8cff',
+            borderRadius: 3,
+          },
+          {
+            label: 'Instagram',
+            data: [78, 59, 35, 15],
+            backgroundColor: '#c96dcc',
+            borderRadius: 3,
+          },
+          {
+            label: 'TikTok',
+            data: [62, 39, 24, 10],
+            backgroundColor: '#4ecfb5',
+            borderRadius: 3,
+          },
+          {
+            label: 'Snapchat',
+            data: [65, 30, 13, 4],
+            backgroundColor: '#f5d64e',
+            borderRadius: 3,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: '#c4bfb8',
+              usePointStyle: true,
+              pointStyle: 'rectRounded',
+              padding: 16
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#c4bfb8' }
+          },
+          y: {
+            grid: { color: gridCol },
+            ticks: { callback: v => v + '%' },
+            max: 100
+          }
+        }
+      }
+    });
+
+    /* ─────────────────────────────────────────
+       CHART 3 — OVER TIME (line chart)
+    ───────────────────────────────────────── */
+    const ctx3 = document.getElementById('chart3').getContext('2d');
+
+    // Shared year axis — sparse data uses null for missing years
+    const years = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
+
+    const facebookData  = [67, 71, 71, 72, 79, null, 68, 69, null, 69, null, 68];
+    const instagramData = [13, 17, 26, null, 32, null, 35, 37, null, 40, null, 47];
+    const youtubeData   = [null, null, null, null, null, null, 73, 73, null, 81, null, 83];
+    const tiktokData    = [null, null, null, null, null, null, null, null, 21, 21, null, 33];
+    const twitterData   = [16, 18, 23, null, 24, null, 24, 22, null, 23, null, 22];
+
+    const lineDefaults = { fill: false, tension: 0.35, borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 6, spanGaps: true };
+
+    new Chart(ctx3, {
+      type: 'line',
+      data: {
+        labels: years,
+        datasets: [
+          { ...lineDefaults, label: 'Facebook',  data: facebookData,  borderColor: '#4e8cff', pointBackgroundColor: '#4e8cff' },
+          { ...lineDefaults, label: 'Instagram', data: instagramData, borderColor: '#c96dcc', pointBackgroundColor: '#c96dcc' },
+          { ...lineDefaults, label: 'YouTube',   data: youtubeData,   borderColor: '#ff4e4e', pointBackgroundColor: '#ff4e4e' },
+          { ...lineDefaults, label: 'TikTok',    data: tiktokData,    borderColor: '#4ecfb5', pointBackgroundColor: '#4ecfb5', borderDash: [5,3] },
+          { ...lineDefaults, label: 'Twitter/X', data: twitterData,   borderColor: '#9a9aff', pointBackgroundColor: '#9a9aff', borderDash: [3,3] },
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: '#c4bfb8',
+              usePointStyle: true,
+              pointStyle: 'rectRounded',
+              padding: 16
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => ctx.parsed.y !== null ? ` ${ctx.dataset.label}: ${ctx.parsed.y}%` : null,
+              filter: item => item.parsed.y !== null
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: gridCol },
+            ticks: { color: '#c4bfb8' }
+          },
+          y: {
+            grid: { color: gridCol },
+            ticks: { callback: v => v + '%' },
+            min: 0,
+            max: 100
+          }
+        }
+      }
+    });
+
+    /* ─────────────────────────────────────────
+       INTERSECTION OBSERVER — fade-in on scroll
+    ───────────────────────────────────────── */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
