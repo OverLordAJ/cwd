@@ -1,734 +1,733 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Who Actually Uses What — America's Social Media Divide</title>
-  <meta name="description" content="A data-driven visual essay exploring how social media platform usage splits sharply across age groups in America, using Pew Research 2023 data." />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>The Platform Collapse — A Data Essay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#0e0e0e;
+  --paper:#f5f2eb;
+  --paper2:#edeae0;
+  --accent:#c8232c;
+  --accent2:#1a6eb5;
+  --muted:#6b6860;
+  --rule:#d0ccc0;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Lato',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-weight:300;
+  font-size:1.05rem;
+  line-height:1.8;
+  overflow-x:hidden;
+}
 
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+/* ── Progress bar ── */
+#progress{
+  position:fixed;top:0;left:0;height:3px;
+  background:var(--accent);width:0%;
+  z-index:9999;transition:width .1s linear;
+}
 
-  <!-- Google Fonts: Playfair Display + IBM Plex Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+/* ── Grain overlay ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.025;pointer-events:none;z-index:0;
+}
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+/* ── Nav ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(245,242,235,.92);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--rule);
+  padding:.7rem 0;
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  max-width:1100px;margin:0 auto;padding:0 1.5rem;
+}
+.nav-brand{
+  font-family:var(--mono);font-size:.7rem;
+  letter-spacing:.18em;color:var(--muted);text-transform:uppercase;
+  text-decoration:none;
+}
+.nav-label{
+  font-family:var(--mono);font-size:.65rem;
+  letter-spacing:.14em;color:var(--accent);text-transform:uppercase;
+}
 
-  <style>
-    :root {
-      --bg: #0e0e0e;
-      --bg-card: #161616;
-      --bg-muted: #1c1c1c;
-      --text: #f0ece3;
-      --text-muted: #8a8480;
-      --accent: #e8c97e;
-      --accent-dim: #5a4b2a;
-      --border: #2a2a2a;
-      --font-display: 'Playfair Display', Georgia, serif;
-      --font-body: 'IBM Plex Sans', sans-serif;
-      --youtube:  #ff4e4e;
-      --facebook: #4e8cff;
-      --instagram:#c96dcc;
-      --tiktok:   #4ecfb5;
-      --snapchat: #f5d64e;
-    }
+/* ── Hero ── */
+.hero{
+  min-height:100svh;
+  display:grid;
+  place-items:center;
+  padding:6rem 1.5rem 4rem;
+  border-bottom:1px solid var(--rule);
+  position:relative;
+}
+.hero-inner{max-width:820px;margin:0 auto;}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.hero-eyebrow{
+  font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.2em;color:var(--accent);
+  text-transform:uppercase;margin-bottom:1.4rem;
+  display:flex;align-items:center;gap:.8rem;
+}
+.hero-eyebrow::before{
+  content:'';display:block;width:32px;height:1px;background:var(--accent);
+}
+.hero h1{
+  font-family:var(--serif);
+  font-size:clamp(2.8rem,7vw,5.8rem);
+  font-weight:900;
+  line-height:1.04;
+  letter-spacing:-.02em;
+  margin-bottom:1.6rem;
+}
+.hero h1 span{
+  font-style:italic;font-weight:400;
+  color:var(--accent);
+}
+.hero-deck{
+  font-size:1.2rem;font-weight:300;
+  color:#3a3832;max-width:58ch;
+  line-height:1.65;margin-bottom:2.4rem;
+  border-left:3px solid var(--rule);
+  padding-left:1.2rem;
+}
+.byline{
+  font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.1em;color:var(--muted);
+  display:flex;gap:1.5rem;flex-wrap:wrap;
+}
+.byline strong{color:var(--ink);font-weight:500;}
 
-    html { scroll-behavior: smooth; }
+.hero-scroll{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:.62rem;
+  letter-spacing:.16em;color:var(--muted);
+  text-transform:uppercase;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  animation:scrollpulse 2s ease-in-out infinite;
+}
+.hero-scroll::after{
+  content:'';display:block;width:1px;height:32px;
+  background:var(--rule);
+  animation:linegrow 2s ease-in-out infinite;
+}
+@keyframes scrollpulse{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes linegrow{0%,100%{height:20px}50%{height:40px}}
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
-      font-weight: 400;
-      font-size: 1rem;
-      line-height: 1.75;
-    }
+/* ── Section layout ── */
+.section{
+  padding:5rem 0;
+  border-bottom:1px solid var(--rule);
+  opacity:0;transform:translateY(24px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+.section.visible{opacity:1;transform:none;}
 
-    /* ── SKIP LINK (accessibility) ── */
-    .skip-link {
-      position: absolute;
-      top: -100%;
-      left: 1rem;
-      background: var(--accent);
-      color: #000;
-      padding: .4rem .8rem;
-      font-weight: 600;
-      z-index: 9999;
-      border-radius: 4px;
-      transition: top .2s;
-    }
-    .skip-link:focus { top: 1rem; }
+.section-label{
+  font-family:var(--mono);font-size:.65rem;
+  letter-spacing:.2em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:.5rem;
+}
+h2.section-title{
+  font-family:var(--serif);
+  font-size:clamp(1.9rem,4vw,3rem);
+  font-weight:700;line-height:1.15;
+  margin-bottom:2rem;letter-spacing:-.01em;
+}
 
-    /* ── NAVIGATION ── */
-    nav.top-nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(14,14,14,.92);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--border);
-      padding: .75rem 0;
-    }
-    nav.top-nav .nav-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-    nav.top-nav .site-label {
-      font-size: .7rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-    nav.top-nav .section-links {
-      display: flex;
-      gap: 1.5rem;
-      list-style: none;
-    }
-    nav.top-nav .section-links a {
-      font-size: .75rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color .2s;
-    }
-    nav.top-nav .section-links a:hover,
-    nav.top-nav .section-links a:focus { color: var(--accent); }
+/* ── Drop cap ── */
+.dropcap::first-letter{
+  font-family:var(--serif);font-weight:900;
+  float:left;font-size:4.2rem;line-height:.82;
+  margin:.08em .12em -.05em 0;
+  color:var(--accent);
+}
 
-    /* ── HERO ── */
-    .hero {
-      min-height: 92vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 6rem 1.5rem 4rem;
-      max-width: 860px;
-      margin: 0 auto;
-    }
-    .hero .kicker {
-      font-size: .72rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1.25rem;
-      display: block;
-    }
-    .hero h1 {
-      font-family: var(--font-display);
-      font-size: clamp(2.4rem, 6vw, 4.8rem);
-      font-weight: 900;
-      line-height: 1.08;
-      margin-bottom: 1.5rem;
-      color: var(--text);
-    }
-    .hero h1 em {
-      font-style: italic;
-      color: var(--accent);
-    }
-    .hero .deck {
-      max-width: 560px;
-      font-size: 1.15rem;
-      color: #b8b2a9;
-      line-height: 1.7;
-      margin-bottom: 2.5rem;
-    }
-    .hero .byline {
-      font-size: .75rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border);
-      padding-top: 1rem;
-    }
-    .hero .byline span { color: var(--accent); }
+/* ── Pull quote ── */
+.pull{
+  border-top:2px solid var(--ink);
+  border-bottom:1px solid var(--rule);
+  padding:1.4rem 0;margin:2.5rem 0;
+}
+.pull p{
+  font-family:var(--serif);font-size:1.35rem;
+  font-style:italic;line-height:1.45;
+  margin-bottom:.5rem;
+}
+.pull cite{
+  font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.1em;color:var(--muted);
+  font-style:normal;text-transform:uppercase;
+}
 
-    /* ── DIVIDER ── */
-    .section-divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 0;
-    }
+/* ── Stat grid ── */
+.stat-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--rule);
+  border:1px solid var(--rule);
+  margin:2.5rem 0;
+}
+.stat-cell{
+  background:var(--paper);
+  padding:1.6rem 1.4rem;
+  text-align:center;
+}
+.stat-num{
+  font-family:var(--serif);
+  font-size:3rem;font-weight:900;
+  line-height:1;display:block;
+  color:var(--accent);
+}
+.stat-desc{
+  font-family:var(--sans);font-size:.78rem;
+  font-weight:300;color:var(--muted);
+  margin-top:.4rem;line-height:1.4;
+}
 
-    /* ── PROSE SECTION ── */
-    .prose-section {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 5rem 1.5rem;
-    }
-    .prose-section .section-number {
-      display: block;
-      font-size: .68rem;
-      letter-spacing: .25em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: .75rem;
-    }
-    .prose-section h2 {
-      font-family: var(--font-display);
-      font-size: clamp(1.7rem, 3.5vw, 2.6rem);
-      font-weight: 700;
-      line-height: 1.2;
-      margin-bottom: 1.5rem;
-      color: var(--text);
-    }
-    .prose-section p {
-      max-width: 640px;
-      color: #b8b2a9;
-      font-size: 1.05rem;
-      margin-bottom: 1.1rem;
-    }
-    .prose-section p strong { color: var(--text); font-weight: 600; }
+/* ── Timeline ── */
+.tl-item{
+  display:grid;grid-template-columns:90px 1fr;
+  gap:1.2rem;padding:1rem 0;
+  border-bottom:1px solid var(--rule);
+}
+.tl-item:last-child{border-bottom:none;}
+.tl-date{
+  font-family:var(--mono);font-size:.7rem;
+  color:var(--accent);padding-top:.1rem;
+  letter-spacing:.06em;font-weight:500;
+}
+.tl-text{font-size:.92rem;font-weight:300;}
+.tl-text strong{font-weight:700;color:var(--ink);}
 
-    /* ── CHART CONTAINERS ── */
-    .chart-wrap {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 2rem;
-      margin-top: 2.5rem;
-    }
-    .chart-wrap .chart-title {
-      font-size: .72rem;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
-    }
-    .chart-wrap canvas { max-height: 480px; }
+/* ── Chart card ── */
+.chart-card{
+  background:var(--paper2);
+  border:1px solid var(--rule);
+  padding:2rem;margin-top:1.5rem;
+}
+.chart-hed{
+  font-family:var(--sans);font-weight:700;
+  font-size:.95rem;margin-bottom:.3rem;
+}
+.chart-dek{
+  font-family:var(--mono);font-size:.65rem;
+  color:var(--muted);letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:1.4rem;
+}
+.chart-note{
+  font-size:.72rem;color:var(--muted);
+  margin-top:1rem;font-style:italic;
+  border-top:1px solid var(--rule);padding-top:.7rem;
+}
 
-    /* ── STAT CALLOUTS ── */
-    .stat-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1rem;
-      margin-top: 2.5rem;
-    }
-    .stat-card {
-      background: var(--bg-muted);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1.25rem 1.25rem 1rem;
-    }
-    .stat-card .stat-val {
-      font-family: var(--font-display);
-      font-size: 2.6rem;
-      font-weight: 900;
-      color: var(--accent);
-      line-height: 1;
-      display: block;
-    }
-    .stat-card .stat-label {
-      font-size: .78rem;
-      color: var(--text-muted);
-      margin-top: .4rem;
-      line-height: 1.4;
-    }
+/* ── Full-bleed dark section ── */
+.dark-section{
+  background:var(--ink);color:#f0ede6;
+  padding:5rem 0;border-bottom:1px solid #333;
+  opacity:0;transform:translateY(24px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+.dark-section.visible{opacity:1;transform:none;}
+.dark-section .section-label{color:#666;}
+.dark-section h2.section-title{color:#f0ede6;}
+.dark-section .chart-card{background:#1a1a1a;border-color:#333;}
+.dark-section .chart-hed{color:#f0ede6;}
+.dark-section .chart-note{border-color:#333;color:#666;}
+.dark-section p{color:#bbb8b0;}
+.dark-section .pull{border-top-color:#f0ede6;border-bottom-color:#333;}
+.dark-section .pull p{color:#f0ede6;}
+.dark-section .pull cite{color:#666;}
+.dark-section .tl-date{color:#c8a832;}
+.dark-section .tl-item{border-color:#2a2a2a;}
+.dark-section .tl-text{color:#bbb8b0;}
 
-    /* ── PLATFORM LEGEND BADGES ── */
-    .platform-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .5rem;
-      margin: 1rem 0 0;
-    }
-    .platform-badge {
-      font-size: .72rem;
-      letter-spacing: .06em;
-      padding: .25rem .65rem;
-      border-radius: 20px;
-      border: 1px solid;
-      font-weight: 500;
-    }
-    .pb-yt  { color: var(--youtube);   border-color: var(--youtube); }
-    .pb-fb  { color: var(--facebook);  border-color: var(--facebook); }
-    .pb-ig  { color: var(--instagram); border-color: var(--instagram); }
-    .pb-tt  { color: var(--tiktok);    border-color: var(--tiktok); }
-    .pb-sc  { color: var(--snapchat);  border-color: var(--snapchat); }
+/* ── Conclusion / credits ── */
+.credits{
+  background:var(--paper2);
+  border-top:1px solid var(--rule);
+  padding:3rem 0;font-size:.82rem;color:var(--muted);
+}
+.credits a{color:var(--ink);}
+.credits h4{
+  font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink);margin-bottom:.8rem;
+}
+.credits table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.credits th{
+  text-align:left;font-weight:700;color:var(--ink);
+  padding:.4rem .5rem;border-bottom:2px solid var(--ink);
+}
+.credits td{padding:.45rem .5rem;border-bottom:1px solid var(--rule);vertical-align:top;}
+.credits tr:last-child td{border-bottom:none;}
 
-    /* ── SOURCE NOTE ── */
-    .source-note {
-      font-size: .72rem;
-      color: var(--text-muted);
-      margin-top: 1rem;
-      border-top: 1px solid var(--border);
-      padding-top: .75rem;
-    }
-    .source-note a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+/* ── Footer ── */
+footer{
+  background:var(--ink);color:#6b6860;
+  padding:2rem 0;font-family:var(--mono);
+  font-size:.65rem;letter-spacing:.08em;
+  text-transform:uppercase;
+}
+footer a{color:#6b6860;}
 
-    /* ── PULLQUOTE ── */
-    .pullquote {
-      border-left: 3px solid var(--accent);
-      padding: 1rem 1.5rem;
-      margin: 2rem 0;
-      font-family: var(--font-display);
-      font-size: 1.45rem;
-      font-style: italic;
-      color: var(--text);
-      line-height: 1.45;
-      background: var(--bg-muted);
-      border-radius: 0 6px 6px 0;
-    }
+/* ── Accessibility ── */
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+.skip-link{
+  position:absolute;top:-60px;left:1rem;
+  background:var(--accent);color:#fff;
+  padding:.5rem 1rem;font-size:.85rem;
+  text-decoration:none;border-radius:3px;
+  transition:top .2s;z-index:9999;
+}
+.skip-link:focus{top:1rem;}
 
-    /* ── FOOTER ── */
-    footer {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 3rem 1.5rem 5rem;
-      border-top: 1px solid var(--border);
-    }
-    footer .footer-label {
-      font-size: .68rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-      display: block;
-    }
-    footer p { font-size: .88rem; color: var(--text-muted); max-width: 600px; margin-bottom: .6rem; }
-    footer a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
-
-    /* ── RESPONSIVE TWEAKS ── */
-    @media (max-width: 600px) {
-      nav.top-nav .section-links { display: none; }
-      .chart-wrap { padding: 1.25rem; }
-      .stat-row { grid-template-columns: 1fr 1fr; }
-    }
-
-    /* ── FADE-IN ANIMATION ── */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity .65s ease, transform .65s ease;
-    }
-    .fade-in.visible {
-      opacity: 1;
-      transform: none;
-    }
-  </style>
+/* ── Responsive ── */
+@media(max-width:768px){
+  .stat-row{grid-template-columns:repeat(3,1fr);}
+  .stat-num{font-size:2rem;}
+  .hero h1{font-size:2.6rem;}
+  .tl-item{grid-template-columns:70px 1fr;}
+}
+@media(max-width:480px){
+  .stat-row{grid-template-columns:1fr;}
+  .hero-scroll{display:none;}
+}
+</style>
 </head>
 <body>
 
-  <!-- Skip to main content (WCAG 2.4.1) -->
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div id="progress" role="progressbar" aria-label="Reading progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
 
-  <!-- ── NAVIGATION ── -->
-  <nav class="top-nav" aria-label="Page sections">
-    <div class="nav-inner">
-      <span class="site-label">Data Essay &bull; 2025</span>
-      <ul class="section-links">
-        <li><a href="#section-1">The Landscape</a></li>
-        <li><a href="#section-2">The Age Gap</a></li>
-        <li><a href="#section-3">Over Time</a></li>
-      </ul>
+<!-- ── NAV ── -->
+<nav aria-label="Site navigation">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Platform Collapse</a>
+    <span class="nav-label">Data Essay · 2025</span>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<header class="hero" role="banner">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">A Data Essay on Social Media</p>
+    <h1>The <span>Great Unraveling</span> of the Platforms We Built Our Lives On</h1>
+    <p class="hero-deck">
+      In a single year, TikTok rewrote the rules of online attention, Twitter self-destructed in the spotlight, and Meta lost hundreds of billions of dollars chasing a vision nobody asked for. The data tells a story about power — and how fast it shifts.
+    </p>
+    <div class="byline">
+      <span><strong>By</strong> Amiel Russell</span>
+      <span><strong>Published</strong> April 2025</span>
+      <span><strong>Course</strong> 301S</span>
     </div>
-  </nav>
+  </div>
+  <div class="hero-scroll" aria-hidden="true">Scroll</div>
+</header>
 
-  <!-- ── HERO ── -->
-  <header>
-    <div class="hero">
-      <span class="kicker">A Visual Essay on Platform Usage in America</span>
-      <h1>Who Actually Uses <em>What</em></h1>
-      <p class="deck">
-        Everyone thinks they know social media. But the platforms different generations
-        actually rely on tell a more fractured story — one that reveals not just taste,
-        but entirely separate digital worlds.
+<!-- ── MAIN ── -->
+<main id="main">
+
+  <!-- ═══ SECTION 1: Context ═══ -->
+  <section class="section" aria-labelledby="s1">
+    <div class="container" style="max-width:1100px">
+      <div class="row">
+        <div class="col-lg-7">
+          <p class="section-label">01 — The Setup</p>
+          <h2 class="section-title" id="s1">Three platforms. Billions of users. One tipping point.</h2>
+
+          <p class="dropcap">
+            For most of the 2010s, the social media landscape felt permanent. Facebook dominated nearly every corner of the internet, Twitter served as the world's public square, and Instagram quietly turned into a cultural mirror — reflecting how we dressed, ate, traveled, and presented ourselves. These weren't just apps. They were infrastructure.
+          </p>
+          <p>
+            Then came 2022. In twelve months, a Chinese-owned video app pulled more daily attention than anything Silicon Valley had produced. The platform that once hosted presidents and breaking news descended into operational chaos after a $44 billion acquisition. And the company behind Facebook, already reeling from user decline, watched its market value evaporate by nearly 70 percent. The ground that had felt so solid turned out to be anything but.
+          </p>
+          <p>
+            Researchers at Northeastern University saw it coming. "Social media success is a game of exponential growth where platforms rise and fall rapidly once they gain or lose traction," said Yakov Bart, an associate professor of marketing. "It's entirely plausible that a platform we've barely noticed today will be the biggest talk of the town tomorrow."
+          </p>
+          <p>
+            What the data from that period reveals is something more fundamental than corporate drama: a restructuring of how human attention is allocated online, and who controls it.
+          </p>
+
+          <div class="pull">
+            <p>"Social media is such an integral part of modern life that any change on a platform can be seismic."</p>
+            <cite>— Northeastern Global News, December 2022</cite>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="col-lg-4 offset-lg-1 mt-5 mt-lg-0">
+          <p class="section-label">Key moments</p>
+          <div role="list" aria-label="Social media timeline 2022">
+            <div class="tl-item" role="listitem">
+              <span class="tl-date">Jan '22</span>
+              <span class="tl-text"><strong>TikTok</strong> overtakes Google as the most-visited site of 2021, per Cloudflare's traffic report.</span>
+            </div>
+            <div class="tl-item" role="listitem">
+              <span class="tl-date">Apr '22</span>
+              <span class="tl-text"><strong>Elon Musk</strong> discloses a 9% stake in Twitter and launches a $44B buyout bid.</span>
+            </div>
+            <div class="tl-item" role="listitem">
+              <span class="tl-date">Jul '22</span>
+              <span class="tl-text"><strong>Meta</strong> reports its first-ever quarterly revenue decline, stunning Wall Street.</span>
+            </div>
+            <div class="tl-item" role="listitem">
+              <span class="tl-date">Oct '22</span>
+              <span class="tl-text"><strong>Twitter acquisition</strong> closes. Mass layoffs begin within days. Blue-check chaos follows.</span>
+            </div>
+            <div class="tl-item" role="listitem">
+              <span class="tl-date">Nov '22</span>
+              <span class="tl-text"><strong>Mastodon</strong> surges past 2.5M monthly active users as Twitter refugees seek alternatives.</span>
+            </div>
+            <div class="tl-item" role="listitem">
+              <span class="tl-date">Dec '22</span>
+              <span class="tl-text"><strong>15+ U.S. states</strong> ban TikTok on government-issued devices citing national security concerns.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat row -->
+      <div class="stat-row" role="list" aria-label="Key statistics">
+        <div class="stat-cell" role="listitem">
+          <span class="stat-num" data-target="1200" data-suffix="M+">0</span>
+          <p class="stat-desc">TikTok monthly active users by end of 2022</p>
+        </div>
+        <div class="stat-cell" role="listitem">
+          <span class="stat-num">$44B</span>
+          <p class="stat-desc">Elon Musk's Twitter acquisition price, October 2022</p>
+        </div>
+        <div class="stat-cell" role="listitem">
+          <span class="stat-num">~70%</span>
+          <p class="stat-desc">Decline in Meta's stock value over the course of 2022</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 2: User Growth ═══ -->
+  <section class="section" aria-labelledby="s2">
+    <div class="container" style="max-width:1100px">
+      <div class="row align-items-start">
+        <div class="col-lg-6">
+          <div class="chart-card">
+            <p class="chart-dek">Visualization 1 of 3</p>
+            <p class="chart-hed">Monthly Active Users by Platform, 2019–2023 (billions)</p>
+            <canvas id="mauChart" height="340" role="img" aria-label="Line chart: TikTok grew from 500M users in 2019 to 1.5B by 2023. Facebook stayed near 3B. Twitter peaked at 450M in 2022 then dropped. Instagram grew steadily to 2B."></canvas>
+            <p class="chart-note">Sources: Company earnings reports, Statista, DataReportal. TikTok figures are estimates — the platform does not publicly report consistent MAU data.</p>
+          </div>
+        </div>
+
+        <div class="col-lg-5 offset-lg-1 mt-5 mt-lg-0">
+          <p class="section-label">02 — The Numbers</p>
+          <h2 class="section-title" id="s2">TikTok's rise wasn't a fluke. It was a takeover.</h2>
+
+          <p>
+            When researchers look at the user growth curves of major social platforms between 2019 and 2023, one line bends differently than all the others. TikTok's ascent from 500 million to over 1.5 billion monthly active users in four years represents the fastest adoption of any entertainment platform in history — outpacing even the peak years of Facebook and YouTube.
+          </p>
+          <p>
+            What's particularly striking isn't TikTok's raw numbers, but what happened to everyone else's. Twitter plateaued and then contracted. Facebook's growth flattened near the three-billion mark. Only Instagram, benefiting from Meta's aggressive push of short-form Reels, kept meaningful momentum. The chart tells a story of a finite pool of human attention — and who's winning the fight to hold it.
+          </p>
+
+          <div class="pull">
+            <p>"One could imagine that the company could start to get squeezed by regulators. TikTok may become more of a political football."</p>
+            <cite>— John Wihbey, Northeastern University</cite>
+          </div>
+
+          <p>
+            TikTok's growth has never been purely about entertainment. Its algorithm — which surfaces content based on behavioral signals rather than social connections — represented a fundamental departure from how platforms like Facebook and Twitter were built. You don't need to follow anyone. You don't need to know anyone. The feed finds you.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 3: Meta — dark ═══ -->
+  <section class="dark-section" aria-labelledby="s3">
+    <div class="container" style="max-width:1100px">
+      <p class="section-label">03 — Meta's Fall</p>
+      <h2 class="section-title" id="s3">A $700 billion evaporation</h2>
+
+      <div class="row align-items-start">
+        <div class="col-lg-5">
+          <p style="color:#bbb8b0">
+            In February 2022, Meta reported that Facebook had lost daily active users for the first time in its history. One million people — gone in a single quarter. The stock dropped 26% in a single day, erasing roughly $230 billion in market value overnight. It was the largest single-day market cap loss for any company in U.S. stock market history.
+          </p>
+          <p style="color:#bbb8b0;margin-top:1rem">
+            By November of that year, the stock had fallen nearly 70% from its peak. The culprit, according to analysts, was a combination of Apple's iOS privacy changes cutting into ad revenue, growing competition from TikTok, and deep investor skepticism about Mark Zuckerberg's bet on the metaverse — a virtual reality world that cost the company over $10 billion in 2021 alone, with little to show for it publicly.
+          </p>
+          <p style="color:#bbb8b0;margin-top:1rem">
+            "Facebook can't succeed anymore unless they invent something that's used by multiple billions of people," said Rahul Bhargava, assistant professor at Northeastern. "There's only so many things that could be used by multiple billions of people." The company's recovery in 2023, driven by a year of aggressive cost-cutting Zuckerberg called the "Year of Efficiency," showed how quickly markets forgive — but not how quickly trust returns.
+          </p>
+
+          <div class="pull" style="margin-top:2rem">
+            <p>"Certainly, they're trying to figure out if they can copy the 'secret sauce' of TikTok."</p>
+            <cite>— Yakov Bart, Northeastern University</cite>
+          </div>
+        </div>
+
+        <div class="col-lg-6 offset-lg-1 mt-4 mt-lg-0">
+          <div class="chart-card">
+            <p class="chart-dek">Visualization 2 of 3</p>
+            <p class="chart-hed">Meta (META) Stock Price, Jan 2021 – Dec 2023</p>
+            <canvas id="metaChart" height="320" role="img" aria-label="Line chart showing Meta stock declining from $382 in late 2021 to below $90 by late 2022, then recovering to $353 by December 2023."></canvas>
+            <p class="chart-note" style="color:#555">Source: Yahoo Finance. Monthly closing prices. Past performance does not indicate future results.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 4: Attention Economy ═══ -->
+  <section class="section" aria-labelledby="s4">
+    <div class="container" style="max-width:1100px">
+      <div class="row align-items-start">
+        <div class="col-lg-6">
+          <p class="section-label">04 — The Attention Economy</p>
+          <h2 class="section-title" id="s4">Where people actually spend their time tells a different story</h2>
+
+          <p>
+            User counts only capture part of the picture. A platform can have a billion registered accounts and still be losing the attention war. The more revealing metric is daily engagement — how many minutes per day the average user spends on each platform. And by that measure, TikTok isn't just growing. It's dominant in a way that should alarm every other app fighting for screen time.
+          </p>
+          <p>
+            In 2022, TikTok users spent an average of 95 minutes per day on the platform — nearly twice the time spent on YouTube, and more than three times what Facebook or Instagram commanded. Those aren't marginal differences. They represent structural advantages in the attention economy that are extraordinarily hard to compete against.
+          </p>
+
+          <div class="pull">
+            <p>"TikTok doesn't change the underlying concern that we're engineering platforms to harness human attention in ways that are somewhat deceptive, probably harmful — not great for young people."</p>
+            <cite>— John Wihbey, Northeastern University</cite>
+          </div>
+
+          <p>
+            The engagement gap matters because advertising revenue follows attention. Every extra minute a user spends scrolling TikTok is a minute they aren't spending on Facebook or Twitter. As those engagement curves diverged through 2022 and 2023, the business model underpinning older platforms became harder to sustain — and the pressure to algorithmically optimize content, regardless of its social effects, became more intense.
+          </p>
+        </div>
+
+        <div class="col-lg-5 offset-lg-1 mt-4 mt-lg-0">
+          <div class="chart-card">
+            <p class="chart-dek">Visualization 3 of 3</p>
+            <p class="chart-hed">Average Daily Time Spent per Platform, 2022 (minutes)</p>
+            <canvas id="timeChart" height="300" role="img" aria-label="Horizontal bar chart: TikTok users spend 95 minutes per day, YouTube 74, Facebook 33, Twitter 31, Instagram 29."></canvas>
+            <p class="chart-note">Sources: eMarketer, DataReportal 2022 Digital Report. Global averages among adult users of each platform.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 5: Conclusion ═══ -->
+  <section class="section" aria-labelledby="s5">
+    <div class="container" style="max-width:760px">
+      <p class="section-label">05 — What It Means</p>
+      <h2 class="section-title" id="s5">The permanence was always an illusion</h2>
+
+      <p class="dropcap">
+        What the data from 2022 ultimately reveals is that social media platforms are not utilities — they're not water systems or electricity grids that persist regardless of what's happening inside the company. They are, at their core, attention machines. And attention is fickle, contextual, and remarkably easy to redirect once something better comes along.
       </p>
-      <p class="byline">
-        Data: <span>Pew Research Center, Social Media Use in 2023</span>
-        &nbsp;&bull;&nbsp; Visualization: Charts using Chart.js
+      <p>
+        The predictions made by Northeastern researchers at the end of 2022 aged in interesting ways. TikTok didn't get banned nationally in the United States — not in 2023, not even in 2024, despite ongoing Congressional pressure. Twitter, renamed X under Musk's ownership, retained a core user base but shed the cultural centrality it once had. Meta's stock recovered dramatically in 2023, propelled by AI-driven advertising optimization and a genuine reversal of its spending trajectory, but questions about its long-term relevance among younger users persisted.
+      </p>
+      <p>
+        Perhaps most significantly, the Mastodon moment — the brief, hopeful surge of decentralized social media — showed both that alternatives were possible and that network effects made them brutally hard to sustain. People went back. They always go back, until they don't.
+      </p>
+      <p>
+        The deeper lesson isn't about any single platform. It's about what we choose to pay attention to, and what that attention funds. Every minute spent scrolling is a vote — for an algorithm, for an ad model, for a set of content moderation decisions made by a small group of people with enormous power over what information billions of people see. The platforms may have felt permanent. The choices we make on them never were.
       </p>
     </div>
-  </header>
+  </section>
 
-  <hr class="section-divider" />
+</main>
 
-  <!-- ── MAIN CONTENT ── -->
-  <main id="main-content">
-
-    <!-- ═══════════════════════════════════════
-         SECTION 1 — THE LANDSCAPE
-    ═══════════════════════════════════════ -->
-    <section id="section-1" class="prose-section" aria-labelledby="s1-heading">
-      <span class="section-number">01 — The Landscape</span>
-      <h2 id="s1-heading">YouTube Reigns. Facebook Holds.<br>Everything Else Is a Scramble.</h2>
-
-      <p>
-        In spring 2023, the Pew Research Center asked a nationally representative sample of
-        American adults which social media platforms they use. The results confirm some assumptions
-        and shatter others.
-      </p>
-      <p>
-        <strong>YouTube sits at 83%</strong> — nearly universal among American adults. It's barely
-        thought of as "social media" by most users, yet it dwarfs every competitor. Facebook, despite
-        years of "it's dying" headlines, holds firm at 68%. Below them, a long tail: Instagram,
-        Pinterest, TikTok, LinkedIn, and Snapchat all battling for the 20–50% band.
-      </p>
-
-      <!-- STAT CALLOUTS -->
-      <div class="stat-row" aria-label="Key statistics">
-        <div class="stat-card">
-          <span class="stat-val">83%</span>
-          <p class="stat-label">of US adults use YouTube</p>
-        </div>
-        <div class="stat-card">
-          <span class="stat-val">68%</span>
-          <p class="stat-label">still use Facebook regularly</p>
-        </div>
-        <div class="stat-card">
-          <span class="stat-val">33%</span>
-          <p class="stat-label">are now on TikTok — up 57% since 2020</p>
-        </div>
-        <div class="stat-card">
-          <span class="stat-val">31%</span>
-          <p class="stat-label">use 5 or more platforms</p>
-        </div>
+<!-- ═══ CREDITS / AI DOCS ═══ -->
+<section class="credits" aria-labelledby="credits-heading">
+  <div class="container" style="max-width:1100px">
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <h4 id="credits-heading">Data Sources</h4>
+        <ul style="list-style:none;font-size:.8rem;line-height:2">
+          <li>Statista — Social Media Platform User Data, 2019–2023</li>
+          <li>DataReportal — Digital 2022 & 2023 Global Reports</li>
+          <li>eMarketer — U.S. Time Spent with Social Platforms, 2022</li>
+          <li>Yahoo Finance — META historical price data</li>
+          <li><a href="https://news.northeastern.edu/2022/12/21/social-media-2023/" target="_blank" rel="noopener">Northeastern Global News, December 2022</a></li>
+        </ul>
       </div>
-
-      <!-- CHART 1 -->
-      <div class="chart-wrap fade-in" aria-label="Bar chart: Platform adoption among US adults 2023">
-        <p class="chart-title">Chart 1 — Platform adoption among US adults (% who use each platform)</p>
-        <canvas id="chart1" role="img" aria-label="Horizontal bar chart showing social media platform adoption rates. YouTube leads at 83%, followed by Facebook at 68%, Instagram at 47%, Pinterest at 35%, TikTok at 33%, LinkedIn at 30%, Snapchat at 27%, WhatsApp at 23%, Twitter at 22%, and Reddit at 22%."></canvas>
-        <p class="source-note">
-          Source: <a href="https://www.pewresearch.org/internet/2023/04/24/social-media-use-in-2023/" target="_blank" rel="noopener">Pew Research Center, "Social Media Use in 2023" (April 2023)</a>.
-          Based on a survey of 5,733 U.S. adults.
-        </p>
+      <div class="col-lg-6">
+        <h4>AI Tool Documentation</h4>
+        <table aria-label="AI tools used in this project">
+          <thead>
+            <tr><th scope="col">Tool</th><th scope="col">Use</th><th scope="col">Prompts</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Claude (Anthropic)</td>
+              <td>HTML/CSS/JS structure, chart configuration, layout design</td>
+              <td>"Make into an actual website without making it seem it was coded" [full prompt list — update with your actual prompts]</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top:1rem;font-size:.75rem">Built with Bootstrap 5.3 · Chart.js 4.4 · Playfair Display / Lato / IBM Plex Mono via Google Fonts</p>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <hr class="section-divider" />
+<footer role="contentinfo">
+  <div class="container" style="max-width:1100px">
+    <div class="row">
+      <div class="col-md-6">&copy; 2025 [Your Name] — [Course] — [Institution]</div>
+      <div class="col-md-6 text-md-end"><a href="#">Back to top ↑</a></div>
+    </div>
+  </div>
+</footer>
 
-    <!-- ═══════════════════════════════════════
-         SECTION 2 — THE AGE GAP
-    ═══════════════════════════════════════ -->
-    <section id="section-2" class="prose-section" aria-labelledby="s2-heading">
-      <span class="section-number">02 — The Age Gap</span>
-      <h2 id="s2-heading">Same Platform. Completely Different Crowd.</h2>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+/* ── Reading progress ── */
+const bar = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+  bar.style.width = pct + '%';
+  bar.setAttribute('aria-valuenow', Math.round(pct));
+}, { passive: true });
 
-      <p>
-        Aggregate numbers hide the real story. When you break platform usage down by age,
-        the picture splits dramatically. Americans aged 18–29 and those 65+ are not just
-        using different amounts of social media — they are using <strong>fundamentally
-        different platforms</strong>.
-      </p>
+/* ── Scroll reveal ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, { threshold: 0.08 });
+document.querySelectorAll('.section, .dark-section').forEach(el => observer.observe(el));
 
-      <div class="pullquote" role="blockquote">
-        "62% of Americans aged 18–29 use TikTok.
-        Among those 65 and older, that number is 10%."
-      </div>
+/* ── Animated counters ── */
+const countObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const target = +el.dataset.target;
+    const suffix = el.dataset.suffix || '';
+    if (!target) return;
+    let current = 0;
+    const step = target / 60;
+    const tick = () => {
+      current = Math.min(current + step, target);
+      el.textContent = Math.round(current).toLocaleString() + suffix;
+      if (current < target) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    countObserver.unobserve(el);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-target]').forEach(el => countObserver.observe(el));
 
-      <p>
-        Snapchat illustrates the divide most sharply: 65% penetration among young adults,
-        against just 4% of seniors. Facebook runs in the opposite direction — it's one of the
-        few platforms where older adults approach parity with younger ones. For the 65+ group,
-        Facebook and YouTube are essentially the whole internet.
-      </p>
+/* ── Chart defaults ── */
+Chart.defaults.font.family = "'Lato', system-ui, sans-serif";
+Chart.defaults.font.size   = 11;
+Chart.defaults.color       = '#6b6860';
 
-      <div class="platform-legend" aria-label="Platform color legend">
-        <span class="platform-badge pb-yt">YouTube</span>
-        <span class="platform-badge pb-fb">Facebook</span>
-        <span class="platform-badge pb-ig">Instagram</span>
-        <span class="platform-badge pb-tt">TikTok</span>
-        <span class="platform-badge pb-sc">Snapchat</span>
-      </div>
+const GRID_LIGHT = 'rgba(0,0,0,0.06)';
+const GRID_DARK  = 'rgba(255,255,255,0.06)';
+const TIP_LIGHT  = { backgroundColor:'#0e0e0e', borderColor:'#333', borderWidth:1, titleColor:'#f0ede6', bodyColor:'#999', padding:10 };
+const TIP_DARK   = { backgroundColor:'#1a1a1a', borderColor:'#333', borderWidth:1, titleColor:'#f0ede6', bodyColor:'#777', padding:10 };
 
-      <!-- CHART 2 -->
-      <div class="chart-wrap fade-in" aria-label="Grouped bar chart: Platform usage by age group">
-        <p class="chart-title">Chart 2 — Platform usage by age group (% who use each, 2023)</p>
-        <canvas id="chart2" role="img" aria-label="Grouped bar chart comparing usage of YouTube, Facebook, Instagram, TikTok, and Snapchat across four age groups: 18-29, 30-49, 50-64, and 65 and older. Younger adults dominate TikTok, Instagram, and Snapchat. Facebook remains relatively stable across age groups. YouTube is near-universal for younger adults and still high among seniors."></canvas>
-        <p class="source-note">
-          Source: <a href="https://www.pewresearch.org/internet/2023/04/24/social-media-use-in-2023/" target="_blank" rel="noopener">Pew Research Center, "Social Media Use in 2023" (April 2023)</a>.
-        </p>
-      </div>
-    </section>
+/* ── Chart 1: MAU Line ── */
+new Chart(document.getElementById('mauChart'), {
+  type:'line',
+  data:{
+    labels:['2019','2020','2021','2022','2023'],
+    datasets:[
+      { label:'TikTok',     data:[0.50,0.69,1.00,1.20,1.50], borderColor:'#e02020', backgroundColor:'rgba(224,32,32,.1)',  borderWidth:2.5, pointRadius:5, tension:.35, fill:false },
+      { label:'Facebook',   data:[2.50,2.80,2.90,2.96,3.03], borderColor:'#4267b2', backgroundColor:'rgba(66,103,178,.1)', borderWidth:2.5, pointRadius:5, tension:.35, fill:false },
+      { label:'Instagram',  data:[1.00,1.20,1.40,1.50,2.00], borderColor:'#c13584', backgroundColor:'rgba(193,53,132,.1)', borderWidth:2.5, pointRadius:5, tension:.35, fill:false },
+      { label:'Twitter / X',data:[0.33,0.35,0.40,0.45,0.35], borderColor:'#1d9bf0', backgroundColor:'rgba(29,155,240,.1)', borderWidth:2.5, pointRadius:5, tension:.35, fill:false },
+    ]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{ position:'bottom', labels:{ boxWidth:10, padding:14 } },
+      tooltip:{ ...TIP_LIGHT, callbacks:{ label: c => ` ${c.dataset.label}: ${c.parsed.y}B` } },
+    },
+    scales:{
+      x:{ grid:{ color:GRID_LIGHT } },
+      y:{ grid:{ color:GRID_LIGHT }, ticks:{ callback:v=>v+'B' }, title:{ display:true, text:'Billions of users' } },
+    }
+  }
+});
 
-    <hr class="section-divider" />
-
-    <!-- ═══════════════════════════════════════
-         SECTION 3 — OVER TIME
-    ═══════════════════════════════════════ -->
-    <section id="section-3" class="prose-section" aria-labelledby="s3-heading">
-      <span class="section-number">03 — Over Time</span>
-      <h2 id="s3-heading">Facebook Plateaued. Instagram Climbed.<br>TikTok Arrived.</h2>
-
-      <p>
-        Social media has never been a stable market. Platforms that felt permanent have
-        stalled, while newcomers have surged seemingly overnight. Tracking Pew's longitudinal
-        data from 2012 to 2023 makes the shifts unmistakable.
-      </p>
-      <p>
-        <strong>Facebook's story is a plateau</strong>, not a collapse. After explosive
-        growth through 2016, it leveled off and has barely moved since. Instagram's steady
-        climb — from 13% in 2012 to 47% in 2023 — is the quieter success story of the
-        decade. And then there is TikTok: barely a blip in 2020, sitting at 33% just three
-        years later.
-      </p>
-      <p>
-        Twitter's story is perhaps the most telling: modest adoption, a decade of slow growth,
-        and in 2023 — under its new ownership — usage actually declined.
-      </p>
-
-      <!-- CHART 3 -->
-      <div class="chart-wrap fade-in" aria-label="Line chart: Platform growth over time 2012 to 2023">
-        <p class="chart-title">Chart 3 — Platform growth over time (% of US adults, 2012–2023)</p>
-        <canvas id="chart3" role="img" aria-label="Line chart showing trends for Facebook, Instagram, YouTube, TikTok, and Twitter from 2012 to 2023. Facebook peaked around 2016 and has since plateaued. Instagram has grown steadily. TikTok emerged rapidly from 2020 onward. Twitter has remained flat and dipped slightly in 2023. YouTube data begins in 2018 and shows modest growth to 83%."></canvas>
-        <p class="source-note">
-          Source: <a href="https://www.pewresearch.org/internet/2023/04/24/social-media-use-in-2023/" target="_blank" rel="noopener">Pew Research Center, "Social Media Use in 2023"</a>;
-          Pew longitudinal social media tracking data (2012–2023).
-          YouTube tracking begins 2018. TikTok tracking begins 2020.
-        </p>
-      </div>
-
-      <p style="margin-top: 2.5rem;">
-        What comes next is anyone's guess. The history of social media is littered with
-        platforms that seemed unassailable — MySpace, Vine, Google+ — and newcomers that
-        no one predicted. The one constant: the platforms that win aren't always the ones
-        that are objectively best. They're the ones that find their crowd first.
-      </p>
-    </section>
-
-  </main>
-
-  <hr class="section-divider" />
-
-  <!-- ── FOOTER ── -->
-  <footer>
-    <span class="footer-label">About this project</span>
-    <p>
-      This visual essay was created as a final project for a web design course. All data
-      is drawn from publicly available survey research published by the
-      <a href="https://www.pewresearch.org/internet/2023/04/24/social-media-use-in-2023/" target="_blank" rel="noopener">Pew Research Center</a>.
-    </p>
-    <p>
-      <strong>AI disclosure:</strong> Claude (Anthropic) was used to assist with
-      code structure, chart configuration, and layout. All written analysis and editorial
-      framing was written independently. Prompts used included requests for a Bootstrap 5
-      layout with Chart.js visualizations, accessible markup, and Pudding-inspired styling.
-    </p>
-    <p>
-      Visualizations built with <a href="https://www.chartjs.org/" target="_blank" rel="noopener">Chart.js</a>.
-      Layout powered by <a href="https://getbootstrap.com/" target="_blank" rel="noopener">Bootstrap 5</a>.
-      Fonts: Playfair Display &amp; IBM Plex Sans via Google Fonts.
-    </p>
-  </footer>
-
-  <!-- Bootstrap JS bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    /* ─────────────────────────────────────────
-       CHART DEFAULTS
-    ───────────────────────────────────────── */
-    Chart.defaults.color = '#8a8480';
-    Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
-    Chart.defaults.font.size = 12;
-
-    const accent  = '#e8c97e';
-    const muted   = '#2a2a2a';
-    const gridCol = 'rgba(255,255,255,0.05)';
-
-    /* ─────────────────────────────────────────
-       CHART 1 — OVERALL ADOPTION (horizontal bar)
-    ───────────────────────────────────────── */
-    const ctx1 = document.getElementById('chart1').getContext('2d');
-    new Chart(ctx1, {
-      type: 'bar',
-      data: {
-        labels: ['YouTube','Facebook','Instagram','Pinterest','TikTok','LinkedIn','Snapchat','WhatsApp','Twitter / X','Reddit'],
-        datasets: [{
-          label: '% of US adults',
-          data: [83, 68, 47, 35, 33, 30, 27, 23, 22, 22],
-          backgroundColor: [
-            '#ff4e4e','#4e8cff','#c96dcc','#e87e7e','#4ecfb5',
-            '#6e9fff','#f5d64e','#6bde8f','#9a9aff','#ff9a4e'
-          ],
-          borderRadius: 4,
-          borderSkipped: false,
-        }]
+/* ── Chart 2: Meta Stock Line ── */
+new Chart(document.getElementById('metaChart'), {
+  type:'line',
+  data:{
+    labels:['Jan \'21','Mar','Jun','Sep','Dec \'21','Mar \'22','Jun','Sep','Dec \'22','Mar \'23','Jun','Sep','Dec \'23'],
+    datasets:[{
+      label:'META (USD)',
+      data:[273,300,355,382,338, 213,168,134,120, 185,289,309,353],
+      borderColor:'#f0c040',
+      backgroundColor: ctx => {
+        const g = ctx.chart.ctx.createLinearGradient(0,0,0,280);
+        g.addColorStop(0,'rgba(240,192,64,.3)');
+        g.addColorStop(1,'rgba(240,192,64,.0)');
+        return g;
       },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx => ` ${ctx.parsed.x}% of US adults`
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: { color: gridCol },
-            ticks: { callback: v => v + '%' },
-            max: 100
-          },
-          y: {
-            grid: { display: false },
-            ticks: { color: '#c4bfb8' }
-          }
-        }
-      }
-    });
+      borderWidth:2.5, pointRadius:3, fill:true, tension:.4,
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{ display:false },
+      tooltip:{ ...TIP_DARK, callbacks:{ label:c=>` $${c.parsed.y}` } },
+    },
+    scales:{
+      x:{ grid:{ color:GRID_DARK }, ticks:{ color:'#555', maxRotation:35 } },
+      y:{ grid:{ color:GRID_DARK }, ticks:{ color:'#555', callback:v=>'$'+v }, title:{ display:true, text:'Closing Price (USD)', color:'#555' } },
+    }
+  }
+});
 
-    /* ─────────────────────────────────────────
-       CHART 2 — BY AGE GROUP (grouped bar)
-    ───────────────────────────────────────── */
-    const ctx2 = document.getElementById('chart2').getContext('2d');
-    new Chart(ctx2, {
-      type: 'bar',
-      data: {
-        labels: ['18–29', '30–49', '50–64', '65+'],
-        datasets: [
-          {
-            label: 'YouTube',
-            data: [93, 87, 75, 53],
-            backgroundColor: '#ff4e4e',
-            borderRadius: 3,
-          },
-          {
-            label: 'Facebook',
-            data: [67, 75, 68, 58],
-            backgroundColor: '#4e8cff',
-            borderRadius: 3,
-          },
-          {
-            label: 'Instagram',
-            data: [78, 59, 35, 15],
-            backgroundColor: '#c96dcc',
-            borderRadius: 3,
-          },
-          {
-            label: 'TikTok',
-            data: [62, 39, 24, 10],
-            backgroundColor: '#4ecfb5',
-            borderRadius: 3,
-          },
-          {
-            label: 'Snapchat',
-            data: [65, 30, 13, 4],
-            backgroundColor: '#f5d64e',
-            borderRadius: 3,
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              color: '#c4bfb8',
-              usePointStyle: true,
-              pointStyle: 'rectRounded',
-              padding: 16
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%`
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { color: '#c4bfb8' }
-          },
-          y: {
-            grid: { color: gridCol },
-            ticks: { callback: v => v + '%' },
-            max: 100
-          }
-        }
-      }
-    });
-
-    /* ─────────────────────────────────────────
-       CHART 3 — OVER TIME (line chart)
-    ───────────────────────────────────────── */
-    const ctx3 = document.getElementById('chart3').getContext('2d');
-
-    // Shared year axis — sparse data uses null for missing years
-    const years = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
-
-    const facebookData  = [67, 71, 71, 72, 79, null, 68, 69, null, 69, null, 68];
-    const instagramData = [13, 17, 26, null, 32, null, 35, 37, null, 40, null, 47];
-    const youtubeData   = [null, null, null, null, null, null, 73, 73, null, 81, null, 83];
-    const tiktokData    = [null, null, null, null, null, null, null, null, 21, 21, null, 33];
-    const twitterData   = [16, 18, 23, null, 24, null, 24, 22, null, 23, null, 22];
-
-    const lineDefaults = { fill: false, tension: 0.35, borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 6, spanGaps: true };
-
-    new Chart(ctx3, {
-      type: 'line',
-      data: {
-        labels: years,
-        datasets: [
-          { ...lineDefaults, label: 'Facebook',  data: facebookData,  borderColor: '#4e8cff', pointBackgroundColor: '#4e8cff' },
-          { ...lineDefaults, label: 'Instagram', data: instagramData, borderColor: '#c96dcc', pointBackgroundColor: '#c96dcc' },
-          { ...lineDefaults, label: 'YouTube',   data: youtubeData,   borderColor: '#ff4e4e', pointBackgroundColor: '#ff4e4e' },
-          { ...lineDefaults, label: 'TikTok',    data: tiktokData,    borderColor: '#4ecfb5', pointBackgroundColor: '#4ecfb5', borderDash: [5,3] },
-          { ...lineDefaults, label: 'Twitter/X', data: twitterData,   borderColor: '#9a9aff', pointBackgroundColor: '#9a9aff', borderDash: [3,3] },
-        ]
-      },
-      options: {
-        responsive: true,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              color: '#c4bfb8',
-              usePointStyle: true,
-              pointStyle: 'rectRounded',
-              padding: 16
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: ctx => ctx.parsed.y !== null ? ` ${ctx.dataset.label}: ${ctx.parsed.y}%` : null,
-              filter: item => item.parsed.y !== null
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: { color: gridCol },
-            ticks: { color: '#c4bfb8' }
-          },
-          y: {
-            grid: { color: gridCol },
-            ticks: { callback: v => v + '%' },
-            min: 0,
-            max: 100
-          }
-        }
-      }
-    });
-
-    /* ─────────────────────────────────────────
-       INTERSECTION OBSERVER — fade-in on scroll
-    ───────────────────────────────────────── */
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.12 });
-
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-  </script>
-
+/* ── Chart 3: Time Spent Horizontal Bar ── */
+new Chart(document.getElementById('timeChart'), {
+  type:'bar',
+  data:{
+    labels:['TikTok','YouTube','Facebook','Twitter / X','Instagram'],
+    datasets:[{
+      label:'Avg. daily minutes',
+      data:[95,74,33,31,29],
+      backgroundColor:['#e02020','#ff6d00','#4267b2','#1d9bf0','#c13584'],
+      borderRadius:4, barThickness:26,
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true,
+    plugins:{
+      legend:{ display:false },
+      tooltip:{ ...TIP_LIGHT, callbacks:{ label:c=>` ${c.parsed.x} min/day` } },
+    },
+    scales:{
+      x:{ grid:{ color:GRID_LIGHT }, ticks:{ callback:v=>v+' min' }, title:{ display:true, text:'Average daily minutes' } },
+      y:{ grid:{ display:false } },
+    }
+  }
+});
+</script>
 </body>
 </html>
