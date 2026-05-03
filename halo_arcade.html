@@ -56,6 +56,9 @@ function sfxDeath()  { tone(400,'square',0.4,0.4,50); }
 function sfxJump()   { tone(300,'sine',0.12,0.12,600); }
 function sfxPickup() { tone(660,'sine',0.1,0.25,1200); }
 function sfxWave()   { tone(440,'sine',0.5,0.3,880); }
+function sfxPwrDmg()  { tone(200,'sawtooth',0.05,0.2,800); setTimeout(()=>tone(800,'sawtooth',0.12,0.25,1200),60); }
+function sfxPwrInv()  { [0,80,160].forEach(d=>setTimeout(()=>tone(520,'sine',0.12,0.3,1040),d)); }
+function sfxPwrHeal() { [0,100,200].forEach((d,i)=>setTimeout(()=>tone(440+i*220,'sine',0.1,0.28,880+i*220),d)); }
 
 // ── INPUT ──────────────────────────────────────
 const keys = {};
@@ -66,17 +69,28 @@ document.addEventListener('keydown', e => {
     keys[e.code] = true;
     if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
       if (gs === 'playing') playerJump();
+      else if (gs === 'wave_clear') waveTimer = 1;
       else if (gs === 'menu' || gs === 'gameover') startGame();
     }
-    if (e.code === 'KeyR' && gs === 'playing') reload();
     if (e.code === 'Enter' && (gs === 'menu' || gs === 'gameover')) startGame();
   }
 });
 document.addEventListener('keyup', e => { keys[e.code] = false; });
-canvas.addEventListener('mousedown', () => { ensureAudio(); mouseDown = true; if (gs !== 'playing') startGame(); });
+canvas.addEventListener('mousedown', () => {
+  ensureAudio();
+  mouseDown = true;
+  if (gs === 'menu' || gs === 'gameover') startGame();
+  else if (gs === 'wave_clear') waveTimer = 1;  // skip countdown, go next wave
+});
 canvas.addEventListener('mouseup',   () => { mouseDown = false; });
-canvas.addEventListener('touchstart', e => { e.preventDefault(); ensureAudio(); mouseDown = true; if (gs !== 'playing') startGame(); }, { passive: false });
-canvas.addEventListener('touchend',   e => { e.preventDefault(); mouseDown = false; }, { passive: false });
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  ensureAudio();
+  mouseDown = true;
+  if (gs === 'menu' || gs === 'gameover') startGame();
+  else if (gs === 'wave_clear') waveTimer = 1;
+}, { passive: false });
+canvas.addEventListener('touchend', e => { e.preventDefault(); mouseDown = false; }, { passive: false });
 
 // ── CONSTANTS ──────────────────────────────────
 const GRAVITY   = 0.48;
@@ -85,13 +99,36 @@ const W = canvas.width, H = canvas.height;
 
 // ── PLATFORMS ─────────────────────────────────
 const platforms = [
-  { x: -400, y: GROUND_Y, w: W + 800, h: 82 },   // ground — wide so off-screen enemies land
-  { x: 140, y: 318, w: 110, h: 12 },
-  { x: 410, y: 295, w: 120, h: 12 },
-  { x: 620, y: 345, w: 100, h: 12 },
+  { x: -400, y: GROUND_Y, w: W + 800, h: 82 },  // ground
+
+  // Low row — easy hops
   { x: 40,  y: 370, w: 80,  h: 12 },
-  { x: 280, y: 365, w: 90,  h: 12 },
-  { x: 560, y: 255, w: 80,  h: 12 },
+  { x: 200, y: 375, w: 70,  h: 12 },
+  { x: 520, y: 372, w: 85,  h: 12 },
+  { x: 680, y: 368, w: 75,  h: 12 },
+
+  // Mid row — main combat platforms
+  { x: 100, y: 310, w: 120, h: 12 },
+  { x: 310, y: 318, w: 100, h: 12 },
+  { x: 490, y: 305, w: 130, h: 12 },
+  { x: 660, y: 315, w: 100, h: 12 },
+
+  // High row — sniper perches
+  { x: 30,  y: 235, w: 90,  h: 12 },
+  { x: 210, y: 220, w: 80,  h: 12 },
+  { x: 380, y: 210, w: 100, h: 12 },
+  { x: 560, y: 225, w: 90,  h: 12 },
+  { x: 700, y: 240, w: 80,  h: 12 },
+
+  // Top row — risky high ground
+  { x: 120, y: 148, w: 70,  h: 12 },
+  { x: 340, y: 138, w: 120, h: 12 },
+  { x: 590, y: 152, w: 80,  h: 12 },
+
+  // Floating mid connectors
+  { x: 265, y: 270, w: 55,  h: 12 },
+  { x: 455, y: 258, w: 55,  h: 12 },
+  { x: 640, y: 268, w: 50,  h: 12 },
 ];
 
 // ── STARS (pre-computed) ───────────────────────
@@ -118,12 +155,18 @@ function createPlayer() {
     facing: 1,
     shield: 100,
     health: 3,
-    ammo: 32, maxAmmo: 32,
-    reloading: false, reloadTimer: 0,
     lastHit: -9999,
     shootCD: 0,
     walkT: 0,
     invincible: 0,
+    // Power-ups (frames remaining, 0 = inactive)
+    pwrDmg:  0,   // Damage Boost — bullets deal 3x damage
+    pwrInv:  0,   // Overshield  — full invincibility
+    pwrHeal: 0,
+    // Single-shot: track if mouse was already down last frame
+    prevMouseDown: false,
+    burstCount: 0,
+    burstTimer: 0,
   };
 }
 
@@ -131,7 +174,7 @@ function mkGrunt(x) {
   return {
     type: 'grunt', x, y: GROUND_Y - 35,
     w: 24, h: 34, vx: 0, vy: 0, onGround: false,
-    hp: 2, maxHp: 2,
+    hp: 1, maxHp: 1,
     facing: x < W / 2 ? 1 : -1,
     shootCD: 80 + Math.random() * 80,
     walkT: 0, dead: false,
@@ -141,7 +184,7 @@ function mkElite(x) {
   return {
     type: 'elite', x, y: GROUND_Y - 57,
     w: 32, h: 56, vx: 0, vy: 0, onGround: false,
-    hp: 6, maxHp: 6,
+    hp: 3, maxHp: 3,
     facing: x < W / 2 ? 1 : -1,
     shootCD: 50 + Math.random() * 60,
     walkT: 0, dead: false,
@@ -151,7 +194,7 @@ function mkHunter(x) {
   return {
     type: 'hunter', x, y: GROUND_Y - 71,
     w: 40, h: 70, vx: 0, vy: 0, onGround: false,
-    hp: 12, maxHp: 12,
+    hp: 6, maxHp: 6,
     facing: x < W / 2 ? 1 : -1,
     shootCD: 90 + Math.random() * 40,
     walkT: 0, dead: false,
@@ -164,7 +207,7 @@ function mkBoss(x, wave) {
   return {
     type: 'boss', x, y: GROUND_Y - 111,
     w: 64, h: 110, vx: 0, vy: 0, onGround: false,
-    hp: 60 + tier * 40, maxHp: 60 + tier * 40,
+    hp: 30 + tier * 20, maxHp: 30 + tier * 20,
     facing: x < W / 2 ? 1 : -1,
     shootCD: 55, walkT: 0, dead: false,
     tier,                               // used for color variants
@@ -275,23 +318,36 @@ function playerJump() {
   if (player.onGround) { player.vy = -12.5; sfxJump(); }
 }
 
-function reload() {
-  if (!player.reloading && player.ammo < player.maxAmmo) {
-    player.reloading  = true;
-    player.reloadTimer = 130;
-  }
+function shoot() {
+  if (player.shootCD > 0) return;
+  // Trigger burst on fresh click only
+  if (!mouseDown || player.prevMouseDown) return;
+  player.burstCount = 3;      // 3-round burst
+  player.burstTimer = 0;      // fire first round immediately
 }
 
-function shoot() {
-  if (player.shootCD > 0 || player.reloading) return;
-  if (player.ammo <= 0) { reload(); return; }
-  player.ammo--;
-  player.shootCD = 9;
+function processBurst() {
+  if (!player.burstCount || player.burstCount <= 0) return;
+  player.burstTimer--;
+  if (player.burstTimer > 0) return;
+
+  // Fire one round
   sfxShoot();
-  const bx = player.facing === 1 ? player.x + player.w + 2 : player.x - 2;
-  bullets.push({ x: bx, y: player.y + 22, vx: player.facing * 15, vy: 0, life: 55 });
-  // muzzle flash
-  for (let i = 0; i < 5; i++) spark(bx, player.y + 22, '#ffe844', 2);
+  const bx  = player.facing === 1 ? player.x + player.w + 2 : player.x - 2;
+  const dmg = player.pwrDmg > 0 ? 3 : 1;
+  const col = player.pwrDmg > 0 ? '#ff4400' : '#ffe844';
+  // Tiny vertical spread per round so they're visually distinct
+  const spread = (3 - player.burstCount) * 3;
+  bullets.push({ x: bx, y: player.y + 20 + spread, vx: player.facing * 16, vy: 0, life: 55, dmg, col });
+  const flashCol = player.pwrDmg > 0 ? '#ff8800' : '#ffe844';
+  for (let i = 0; i < 4; i++) spark(bx, player.y + 20 + spread, flashCol, 2);
+
+  player.burstCount--;
+  if (player.burstCount > 0) {
+    player.burstTimer = 7;   // frames between burst rounds
+  } else {
+    player.shootCD = player.pwrDmg > 0 ? 20 : 28;  // cooldown before next burst
+  }
 }
 
 function enemyShoot(e) {
@@ -300,25 +356,19 @@ function enemyShoot(e) {
   const d  = Math.hypot(dx, dy);
   if (d > 800) return;
 
-  if (e.type === 'boss') {
-    // 3-way spread
-    const spd = 5 + e.tier * 0.5;
-    const col = e.tier >= 3 ? '#ff00ff' : e.tier >= 2 ? '#ff8800' : '#ffdd00';
-    const baseA = Math.atan2(dy, dx);
-    [-0.28, 0, 0.28].forEach(offset => {
-      const a = baseA + offset;
-      eBullets.push({ x: e.x + e.w/2, y: e.y + e.h/2,
-        vx: Math.cos(a)*spd, vy: Math.sin(a)*spd,
-        life: 120, col, r: 8, dmg: 55 });
-    });
-    return;
-  }
+  const spd = e.type === 'boss' ? 5 + (e.tier||1) * 0.5 : e.type === 'hunter' ? 5.5 : e.type === 'elite' ? 5 : 4.5;
+  const dmg = e.type === 'boss' ? 55 : e.type === 'hunter' ? 40 : e.type === 'elite' ? 22 : 15;
+  const col = e.type === 'boss'
+    ? ((e.tier||1) >= 3 ? '#ff00ff' : (e.tier||1) >= 2 ? '#ff8800' : '#ffdd00')
+    : e.type === 'hunter' ? '#00ffcc' : e.type === 'elite' ? '#ff4400' : '#44aaff';
+  const r   = e.type === 'boss' ? 7 : e.type === 'hunter' ? 6 : e.type === 'elite' ? 5 : 4;
 
-  const spd  = e.type === 'hunter' ? 5.5 : e.type === 'elite' ? 5 : 4.5;
-  const dmg  = e.type === 'hunter' ? 40  : e.type === 'elite' ? 22 : 15;
-  const col  = e.type === 'hunter' ? '#00ffcc' : e.type === 'elite' ? '#ff4400' : '#44aaff';
-  const r    = e.type === 'hunter' ? 6 : e.type === 'elite' ? 5 : 4;
-  eBullets.push({ x: e.x + e.w/2, y: e.y + e.h/2, vx: dx/d*spd, vy: dy/d*spd, life: 90, col, r, dmg });
+  // Single aimed shot for all enemy types
+  eBullets.push({
+    x: e.x + e.w / 2, y: e.y + e.h / 2,
+    vx: dx / d * spd, vy: dy / d * spd,
+    life: 110, col, r, dmg,
+  });
 }
 
 // ── PARTICLES ──────────────────────────────────
@@ -358,17 +408,20 @@ function update() {
 
   if (player.vx !== 0 && player.onGround) player.walkT++;
 
-  // Shoot on click/hold
-  if (mouseDown) shoot();
-
-  // Reload
-  if (player.reloading) { player.reloadTimer--; if (player.reloadTimer <= 0) { player.reloading = false; player.ammo = player.maxAmmo; } }
+  // Burst fire
+  shoot();
+  processBurst();
+  player.prevMouseDown = mouseDown;
 
   player.shootCD    = Math.max(0, player.shootCD - 1);
   player.invincible = Math.max(0, player.invincible - 1);
+  player.pwrDmg     = Math.max(0, player.pwrDmg - 1);
+  player.pwrInv     = Math.max(0, player.pwrInv - 1);
 
   physics(player);
-  player.x = Math.max(0, Math.min(W - player.w, player.x));
+  // Pac-Man wrap — exit left = enter right, exit right = enter left
+  if (player.x + player.w < 0)  player.x = W;
+  if (player.x > W)             player.x = -player.w;
 
   // Shield regen
   if (Date.now() - player.lastHit > 3200 && player.shield < 100)
@@ -400,7 +453,7 @@ function update() {
 
   if (enemies.length === 0) {
     gs = 'wave_clear';
-    waveTimer = 200;
+    waveTimer = 1200;   // 20 seconds at 60fps
     player.shield = Math.min(100, player.shield + 35);
   }
 
@@ -411,8 +464,8 @@ function update() {
       if (e.dead) continue;
       if (b.x > e.x && b.x < e.x + e.w && b.y > e.y && b.y < e.y + e.h) {
         b.life = 0;
-        spark(b.x, b.y, '#ffe844', 4);
-        e.hp--;
+        spark(b.x, b.y, b.col || '#ffe844', 4);
+        e.hp -= (b.dmg || 1);
         if (e.hp <= 0) {
           e.dead = true; sfxDeath();
           const col = e.type === 'boss' ? '#ffdd00' : e.type === 'hunter' ? '#00ffcc' : e.type === 'elite' ? '#ff5500' : '#5588ff';
@@ -420,8 +473,24 @@ function update() {
           shake(e.type === 'boss' ? 10 : 4, e.type === 'boss' ? 30 : 12);
           score += e.type === 'boss' ? 5000 * (e.tier || 1) : e.type === 'hunter' ? 1000 : e.type === 'elite' ? 500 : 100;
           const dropChance = e.type === 'boss' ? 1.0 : e.type === 'hunter' ? 0.6 : 0.35;
-          if (Math.random() < dropChance)
-            pickups.push({ x: e.x + e.w/2, y: e.y, type: 'ammo', life: 350 });
+          if (Math.random() < dropChance) {
+            // Weighted drop table: ammo most common, power-ups rarer
+            const roll = Math.random();
+            let dropType;
+            if (e.type === 'boss') {
+              // Boss always drops one of each power-up + ammo
+              ['dmg','inv','heal','ammo'].forEach((t, i) => {
+                pickups.push({ x: e.x + e.w/2 + (i-1.5)*28, y: e.y, type: t, life: 500, bobT: i*20 });
+              });
+              dropType = null; // already handled
+            } else {
+              dropType = roll < 0.50 ? 'ammo'
+                       : roll < 0.70 ? 'dmg'
+                       : roll < 0.85 ? 'inv'
+                       : 'heal';
+            }
+            if (dropType) pickups.push({ x: e.x + e.w/2, y: e.y, type: dropType, life: 450, bobT: 0 });
+          }
         }
       }
     }
@@ -431,7 +500,8 @@ function update() {
   // ── Enemy bullets vs player
   for (const b of eBullets) {
     b.x += b.vx; b.y += b.vy; b.life--;
-    if (player.invincible === 0 &&
+    const blocked = player.invincible > 0 || player.pwrInv > 0;
+    if (!blocked &&
         b.x > player.x && b.x < player.x + player.w &&
         b.y > player.y && b.y < player.y + player.h) {
       b.life = 0; sfxHit();
@@ -459,9 +529,30 @@ function update() {
   // ── Pickups
   for (const pk of pickups) {
     pk.life--;
-    if (Math.abs((pk.x) - (player.x + 14)) < 26 && Math.abs(pk.y - (player.y + 24)) < 36) {
-      if (pk.type === 'ammo') { player.ammo = Math.min(player.maxAmmo, player.ammo + 16); sfxPickup(); }
+    // Bob up and down
+    pk.bobT = (pk.bobT || 0) + 1;
+    pk.drawY = pk.y - Math.sin(pk.bobT * 0.06) * 6;
+
+    const cx = player.x + 14, cy = player.y + 24;
+    if (Math.abs(pk.x - cx) < 28 && Math.abs(pk.drawY - cy) < 38) {
       pk.life = 0;
+      if (pk.type === 'ammo') {
+        player.ammo = Math.min(player.maxAmmo, player.ammo + 16);
+        sfxPickup();
+      } else if (pk.type === 'dmg') {
+        player.pwrDmg = 600;   // ~10 seconds
+        sfxPwrDmg();
+        shake(3, 8);
+      } else if (pk.type === 'inv') {
+        player.pwrInv = 480;   // ~8 seconds
+        sfxPwrInv();
+        shake(3, 8);
+      } else if (pk.type === 'heal') {
+        player.health = Math.min(3, player.health + 1);
+        player.shield = 100;
+        sfxPwrHeal();
+        shake(2, 6);
+      }
     }
   }
   pickups = pickups.filter(pk => pk.life > 0);
@@ -978,13 +1069,10 @@ function drawHUD() {
   ctx.fillStyle = '#ff7788'; ctx.font = 'bold 8px Courier New';
   ctx.fillText('HEALTH', 90, 47);
 
-  // Ammo
-  const astr = player.reloading
-    ? `RELOADING ${Math.ceil(player.reloadTimer/65)}s`
-    : `AMMO  ${player.ammo}/${player.maxAmmo}`;
-  ctx.fillStyle = player.ammo === 0 ? '#ff4444' : player.reloading ? '#ffaa00' : '#ccff44';
-  ctx.font = 'bold 11px Courier New';
-  ctx.fillText(astr, 14, 66);
+  // Controls
+  ctx.fillStyle = 'rgba(120,180,120,0.4)';
+  ctx.font = '8px Courier New';
+  ctx.fillText('A/D: Move   W/SPACE: Jump   CLICK: Shoot', 14, H - 7);
 
   // Score (top right)
   ctx.fillStyle = '#ffffff';
@@ -1015,6 +1103,34 @@ function drawHUD() {
   ctx.fillStyle = 'rgba(120,180,120,0.4)';
   ctx.font = '8px Courier New';
   ctx.fillText('A/D: Move   W/SPACE: Jump   CLICK: Fire   R: Reload', 14, H - 7);
+
+  // ── Active power-up bars (bottom right)
+  const pwrs = [
+    { key: 'pwrDmg', max: 600, label: '⚡DMG+', col: '#ff6600', bg: '#331100' },
+    { key: 'pwrInv', max: 480, label: '🛡INV',  col: '#00ccff', bg: '#001133' },
+  ];
+  let pY = H - 7;
+  for (const pw of pwrs) {
+    const val = player[pw.key];
+    if (val <= 0) continue;
+    pY -= 16;
+    const bw = 120, frac = val / pw.max;
+    ctx.fillStyle = pw.bg;
+    roundRect(W - 14 - bw, pY - 10, bw, 12, 2); ctx.fill();
+    ctx.fillStyle = pw.col;
+    roundRect(W - 14 - bw, pY - 10, bw * frac, 12, 2); ctx.fill();
+    ctx.strokeStyle = pw.col; ctx.lineWidth = 0.8;
+    roundRect(W - 14 - bw, pY - 10, bw, 12, 2); ctx.stroke();
+    // Pulse glow when < 3 seconds left
+    if (val < 180 && Math.floor(Date.now() / 250) % 2 === 0) {
+      ctx.fillStyle = '#fff';
+    } else {
+      ctx.fillStyle = pw.col;
+    }
+    ctx.font = 'bold 8px Courier New'; ctx.textAlign = 'right';
+    ctx.fillText(pw.label, W - 16, pY);
+    ctx.textAlign = 'left';
+  }
   ctx.restore();
 }
 
@@ -1041,7 +1157,7 @@ function drawMenu() {
   ctx.shadowBlur = 0;
   ctx.fillStyle = '#557755'; ctx.font = '12px Courier New';
   ctx.fillText('── CONTROLS ──', W/2, 250);
-  const ctrls = ['A / D  —  Move', 'W / ↑ / SPACE  —  Jump', 'CLICK / HOLD  —  Shoot', 'R  —  Reload'];
+  const ctrls = ['A / D  —  Move', 'W / ↑ / SPACE  —  Jump', 'CLICK  —  Shoot (single shot)'];
   ctx.fillStyle = '#889988'; ctx.font = '11px Courier New';
   ctrls.forEach((c, i) => ctx.fillText(c, W/2, 272 + i*18));
 
@@ -1088,40 +1204,75 @@ function drawGameOver() {
 // ── DRAW WAVE CLEAR ───────────────────────────
 function drawWaveClear() {
   ctx.save();
-  const clearedWave = wave;         // current wave just cleared
-  const nextWave    = wave + 1;     // wave is incremented only after timer
+  const clearedWave = wave;
+  const nextWave    = wave + 1;
   const bossNext    = nextWave % 10 === 0;
   const totalNext   = Math.min(3 + nextWave * 2, 20) + (bossNext ? 1 : 0);
+  const secsLeft    = Math.ceil(waveTimer / 60);
+  const frac        = waveTimer / 1200;
 
-  ctx.fillStyle = 'rgba(0,18,0,0.48)';
+  ctx.fillStyle = 'rgba(0,18,0,0.55)';
   ctx.fillRect(0, 0, W, H);
   ctx.textAlign = 'center';
 
+  // Cleared banner
   ctx.shadowColor = '#00ff66'; ctx.shadowBlur = 14;
-  ctx.fillStyle = '#00ff66'; ctx.font = 'bold 34px Courier New';
-  ctx.fillText(`WAVE ${clearedWave} CLEARED!`, W/2, 180);
+  ctx.fillStyle = '#00ff66'; ctx.font = 'bold 38px Courier New';
+  ctx.fillText(`WAVE ${clearedWave} CLEARED!`, W/2, 145);
   ctx.shadowBlur = 0;
 
-  ctx.fillStyle = '#aaffaa'; ctx.font = '17px Courier New';
-  ctx.fillText(`NEXT WAVE IN  ${Math.ceil(waveTimer / 60)}...`, W/2, 222);
-  ctx.fillStyle = '#55aa55'; ctx.font = '11px Courier New';
-  ctx.fillText('SHIELDS PARTIALLY RESTORED', W/2, 244);
+  ctx.fillStyle = '#55aa55'; ctx.font = '12px Courier New';
+  ctx.fillText('SHIELDS PARTIALLY RESTORED', W/2, 172);
 
-  ctx.fillStyle = '#667766'; ctx.font = '10px Courier New';
-  ctx.fillText(`INCOMING: ${totalNext} ENEMIES`, W/2, 264);
+  // ── Countdown ring
+  const cx = W / 2, cy = 285, radius = 68;
 
+  // Ring background
+  ctx.strokeStyle = 'rgba(0,80,0,0.5)';
+  ctx.lineWidth = 10;
+  ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2); ctx.stroke();
+
+  // Countdown arc — sweeps from top, drains as time passes
+  const pulse = 0.85 + Math.sin(Date.now() * 0.01) * 0.15;
+  const arcCol = secsLeft <= 5 ? `rgba(255,60,0,${pulse})` : secsLeft <= 10 ? `rgba(255,200,0,${pulse})` : `rgba(0,255,100,${pulse})`;
+  ctx.strokeStyle = arcCol;
+  ctx.shadowColor = arcCol; ctx.shadowBlur = 18;
+  ctx.lineWidth = 10;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2);
+  ctx.stroke();
+  ctx.shadowBlur = 0; ctx.lineCap = 'butt';
+
+  // Second number inside ring
+  const numCol = secsLeft <= 5 ? '#ff4400' : secsLeft <= 10 ? '#ffcc00' : '#00ff88';
+  ctx.fillStyle = numCol;
+  ctx.shadowColor = numCol; ctx.shadowBlur = 12;
+  ctx.font = `bold ${secsLeft >= 10 ? 52 : 62}px Courier New`;
+  ctx.fillText(secsLeft, cx, cy + 20);
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = 'rgba(150,200,150,0.6)';
+  ctx.font = '11px Courier New';
+  ctx.fillText('NEXT WAVE IN', cx, cy - 82);
+
+  // Next wave info
+  ctx.fillStyle = '#aaffaa'; ctx.font = 'bold 15px Courier New';
+  ctx.fillText(`▶  WAVE ${nextWave}  ·  ${totalNext} ENEMIES`, W/2, 385);
+
+  // Boss warning
   if (bossNext) {
     const p = 0.6 + Math.sin(Date.now() * 0.01) * 0.4;
     ctx.fillStyle = `rgba(255,60,0,${p})`;
-    ctx.font = 'bold 28px Courier New';
-    ctx.shadowColor = '#ff4400'; ctx.shadowBlur = 20;
-    ctx.fillText('⚠  BOSS WAVE INCOMING  ⚠', W/2, 330);
+    ctx.font = 'bold 22px Courier New';
+    ctx.shadowColor = '#ff4400'; ctx.shadowBlur = 18;
+    ctx.fillText('⚠  BOSS WAVE INCOMING  ⚠', W/2, 425);
     ctx.shadowBlur = 0;
     const tier = nextWave / 10;
     const tname = tier >= 3 ? 'SHADOW JUGGERNAUT' : tier >= 2 ? 'INFERNO JUGGERNAUT' : 'FLOOD JUGGERNAUT';
     ctx.fillStyle = `rgba(255,180,0,${p})`;
-    ctx.font = '14px Courier New';
-    ctx.fillText(`[ ${tname}  ·  TIER ${tier} ]`, W/2, 358);
+    ctx.font = '12px Courier New';
+    ctx.fillText(`[ ${tname}  ·  TIER ${tier} ]`, W/2, 446);
   }
 
   ctx.restore();
@@ -1139,18 +1290,62 @@ function render() {
 
   // Pickups
   for (const pk of pickups) {
-    const p = 0.7 + Math.sin(Date.now() * 0.008) * 0.3;
+    const pulse = 0.65 + Math.sin(Date.now() * 0.007 + (pk.bobT || 0)) * 0.35;
+    const py = pk.drawY ?? pk.y;
     ctx.save();
-    ctx.globalAlpha = p;
-    ctx.fillStyle = '#ccff44';
-    ctx.fillRect(pk.x - 10, pk.y - 2, 20, 10);
-    ctx.fillStyle = '#eeff88';
-    ctx.fillRect(pk.x - 8, pk.y, 16, 4);
-    ctx.fillStyle = '#aacc22';
-    ctx.font = 'bold 8px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillText('AMMO', pk.x, pk.y - 5);
-    ctx.textAlign = 'left';
+
+    if (pk.type === 'ammo') {
+      ctx.globalAlpha = pulse;
+      ctx.fillStyle = '#ccff44'; ctx.fillRect(pk.x - 10, py - 2, 20, 10);
+      ctx.fillStyle = '#eeff88'; ctx.fillRect(pk.x - 8,  py,      16,  4);
+      ctx.fillStyle = '#aacc22'; ctx.font = 'bold 8px Courier New';
+      ctx.textAlign = 'center'; ctx.fillText('AMMO', pk.x, py - 7); ctx.textAlign = 'left';
+
+    } else if (pk.type === 'dmg') {
+      // Red/orange flame — damage boost
+      ctx.globalAlpha = pulse;
+      ctx.shadowColor = '#ff4400'; ctx.shadowBlur = 14;
+      ctx.fillStyle = '#ff2200'; ctx.beginPath(); ctx.arc(pk.x, py, 13, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#ff6600'; ctx.beginPath(); ctx.arc(pk.x, py, 9,  0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#ffdd00'; ctx.beginPath(); ctx.arc(pk.x, py, 5,  0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
+      // Lightning bolt icon
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 12px Courier New'; ctx.textAlign = 'center';
+      ctx.fillText('⚡', pk.x, py + 4);
+      ctx.fillStyle = '#ff8844'; ctx.font = 'bold 8px Courier New';
+      ctx.fillText('DMG+', pk.x, py - 18); ctx.textAlign = 'left';
+
+    } else if (pk.type === 'inv') {
+      // Blue/cyan — overshield
+      ctx.globalAlpha = pulse;
+      ctx.shadowColor = '#00ccff'; ctx.shadowBlur = 18;
+      ctx.fillStyle = '#0044aa'; ctx.beginPath(); ctx.arc(pk.x, py, 13, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#0088ee'; ctx.beginPath(); ctx.arc(pk.x, py, 9,  0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#44ddff'; ctx.beginPath(); ctx.arc(pk.x, py, 5,  0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px Courier New'; ctx.textAlign = 'center';
+      ctx.fillText('🛡', pk.x, py + 4);
+      ctx.fillStyle = '#44ccff'; ctx.font = 'bold 8px Courier New';
+      ctx.fillText('INV', pk.x, py - 18); ctx.textAlign = 'left';
+
+    } else if (pk.type === 'heal') {
+      // Green cross — heal
+      ctx.globalAlpha = pulse;
+      ctx.shadowColor = '#00ff66'; ctx.shadowBlur = 16;
+      ctx.fillStyle = '#004422'; ctx.beginPath(); ctx.arc(pk.x, py, 13, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#00aa44'; ctx.beginPath(); ctx.arc(pk.x, py, 9,  0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#44ff88'; ctx.beginPath(); ctx.arc(pk.x, py, 5,  0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
+      // Cross shape
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(pk.x - 6, py - 2, 12, 4);
+      ctx.fillRect(pk.x - 2, py - 6, 4, 12);
+      ctx.fillStyle = '#88ffaa'; ctx.font = 'bold 8px Courier New';
+      ctx.textAlign = 'center'; ctx.fillText('HEAL', pk.x, py - 18); ctx.textAlign = 'left';
+    }
+
     ctx.restore();
   }
 
@@ -1176,11 +1371,12 @@ function render() {
     ctx.restore();
   }
 
-  // Player bullets
+  // Player bullets — color varies with dmg boost
   for (const b of bullets) {
     ctx.save();
-    ctx.fillStyle = '#ffe044';
-    ctx.shadowColor = '#ffff00'; ctx.shadowBlur = 8;
+    const bc = b.col || '#ffe044';
+    ctx.fillStyle = bc;
+    ctx.shadowColor = bc; ctx.shadowBlur = b.dmg > 1 ? 14 : 6;
     ctx.fillRect(b.x - 8, b.y - 2, 14, 4);
     ctx.fillStyle = '#fff';
     ctx.fillRect(b.x - 6, b.y - 1, 6, 2);
@@ -1207,6 +1403,29 @@ function render() {
 
   // Player
   if (gs === 'playing' || gs === 'wave_clear') {
+    // Power-up aura ring
+    if (player.pwrInv > 0) {
+      const ap = 0.3 + Math.sin(Date.now() * 0.015) * 0.2;
+      ctx.save();
+      ctx.strokeStyle = `rgba(0,200,255,${ap})`;
+      ctx.lineWidth = 5;
+      ctx.shadowColor = '#00ccff'; ctx.shadowBlur = 20;
+      ctx.beginPath();
+      ctx.ellipse(player.x + 14, player.y + 24, 26, 32, 0, 0, Math.PI*2);
+      ctx.stroke();
+      ctx.restore();
+    }
+    if (player.pwrDmg > 0) {
+      const ap = 0.25 + Math.sin(Date.now() * 0.018) * 0.2;
+      ctx.save();
+      ctx.strokeStyle = `rgba(255,80,0,${ap})`;
+      ctx.lineWidth = 4;
+      ctx.shadowColor = '#ff4400'; ctx.shadowBlur = 16;
+      ctx.beginPath();
+      ctx.ellipse(player.x + 14, player.y + 24, 22, 28, 0, 0, Math.PI*2);
+      ctx.stroke();
+      ctx.restore();
+    }
     drawChief(player.x, player.y, player.facing, player.walkT, player.shield, player.invincible);
   }
 
