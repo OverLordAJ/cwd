@@ -485,20 +485,58 @@ class Fighter{
     if(this.state==='ko')return;
     this.aiTimer--;
     const dist=Math.abs(this.x-opp.x),dir=opp.x>this.x?1:-1;
+    const D=difficulty; // 0=easy 1=medium 2=hard
+
+    // ── Movement ──
     if(!this.attacking&&this.stun<=0){
-      if(dist>90)this.vx+=dir*0.95;
-      this.vx=Math.max(-this.ch.spd,Math.min(this.ch.spd,this.vx));
+      const chaseRange=D===0?80:D===1?100:115;
+      const speed=D===0?0.5:D===1?0.85:0.95;
+      if(dist>chaseRange)this.vx+=dir*speed;
+      // Easy: CPU drifts away sometimes
+      if(D===0&&Math.random()<0.018)this.vx-=dir*1.2;
+      this.vx=Math.max(-this.ch.spd*(D===0?0.55:D===1?0.8:1),Math.min(this.ch.spd*(D===0?0.55:D===1?0.8:1),this.vx));
     }
+
+    // ── Decision timer ──
+    const thinkMin=D===0?48:D===1?22:10;
+    const thinkMax=D===0?90:D===1?42:22;
     if(this.aiTimer<=0){
-      this.aiTimer=18+Math.random()*30|0;
-      if(dist<115&&!this.attacking&&this.stun<=0){
+      this.aiTimer=thinkMin+Math.random()*(thinkMax-thinkMin)|0;
+
+      // ── Attack decisions ──
+      const attackRange=D===0?90:D===1?115:128;
+      if(dist<attackRange&&!this.attacking&&this.stun<=0){
         const r=Math.random();
-        if(this.meter>=100&&r<0.25)this.doAtk('s');
-        else if(r<0.55)this.doAtk('l');
-        else if(r<0.78)this.doAtk('h');
-        if(r>0.82&&this.onGround){this.vy=-this.ch.jmp;this.onGround=false;}
-      } else if(dist<220&&this.onGround&&Math.random()<0.18)
+        if(D===0){
+          // Easy: mostly light, rarely heavy, almost never special, often misses
+          if(r<0.04&&this.meter>=100)this.doAtk('s');
+          else if(r<0.30)this.doAtk('l');
+          else if(r<0.40)this.doAtk('h');
+          // 60% chance CPU just stands there
+        } else if(D===1){
+          // Medium: balanced, occasional special
+          if(r<0.20&&this.meter>=100)this.doAtk('s');
+          else if(r<0.52)this.doAtk('l');
+          else if(r<0.75)this.doAtk('h');
+          if(r>0.86&&this.onGround){this.vy=-this.ch.jmp;this.onGround=false;}
+        } else {
+          // Hard: aggressive, fast react, loves special, mix of all attacks
+          if(r<0.38&&this.meter>=100)this.doAtk('s');
+          else if(r<0.52)this.doAtk('h');
+          else if(r<0.88)this.doAtk('l');
+          if(r>0.78&&this.onGround){this.vy=-this.ch.jmp;this.onGround=false;}
+        }
+      }
+
+      // ── Jump evasion ──
+      const jumpChance=D===0?0.04:D===1?0.14:0.28;
+      const jumpRange=D===0?130:D===1?200:260;
+      if(dist<jumpRange&&this.onGround&&Math.random()<jumpChance&&!this.attacking)
         {this.vy=-this.ch.jmp;this.onGround=false;}
+
+      // ── Hard: back off if low HP to bait ──
+      if(D===2&&this.hp<60&&Math.random()<0.35&&!this.attacking)
+        this.vx-=dir*3.5;
     }
   }
   draw(){drawSP(this);}
@@ -506,7 +544,7 @@ class Fighter{
 function overlaps(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
 
 // ─── GAME STATE ───────────────────────────────────────────────────────────────
-let gState='loading',cursor=0,p1ci=0,cpuci=1;
+let gState='loading',cursor=0,p1ci=0,cpuci=1,difficulty=1,diffCursor=1; // 0=easy 1=medium 2=hard
 let p1,cpu,rtimer=90*60,rnd=1,p1W=0,cpuW=0,resTmr=0,camShake=0,flashT=0;
 let annTxt='',annT=0;
 function ann(txt,d=90){annTxt=txt;annT=d;}
@@ -557,8 +595,15 @@ function update(){
   if(gState==='select'){
     if(eat('KeyA')||eat('ArrowLeft'))cursor=(cursor-1+CHARS.length)%CHARS.length;
     if(eat('KeyD')||eat('ArrowRight'))cursor=(cursor+1)%CHARS.length;
-    if(eat('Space')||eat('Enter')||eat('KeyF')){p1ci=cursor;startFight();}
+    if(eat('Space')||eat('Enter')||eat('KeyF')){p1ci=cursor;diffCursor=difficulty;gState='diff';}
     if(eat('Escape'))gState='title';
+    return;
+  }
+  if(gState==='diff'){
+    if(eat('ArrowLeft')||eat('KeyA'))diffCursor=Math.max(0,diffCursor-1);
+    if(eat('ArrowRight')||eat('KeyD'))diffCursor=Math.min(2,diffCursor+1);
+    if(eat('Space')||eat('Enter')||eat('KeyF')){difficulty=diffCursor;startFight();}
+    if(eat('Escape'))gState='select';
     return;
   }
   if(gState==='fight'){
@@ -588,6 +633,7 @@ function render(){
   if(gState==='loading')drawLoading();
   else if(gState==='title')drawTitle();
   else if(gState==='select')drawSelect();
+  else if(gState==='diff')drawDiff();
   else if(gState==='fight')drawFight();
   else if(gState==='result')drawResult();
   ctx.restore();
@@ -633,7 +679,7 @@ function drawTitle(){
   ctx.globalAlpha=a;ctx.font='bold 18px "Arial Black"';ctx.fillStyle='#fff';
   ctx.fillText('PRESS  SPACE  TO  START',W/2,415);ctx.globalAlpha=1;
   ctx.font='11px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';
-  ctx.fillText('P1: ← → Move   ↑ Jump   Z Light   X Heavy   C Special  |  VS CPU  |  Best of 3',W/2,475);
+  ctx.fillText('P1: ← → Move   ↑ Jump   Z Light   X Heavy   C Domain  |  3 Difficulties  |  30 Rounds',W/2,475);
 }
 
 function drawSelect(){
@@ -676,6 +722,74 @@ function drawSelect(){
       idx++;
     }
   });
+}
+
+function drawDiff(){
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#08050f');bg.addColorStop(1,'#040209');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  ctx.textAlign='center';
+  ctx.font='bold 34px "Arial Black"';ctx.shadowColor='#e8c44a';ctx.shadowBlur=18;
+  ctx.fillStyle='#e8c44a';ctx.fillText('SELECT DIFFICULTY',W/2,65);ctx.shadowBlur=0;
+  ctx.font='11px Arial';ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.fillText('← → Navigate   |   SPACE Confirm   |   ESC Back',W/2,92);
+
+  const diffs=[
+    {label:'EASY',col:'#44cc44',sub:'Chill Mode',
+     desc:['CPU reacts slowly','Attacks rarely','Mostly stands around','Good for learning'],
+     icon:'🟢',meter:'░░░░░░░░░░',fill:2},
+    {label:'MEDIUM',col:'#FFD700',sub:'Balanced',
+     desc:['CPU mixes attacks','Occasional specials','Jumps and evades','Fair fight'],
+     icon:'🟡',meter:'░░░░░░░░░░',fill:5},
+    {label:'HARD',col:'#CC3333',sub:'Cursed Energy Unleashed',
+     desc:['CPU is aggressive','Spams Domain Expansion','Reads your movement','No mercy'],
+     icon:'🔴',meter:'░░░░░░░░░░',fill:10},
+  ];
+  const CW=240,cx0=(W-3*CW)/2+CW/2;
+  diffs.forEach((d,i)=>{
+    const sel=i===diffCursor,cx=cx0+i*CW,cy=H/2+10;
+    // Card bg
+    ctx.fillStyle=sel?`${d.col}18`:'rgba(255,255,255,0.02)';
+    ctx.strokeStyle=sel?d.col:'rgba(255,255,255,0.07)';
+    ctx.lineWidth=sel?2.5:1;
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(cx-CW/2+10,cy-130,CW-20,290,8);
+    else ctx.rect(cx-CW/2+10,cy-130,CW-20,290);
+    ctx.fill();ctx.stroke();
+    if(sel){ctx.shadowColor=d.col;ctx.shadowBlur=28;}
+    // Icon
+    ctx.font='34px serif';ctx.fillText(d.icon,cx,cy-90);
+    ctx.shadowBlur=0;
+    // Label
+    ctx.font=`bold ${sel?22:18}px "Arial Black"`;ctx.fillStyle=d.col;
+    ctx.fillText(d.label,cx,cy-52);
+    // Sub
+    ctx.font='italic 10px Arial';ctx.fillStyle='rgba(255,255,255,0.45)';
+    ctx.fillText(d.sub,cx,cy-36);
+    // Difficulty bar
+    const barW=140,barH=7,bx=cx-barW/2,by=cy-24;
+    ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(bx,by,barW,barH);
+    ctx.fillStyle=d.col;ctx.shadowColor=d.col;ctx.shadowBlur=sel?10:0;
+    ctx.fillRect(bx,by,barW*(d.fill/10),barH);ctx.shadowBlur=0;
+    ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;ctx.strokeRect(bx,by,barW,barH);
+    // Desc bullets
+    d.desc.forEach((line,li)=>{
+      ctx.font=`${sel?10:9}px Arial`;
+      ctx.fillStyle=sel?'rgba(255,255,255,0.72)':'rgba(255,255,255,0.35)';
+      ctx.fillText(`• ${line}`,cx,cy+12+li*22);
+    });
+    // Selected indicator
+    if(sel){
+      const pa=0.6+0.4*Math.sin(Date.now()*0.007);
+      ctx.globalAlpha=pa;ctx.font='bold 13px "Arial Black"';
+      ctx.fillStyle=d.col;ctx.fillText('▼ SELECT ▼',cx,cy+120);ctx.globalAlpha=1;
+    }
+  });
+  // Fighter preview
+  if(CHARS[p1ci]){
+    ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='left';
+    ctx.fillText(`Playing as: ${CHARS[p1ci].name}`,24,H-18);
+  }
 }
 
 function drawFight(){
@@ -743,6 +857,9 @@ function drawHUD(){
   ctx.fillStyle=secs<=10?'#ff3333':'#fff';ctx.shadowColor=ctx.fillStyle;
   ctx.shadowBlur=secs<=10?18:0;ctx.fillText(secs,W/2,40);ctx.shadowBlur=0;
   ctx.font='bold 9px Arial';ctx.fillStyle='rgba(255,255,255,0.42)';ctx.fillText('RND '+rnd,W/2,55);
+  const dlabel=['EASY','MEDIUM','HARD'][difficulty],dcol=['#44cc44','#FFD700','#CC3333'][difficulty];
+  ctx.font='bold 8px Arial';ctx.fillStyle=dcol;ctx.textAlign='right';
+  ctx.fillText(dlabel,W-12,H-8);
   // Score display
   ctx.font='bold 14px "Arial Black"';ctx.textAlign='center';
   ctx.fillStyle=p1.ch.col;ctx.fillText(p1W,W/2-20,74);
