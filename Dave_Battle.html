@@ -43,19 +43,19 @@ const allLoaded=()=>loadedN>=totalImgs;
 
 // ─── CHARACTERS ───────────────────────────────────────────────────────────────
 const CHARS=[
-  {name:'KingDave',    sub:'CHADDave',      col:'#FFD700',sp:'Unlimited Royalty',    hp:120,spd:3.2,pwr:1.4,jmp:13.5,imgKey:'kingdave',   faceOff:0.0, bodyCol:'#8B6914',
+  {name:'KingDave',    sub:'CHADDave',      col:'#FFD700',sp:'Unlimited Royalty',    hp:200,spd:3.2,pwr:1.4,jmp:13.5,imgKey:'kingdave',   faceOff:0.0, bodyCol:'#8B6914',
    domain:'DOMAIN EXPANSION',domSub:'UNLIMITED ROYALTY',lite:'Hollow Touch',heavy:'Six Eyes Crush'},
-  {name:'ResidentDave',sub:'R.P.D.',        col:'#4A90D9',sp:'Warrant: Executed',    hp:100,spd:5.0,pwr:1.0,jmp:14.0,imgKey:'residentdave',faceOff:0.0, bodyCol:'#1a3a6a',
+  {name:'ResidentDave',sub:'R.P.D.',        col:'#4A90D9',sp:'Warrant: Executed',    hp:200,spd:5.0,pwr:1.0,jmp:14.0,imgKey:'residentdave',faceOff:0.0, bodyCol:'#1a3a6a',
    domain:'SIMPLE DOMAIN',domSub:'WARRANT: EXECUTED',lite:'Badge Strike',heavy:'Clap Swap'},
-  {name:'DaveChief',   sub:'Spartan-117-D', col:'#7EC850',sp:'Black Flash: Spartan', hp:130,spd:3.0,pwr:1.5,jmp:11.5,imgKey:'davechief',  faceOff:0.0, bodyCol:'#3a6020',
+  {name:'DaveChief',   sub:'Spartan-117-D', col:'#7EC850',sp:'Black Flash: Spartan', hp:200,spd:3.0,pwr:1.5,jmp:11.5,imgKey:'davechief',  faceOff:0.0, bodyCol:'#3a6020',
    domain:'BLACK FLASH',domSub:'SPARTAN DIVERGENT FIST',lite:'Mahoraga Jab',heavy:'Divergent Fist'},
-  {name:'AfricanDave', sub:'Cultural King', col:'#E8A020',sp:'Cultural Ratio 7:3',  hp:110,spd:4.0,pwr:1.2,jmp:14.0,imgKey:'africandave', faceOff:0.05,bodyCol:'#7a4a00',
+  {name:'AfricanDave', sub:'Cultural King', col:'#E8A020',sp:'Cultural Ratio 7:3',  hp:200,spd:4.0,pwr:1.2,jmp:14.0,imgKey:'africandave', faceOff:0.05,bodyCol:'#7a4a00',
    domain:'DOMAIN EXPANSION',domSub:'CULTURAL RATIO 7:3',lite:'Ratio Strike',heavy:'Seven Three Blade'},
-  {name:'PsychoDave',  sub:'The Wild Card', col:'#CC3333',sp:'Malevolent Shrine',   hp:95, spd:6.0,pwr:1.1,jmp:15.5,imgKey:'psychodave', faceOff:0.0, bodyCol:'#6a0000',
+  {name:'PsychoDave',  sub:'The Wild Card', col:'#CC3333',sp:'Malevolent Shrine',   hp:200,spd:6.0,pwr:1.1,jmp:15.5,imgKey:'psychodave', faceOff:0.0, bodyCol:'#6a0000',
    domain:'DOMAIN EXPANSION',domSub:'MALEVOLENT SHRINE',lite:'Dismantle',heavy:'Cleave'},
-  {name:'PrisonerDave',sub:'#47821',        col:'#FF6600',sp:'Idle Transfiguration', hp:115,spd:3.5,pwr:1.3,jmp:11.5,imgKey:'prisonerdave',faceOff:0.0, bodyCol:'#aa4400',
+  {name:'PrisonerDave',sub:'#47821',        col:'#FF6600',sp:'Idle Transfiguration', hp:200,spd:3.5,pwr:1.3,jmp:11.5,imgKey:'prisonerdave',faceOff:0.0, bodyCol:'#aa4400',
    domain:'INNATE DOMAIN',domSub:'SOUL PRISON — TRANSFIGURATION',lite:'Soul Punch',heavy:'Body Distortion'},
-  {name:'ChadDave',    sub:'Peak Form',     col:'#00CFFF',sp:'Rika Release: SIGMA', hp:110,spd:4.5,pwr:1.25,jmp:13.0,imgKey:'chaddave',  faceOff:0.02,bodyCol:'#005577',
+  {name:'ChadDave',    sub:'Peak Form',     col:'#00CFFF',sp:'Rika Release: SIGMA', hp:200,spd:4.5,pwr:1.25,jmp:13.0,imgKey:'chaddave',  faceOff:0.02,bodyCol:'#005577',
    domain:'RIKA RELEASE',domSub:'MAXIMUM OUTPUT: SIGMA',lite:'Rika Jab',heavy:'Copy: Sigma'},
 ];
 CHARS.forEach(ch=>{ch.img=IMGS[ch.imgKey];});
@@ -461,9 +461,9 @@ class Fighter{
       if(hb&&overlaps(hb,bb)){
         this.hitDone=true;
         let d=0;
-        if(this.state==='attack_l')d=Math.round(9*this.ch.pwr);
-        if(this.state==='attack_h')d=Math.round(20*this.ch.pwr);
-        if(this.state==='attack_s')d=Math.round(30*this.ch.pwr);
+        if(this.state==='attack_l')d=14;
+        if(this.state==='attack_h')d=30;
+        if(this.state==='attack_s')d=55;
         opp.hit(d,this);
         if(this.state==='attack_s'){burst(opp.x,opp.y-70,this.ch.col,22,8,8,35);burst(opp.x,opp.y-70,'#fff',8,4,4,20);}
         camShake=this.state==='attack_s'?12:this.state==='attack_h'?7:4;
