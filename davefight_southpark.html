@@ -43,20 +43,33 @@ const allLoaded=()=>loadedN>=totalImgs;
 
 // ─── CHARACTERS ───────────────────────────────────────────────────────────────
 const CHARS=[
-  {name:'KingDave',    sub:'CHADDave',      col:'#FFD700',sp:'Unlimited Royalty',    hp:200,spd:3.2,pwr:1.4,jmp:13.5,imgKey:'kingdave',   faceOff:0.0, bodyCol:'#8B6914',
-   domain:'DOMAIN EXPANSION',domSub:'UNLIMITED ROYALTY',lite:'Hollow Touch',heavy:'Six Eyes Crush'},
-  {name:'ResidentDave',sub:'R.P.D.',        col:'#4A90D9',sp:'Warrant: Executed',    hp:200,spd:5.0,pwr:1.0,jmp:14.0,imgKey:'residentdave',faceOff:0.0, bodyCol:'#1a3a6a',
-   domain:'SIMPLE DOMAIN',domSub:'WARRANT: EXECUTED',lite:'Badge Strike',heavy:'Clap Swap'},
-  {name:'DaveChief',   sub:'Spartan-117-D', col:'#7EC850',sp:'Black Flash: Spartan', hp:200,spd:3.0,pwr:1.5,jmp:11.5,imgKey:'davechief',  faceOff:0.0, bodyCol:'#3a6020',
-   domain:'BLACK FLASH',domSub:'SPARTAN DIVERGENT FIST',lite:'Mahoraga Jab',heavy:'Divergent Fist'},
-  {name:'AfricanDave', sub:'Cultural King', col:'#E8A020',sp:'Cultural Ratio 7:3',  hp:200,spd:4.0,pwr:1.2,jmp:14.0,imgKey:'africandave', faceOff:0.05,bodyCol:'#7a4a00',
-   domain:'DOMAIN EXPANSION',domSub:'CULTURAL RATIO 7:3',lite:'Ratio Strike',heavy:'Seven Three Blade'},
-  {name:'PsychoDave',  sub:'The Wild Card', col:'#CC3333',sp:'Malevolent Shrine',   hp:200,spd:6.0,pwr:1.1,jmp:15.5,imgKey:'psychodave', faceOff:0.0, bodyCol:'#6a0000',
-   domain:'DOMAIN EXPANSION',domSub:'MALEVOLENT SHRINE',lite:'Dismantle',heavy:'Cleave'},
-  {name:'PrisonerDave',sub:'#47821',        col:'#FF6600',sp:'Idle Transfiguration', hp:200,spd:3.5,pwr:1.3,jmp:11.5,imgKey:'prisonerdave',faceOff:0.0, bodyCol:'#aa4400',
-   domain:'INNATE DOMAIN',domSub:'SOUL PRISON — TRANSFIGURATION',lite:'Soul Punch',heavy:'Body Distortion'},
-  {name:'ChadDave',    sub:'Peak Form',     col:'#00CFFF',sp:'Rika Release: SIGMA', hp:200,spd:4.5,pwr:1.25,jmp:13.0,imgKey:'chaddave',  faceOff:0.02,bodyCol:'#005577',
-   domain:'RIKA RELEASE',domSub:'MAXIMUM OUTPUT: SIGMA',lite:'Rika Jab',heavy:'Copy: Sigma'},
+  {name:'KingDave',    sub:'CHADDave',      col:'#FFD700',hp:200,spd:3.4,jmp:13.5,imgKey:'kingdave',   faceOff:0.0, bodyCol:'#8B6914',
+   sp:'Unlimited Royalty',domain:'DOMAIN EXPANSION',domSub:'UNLIMITED ROYALTY',lite:'Hollow Touch',heavy:'Six Eyes Crush',
+   dmg_l:13,dmg_h:38,dmg_s:55,dmgRed:0.15,regen:0,sHeal:30,passive:'Royal Armor: -15% damage taken'},
+
+  {name:'ResidentDave',sub:'R.P.D.',        col:'#4A90D9',hp:200,spd:5.5,jmp:14.0,imgKey:'residentdave',faceOff:0.0, bodyCol:'#1a3a6a',
+   sp:'Warrant: Executed',domain:'SIMPLE DOMAIN',domSub:'WARRANT: EXECUTED',lite:'Badge Strike',heavy:'Clap Swap',
+   dmg_l:10,dmg_h:28,dmg_s:55,dmgRed:0,regen:0,rapidFire:5,passive:'Rapid Patrol: +25% speed, 5-hit specials'},
+
+  {name:'DaveChief',   sub:'Spartan-117-D', col:'#7EC850',hp:200,spd:3.0,jmp:11.5,imgKey:'davechief',  faceOff:0.0, bodyCol:'#3a6020',
+   sp:'Black Flash: Spartan',domain:'BLACK FLASH',domSub:'SPARTAN DIVERGENT FIST',lite:'Mahoraga Jab',heavy:'Divergent Fist',
+   dmg_l:14,dmg_h:32,dmg_s:70,dmgRed:0.25,regen:0,dashOnHeavy:60,passive:'Mjolnir Armor: -25% damage taken'},
+
+  {name:'AfricanDave', sub:'Cultural King', col:'#E8A020',hp:200,spd:4.0,jmp:14.0,imgKey:'africandave', faceOff:0.05,bodyCol:'#7a4a00',
+   sp:'Cultural Ratio 7:3',domain:'DOMAIN EXPANSION',domSub:'CULTURAL RATIO 7:3',lite:'Ratio Strike',heavy:'Seven Three Blade',
+   dmg_l:13,dmg_h:30,dmg_s:50,dmgRed:0,regen:0.05,sHeal:25,passive:'Ancestral Spirit: HP regen + heal on special'},
+
+  {name:'PsychoDave',  sub:'The Wild Card', col:'#CC3333',hp:200,spd:6.0,jmp:15.5,imgKey:'psychodave', faceOff:0.0, bodyCol:'#6a0000',
+   sp:'Malevolent Shrine',domain:'DOMAIN EXPANSION',domSub:'MALEVOLENT SHRINE',lite:'Dismantle',heavy:'Cleave',
+   dmg_l:11,dmg_h:30,dmg_s:60,dmgRed:0,regen:0,berserk:0.5,passive:'Berserker: +50% damage when HP below 30%'},
+
+  {name:'PrisonerDave',sub:'#47821',        col:'#FF6600',hp:200,spd:3.5,jmp:11.5,imgKey:'prisonerdave',faceOff:0.0, bodyCol:'#aa4400',
+   sp:'Idle Transfiguration',domain:'INNATE DOMAIN',domSub:'SOUL PRISON — TRANSFIGURATION',lite:'Soul Punch',heavy:'Body Distortion',
+   dmg_l:14,dmg_h:30,dmg_s:50,dmgRed:0.10,regen:0,kbRed:0.5,extraStun:30,passive:'Unbroken: Less knockback, longer stuns'},
+
+  {name:'ChadDave',    sub:'Peak Form',     col:'#00CFFF',hp:200,spd:4.5,jmp:13.0,imgKey:'chaddave',  faceOff:0.02,bodyCol:'#005577',
+   sp:'Rika Release: SIGMA',domain:'RIKA RELEASE',domSub:'MAXIMUM OUTPUT: SIGMA',lite:'Rika Jab',heavy:'Copy: Sigma',
+   dmg_l:14,dmg_h:30,dmg_s:60,dmgRed:0,regen:0,sigmaStance:300,roundScale:0.05,passive:'Sigma Mind: +5% dmg per round won, special boost'},
 ];
 CHARS.forEach(ch=>{ch.img=IMGS[ch.imgKey];});
 
@@ -130,6 +143,15 @@ class VFX{
       ctx.globalAlpha=a*0.06;ctx.fillStyle=this.col;ctx.fillRect(0,0,W,H);
     }else if(this.type==='techname'){
       if(p<0.65){const a=p<0.1?p/0.1:p>0.5?(0.65-p)/0.15:1;ctx.globalAlpha=a;ctx.font='bold italic 12px Arial';ctx.textAlign=this.d.side==='r'?'right':'left';ctx.shadowColor=this.col;ctx.shadowBlur=14;ctx.fillStyle=this.col;ctx.fillText(this.d.txt,this.x,this.y);}
+    }else if(this.type==='dmgnum'){
+      // Floating damage / heal number
+      const yOff=-p*40;const a=p<0.15?p/0.15:p>0.7?(1-p)/0.3:1;
+      ctx.globalAlpha=a;ctx.textAlign='center';
+      ctx.font=`bold ${this.d.heal?16:18}px "Arial Black"`;
+      ctx.shadowColor=this.col;ctx.shadowBlur=14;ctx.fillStyle=this.col;
+      ctx.strokeStyle='#000';ctx.lineWidth=3;
+      ctx.strokeText(this.d.val,this.x,this.y+yOff);
+      ctx.fillText(this.d.val,this.x,this.y+yOff);
     }
     ctx.restore();
   }
@@ -695,7 +717,7 @@ class Fighter{
     this.hp=ch.hp;this.maxHp=ch.hp;this.meter=0;
     this.state='idle';this.timer=0;
     this.onGround=true;this.hitDone=false;this.flash=0;this.stun=0;this.animT=0;
-    this.aiTimer=0;this._dead=false;
+    this.aiTimer=0;this._dead=false;this.buffTimer=0;this.regenAcc=0;
   }
   get attacking(){return this.state.startsWith('attack');}
   get activeWin(){
@@ -725,18 +747,40 @@ class Fighter{
   bodyBox(){return{x:this.x-26,y:this.y-176,w:52,h:176};}
   hit(dmg,src){
     if(this.state==='ko')return;
+    // Apply damage reduction (passive armor)
+    dmg=Math.round(dmg*(1-(this.ch.dmgRed||0)));
     this.hp=Math.max(0,this.hp-dmg);
-    this.flash=14;this.stun=16;
-    this.vx=-this.facing*5.5;this.vy=-4;
+    this.flash=14;
+    // Stun (PrisonerDave applies extra stun to opponents he hits — handled in attacker side)
+    this.stun=16+(src.ch.extraStun||0);
+    // Knockback reduction (PrisonerDave passive)
+    const kbMul=1-(this.ch.kbRed||0);
+    this.vx=-this.facing*5.5*kbMul;this.vy=-4*kbMul;
     this.state='hurt';this.timer=0;
     src.meter=Math.min(100,src.meter+22);
     burst(this.x,this.y-100,this.ch.col,12,5,6);
+    // Floating damage number
+    addVFX('dmgnum',this.x,this.y-150,this.ch.col,42,{val:dmg});
     if(this.hp<=0){this.state='ko';this.vy=-9;this.vx=-this.facing*9;}
   }
   update(opp){
     this.animT++;this.timer++;
     if(this.flash>0)this.flash--;
-    if(this.stun>0)this.stun--;
+    if(this.stun>0){
+      // PrisonerDave passive: 30% chance to break stun each frame
+      if(this.ch.kbRed&&Math.random()<0.012)this.stun=0;
+      else this.stun--;
+    }
+    // Passive HP regen (AfricanDave)
+    if(this.ch.regen&&this.state!=='ko'&&this.hp<this.maxHp){
+      this.regenAcc+=this.ch.regen;
+      if(this.regenAcc>=1){
+        this.hp=Math.min(this.maxHp,this.hp+Math.floor(this.regenAcc));
+        this.regenAcc-=Math.floor(this.regenAcc);
+      }
+    }
+    // Buff timer decay
+    if(this.buffTimer>0)this.buffTimer--;
     if(!this.onGround)this.vy+=GRV;
     this.x+=this.vx;this.y+=this.vy;this.vx*=0.80;
     if(this.y>=GND){this.y=GND;this.vy=0;this.onGround=true;}else this.onGround=false;
@@ -755,24 +799,73 @@ class Fighter{
       if(hb&&overlaps(hb,bb)){
         this.hitDone=true;
         const ch=this.ch;
+        // ── DAMAGE CALC (per-character abilities) ──
+        let dmgMul=1;
+        // PsychoDave berserker: +50% when HP below 30%
+        if(ch.berserk&&this.hp<this.maxHp*0.3)dmgMul+=ch.berserk;
+        // ChadDave round scaling: +5% per round won (capped at +50%)
+        if(ch.roundScale){
+          const wins=this===p1?p1W:cpuW;
+          dmgMul+=Math.min(wins*ch.roundScale,0.5);
+        }
+        // ChadDave sigma stance buff
+        if(this.buffTimer>0)dmgMul+=0.25;
+
         if(this.state==='attack_l'){
-          const d=14;
+          let d=ch.dmg_l;
+          // PsychoDave random damage variance
+          if(ch.imgKey==='psychodave')d+=Math.floor(Math.random()*7)-2;
+          d=Math.round(d*dmgMul);
           addVFX('techname',this.x,this.y-200,ch.col,42,{txt:ch.lite||'Strike',side:this.x<W/2?'l':'r'});
           addVFX('slash',opp.x,opp.y-105,ch.col,24,{len:58,ang:this.facing>0?-Math.PI/5:Math.PI*0.8});
           if(!maybeBlackFlash(this,opp,d))opp.hit(d,this);
           camShake=4;
         }else if(this.state==='attack_h'){
-          const d=30;
+          let d=Math.round(ch.dmg_h*dmgMul);
+          // DaveChief: dash forward on heavy
+          if(ch.dashOnHeavy)this.vx=this.facing*ch.dashOnHeavy/8;
           addVFX('techname',this.x,this.y-200,ch.col,48,{txt:ch.heavy||'Heavy',side:this.x<W/2?'l':'r'});
           addVFX('slash',opp.x,opp.y-108,ch.col,32,{len:90,ang:this.facing>0?-Math.PI/4:Math.PI*0.75,cross:true});
           addVFX('shockwave',opp.x,opp.y-90,ch.col,30,{maxR:85});
+          // AfricanDave multi-hit kick — visual triple slash
+          if(ch.imgKey==='africandave'){
+            setTimeout(()=>addVFX('slash',opp.x,opp.y-115,ch.col,18,{len:75,ang:Math.PI*0.3}),80);
+            setTimeout(()=>addVFX('slash',opp.x,opp.y-95,ch.col,18,{len:75,ang:-Math.PI*0.3}),160);
+          }
           if(!maybeBlackFlash(this,opp,d))opp.hit(d,this);
           camShake=8;
         }else if(this.state==='attack_s'){
-          const d=55;
+          let d=Math.round(ch.dmg_s*dmgMul);
           addVFX('techname',this.x,this.y-200,ch.col,58,{txt:ch.sp,side:this.x<W/2?'l':'r'});
           triggerSpecial(this,opp);
           opp.hit(d,this);
+          // ── PER-CHARACTER SPECIAL EFFECTS ──
+          // KingDave & AfricanDave: heal on special
+          if(ch.sHeal){
+            this.hp=Math.min(this.maxHp,this.hp+ch.sHeal);
+            addVFX('dmgnum',this.x,this.y-150,'#44ff44',50,{val:'+'+ch.sHeal,heal:true});
+            burst(this.x,this.y-100,'#44ff44',16,5,5,32);
+          }
+          // ResidentDave: rapid follow-up shots
+          if(ch.rapidFire){
+            for(let i=1;i<=ch.rapidFire;i++){
+              setTimeout(()=>{
+                if(opp.state!=='ko'){
+                  opp.hit(6,this);
+                  burst(opp.x,opp.y-105,ch.col,4,4,3,15);
+                  addVFX('slash',opp.x,opp.y-100,ch.col,12,{len:40,ang:Math.random()*Math.PI});
+                }
+              },i*120);
+            }
+          }
+          // PrisonerDave: long stun freeze
+          if(ch.imgKey==='prisonerdave'){opp.stun=80;}
+          // ChadDave: activate sigma stance
+          if(ch.sigmaStance){
+            this.buffTimer=ch.sigmaStance;
+            burst(this.x,this.y-100,ch.col,20,7,6,40);
+            addVFX('shockwave',this.x,this.y-90,ch.col,32,{maxR:110});
+          }
           camShake=14;
         }
       }
@@ -946,6 +1039,16 @@ function drawLoading(){
   ctx.fillText(`${Math.round(pct*100)}%`,W/2,H/2+30);
 }
 
+function wrapText(t,maxCh){
+  const words=t.split(' '),lines=[];let cur='';
+  words.forEach(w=>{
+    if((cur+' '+w).trim().length>maxCh){lines.push(cur.trim());cur=w;}
+    else cur+=' '+w;
+  });
+  if(cur.trim())lines.push(cur.trim());
+  return lines;
+}
+
 function drawTitle(){
   const t=(Date.now()-T0)/1000;
   const bg=ctx.createLinearGradient(0,0,0,H);
@@ -1010,8 +1113,13 @@ function drawSelect(){
       ctx.fillText(ch.sub,cx,cy+64);
       if(sel){
         ctx.font='8px Arial';ctx.fillStyle='rgba(255,255,255,0.45)';
-        ctx.fillText(`HP ${ch.hp}  SPD ${ch.spd}  PWR ${ch.pwr}`,cx,cy+78);
-        ctx.fillStyle=ch.col;ctx.fillText(`⚡ ${ch.sp}`,cx,cy+90);
+        ctx.fillText(`HP ${ch.hp}  SPD ${ch.spd.toFixed(1)}  L${ch.dmg_l}  H${ch.dmg_h}  S${ch.dmg_s}`,cx,cy+76);
+        ctx.fillStyle=ch.col;ctx.fillText(`⚡ ${ch.sp}`,cx,cy+88);
+        // Passive ability tooltip — wrapped
+        ctx.font='italic 8px Arial';ctx.fillStyle='rgba(255,255,255,0.55)';
+        const passive=ch.passive||'';
+        const lines=wrapText(passive,28);
+        lines.forEach((line,li)=>ctx.fillText(line,cx,cy+102+li*10));
       }
       idx++;
     }
@@ -1146,6 +1254,9 @@ function drawHUD(){
   hpBar(W-333,16,305,20,cpu.hp,cpu.maxHp,cpu.ch.col,cpu.ch.name,'r');
   meterBar(28,42,185,5,p1.meter,p1.ch.col,'l');
   meterBar(W-213,42,185,5,cpu.meter,cpu.ch.col,'r');
+  // Buff/passive indicators
+  drawBuffs(28,52,p1,'l');
+  drawBuffs(W-28,52,cpu,'r');
   const secs=Math.ceil(rtimer/60);
   ctx.textAlign='center';ctx.font='bold 33px "Arial Black"';
   ctx.fillStyle=secs<=10?'#ff3333':'#fff';ctx.shadowColor=ctx.fillStyle;
@@ -1163,6 +1274,22 @@ function drawHUD(){
   ctx.fillStyle='rgba(255,255,255,0.07)';ctx.fillRect(W/2-55,79,110,3);
   const rpc=Math.min(rnd/30,1),rbc=rpc>0.82?'#ff3333':rpc>0.55?'#ff8800':p1W>cpuW?p1.ch.col:cpu.ch.col;
   ctx.fillStyle=rbc;ctx.fillRect(W/2-55,79,110*rpc,3);
+}
+function drawBuffs(x,y,f,side){
+  ctx.save();
+  const ch=f.ch,buffs=[];
+  if(ch.dmgRed)buffs.push({txt:`🛡 -${Math.round(ch.dmgRed*100)}% DMG`,col:ch.col});
+  if(ch.regen)buffs.push({txt:`✚ ${(ch.regen*60).toFixed(0)}/s REGEN`,col:'#44ff44'});
+  if(ch.berserk&&f.hp<f.maxHp*0.3)buffs.push({txt:`🔥 BERSERK ON`,col:'#ff3333'});
+  if(ch.roundScale){const wins=f===p1?p1W:cpuW;if(wins>0)buffs.push({txt:`Σ +${Math.min(wins*5,50)}% DMG`,col:ch.col});}
+  if(f.buffTimer>0)buffs.push({txt:`⚡ SIGMA STANCE`,col:ch.col});
+  if(ch.kbRed)buffs.push({txt:`⛓ UNBROKEN`,col:ch.col});
+  ctx.font='bold 8px Arial';ctx.textAlign=side==='r'?'right':'left';
+  buffs.forEach((b,i)=>{
+    ctx.globalAlpha=0.85;ctx.shadowColor=b.col;ctx.shadowBlur=4;
+    ctx.fillStyle=b.col;ctx.fillText(b.txt,x,y+i*11);
+  });
+  ctx.restore();
 }
 function hpBar(x,y,w,h,hp,mx,col,name,side){
   const pct=Math.max(0,hp/mx),bc=pct<0.25?'#ff2020':pct<0.5?'#ff8800':col;
