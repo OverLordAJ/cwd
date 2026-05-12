@@ -978,7 +978,16 @@ function update(){
   vfxList=vfxList.filter(v=>v.update());
 
   if(gState==='loading')return;
-  if(gState==='title'){if(eat('Space')||eat('Enter')||eat('KeyZ')){cursor=0;gState='select';}return;}
+  if(gState==='title'){if(eat('Space')||eat('Enter')||eat('KeyZ')){gState='modesel';}return;}
+  if(gState==='modesel'){
+    if(eat('ArrowLeft')||eat('ArrowRight')||eat('ArrowUp')||eat('ArrowDown'))gameMode=gameMode==='pvp'?'cvcpu':'pvp';
+    if(eat('Space')||eat('Enter')||eat('KeyZ')){
+      if(gameMode==='cvcpu'){diffCursor=difficulty;gState='diff';}
+      else{cursor=0;gState='select';}
+    }
+    if(eat('Escape'))gState='title';
+    return;
+  }
   if(gState==='select'){
     if(eat('ArrowLeft'))cursor=(cursor-1+CHARS.length)%CHARS.length;
     if(eat('ArrowRight'))cursor=(cursor+1)%CHARS.length;
@@ -989,9 +998,8 @@ function update(){
   if(gState==='diff'){
     if(eat('ArrowLeft'))diffCursor=Math.max(0,diffCursor-1);
     if(eat('ArrowRight'))diffCursor=Math.min(2,diffCursor+1);
-    if(eat('ArrowUp')||eat('ArrowDown'))gameMode=gameMode==='pvp'?'cvcpu':'pvp';
     if(eat('Space')||eat('Enter')||eat('KeyZ')){difficulty=diffCursor;startFight();}
-    if(eat('Escape')){gState=gameMode==='cvcpu'?'diff':'select';}
+    if(eat('Escape')){gState=gameMode==='cvcpu'?'modesel':'select';}
     return;
   }
   if(gState==='fight'){
@@ -1027,6 +1035,7 @@ function render(){
   ctx.save();ctx.translate(sx,sy);
   if(gState==='loading')drawLoading();
   else if(gState==='title')drawTitle();
+  else if(gState==='modesel')drawModeSelect();
   else if(gState==='select')drawSelect();
   else if(gState==='diff')drawDiff();
   else if(gState==='fight')drawFight();
@@ -1074,6 +1083,99 @@ function drawTitle(){
 }
 
 
+
+function drawModeSelect(){
+  const t=(Date.now()-T0)/1000;
+  ctx.fillStyle='#08050f';ctx.fillRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.02)';ctx.lineWidth=1;
+  for(let i=0;i<W;i+=60){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke();}
+  for(let i=0;i<H;i+=60){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(W,i);ctx.stroke();}
+
+  ctx.textAlign='center';
+  ctx.font='bold 34px "Arial Black"';ctx.shadowColor='#e8c44a';ctx.shadowBlur=18;
+  ctx.fillStyle='#e8c44a';ctx.fillText('SELECT MODE',W/2,62);ctx.shadowBlur=0;
+  ctx.font='11px Arial';ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.fillText('← → or Z to select   |   SPACE to confirm   |   ESC back',W/2,88);
+
+  const modes=[
+    {id:'pvp',   label:'P1 VS CPU',  icon:'🎮', sub:'You fight the CPU',
+     desc:['Pick your fighter','Choose difficulty','Battle across 30 rounds','Black Flash & Domains'],
+     col:'#4A90D9'},
+    {id:'cvcpu', label:'CPU VS CPU', icon:'🤖', sub:'Sit back and watch',
+     desc:['Both fighters are AI','Random matchups each round','Full special moves & domains','Pure chaos spectacle'],
+     col:'#CC3333'},
+  ];
+
+  const CW=300,gap=40;
+  const startX=W/2-CW-gap/2;
+
+  modes.forEach((m,i)=>{
+    const sel=gameMode===m.id;
+    const cx=startX+i*(CW+gap);
+    const cy=H/2+10;
+
+    // Card background
+    ctx.fillStyle=sel?`${m.col}20`:'rgba(255,255,255,0.03)';
+    ctx.strokeStyle=sel?m.col:'rgba(255,255,255,0.08)';
+    ctx.lineWidth=sel?2.5:1;
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(cx,cy-140,CW,300,10);
+    else ctx.rect(cx,cy-140,CW,300);
+    ctx.fill();
+    if(sel){ctx.shadowColor=m.col;ctx.shadowBlur=30;}
+    ctx.stroke();ctx.shadowBlur=0;
+
+    // Icon
+    ctx.font='48px serif';ctx.textAlign='center';
+    ctx.fillText(m.icon,cx+CW/2,cy-84);
+
+    // Label
+    ctx.font=`bold ${sel?26:22}px "Arial Black"`;
+    ctx.fillStyle=sel?m.col:'rgba(255,255,255,0.55)';
+    ctx.fillText(m.label,cx+CW/2,cy-42);
+
+    // Sub
+    ctx.font='italic 11px Arial';ctx.fillStyle=sel?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.35)';
+    ctx.fillText(m.sub,cx+CW/2,cy-22);
+
+    // Divider
+    ctx.strokeStyle=sel?m.col+'66':'rgba(255,255,255,0.08)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx+20,cy-8);ctx.lineTo(cx+CW-20,cy-8);ctx.stroke();
+
+    // Desc bullets
+    m.desc.forEach((line,li)=>{
+      ctx.font=`${sel?11:10}px Arial`;
+      ctx.fillStyle=sel?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.28)';
+      ctx.textAlign='left';
+      ctx.fillText(`▸ ${line}`,cx+22,cy+16+li*26);
+    });
+
+    // Selected indicator
+    if(sel){
+      const pulse=0.55+0.45*Math.sin(t*3.5);
+      ctx.globalAlpha=pulse;
+      ctx.font='bold 14px "Arial Black"';ctx.fillStyle=m.col;ctx.textAlign='center';
+      ctx.shadowColor=m.col;ctx.shadowBlur=12;
+      ctx.fillText('▶  PRESS SPACE  ◀',cx+CW/2,cy+130);
+      ctx.shadowBlur=0;ctx.globalAlpha=1;
+    }
+  });
+
+  // Mini previews below cards
+  if(CHARS.length>0){
+    ctx.globalAlpha=0.35+0.15*Math.sin(t*1.2);
+    // P1 side: show cursor character
+    drawMini(W/2-CW-gap/2+50, H-52, CHARS[cursor%CHARS.length]);
+    // CPU side: question marks or random char rotating
+    const cpuPrev=CHARS[(Math.floor(t*0.8))%CHARS.length];
+    if(gameMode==='cvcpu')drawMini(W/2+gap/2+CW-50, H-52, cpuPrev);
+    ctx.globalAlpha=1;
+  }
+
+  ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.18)';ctx.textAlign='center';
+  ctx.fillText('← → Switch   SPACE / Z Confirm   ESC Back',W/2,H-16);
+}
 
 function drawSelect(){
   ctx.fillStyle='#08050f';ctx.fillRect(0,0,W,H);
@@ -1172,7 +1274,7 @@ function drawDiff(){
   ctx.fillText('🤖  CPU VS CPU',modeX2+modeW/2,modeY+modeH/2+4);
 
   ctx.font='9px Arial';ctx.fillStyle='rgba(255,255,255,0.22)';ctx.textAlign='center';
-  ctx.fillText('↑ / ↓  Toggle Mode',W/2,modeY-7);
+  ctx.fillText('Mode locked — ESC to go back and change',W/2,modeY-7);
 
   if(!cvcSel&&CHARS[p1ci]){ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='left';ctx.fillText(`Playing as: ${CHARS[p1ci].name}`,24,H-18);}
   if(cvcSel){ctx.font='10px Arial';ctx.fillStyle='rgba(255,100,100,0.5)';ctx.textAlign='center';ctx.fillText('CPU characters chosen randomly — sit back and watch!',W/2,H-18);}
