@@ -936,7 +936,7 @@ class Fighter{
 function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
 
 // ── GAME STATE ───────────────────────────────────────────────────────────────
-let gState='loading',cursor=0,p1ci=0,cpuci=1;
+let gState='loading',cursor=0,p1ci=0,cpuci=1,gameMode='pvp'; // 'pvp' | 'cvcpu'
 let p1,cpu,rtimer=90*60,rnd=1,p1W=0,cpuW=0,resTmr=0;
 let camShake=0,flashT=0,annTxt='',annT=0;
 let difficulty=1,diffCursor=1;
@@ -949,16 +949,24 @@ const loadCheck=setInterval(()=>{if(allLoaded()){gState='title';clearInterval(lo
 setTimeout(()=>{gState='title';clearInterval(loadCheck);},5000);
 
 function startFight(){
-  do{cpuci=Math.random()*CHARS.length|0;}while(cpuci===p1ci);
-  p1=new Fighter(p1ci,215,1,true);
-  cpu=new Fighter(cpuci,685,-1,false);
+  if(gameMode==='cvcpu'){
+    // Both random, both AI
+    p1ci=Math.random()*CHARS.length|0;
+    do{cpuci=Math.random()*CHARS.length|0;}while(cpuci===p1ci);
+    p1=new Fighter(p1ci,215,1,false);
+    cpu=new Fighter(cpuci,685,-1,false);
+  }else{
+    do{cpuci=Math.random()*CHARS.length|0;}while(cpuci===p1ci);
+    p1=new Fighter(p1ci,215,1,true);
+    cpu=new Fighter(cpuci,685,-1,false);
+  }
   rtimer=90*60;flashT=0;countdown=10*60;
   gState='fight';
 }
 function endRound(who){
   if(who==='p1')p1W++;else cpuW++;
   persistVFX.push({col:(who==='p1'?p1:cpu).ch.col,rnd,t:0,sp:40+Math.random()*28|0,off:(rnd*37)%52});
-  if(rnd>=30){ann(p1W>cpuW?'PLAYER IS CHAMPION!':'CPU IS CHAMPION!',220);setTimeout(()=>{gState='result';resTmr=0;},3800);}
+  if(rnd>=30){ann(gameMode==='cvcpu'?(p1W>cpuW?p1.ch.name+' WINS!':cpu.ch.name+' WINS!'):p1W>cpuW?'PLAYER IS CHAMPION!':'CPU IS CHAMPION!',220);setTimeout(()=>{gState='result';resTmr=0;},3800);}
   else{ann(who==='p1'?`P1 WINS RND ${rnd}!`:`CPU WINS RND ${rnd}!`,80);rnd++;setTimeout(()=>startFight(),2000);}
 }
 
@@ -981,8 +989,9 @@ function update(){
   if(gState==='diff'){
     if(eat('ArrowLeft'))diffCursor=Math.max(0,diffCursor-1);
     if(eat('ArrowRight'))diffCursor=Math.min(2,diffCursor+1);
+    if(eat('ArrowUp')||eat('ArrowDown'))gameMode=gameMode==='pvp'?'cvcpu':'pvp';
     if(eat('Space')||eat('Enter')||eat('KeyZ')){difficulty=diffCursor;startFight();}
-    if(eat('Escape'))gState='select';
+    if(eat('Escape')){gState=gameMode==='cvcpu'?'diff':'select';}
     return;
   }
   if(gState==='fight'){
@@ -1004,7 +1013,7 @@ function update(){
   if(gState==='result'){
     resTmr++;
     if((eat('Space')||eat('Enter')||eat('KeyZ')||resTmr>320)&&resTmr>80)
-      {gState='select';p1W=cpuW=0;rnd=1;cursor=p1ci;persistVFX=[];vfxList=[];}
+      {gState='select';p1W=cpuW=0;rnd=1;cursor=p1ci;persistVFX=[];vfxList=[];gameMode='pvp';}
     return;
   }
 }
@@ -1061,7 +1070,7 @@ function drawTitle(){
   ctx.globalAlpha=a;ctx.font='bold 18px "Arial Black"';ctx.fillStyle='#fff';
   ctx.fillText('PRESS  SPACE  TO  START',W/2,418);ctx.globalAlpha=1;
   ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';
-  ctx.fillText('← → Move  ↑ Jump  Z Light  X Heavy  C Special  |  VS CPU  |  Best of 30 Rounds',W/2,475);
+  ctx.fillText('← → Move  ↑ Jump  Z Light  X Heavy  C Special  |  P1 vs CPU  or  CPU vs CPU  |  30 Rounds',W/2,475);
 }
 
 
@@ -1136,7 +1145,37 @@ function drawDiff(){
     });
     if(sel){const pa=0.6+0.4*Math.sin(Date.now()*0.007);ctx.globalAlpha=pa;ctx.font='bold 12px "Arial Black"';ctx.fillStyle=d.col;ctx.fillText('▼ SELECT ▼',cx,cy+110);ctx.globalAlpha=1;}
   });
-  if(CHARS[p1ci]){ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='left';ctx.fillText(`Playing as: ${CHARS[p1ci].name}`,24,H-18);}
+  // ── MODE TOGGLE ──
+  const modeY=H-60;
+  const pvpSel=gameMode==='pvp', cvcSel=gameMode==='cvcpu';
+  const modeW=180,modeH=34,modeGap=14;
+  const modeX1=W/2-modeW-modeGap/2, modeX2=W/2+modeGap/2;
+
+  // P1 vs CPU button
+  ctx.fillStyle=pvpSel?`${CHARS[p1ci]?.col||'#e8c44a'}22`:'rgba(255,255,255,0.03)';
+  ctx.strokeStyle=pvpSel?(CHARS[p1ci]?.col||'#e8c44a'):'rgba(255,255,255,0.15)';
+  ctx.lineWidth=pvpSel?2:1;
+  ctx.beginPath();if(ctx.roundRect)ctx.roundRect(modeX1,modeY,modeW,modeH,6);else ctx.rect(modeX1,modeY,modeW,modeH);
+  ctx.fill();if(pvpSel){ctx.shadowColor=CHARS[p1ci]?.col||'#e8c44a';ctx.shadowBlur=16;}ctx.stroke();ctx.shadowBlur=0;
+  ctx.textAlign='center';ctx.font=`bold ${pvpSel?13:11}px "Arial Black"`;
+  ctx.fillStyle=pvpSel?(CHARS[p1ci]?.col||'#e8c44a'):'rgba(255,255,255,0.45)';
+  ctx.fillText('🎮  P1 VS CPU',modeX1+modeW/2,modeY+modeH/2+4);
+
+  // CPU vs CPU button
+  ctx.fillStyle=cvcSel?'#CC333322':'rgba(255,255,255,0.03)';
+  ctx.strokeStyle=cvcSel?'#CC3333':'rgba(255,255,255,0.15)';
+  ctx.lineWidth=cvcSel?2:1;
+  ctx.beginPath();if(ctx.roundRect)ctx.roundRect(modeX2,modeY,modeW,modeH,6);else ctx.rect(modeX2,modeY,modeW,modeH);
+  ctx.fill();if(cvcSel){ctx.shadowColor='#CC3333';ctx.shadowBlur=16;}ctx.stroke();ctx.shadowBlur=0;
+  ctx.textAlign='center';ctx.font=`bold ${cvcSel?13:11}px "Arial Black"`;
+  ctx.fillStyle=cvcSel?'#CC3333':'rgba(255,255,255,0.45)';
+  ctx.fillText('🤖  CPU VS CPU',modeX2+modeW/2,modeY+modeH/2+4);
+
+  ctx.font='9px Arial';ctx.fillStyle='rgba(255,255,255,0.22)';ctx.textAlign='center';
+  ctx.fillText('↑ / ↓  Toggle Mode',W/2,modeY-7);
+
+  if(!cvcSel&&CHARS[p1ci]){ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='left';ctx.fillText(`Playing as: ${CHARS[p1ci].name}`,24,H-18);}
+  if(cvcSel){ctx.font='10px Arial';ctx.fillStyle='rgba(255,100,100,0.5)';ctx.textAlign='center';ctx.fillText('CPU characters chosen randomly — sit back and watch!',W/2,H-18);}
 }
 
 function drawFight(){
@@ -1207,6 +1246,11 @@ function drawHUD(){
   // Diff label
   const dlabel=['EASY','MED','HARD'][difficulty],dcol=['#44cc44','#FFD700','#CC3333'][difficulty];
   ctx.font='bold 8px Arial';ctx.fillStyle=dcol;ctx.textAlign='right';ctx.fillText(dlabel,W-10,H-8);
+  if(gameMode==='cvcpu'){
+    const pulse=0.6+0.4*Math.sin(Date.now()*0.005);
+    ctx.globalAlpha=pulse;ctx.font='bold 10px "Arial Black"';ctx.fillStyle='#CC3333';ctx.textAlign='center';
+    ctx.fillText('👁  SPECTATING — CPU VS CPU',W/2,H-8);ctx.globalAlpha=1;
+  }
 }
 function hpBar(x,y,w,h,hp,mx,col,name,side){
   const pct=Math.max(0,hp/mx),bc=pct<0.25?'#ff2020':pct<0.5?'#ff8800':col;
