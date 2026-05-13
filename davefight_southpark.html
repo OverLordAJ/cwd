@@ -966,8 +966,16 @@ function startFight(){
 function endRound(who){
   if(who==='p1')p1W++;else cpuW++;
   persistVFX.push({col:(who==='p1'?p1:cpu).ch.col,rnd,t:0,sp:40+Math.random()*28|0,off:(rnd*37)%52});
-  if(rnd>=30){ann(gameMode==='cvcpu'?(p1W>cpuW?p1.ch.name+' WINS!':cpu.ch.name+' WINS!'):p1W>cpuW?'PLAYER IS CHAMPION!':'CPU IS CHAMPION!',220);setTimeout(()=>{gState='result';resTmr=0;},3800);}
-  else{ann(who==='p1'?`P1 WINS RND ${rnd}!`:`CPU WINS RND ${rnd}!`,80);rnd++;setTimeout(()=>startFight(),2000);}
+  // CPU vs CPU: infinite rounds — never end, just keep going
+  if(gameMode==='cvcpu'){
+    const winner=(who==='p1'?p1:cpu).ch;
+    ann(`${winner.name} WINS RND ${rnd}!`,75);
+    rnd++;
+    setTimeout(()=>startFight(),2000);
+  } else {
+    if(rnd>=30){ann(p1W>cpuW?'PLAYER IS CHAMPION!':'CPU IS CHAMPION!',220);setTimeout(()=>{gState='result';resTmr=0;},3800);}
+    else{ann(who==='p1'?`P1 WINS RND ${rnd}!`:`CPU WINS RND ${rnd}!`,80);rnd++;setTimeout(()=>startFight(),2000);}
+  }
 }
 
 // ── UPDATE ───────────────────────────────────────────────────────────────────
@@ -1336,7 +1344,7 @@ function drawHUD(){
   ctx.fillStyle=secs<=10?'#ff3333':'#fff';
   ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=secs<=10?18:0;
   ctx.fillText(secs,W/2,40);ctx.shadowBlur=0;
-  ctx.font='bold 9px Arial';ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fillText('RND '+rnd+'/30',W/2,55);
+  ctx.font='bold 9px Arial';ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fillText(gameMode==='cvcpu'?'RND '+rnd:'RND '+rnd+'/30',W/2,55);
   // Score dots
   ctx.font='bold 13px "Arial Black"';ctx.fillStyle=p1.ch.col;ctx.fillText(p1W,W/2-18,72);
   ctx.fillStyle='rgba(255,255,255,0.28)';ctx.fillText('—',W/2,72);
