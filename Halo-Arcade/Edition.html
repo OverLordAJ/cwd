@@ -24,6 +24,41 @@ const P_SPEED = 4.5;
 const B_SPEED = 11;
 const EB_SPEED = 4.5;
 
+const DIFFICULTIES = [
+  {
+    name: 'EASY', color: '#4cf', skull: '⬡',
+    enemySpeedMult: 0.65, enemyHpMult: 0.75, enemyFireMult: 1.6,
+    shieldDmg: 18, meleeDmg: 0.4, shieldRecharge: 0.28, rechargeDelay: 160,
+    lives: 5, scoreMultiplier: 0.5,
+    desc: 'Relax and enjoy the fight.'
+  },
+  {
+    name: 'NORMAL', color: '#0f8', skull: '⬡',
+    enemySpeedMult: 1.0, enemyHpMult: 1.0, enemyFireMult: 1.0,
+    shieldDmg: 30, meleeDmg: 0.8, shieldRecharge: 0.18, rechargeDelay: 220,
+    lives: 3, scoreMultiplier: 1.0,
+    desc: 'The way Halo was meant to be played.'
+  },
+  {
+    name: 'HEROIC', color: '#fa0', skull: '⬡',
+    enemySpeedMult: 1.35, enemyHpMult: 1.5, enemyFireMult: 0.7,
+    shieldDmg: 45, meleeDmg: 1.4, shieldRecharge: 0.10, rechargeDelay: 300,
+    lives: 3, scoreMultiplier: 1.75,
+    desc: 'A tough fight. You will earn your victory.'
+  },
+  {
+    name: 'LEGENDARY', color: '#f33', skull: '☠',
+    enemySpeedMult: 1.7, enemyHpMult: 2.5, enemyFireMult: 0.5,
+    shieldDmg: 70, meleeDmg: 2.5, shieldRecharge: 0.05, rechargeDelay: 420,
+    lives: 1, scoreMultiplier: 3.0,
+    desc: 'Become a legend. Or die trying.'
+  }
+];
+
+let diffIndex = 1;
+let diff = DIFFICULTIES[diffIndex];
+let choosingDiff = false;
+
 let score = 0, lives = 3, wave = 1, shields = 100;
 let gameOver = false, started = false;
 let pBullets = [], eBullets = [], enemies = [], particles = [];
@@ -60,9 +95,17 @@ const player = {
 const keys = {};
 document.addEventListener('keydown', e => {
   keys[e.code] = true;
-  if (['Space','ArrowLeft','ArrowRight','ArrowUp'].includes(e.code)) e.preventDefault();
-  if (!started && !gameOver) { started = true; }
-  if (gameOver && e.code === 'Enter') restart();
+  if (['Space','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code)) e.preventDefault();
+
+  if (choosingDiff) {
+    if (e.code === 'ArrowLeft'  || e.code === 'ArrowUp')   { diffIndex = (diffIndex - 1 + DIFFICULTIES.length) % DIFFICULTIES.length; diff = DIFFICULTIES[diffIndex]; }
+    if (e.code === 'ArrowRight' || e.code === 'ArrowDown')  { diffIndex = (diffIndex + 1) % DIFFICULTIES.length; diff = DIFFICULTIES[diffIndex]; }
+    if (e.code === 'Enter' || e.code === 'KeyZ' || e.code === 'Space') { choosingDiff = false; started = true; applyDifficulty(); spawnWave(); }
+    return;
+  }
+
+  if (!started && !gameOver && !choosingDiff) { choosingDiff = true; return; }
+  if (gameOver && e.code === 'Enter') { gameOver = false; choosingDiff = true; return; }
 });
 document.addEventListener('keyup', e => { keys[e.code] = false; });
 
@@ -109,13 +152,14 @@ function spawnWave() {
     const isElite = wave >= 2 && Math.random() < 0.35;
     const isJackal = wave >= 3 && !isElite && Math.random() < 0.25;
     let type = isElite ? 'elite' : (isJackal ? 'jackal' : 'grunt');
+    const baseHp = type === 'elite' ? 4 : type === 'jackal' ? 2 : 1;
+    const hp = Math.max(1, Math.round(baseHp * diff.enemyHpMult));
     enemies.push({
       x: 480 + Math.random() * 380,
       y: GROUND_Y - (type === 'elite' ? 55 : 42),
       w: type === 'elite' ? 32 : 26,
       h: type === 'elite' ? 55 : 42,
-      hp: type === 'elite' ? 4 : type === 'jackal' ? 2 : 1,
-      maxHp: type === 'elite' ? 4 : type === 'jackal' ? 2 : 1,
+      hp, maxHp: hp,
       type,
       vx: 0, vy: 0,
       onGround: true,
@@ -127,21 +171,23 @@ function spawnWave() {
   }
 }
 
-function restart() {
-  score = 0; lives = 3; wave = 1; shields = 100;
-  gameOver = false; started = true; shieldCooldown = 0;
+function applyDifficulty() {
+  score = 0; lives = diff.lives; wave = 1; shields = 100; shieldCooldown = 0;
   pBullets = []; eBullets = []; particles = [];
   player.x = 80; player.y = GROUND_Y - player.h;
   player.vx = 0; player.vy = 0; player.dir = 1;
   player.shootCD = 0; player.iframes = 0;
-  spawnWave();
+}
+
+function restart() {
+  gameOver = false; started = false; choosingDiff = true;
 }
 
 function update() {
   if (!started || gameOver) return;
 
   if (shieldCooldown > 0) shieldCooldown--;
-  else shields = Math.min(100, shields + 0.18);
+  else shields = Math.min(100, shields + diff.shieldRecharge);
 
   player.vx = 0;
   if (keys['ArrowLeft'])  { player.vx = -P_SPEED; player.dir = -1; }
@@ -168,7 +214,7 @@ function update() {
   for (const e of enemies) {
     const dx = (player.x + player.w/2) - (e.x + e.w/2);
     const dist = Math.abs(dx);
-    const speed = (0.9 + wave * 0.15) * (e.type === 'elite' ? 1.1 : 1);
+    const speed = (0.9 + wave * 0.15) * (e.type === 'elite' ? 1.1 : 1) * diff.enemySpeedMult;
     if (dist < 350 || e.type === 'elite') {
       e.vx = (dx > 0 ? 1 : -1) * speed;
       e.dir = dx > 0 ? 1 : -1;
@@ -183,7 +229,7 @@ function update() {
     applyPhysics(e);
     if (++e.walkTimer > 10) { e.walkTimer = 0; e.walkFrame = (e.walkFrame+1)%2; }
     if (--e.shootTimer <= 0) {
-      const baseCD = Math.max(35, 100 - wave*8);
+      const baseCD = Math.max(20, (100 - wave*8) * diff.enemyFireMult);
       e.shootTimer = baseCD + Math.random()*40;
       const angle = Math.atan2((player.y+player.h/2)-(e.y+e.h/2), (player.x+player.w/2)-(e.x+e.w/2));
       eBullets.push({
@@ -203,19 +249,20 @@ function update() {
 
   for (let bi = pBullets.length-1; bi >= 0; bi--) {
     const b = pBullets[bi];
+    let hit = false;
     for (let ei = enemies.length-1; ei >= 0; ei--) {
       const e = enemies[ei];
       if (!overlap(b, e)) continue;
       if (e.type === 'jackal' && e.shield && b.vx * (e.dir < 0 ? 1 : -1) > 0) {
-        burst(b.x, b.y, '#4cf', 5); pBullets.splice(bi, 1); break;
+        burst(b.x, b.y, '#4cf', 5); pBullets.splice(bi, 1); hit = true; break;
       }
-      pBullets.splice(bi, 1);
+      pBullets.splice(bi, 1); hit = true;
       e.hp--;
       const col = e.type === 'elite' ? '#a0f' : e.type === 'jackal' ? '#0ff' : '#f80';
       burst(b.x, b.y, col, 6);
       if (e.hp <= 0) {
         burst(e.x+e.w/2, e.y+e.h/2, col, 18);
-        score += e.type === 'elite' ? 250 : e.type === 'jackal' ? 150 : 100;
+        score += Math.round((e.type === 'elite' ? 250 : e.type === 'jackal' ? 150 : 100) * diff.scoreMultiplier);
         enemies.splice(ei, 1);
       }
       break;
@@ -228,7 +275,8 @@ function update() {
       if (!overlap(eBullets[bi], pr)) continue;
       burst(eBullets[bi].x, eBullets[bi].y, '#0af', 5);
       eBullets.splice(bi, 1);
-      shields -= 30; shieldCooldown = 220;
+      shields -= diff.shieldDmg;
+      shieldCooldown = diff.rechargeDelay;
       if (shields <= 0) {
         shields = 0; lives--;
         burst(player.x+player.w/2, player.y+player.h/2, '#0f8', 22);
@@ -241,7 +289,8 @@ function update() {
   if (player.iframes === 0) {
     for (const e of enemies) {
       if (overlap(player, e)) {
-        shields -= 0.8; shieldCooldown = 200;
+        shields -= diff.meleeDmg;
+        shieldCooldown = diff.rechargeDelay;
         if (shields <= 0) {
           shields = 0; lives--;
           burst(player.x+player.w/2, player.y+player.h/2, '#0f8', 22);
@@ -257,7 +306,7 @@ function update() {
     return p.life > 0;
   });
 
-  if (enemies.length === 0) { wave++; score += wave*75; spawnWave(); }
+  if (enemies.length === 0) { wave++; score += Math.round(wave*75*diff.scoreMultiplier); spawnWave(); }
 }
 
 function glow(col, blur=12) { ctx.shadowColor = col; ctx.shadowBlur = blur; }
@@ -501,10 +550,10 @@ function drawHUD() {
   ctx.textAlign = 'left';
   ctx.fillStyle = '#f55';
   ctx.fillText(`LIVES:`, W - 170, 27);
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < diff.lives; i++) {
     ctx.fillStyle = i < lives ? '#3e8c3e' : '#333';
-    ctx.fillRect(W - 100 + i*28, 10, 18, 22);
-    if (i < lives) { ctx.fillStyle = '#f90'; ctx.fillRect(W - 97 + i*28, 13, 12, 6); }
+    ctx.fillRect(W - 100 + i*24, 10, 18, 22);
+    if (i < lives) { ctx.fillStyle = '#f90'; ctx.fillRect(W - 97 + i*24, 13, 12, 6); }
   }
   const sbx = W/2 + 80, sby = 10, sbw = 160, sbh = 12;
   ctx.fillStyle = '#001428';
@@ -519,6 +568,10 @@ function drawHUD() {
   ctx.fillStyle = '#8cf';
   ctx.font = '10px "Courier New", monospace';
   ctx.fillText('SHIELD', sbx - 48, sby + 10);
+  // Difficulty badge
+  ctx.fillStyle = diff.color;
+  ctx.font = 'bold 11px "Courier New", monospace';
+  ctx.fillText(diff.name, sbx + sbw + 8, sby + 10);
   ctx.fillStyle = '#888';
   ctx.font = '11px "Courier New", monospace';
   ctx.fillText(`HOSTILES: ${enemies.length}`, 12, H - 10);
@@ -526,6 +579,19 @@ function drawHUD() {
   ctx.textAlign = 'right';
   ctx.fillText('← → MOVE  |  SPACE JUMP  |  Z FIRE', W - 12, H - 10);
   ctx.textAlign = 'left';
+}
+
+function drawHaloRing() {
+  ctx.save();
+  ctx.globalAlpha = 0.1;
+  ctx.strokeStyle = '#4af'; ctx.lineWidth = 22;
+  ctx.beginPath();
+  ctx.ellipse(W*0.78, H*0.22, 200, 65, -0.25, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.globalAlpha = 0.06;
+  ctx.fillStyle = '#2af';
+  ctx.beginPath(); ctx.arc(W*0.78, H*0.22, 78, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
 }
 
 function drawBG() {
@@ -542,17 +608,82 @@ function drawBG() {
   }
 }
 
-function drawHaloRing() {
-  ctx.save();
-  ctx.globalAlpha = 0.1;
-  ctx.strokeStyle = '#4af'; ctx.lineWidth = 22;
-  ctx.beginPath();
-  ctx.ellipse(W*0.78, H*0.22, 200, 65, -0.25, 0, Math.PI*2);
-  ctx.stroke();
-  ctx.globalAlpha = 0.06;
-  ctx.fillStyle = '#2af';
-  ctx.beginPath(); ctx.arc(W*0.78, H*0.22, 78, 0, Math.PI*2); ctx.fill();
-  ctx.restore();
+function drawDifficultyScreen() {
+  ctx.fillStyle = 'rgba(0,0,10,0.92)';
+  ctx.fillRect(0, 0, W, H);
+
+  glow('#0af', 30);
+  ctx.fillStyle = '#0af';
+  ctx.font = 'bold 36px "Courier New", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('SELECT DIFFICULTY', W/2, 70);
+  noGlow();
+
+  const cardW = 180, cardH = 200, gap = 18;
+  const totalW = DIFFICULTIES.length * cardW + (DIFFICULTIES.length-1) * gap;
+  const startX = (W - totalW) / 2;
+
+  DIFFICULTIES.forEach((d, i) => {
+    const cx = startX + i * (cardW + gap);
+    const cy = 105;
+    const selected = i === diffIndex;
+
+    ctx.fillStyle = selected ? 'rgba(0,0,0,0.9)' : 'rgba(0,0,0,0.5)';
+    ctx.fillRect(cx, cy, cardW, cardH);
+
+    if (selected) {
+      glow(d.color, 20);
+      ctx.strokeStyle = d.color;
+      ctx.lineWidth = 3;
+    } else {
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 1.5;
+    }
+    ctx.strokeRect(cx, cy, cardW, cardH);
+    noGlow();
+
+    ctx.font = selected ? 'bold 28px monospace' : '22px monospace';
+    ctx.fillStyle = d.color;
+    ctx.textAlign = 'center';
+    if (selected) glow(d.color, 14);
+    ctx.fillText(d.skull, cx + cardW/2, cy + 38);
+    noGlow();
+
+    ctx.font = `bold ${selected ? 20 : 17}px "Courier New", monospace`;
+    ctx.fillStyle = selected ? d.color : '#aaa';
+    ctx.fillText(d.name, cx + cardW/2, cy + 68);
+
+    ctx.font = '11px "Courier New", monospace';
+    ctx.fillStyle = selected ? '#ddd' : '#666';
+    const stats = [
+      `LIVES: ${d.lives}`,
+      `SCORE: x${d.scoreMultiplier}`,
+      `SPEED: x${d.enemySpeedMult}`,
+      `DAMAGE: x${d.enemyHpMult}`,
+    ];
+    stats.forEach((s, si) => ctx.fillText(s, cx + cardW/2, cy + 98 + si*20));
+
+    if (selected) {
+      const pulse = 0.6 + Math.sin(Date.now()*0.006)*0.4;
+      ctx.globalAlpha = pulse;
+      glow(d.color, 8);
+      ctx.fillStyle = d.color;
+      ctx.font = 'bold 22px monospace';
+      ctx.fillText('▼', cx + cardW/2, cy + cardH - 12);
+      noGlow();
+      ctx.globalAlpha = 1;
+    }
+  });
+
+  ctx.font = 'italic 14px "Courier New", monospace';
+  ctx.fillStyle = DIFFICULTIES[diffIndex].color;
+  ctx.textAlign = 'center';
+  ctx.fillText(`"${DIFFICULTIES[diffIndex].desc}"`, W/2, 340);
+
+  ctx.fillStyle = '#555';
+  ctx.font = '13px "Courier New", monospace';
+  ctx.fillText('← → to choose     ENTER / Z to confirm', W/2, 380);
+  ctx.textAlign = 'left';
 }
 
 function drawStart() {
@@ -592,11 +723,14 @@ function drawGameOver() {
   ctx.fillText(`FINAL SCORE: ${score}`, W/2, 255);
   ctx.fillStyle = '#0af';
   ctx.fillText(`WAVES CLEARED: ${Math.max(0, wave-1)}`, W/2, 292);
+  ctx.fillStyle = diff.color;
+  ctx.font = '16px "Courier New", monospace';
+  ctx.fillText(`Difficulty: ${diff.name}`, W/2, 328);
   const pulse = 0.6 + Math.sin(Date.now()*0.004)*0.4;
   ctx.globalAlpha = pulse;
   ctx.fillStyle = '#ff0';
   ctx.font = 'bold 20px "Courier New", monospace';
-  ctx.fillText('PRESS ENTER TO PLAY AGAIN', W/2, 370);
+  ctx.fillText('PRESS ENTER TO PLAY AGAIN', W/2, 390);
   ctx.globalAlpha = 1; ctx.textAlign = 'left';
 }
 
@@ -620,8 +754,9 @@ function loop() {
   }
   drawChief();
   drawHUD();
-  if (!started) drawStart();
-  if (gameOver)  drawGameOver();
+  if (!started && !choosingDiff) drawStart();
+  if (choosingDiff) drawDifficultyScreen();
+  if (gameOver) drawGameOver();
   requestAnimationFrame(loop);
 }
 
