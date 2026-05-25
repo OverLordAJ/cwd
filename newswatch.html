@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NewsWatch — Global News, USA First</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0d0f14;--surface:#161922;--surface2:#1e2330;--border:#2a2f3d;
+  --text:#e8eaf0;--muted:#7a8099;--accent:#e63946;--accent2:#457b9d;
+  --gold:#f4a261;--green:#2a9d8f;--usa:#b22234;--usa2:#3c3b6e;
+  --card:#1a1d28;--hover:#222638;
+}
+.light{
+  --bg:#f0f2f7;--surface:#ffffff;--surface2:#e8ebf4;--border:#d0d5e8;
+  --text:#1a1d2e;--muted:#5a6080;--card:#ffffff;--hover:#f5f7ff;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;transition:background 0.3s,color 0.3s;}
+
+/* TOP BAR */
+.topbar{background:#000;padding:6px 20px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#888;border-bottom:1px solid #1a1a1a;}
+.topbar-left{display:flex;gap:16px;}
+.topbar span{display:flex;align-items:center;gap:4px;}
+.live-dot{width:6px;height:6px;background:#e63946;border-radius:50%;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.topbar-right{display:flex;gap:12px;align-items:center;}
+.theme-btn{background:none;border:1px solid #333;color:#888;padding:2px 10px;border-radius:3px;cursor:pointer;font-size:10px;transition:all 0.2s;}
+.theme-btn:hover{border-color:#555;color:#ccc;}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
+.logo{font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--text);}
+.logo span{color:var(--accent);}
+.logo small{font-size:10px;font-weight:400;color:var(--muted);display:block;letter-spacing:2px;text-transform:uppercase;margin-top:-4px;}
+nav{display:flex;gap:4px;}
+nav a{padding:7px 14px;border-radius:6px;color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;border:1px solid transparent;}
+nav a:hover,nav a.active{background:var(--surface2);color:var(--text);border-color:var(--border);}
+nav a.active{color:var(--accent);}
+.refresh-btn{background:var(--accent);color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;transition:opacity 0.2s;}
+.refresh-btn:hover{opacity:0.85;}
+.refresh-btn.spinning svg{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* BREAKING TICKER */
+.ticker-wrap{background:var(--accent);overflow:hidden;height:34px;display:flex;align-items:center;}
+.ticker-label{background:#8b0000;color:white;padding:0 14px;font-size:11px;font-weight:800;letter-spacing:1.5px;white-space:nowrap;height:100%;display:flex;align-items:center;flex-shrink:0;}
+.ticker-track{display:flex;align-items:center;animation:ticker 60s linear infinite;white-space:nowrap;}
+.ticker-track:hover{animation-play-state:paused;}
+.ticker-item{color:white;font-size:12px;font-weight:500;padding:0 40px;}
+.ticker-sep{color:rgba(255,255,255,0.5);font-size:10px;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* USA BANNER */
+.usa-banner{background:linear-gradient(135deg,var(--usa2) 0%,var(--usa) 100%);padding:8px 20px;text-align:center;font-size:12px;font-weight:600;letter-spacing:1px;color:rgba(255,255,255,0.9);}
+.usa-banner span{color:#fff;}
+
+/* MAIN LAYOUT */
+.main-wrap{max-width:1400px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr 320px;gap:24px;}
+@media(max-width:1000px){.main-wrap{grid-template-columns:1fr;}}
+
+/* SECTION LABELS */
+.section-label{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.section-label h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
+.section-label .badge{background:var(--accent);color:white;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:1px;}
+.section-label .badge.world{background:var(--accent2);}
+.section-label .badge.politics{background:#6a0dad;}
+.section-label .badge.business{background:var(--green);}
+.section-label .badge.tech{background:#f4a261;}
+.section-line{flex:1;height:1px;background:var(--border);}
+
+/* HERO CARD */
+.hero-card{position:relative;border-radius:12px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin-bottom:20px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;display:block;}
+.hero-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+.hero-img{width:100%;height:280px;object-fit:cover;display:block;background:var(--surface2);}
+.hero-img-placeholder{width:100%;height:280px;background:linear-gradient(135deg,var(--usa2),var(--usa));display:flex;align-items:center;justify-content:center;font-size:48px;}
+.hero-content{padding:20px;}
+.hero-source{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:8px;}
+.hero-title{font-size:22px;font-weight:800;line-height:1.3;color:var(--text);margin-bottom:10px;}
+.hero-desc{font-size:13px;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.hero-meta{margin-top:12px;display:flex;gap:12px;font-size:11px;color:var(--muted);}
+
+/* NEWS GRID */
+.news-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px;}
+@media(max-width:700px){.news-grid{grid-template-columns:1fr;}}
+.news-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.2s;text-decoration:none;display:block;}
+.news-card:hover{background:var(--hover);border-color:var(--accent);transform:translateY(-1px);}
+.news-card-img{width:100%;height:140px;object-fit:cover;background:var(--surface2);display:block;}
+.news-card-img-ph{width:100%;height:140px;background:linear-gradient(135deg,var(--surface2),var(--border));display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--muted);}
+.news-card-body{padding:14px;}
+.news-card-source{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:6px;}
+.news-card-title{font-size:13px;font-weight:700;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.news-card-time{font-size:10px;color:var(--muted);margin-top:8px;}
+
+/* SIDEBAR */
+.sidebar{}
+.sidebar-section{margin-bottom:28px;}
+.sidebar-list{}
+.sidebar-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.sidebar-item:last-child{border-bottom:none;}
+.sidebar-item:hover .sidebar-title{color:var(--accent);}
+.sidebar-thumb{width:72px;height:56px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--surface2);}
+.sidebar-thumb-ph{width:72px;height:56px;border-radius:6px;flex-shrink:0;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted);}
+.sidebar-info{}
+.sidebar-source{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);margin-bottom:4px;}
+.sidebar-title{font-size:12px;font-weight:600;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;transition:color 0.2s;}
+.sidebar-time{font-size:10px;color:var(--muted);margin-top:4px;}
+
+/* WORLD SECTION */
+.world-section{max-width:1400px;margin:0 auto 32px;padding:0 20px;}
+.world-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+@media(max-width:900px){.world-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.world-grid{grid-template-columns:1fr;}}
+
+/* CATEGORY TABS */
+.cat-section{max-width:1400px;margin:0 auto 32px;padding:0 20px;}
+.cat-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.cat-tab{padding:7px 16px;border-radius:20px;border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.cat-tab:hover{border-color:var(--accent);color:var(--accent);}
+.cat-tab.active{background:var(--accent);color:white;border-color:var(--accent);}
+.cat-content{display:none;}
+.cat-content.active{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:800px){.cat-content.active{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.cat-content.active{grid-template-columns:1fr;}}
+
+/* LOADING / ERROR */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--muted);}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:14px;}
+.error-msg{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:20px;text-align:center;color:var(--muted);font-size:13px;}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;margin-top:20px;}
+.footer-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;}
+.footer-copy{font-size:12px;color:var(--muted);}
+.footer-sources{font-size:11px;color:var(--muted);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span><span class="live-dot"></span> LIVE</span>
+    <span id="topDate"></span>
+    <span id="topTime"></span>
+    <span id="lastUpdated">Updating...</span>
+  </div>
+  <div class="topbar-right">
+    <button class="theme-btn" onclick="toggleTheme()">☀ Light</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      News<span>Watch</span>
+      <small>Global Coverage · USA First</small>
+    </div>
+    <nav>
+      <a class="active" onclick="showSection('us')">🇺🇸 USA</a>
+      <a onclick="showSection('world')">🌍 World</a>
+      <a onclick="showSection('politics')">🏛 Politics</a>
+      <a onclick="showSection('business')">📈 Business</a>
+      <a onclick="showSection('tech')">💻 Tech</a>
+    </nav>
+    <button class="refresh-btn" onclick="refreshAll()" id="refreshBtn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      Refresh
+    </button>
+  </div>
+</header>
+
+<!-- BREAKING TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-label">⚡ BREAKING</div>
+  <div style="overflow:hidden;flex:1;">
+    <div class="ticker-track" id="tickerTrack">
+      <span class="ticker-item">Loading latest headlines...</span>
+    </div>
+  </div>
+</div>
+
+<!-- USA BANNER -->
+<div class="usa-banner">🇺🇸 <span>UNITED STATES</span> — TOP STORIES</div>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent">
+
+<!-- US SECTION -->
+<div id="section-us">
+  <div class="main-wrap">
+    <div>
+      <div class="section-label">
+        <span class="badge">🇺🇸 USA FEATURED</span>
+        <div class="section-line"></div>
+      </div>
+      <div id="heroCard"><div class="loading"><div class="spinner"></div>Loading top story...</div></div>
+
+      <div class="section-label">
+        <span class="badge">USA NEWS</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="news-grid" id="usGrid"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="badge world">🌍 WORLD</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="sidebar-list" id="worldSidebar"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORLD SECTION -->
+<div id="section-world" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge world">🌍 WORLD NEWS</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="worldGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- POLITICS SECTION -->
+<div id="section-politics" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge politics">🏛 POLITICS</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="politicsGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- BUSINESS SECTION -->
+<div id="section-business" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge business">📈 BUSINESS</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="businessGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- TECH SECTION -->
+<div id="section-tech" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge tech">💻 TECHNOLOGY</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="techGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+</div><!-- end mainContent -->
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-copy">© 2026 NewsWatch — Live news aggregator. Content from NPR, BBC, Reuters, AP & more.</div>
+    <div class="footer-sources">Auto-refreshes every 5 minutes</div>
+  </div>
+</footer>
+
+<script>
+// ── FEEDS ──────────────────────────────────────────────────────────────────────
+const RSS2JSON = 'https://api.rss2json.com/v1/api.json?count=20&rss_url=';
+const FEEDS = {
+  us:       'https://feeds.npr.org/1001/rss.xml',
+  politics: 'https://feeds.npr.org/1014/rss.xml',
+  business: 'https://feeds.npr.org/1006/rss.xml',
+  tech:     'https://feeds.npr.org/1019/rss.xml',
+  science:  'https://feeds.npr.org/1007/rss.xml',
+  world:    'https://feeds.bbci.co.uk/news/world/rss.xml',
+  world2:   'https://feeds.reuters.com/reuters/worldNews',
+};
+
+const cache = {};
+
+async function fetchFeed(key) {
+  if (cache[key] && Date.now() - cache[key].ts < 5*60*1000) return cache[key].items;
+  try {
+    const url = RSS2JSON + encodeURIComponent(FEEDS[key]);
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.status === 'ok' && data.items?.length) {
+      cache[key] = { items: data.items, ts: Date.now() };
+      return data.items;
+    }
+  } catch(e) {}
+  return [];
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr);
+  const m = Math.floor(diff/60000), h = Math.floor(m/60), d = Math.floor(h/24);
+  if (m < 1) return 'Just now';
+  if (m < 60) return `${m}m ago`;
+  if (h < 24) return `${h}h ago`;
+  return `${d}d ago`;
+}
+
+function getImg(item) {
+  if (item.thumbnail && item.thumbnail.startsWith('http')) return item.thumbnail;
+  if (item.enclosure?.link?.startsWith('http')) return item.enclosure.link;
+  const m = (item.content||'').match(/<img[^>]+src="([^"]+)"/);
+  if (m) return m[1];
+  return null;
+}
+
+function stripHtml(html) {
+  return (html||'').replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/&quot;/g,'"').replace(/&#39;/g,"'").trim();
+}
+
+function srcLabel(item) {
+  return item.author || (item.link||'').split('/')[2]?.replace('www.','').replace('feeds.','') || 'News';
+}
+
+const PH_EMOJIS = {us:'🇺🇸',world:'🌍',politics:'🏛',business:'📈',tech:'💻',science:'🔬'};
+
+function cardImg(item, section, h=140) {
+  const src = getImg(item);
+  if (src) return `<img class="news-card-img" src="${src}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" style="height:${h}px">
+    <div class="news-card-img-ph" style="height:${h}px;display:none;">${PH_EMOJIS[section]||'📰'}</div>`;
+  return `<div class="news-card-img-ph" style="height:${h}px;">${PH_EMOJIS[section]||'📰'}</div>`;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderHero(item, section='us') {
+  const src = getImg(item);
+  const img = src
+    ? `<img class="hero-img" src="${src}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+       <div class="hero-img-placeholder" style="display:none;">${PH_EMOJIS[section]}</div>`
+    : `<div class="hero-img-placeholder">${PH_EMOJIS[section]}</div>`;
+  return `<a class="hero-card" href="${item.link}" target="_blank" rel="noopener">
+    ${img}
+    <div class="hero-content">
+      <div class="hero-source">${srcLabel(item)}</div>
+      <div class="hero-title">${item.title}</div>
+      <div class="hero-desc">${stripHtml(item.description)}</div>
+      <div class="hero-meta"><span>${timeAgo(item.pubDate)}</span></div>
+    </div>
+  </a>`;
+}
+
+function renderCard(item, section='us') {
+  return `<a class="news-card" href="${item.link}" target="_blank" rel="noopener">
+    ${cardImg(item, section)}
+    <div class="news-card-body">
+      <div class="news-card-source">${srcLabel(item)}</div>
+      <div class="news-card-title">${item.title}</div>
+      <div class="news-card-time">${timeAgo(item.pubDate)}</div>
+    </div>
+  </a>`;
+}
+
+function renderSidebarItem(item, section='world') {
+  const src = getImg(item);
+  const thumb = src
+    ? `<img class="sidebar-thumb" src="${src}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+       <div class="sidebar-thumb-ph" style="display:none;">${PH_EMOJIS[section]}</div>`
+    : `<div class="sidebar-thumb-ph">${PH_EMOJIS[section]}</div>`;
+  return `<a class="sidebar-item" href="${item.link}" target="_blank" rel="noopener">
+    ${thumb}
+    <div class="sidebar-info">
+      <div class="sidebar-source">${srcLabel(item)}</div>
+      <div class="sidebar-title">${item.title}</div>
+      <div class="sidebar-time">${timeAgo(item.pubDate)}</div>
+    </div>
+  </a>`;
+}
+
+// ── SECTIONS ──────────────────────────────────────────────────────────────────
+async function loadUS() {
+  const items = await fetchFeed('us');
+  if (!items.length) {
+    document.getElementById('heroCard').innerHTML = '<div class="error-msg">Could not load US news. Check your connection.</div>';
+    document.getElementById('usGrid').innerHTML = '';
+    return;
+  }
+  document.getElementById('heroCard').innerHTML = renderHero(items[0], 'us');
+  document.getElementById('usGrid').innerHTML = items.slice(1,7).map(i => renderCard(i,'us')).join('');
+  updateTicker(items.slice(0,10));
+}
+
+async function loadWorldSidebar() {
+  const items = await fetchFeed('world');
+  if (!items.length) { document.getElementById('worldSidebar').innerHTML = '<div class="error-msg">Could not load world news.</div>'; return; }
+  document.getElementById('worldSidebar').innerHTML = items.slice(0,6).map(i => renderSidebarItem(i,'world')).join('');
+}
+
+async function loadSection(key, gridId) {
+  const el = document.getElementById(gridId);
+  if (!el) return;
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  let items = await fetchFeed(key);
+  if (key === 'world') {
+    const items2 = await fetchFeed('world2');
+    items = [...items, ...items2].sort((a,b) => new Date(b.pubDate)-new Date(a.pubDate));
+  }
+  if (!items.length) { el.innerHTML = '<div class="error-msg">Could not load articles.</div>'; return; }
+  el.innerHTML = items.slice(0,12).map(i => renderCard(i,key)).join('');
+}
+
+// ── TICKER ────────────────────────────────────────────────────────────────────
+function updateTicker(items) {
+  if (!items.length) return;
+  const html = items.map(i => `<span class="ticker-item">${i.title}</span><span class="ticker-sep">◆</span>`).join('');
+  document.getElementById('tickerTrack').innerHTML = html + html; // doubled for seamless loop
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+const sections = ['us','world','politics','business','tech'];
+function showSection(name) {
+  sections.forEach(s => {
+    document.getElementById('section-'+s).style.display = s === name ? '' : 'none';
+  });
+  document.querySelectorAll('nav a').forEach((a,i) => a.classList.toggle('active', sections[i] === name));
+  if (name !== 'us') loadSection(name, name+'Grid');
+}
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('topDate').textContent = now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('topTime').textContent = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+// ── THEME ─────────────────────────────────────────────────────────────────────
+let dark = true;
+function toggleTheme() {
+  dark = !dark;
+  document.body.classList.toggle('light', !dark);
+  document.querySelector('.theme-btn').textContent = dark ? '☀ Light' : '🌙 Dark';
+}
+
+// ── REFRESH ───────────────────────────────────────────────────────────────────
+async function refreshAll() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  Object.keys(cache).forEach(k => delete cache[k]);
+  await Promise.all([loadUS(), loadWorldSidebar()]);
+  const active = sections.find(s => document.getElementById('section-'+s).style.display !== 'none');
+  if (active && active !== 'us') await loadSection(active, active+'Grid');
+  btn.classList.remove('spinning');
+  document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+updateClock();
+setInterval(updateClock, 1000);
+setInterval(refreshAll, 5*60*1000);
+
+(async () => {
+  await Promise.all([loadUS(), loadWorldSidebar()]);
+  document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+})();
+</script>
+</body>
+</html>
