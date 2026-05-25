@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FAT CAMP RUMBLE</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a0a00; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: 'Impact', sans-serif; color: white; overflow: hidden; }
+  h1 { font-size: 2.5rem; color: #ff6600; text-shadow: 2px 2px #000, 0 0 20px #ff6600; margin-bottom: 4px; letter-spacing: 3px; }
+  #subtitle { font-size: 0.85rem; color: #ffaa00; margin-bottom: 8px; font-family: Arial, sans-serif; }
+  canvas { border: 3px solid #ff6600; box-shadow: 0 0 30px #ff6600aa; background: #87CEEB; display: block; }
+  #ui { display: flex; gap: 30px; margin-top: 8px; font-size: 1rem; }
+  #ui span { background: #2a1000; padding: 4px 14px; border: 2px solid #ff6600; border-radius: 6px; }
+  #instructions { margin-top: 8px; font-size: 0.75rem; color: #aaa; font-family: Arial, sans-serif; text-align: center; }
+  #gameover { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.92); border: 3px solid #ff6600; padding: 30px 50px; border-radius: 12px; text-align: center; z-index: 10; }
+  #gameover h2 { font-size: 2.5rem; color: #ff2200; margin-bottom: 10px; }
+  #gameover p { font-size: 1rem; color: #ffaa00; margin-bottom: 20px; font-family: Arial, sans-serif; }
+  #restartBtn { background: #ff6600; border: none; color: white; padding: 12px 30px; font-size: 1.2rem; font-family: Impact; cursor: pointer; border-radius: 8px; letter-spacing: 2px; }
+  #restartBtn:hover { background: #ff8800; }
+</style>
+</head>
+<body>
+<h1>FAT CAMP RUMBLE</h1>
+<div id="subtitle">Based on WingsofRedemption @ Lolcow Live Fat Camp</div>
+<canvas id="gameCanvas" width="800" height="380"></canvas>
+<div id="ui">
+  <span>SCORE: <b id="scoreDisplay">0</b></span>
+  <span>HP: <b id="hpDisplay">❤️❤️❤️</b></span>
+  <span>SLAMS: <b id="slamDisplay">0</b></span>
+</div>
+<div id="instructions">
+  [SPACE / UP] Jump &nbsp;|&nbsp; [DOWN / S] Body Slam &nbsp;|&nbsp; Eat burgers for RAGE • Dodge salads • SLAM Keemstar clones
+</div>
+
+<div id="gameover">
+  <h2 id="goTitle">BANNED FROM FAT CAMP</h2>
+  <p id="goMsg">Wings has been kicked out by Keemstar.</p>
+  <p style="font-size:1.3rem; color:white;">Score: <b id="finalScore">0</b> &nbsp;|&nbsp; Slams: <b id="finalSlams">0</b></p>
+  <br>
+  <button id="restartBtn" onclick="startGame()">PLAY AGAIN</button>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const GROUND = H - 60;
+
+let game, anim;
+
+function startGame() {
+  document.getElementById('gameover').style.display = 'none';
+  cancelAnimationFrame(anim);
+  game = {
+    score: 0,
+    slams: 0,
+    hp: 3,
+    rage: 0,       // 0-100, filled by burgers, depletes body slam
+    frame: 0,
+    speed: 3.5,
+    running: true,
+    paused: false,
+    objects: [],
+    particles: [],
+    spawnTimer: 0,
+    spawnInterval: 90,
+    boss: null,
+    bossTimer: 0,
+    bossHealth: 0,
+    bossActive: false,
+    shake: 0,
+  };
+  initWings();
+  loop();
+}
+
+// ---- Wings (player) ----
+let wings = {};
+function initWings() {
+  wings = {
+    x: 110, y: GROUND,
+    w: 54, h: 72,
+    vy: 0,
+    jumping: false,
+    slamming: false,
+    slamCooldown: 0,
+    invincible: 0,
+    rage: 0,
+    animFrame: 0,
+    animTimer: 0,
+    facingRight: true,
+  };
+}
+
+// ---- Drawing helpers ----
+function drawWings(x, y, slamming, invincible, rageFull) {
+  ctx.save();
+  if (invincible > 0 && Math.floor(invincible / 4) % 2 === 0) { ctx.restore(); return; }
+  const blink = rageFull ? (Math.floor(game.frame / 6) % 2 === 0) : false;
+  // shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath(); ctx.ellipse(x + wings.w/2, GROUND + 10, 28, 8, 0, 0, Math.PI*2); ctx.fill();
+
+  // body (big belly)
+  ctx.fillStyle = slamming ? '#8B0000' : (blink ? '#ff4400' : '#cc2200');
+  ctx.beginPath(); ctx.ellipse(x + 27, y + 38, 28, 32, 0, 0, Math.PI*2); ctx.fill();
+
+  // shirt text
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 8px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('WINGS', x + 27, y + 42);
+
+  // head
+  ctx.fillStyle = '#f5c5a0';
+  ctx.beginPath(); ctx.arc(x + 27, y + 10, 18, 0, Math.PI*2); ctx.fill();
+  // hair
+  ctx.fillStyle = '#3a1f00';
+  ctx.beginPath(); ctx.arc(x + 27, y + 4, 18, Math.PI, Math.PI*2); ctx.fill();
+  // beard
+  ctx.fillStyle = '#3a1f00';
+  ctx.fillRect(x + 14, y + 18, 26, 9);
+
+  // eyes (angry when slamming)
+  ctx.fillStyle = 'white';
+  ctx.fillRect(x+18, y+8, 8, 6); ctx.fillRect(x+30, y+8, 8, 6);
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(x+21, y+9, 4, 4); ctx.fillRect(x+33, y+9, 4, 4);
+  if (slamming) {
+    ctx.fillStyle = '#ff0000';
+    ctx.fillRect(x+21, y+9, 4, 4); ctx.fillRect(x+33, y+9, 4, 4);
+  }
+
+  // arms
+  ctx.fillStyle = '#cc2200';
+  if (slamming) {
+    // arms raised for slam
+    ctx.fillRect(x-8, y+20, 14, 10);
+    ctx.fillRect(x+48, y+20, 14, 10);
+  } else {
+    ctx.fillRect(x-5, y+30, 12, 10);
+    ctx.fillRect(x+47, y+30, 12, 10);
+  }
+
+  // legs
+  ctx.fillStyle = '#334';
+  ctx.fillRect(x+8, y+60, 14, 14);
+  ctx.fillRect(x+30, y+60, 14, 14);
+
+  // rage aura
+  if (rageFull) {
+    ctx.strokeStyle = `rgba(255,80,0,${0.4 + 0.3*Math.sin(game.frame*0.2)})`;
+    ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.arc(x+27, y+36, 42, 0, Math.PI*2); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawKeemstar(obj) {
+  let {x, y, w, h, hp, maxHp, isBoss} = obj;
+  ctx.save();
+  // shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath(); ctx.ellipse(x+w/2, GROUND+10, 22, 6, 0, 0, Math.PI*2); ctx.fill();
+
+  // body
+  ctx.fillStyle = isBoss ? '#660000' : '#222277';
+  ctx.beginPath(); ctx.ellipse(x+w/2, y+h*0.55, 18, 22, 0, 0, Math.PI*2); ctx.fill();
+
+  // head
+  ctx.fillStyle = '#f5c5a0';
+  ctx.beginPath(); ctx.arc(x+w/2, y+14, 14, 0, Math.PI*2); ctx.fill();
+
+  // gnome hat
+  ctx.fillStyle = isBoss ? '#aa0000' : '#0000cc';
+  ctx.beginPath(); ctx.moveTo(x+w/2, y-18); ctx.lineTo(x+w/2-16, y+6); ctx.lineTo(x+w/2+16, y+6); ctx.closePath(); ctx.fill();
+  // hat star
+  ctx.fillStyle = 'yellow';
+  ctx.font = '12px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('★', x+w/2, y-4);
+
+  // eyes
+  ctx.fillStyle = 'white';
+  ctx.fillRect(x+w/2-9, y+8, 6, 5); ctx.fillRect(x+w/2+3, y+8, 6, 5);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(x+w/2-7, y+9, 3, 3); ctx.fillRect(x+w/2+5, y+9, 3, 3);
+
+  // HP bar for boss
+  if (isBoss && maxHp) {
+    ctx.fillStyle = '#500';
+    ctx.fillRect(x, y-30, w, 8);
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(x, y-30, w*(hp/maxHp), 8);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y-30, w, 8);
+    ctx.fillStyle = 'white';
+    ctx.font = '8px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('KEEMSTAR', x+w/2, y-22);
+  }
+  ctx.restore();
+}
+
+function drawBurger(x, y) {
+  ctx.save();
+  // bun top
+  ctx.fillStyle = '#c8832c';
+  ctx.beginPath(); ctx.ellipse(x+16, y+4, 16, 8, 0, 0, Math.PI*2); ctx.fill();
+  // sesame
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x+10, y+1, 3, 2); ctx.fillRect(x+18, y+0, 3, 2); ctx.fillRect(x+15, y+3, 3, 2);
+  // patty
+  ctx.fillStyle = '#5a2500';
+  ctx.fillRect(x+4, y+9, 24, 6);
+  // cheese
+  ctx.fillStyle = '#f5c842';
+  ctx.fillRect(x+2, y+13, 28, 4);
+  // bun bottom
+  ctx.fillStyle = '#c8832c';
+  ctx.beginPath(); ctx.ellipse(x+16, y+19, 16, 6, 0, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawSalad(x, y) {
+  ctx.save();
+  // bowl
+  ctx.fillStyle = '#8B6914';
+  ctx.beginPath(); ctx.ellipse(x+16, y+22, 18, 8, 0, 0, Math.PI*2); ctx.fill();
+  // greens
+  ctx.fillStyle = '#2d8a00';
+  ctx.beginPath(); ctx.ellipse(x+16, y+14, 14, 10, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#3fa800';
+  ctx.beginPath(); ctx.ellipse(x+10, y+12, 8, 7, -0.3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x+22, y+12, 8, 7, 0.3, 0, Math.PI*2); ctx.fill();
+  // red tomato
+  ctx.fillStyle = '#cc2200';
+  ctx.beginPath(); ctx.arc(x+16, y+15, 5, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawDumbbell(x, y) {
+  ctx.save();
+  ctx.fillStyle = '#555';
+  ctx.fillRect(x+10, y+12, 12, 8);
+  ctx.fillStyle = '#333';
+  ctx.fillRect(x+2, y+8, 10, 16);
+  ctx.fillRect(x+20, y+8, 10, 16);
+  ctx.fillStyle = '#777';
+  ctx.fillRect(x+4, y+10, 6, 12);
+  ctx.fillRect(x+22, y+10, 6, 12);
+  ctx.restore();
+}
+
+// ---- Particles ----
+function spawnParticles(x, y, color, count=10) {
+  for (let i=0; i<count; i++) {
+    game.particles.push({
+      x, y,
+      vx: (Math.random()-0.5)*6,
+      vy: -(Math.random()*5+1),
+      life: 40 + Math.random()*20,
+      color,
+      size: 4+Math.random()*6,
+    });
+  }
+}
+
+function spawnText(x, y, text, color='#ffff00') {
+  game.particles.push({ text, x, y, vy: -1.5, life: 55, color, size: 18 });
+}
+
+// ---- Spawning objects ----
+function spawnObject() {
+  const types = ['burger','burger','salad','dumbbell','keem'];
+  // more keemstars as score rises
+  if (game.score > 300) types.push('keem','keem');
+  const t = types[Math.floor(Math.random()*types.length)];
+  let obj = { type: t, x: W+10, w: 36, h: 36, alive: true };
+  if (t === 'burger') {
+    obj.y = GROUND - 60 + Math.random()*30;
+    obj.vy = -2 - Math.random()*2;
+    obj.vx = 0;
+    obj.bounced = false;
+  } else if (t === 'salad') {
+    obj.y = GROUND - 38;
+    obj.vy = 0; obj.vx = 0;
+  } else if (t === 'dumbbell') {
+    obj.y = GROUND - 36;
+    obj.vy = 0; obj.vx = 0;
+  } else if (t === 'keem') {
+    obj.y = GROUND - 68;
+    obj.vy = 0;
+    obj.vx = -(game.speed + 1);
+    obj.hp = 1;
+    obj.maxHp = 1;
+    obj.isBoss = false;
+    obj.attackTimer = 60 + Math.random()*60;
+  }
+  obj.vx = obj.vx || -(game.speed);
+  game.objects.push(obj);
+}
+
+function spawnBoss() {
+  game.bossActive = true;
+  game.boss = {
+    type: 'keem', x: W+10, y: GROUND-110, w: 60, h: 80,
+    hp: 20, maxHp: 20, isBoss: true, alive: true,
+    vx: -1.5, vy: 0, jumpTimer: 80, phase: 0,
+  };
+  spawnText(W/2-100, H/2-50, '⚠ KEEMSTAR BOSS! ⚠', '#ff0000');
+}
+
+// ---- AABB collision ----
+function overlaps(ax, ay, aw, ah, bx, by, bw, bh) {
+  return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by;
+}
+
+// ---- Main loop ----
+function loop() {
+  if (!game.running) return;
+  game.frame++;
+  update();
+  render();
+  anim = requestAnimationFrame(loop);
+}
+
+function update() {
+  const g = game;
+  g.score += 0.05;
+  g.speed = 3.5 + g.score * 0.004;
+  if (g.shake > 0) g.shake--;
+
+  // spawn
+  g.spawnTimer++;
+  g.spawnInterval = Math.max(40, 90 - g.score * 0.05);
+  if (g.spawnTimer >= g.spawnInterval) {
+    g.spawnTimer = 0;
+    spawnObject();
+  }
+
+  // boss trigger every 500 score
+  if (!g.bossActive && Math.floor(g.score) % 500 === 0 && Math.floor(g.score) > 0 && g.bossTimer !== Math.floor(g.score)) {
+    g.bossTimer = Math.floor(g.score);
+    spawnBoss();
+  }
+
+  // wings physics
+  wings.vy += 0.7;
+  wings.y += wings.vy;
+  if (wings.y >= GROUND) { wings.y = GROUND; wings.vy = 0; wings.jumping = false; }
+  if (wings.slamCooldown > 0) wings.slamCooldown--;
+  if (wings.invincible > 0) wings.invincible--;
+
+  // slam lands
+  if (wings.slamming && wings.y >= GROUND) {
+    wings.slamming = false;
+    g.shake = 20;
+    spawnParticles(wings.x+27, GROUND, '#ff6600', 18);
+    spawnText(wings.x, GROUND-60, 'BODY SLAM!', '#ff4400');
+    // slam AoE
+    [...g.objects, g.boss].filter(Boolean).forEach(obj => {
+      if (!obj.alive) return;
+      if (obj.type === 'keem' && Math.abs(obj.x - wings.x) < 120) {
+        obj.hp--;
+        if (obj.hp <= 0) {
+          obj.alive = false;
+          g.slams++;
+          g.score += obj.isBoss ? 200 : 30;
+          spawnParticles(obj.x+obj.w/2, obj.y+obj.h/2, '#0000ff', 15);
+          spawnText(obj.x, obj.y-20, obj.isBoss ? '+200 BANNED!' : '+30 SLAMMED!', '#00ffff');
+          if (obj.isBoss) { g.bossActive = false; g.boss = null; }
+        } else {
+          spawnParticles(obj.x+obj.w/2, obj.y+obj.h/2, '#ff8800', 8);
+        }
+      }
+    });
+  }
+
+  // update objects
+  g.objects = g.objects.filter(o => o.alive && o.x > -80);
+  g.objects.forEach(obj => {
+    obj.x += obj.vx !== undefined ? obj.vx : -g.speed;
+    if (obj.type === 'burger') {
+      obj.vy += 0.4;
+      obj.y += obj.vy;
+      if (obj.y >= GROUND - 28) { obj.y = GROUND - 28; if (!obj.bounced) { obj.vy = -3; obj.bounced = true; } else { obj.vy = 0; } }
+    }
+    // check collision with wings
+    if (wings.invincible === 0 && overlaps(wings.x+8, wings.y, wings.w-16, wings.h, obj.x, obj.y, obj.w, obj.h)) {
+      if (obj.type === 'burger') {
+        obj.alive = false;
+        wings.rage = Math.min(100, wings.rage + 35);
+        g.score += 10;
+        spawnParticles(obj.x+18, obj.y+12, '#ff8800', 8);
+        spawnText(obj.x, obj.y-16, '+10 RAGE!', '#ff8800');
+      } else if (obj.type === 'salad') {
+        obj.alive = false;
+        g.hp--;
+        wings.invincible = 80;
+        spawnParticles(obj.x+18, obj.y+12, '#00ff00', 10);
+        spawnText(obj.x, obj.y-16, 'SALAD! -1 HP', '#00ff00');
+        updateHP();
+        if (g.hp <= 0) endGame();
+      } else if (obj.type === 'dumbbell') {
+        obj.alive = false;
+        g.hp--;
+        wings.invincible = 80;
+        spawnParticles(obj.x+16, obj.y+16, '#999', 10);
+        spawnText(obj.x, obj.y-16, 'WORKOUT! -1 HP', '#aaa');
+        updateHP();
+        if (g.hp <= 0) endGame();
+      } else if (obj.type === 'keem' && !wings.slamming) {
+        obj.hp--;
+        wings.invincible = 80;
+        g.hp--;
+        spawnParticles(wings.x+27, wings.y+36, '#0000cc', 12);
+        spawnText(wings.x, wings.y-30, 'KEEMSTAR! -1 HP', '#4444ff');
+        updateHP();
+        if (g.hp <= 0) endGame();
+        if (obj.hp <= 0) { obj.alive = false; }
+      }
+    }
+  });
+
+  // boss update
+  if (g.boss && g.boss.alive) {
+    let b = g.boss;
+    b.x += b.vx;
+    if (b.x < W*0.55) b.vx = Math.abs(b.vx);
+    if (b.x > W-80) b.vx = -Math.abs(b.vx);
+    b.jumpTimer--;
+    if (b.jumpTimer <= 0) { b.jumpTimer = 100; b.vy = -12; }
+    b.vy += 0.6; b.y += b.vy;
+    if (b.y >= GROUND-110) { b.y = GROUND-110; b.vy = 0; }
+    // boss attack
+    if (wings.invincible === 0 && overlaps(wings.x+8, wings.y, wings.w-16, wings.h, b.x, b.y, b.w, b.h)) {
+      wings.invincible = 100;
+      g.hp--;
+      spawnText(wings.x, wings.y-40, 'BOSS HIT! -1 HP', '#ff0000');
+      updateHP();
+      if (g.hp <= 0) endGame();
+    }
+  }
+
+  // rage decay
+  if (wings.rage > 0) wings.rage -= 0.08;
+
+  // particles
+  g.particles = g.particles.filter(p => p.life > 0);
+  g.particles.forEach(p => { p.x += p.vx||0; p.y += p.vy; p.life--; });
+
+  updateUI();
+}
+
+function updateHP() {
+  const hearts = ['', '❤️', '❤️❤️', '❤️❤️❤️'];
+  document.getElementById('hpDisplay').textContent = hearts[Math.max(0,game.hp)] || '💀';
+}
+
+function updateUI() {
+  document.getElementById('scoreDisplay').textContent = Math.floor(game.score);
+  document.getElementById('slamDisplay').textContent = game.slams;
+}
+
+// ---- Render ----
+function render() {
+  const g = game;
+  ctx.save();
+  if (g.shake > 0) { ctx.translate((Math.random()-0.5)*g.shake*0.8, (Math.random()-0.5)*g.shake*0.5); }
+
+  // sky gradient
+  const sky = ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,'#5bb8e8'); sky.addColorStop(1,'#b0e0f0');
+  ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+
+  // clouds
+  drawCloud(100 - (g.frame*0.3)%W, 40, 70);
+  drawCloud(340 - (g.frame*0.2)%W + W/2, 65, 50);
+  drawCloud(600 - (g.frame*0.4)%W, 30, 80);
+
+  // ground
+  ctx.fillStyle = '#6aaa3a';
+  ctx.fillRect(0, GROUND+10, W, H-GROUND-10);
+  // ground line
+  ctx.fillStyle = '#4a8a1a';
+  ctx.fillRect(0, GROUND+10, W, 8);
+
+  // track marks
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 2;
+  for (let i=0; i<5; i++) {
+    const lx = (W - ((g.frame * g.speed * 0.8) % (W/4)) + i*(W/4)) % W;
+    ctx.beginPath(); ctx.moveTo(lx, GROUND+12); ctx.lineTo(lx-30, GROUND+16); ctx.stroke();
+  }
+
+  // sign
+  const signX = (W*1.5 - (g.frame * g.speed * 0.5) % (W*3));
+  if (signX > -100 && signX < W+10) {
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(signX+28, GROUND-60, 8, 60);
+    ctx.fillStyle = '#ffdd44';
+    ctx.fillRect(signX, GROUND-95, 64, 34);
+    ctx.fillStyle = '#000';
+    ctx.font = 'bold 8px Arial'; ctx.textAlign = 'center';
+    ctx.fillText('FAT CAMP', signX+32, GROUND-80);
+    ctx.fillText('AHEAD →', signX+32, GROUND-68);
+  }
+
+  // objects
+  g.objects.forEach(obj => {
+    if (!obj.alive) return;
+    if (obj.type === 'burger') drawBurger(obj.x, obj.y);
+    else if (obj.type === 'salad') drawSalad(obj.x, obj.y);
+    else if (obj.type === 'dumbbell') drawDumbbell(obj.x, obj.y);
+    else if (obj.type === 'keem') drawKeemstar(obj);
+  });
+
+  // boss
+  if (g.boss && g.boss.alive) drawKeemstar(g.boss);
+
+  // rage bar
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(10, 10, 152, 20);
+  const rageGrad = ctx.createLinearGradient(12, 0, 12+wings.rage*1.48, 0);
+  rageGrad.addColorStop(0,'#ff4400'); rageGrad.addColorStop(1,'#ffaa00');
+  ctx.fillStyle = rageGrad;
+  ctx.fillRect(12, 12, wings.rage * 1.48, 16);
+  ctx.strokeStyle = '#ff6600'; ctx.lineWidth = 2;
+  ctx.strokeRect(10, 10, 152, 20);
+  ctx.fillStyle = 'white'; ctx.font = 'bold 11px Impact'; ctx.textAlign = 'center';
+  ctx.fillText(`RAGE ${Math.floor(wings.rage)}%`, 86, 24);
+
+  // wings
+  drawWings(wings.x, wings.y - wings.h, wings.slamming, wings.invincible, wings.rage >= 100);
+
+  // particles
+  g.particles.forEach(p => {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.life / 60);
+    if (p.text) {
+      ctx.fillStyle = p.color;
+      ctx.font = `bold ${p.size}px Impact`;
+      ctx.textAlign = 'center';
+      ctx.fillText(p.text, p.x, p.y);
+    } else {
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size/2, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  });
+
+  ctx.restore();
+}
+
+function drawCloud(x, y, size) {
+  ctx.save();
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.beginPath(); ctx.arc(x, y, size*0.4, 0, Math.PI*2);
+  ctx.arc(x+size*0.3, y-size*0.1, size*0.3, 0, Math.PI*2);
+  ctx.arc(x+size*0.6, y, size*0.35, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function endGame() {
+  game.running = false;
+  document.getElementById('finalScore').textContent = Math.floor(game.score);
+  document.getElementById('finalSlams').textContent = game.slams;
+  const titles = ['BANNED FROM FAT CAMP','KICKED OUT BY KEEMSTAR','TOO MUCH CHAOS'];
+  const msgs = [
+    'Wings has been removed from the premises.',
+    'Keemstar has spoken. No more chaos.',
+    '"You\'re on non-paid suspension." — Keemstar',
+  ];
+  const i = Math.floor(Math.random()*3);
+  document.getElementById('goTitle').textContent = titles[i];
+  document.getElementById('goMsg').textContent = msgs[i];
+  document.getElementById('gameover').style.display = 'block';
+}
+
+// ---- Controls ----
+const keys = {};
+document.addEventListener('keydown', e => {
+  if (keys[e.code]) return;
+  keys[e.code] = true;
+  if (!game || !game.running) return;
+  if ((e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') && !wings.jumping) {
+    wings.vy = -14;
+    wings.jumping = true;
+    wings.slamming = false;
+  }
+  if ((e.code === 'ArrowDown' || e.code === 'KeyS') && wings.jumping && !wings.slamming && wings.slamCooldown === 0) {
+    wings.slamming = true;
+    wings.vy = 16;
+    wings.slamCooldown = 50;
+    wings.rage = Math.max(0, wings.rage - 40);
+    spawnText(wings.x+20, wings.y-20, 'SLAM!', '#ff4400');
+  }
+});
+document.addEventListener('keyup', e => { keys[e.code] = false; });
+
+// mobile touch
+let touchStartY = 0;
+canvas.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; e.preventDefault(); }, {passive:false});
+canvas.addEventListener('touchend', e => {
+  if (!game || !game.running) return;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (dy < -20 && !wings.jumping) { wings.vy = -14; wings.jumping = true; wings.slamming = false; }
+  else if (dy > 20 && wings.jumping && !wings.slamming && wings.slamCooldown === 0) {
+    wings.slamming = true; wings.vy = 16; wings.slamCooldown = 50; wings.rage = Math.max(0, wings.rage - 40);
+  } else if (!wings.jumping) { wings.vy = -14; wings.jumping = true; }
+}, {passive:false});
+
+startGame();
+</script>
+</body>
+</html>
