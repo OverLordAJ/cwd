@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NewsWatch — Global News, USA First</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0d0f14;--surface:#161922;--surface2:#1e2330;--border:#2a2f3d;
+  --text:#e8eaf0;--muted:#7a8099;--accent:#e63946;--accent2:#457b9d;
+  --gold:#f4a261;--green:#2a9d8f;--usa:#b22234;--usa2:#3c3b6e;
+  --card:#1a1d28;--hover:#222638;
+}
+.light{
+  --bg:#f0f2f7;--surface:#ffffff;--surface2:#e8ebf4;--border:#d0d5e8;
+  --text:#1a1d2e;--muted:#5a6080;--card:#ffffff;--hover:#f5f7ff;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;transition:background 0.3s,color 0.3s;}
+
+/* TOP BAR */
+.topbar{background:#000;padding:6px 20px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#888;border-bottom:1px solid #1a1a1a;}
+.topbar-left{display:flex;gap:16px;}
+.topbar span{display:flex;align-items:center;gap:4px;}
+.live-dot{width:6px;height:6px;background:#e63946;border-radius:50%;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.topbar-right{display:flex;gap:12px;align-items:center;}
+.theme-btn{background:none;border:1px solid #333;color:#888;padding:2px 10px;border-radius:3px;cursor:pointer;font-size:10px;transition:all 0.2s;}
+.theme-btn:hover{border-color:#555;color:#ccc;}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
+.logo{font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--text);}
+.logo span{color:var(--accent);}
+.logo small{font-size:10px;font-weight:400;color:var(--muted);display:block;letter-spacing:2px;text-transform:uppercase;margin-top:-4px;}
+nav{display:flex;gap:4px;flex-wrap:wrap;}
+nav a{padding:7px 12px;border-radius:6px;color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;border:1px solid transparent;}
+nav a:hover,nav a.active{background:var(--surface2);color:var(--text);border-color:var(--border);}
+nav a.active{color:var(--accent);}
+/* REGION TABS */
+.region-bar{background:var(--surface2);border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto;white-space:nowrap;}
+.region-bar-inner{max-width:1400px;margin:0 auto;display:flex;gap:2px;padding:6px 0;}
+.region-btn{padding:5px 13px;border-radius:5px;border:1px solid transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;background:none;transition:all 0.2s;white-space:nowrap;}
+.region-btn:hover{background:var(--hover);color:var(--text);}
+.region-btn.active{background:var(--accent2);color:white;border-color:var(--accent2);}
+/* SOURCE PILLS */
+.source-grid{max-width:1400px;margin:0 auto 28px;padding:0 20px;display:flex;flex-wrap:wrap;gap:8px;}
+.source-pill{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.source-pill:hover{border-color:var(--accent);color:var(--accent);}
+.source-pill.active{background:var(--accent);border-color:var(--accent);color:white;}
+.refresh-btn{background:var(--accent);color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;transition:opacity 0.2s;}
+.refresh-btn:hover{opacity:0.85;}
+.refresh-btn.spinning svg{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* BREAKING TICKER */
+.ticker-wrap{background:var(--accent);overflow:hidden;height:34px;display:flex;align-items:center;}
+.ticker-label{background:#8b0000;color:white;padding:0 14px;font-size:11px;font-weight:800;letter-spacing:1.5px;white-space:nowrap;height:100%;display:flex;align-items:center;flex-shrink:0;}
+.ticker-track{display:flex;align-items:center;animation:ticker 60s linear infinite;white-space:nowrap;}
+.ticker-track:hover{animation-play-state:paused;}
+.ticker-item{color:white;font-size:12px;font-weight:500;padding:0 40px;}
+.ticker-sep{color:rgba(255,255,255,0.5);font-size:10px;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* USA BANNER */
+.usa-banner{background:linear-gradient(135deg,var(--usa2) 0%,var(--usa) 100%);padding:8px 20px;text-align:center;font-size:12px;font-weight:600;letter-spacing:1px;color:rgba(255,255,255,0.9);}
+.usa-banner span{color:#fff;}
+
+/* MAIN LAYOUT */
+.main-wrap{max-width:1400px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr 320px;gap:24px;}
+@media(max-width:1000px){.main-wrap{grid-template-columns:1fr;}}
+
+/* SECTION LABELS */
+.section-label{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.section-label h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
+.section-label .badge{background:var(--accent);color:white;font-size:9px;font-weight:800;padding:2px 7px;border-radius:3px;letter-spacing:1px;}
+.section-label .badge.world{background:var(--accent2);}
+.section-label .badge.politics{background:#6a0dad;}
+.section-label .badge.business{background:var(--green);}
+.section-label .badge.tech{background:#f4a261;}
+.section-line{flex:1;height:1px;background:var(--border);}
+
+/* HERO CARD */
+.hero-card{position:relative;border-radius:12px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin-bottom:20px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;display:block;}
+.hero-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+.hero-img{width:100%;height:280px;object-fit:cover;display:block;background:var(--surface2);}
+.hero-img-placeholder{width:100%;height:280px;background:linear-gradient(135deg,var(--usa2),var(--usa));display:flex;align-items:center;justify-content:center;font-size:48px;}
+.hero-content{padding:20px;}
+.hero-source{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:8px;}
+.hero-title{font-size:22px;font-weight:800;line-height:1.3;color:var(--text);margin-bottom:10px;}
+.hero-desc{font-size:13px;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.hero-meta{margin-top:12px;display:flex;gap:12px;font-size:11px;color:var(--muted);}
+
+/* NEWS GRID */
+.news-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px;}
+@media(max-width:700px){.news-grid{grid-template-columns:1fr;}}
+.news-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.2s;text-decoration:none;display:block;}
+.news-card:hover{background:var(--hover);border-color:var(--accent);transform:translateY(-1px);}
+.news-card-img{width:100%;height:140px;object-fit:cover;background:var(--surface2);display:block;}
+.news-card-img-ph{width:100%;height:140px;background:linear-gradient(135deg,var(--surface2),var(--border));display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--muted);}
+.news-card-body{padding:14px;}
+.news-card-source{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:6px;}
+.news-card-title{font-size:13px;font-weight:700;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.news-card-time{font-size:10px;color:var(--muted);margin-top:8px;}
+
+/* SIDEBAR */
+.sidebar{}
+.sidebar-section{margin-bottom:28px;}
+.sidebar-list{}
+.sidebar-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.sidebar-item:last-child{border-bottom:none;}
+.sidebar-item:hover .sidebar-title{color:var(--accent);}
+.sidebar-thumb{width:72px;height:56px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--surface2);}
+.sidebar-thumb-ph{width:72px;height:56px;border-radius:6px;flex-shrink:0;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted);}
+.sidebar-info{}
+.sidebar-source{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);margin-bottom:4px;}
+.sidebar-title{font-size:12px;font-weight:600;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;transition:color 0.2s;}
+.sidebar-time{font-size:10px;color:var(--muted);margin-top:4px;}
+
+/* WORLD SECTION */
+.world-section{max-width:1400px;margin:0 auto 32px;padding:0 20px;}
+.world-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+@media(max-width:900px){.world-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.world-grid{grid-template-columns:1fr;}}
+
+/* CATEGORY TABS */
+.cat-section{max-width:1400px;margin:0 auto 32px;padding:0 20px;}
+.cat-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.cat-tab{padding:7px 16px;border-radius:20px;border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.cat-tab:hover{border-color:var(--accent);color:var(--accent);}
+.cat-tab.active{background:var(--accent);color:white;border-color:var(--accent);}
+.cat-content{display:none;}
+.cat-content.active{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:800px){.cat-content.active{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.cat-content.active{grid-template-columns:1fr;}}
+
+/* LOADING / ERROR */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--muted);}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:14px;}
+.error-msg{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:20px;text-align:center;color:var(--muted);font-size:13px;}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:24px 20px;margin-top:20px;}
+.footer-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;}
+.footer-copy{font-size:12px;color:var(--muted);}
+.footer-sources{font-size:11px;color:var(--muted);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span><span class="live-dot"></span> LIVE</span>
+    <span id="topDate"></span>
+    <span id="topTime"></span>
+    <span id="lastUpdated">Updating...</span>
+  </div>
+  <div class="topbar-right">
+    <button class="theme-btn" onclick="toggleTheme()">☀ Light</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      News<span>Watch</span>
+      <small>Global Coverage · USA First</small>
+    </div>
+    <nav>
+      <a class="active" onclick="showSection('us')">🇺🇸 USA</a>
+      <a onclick="showSection('world')">🌍 World</a>
+      <a onclick="showSection('politics')">🏛 Politics</a>
+      <a onclick="showSection('business')">📈 Business</a>
+      <a onclick="showSection('tech')">💻 Tech</a>
+      <a onclick="showSection('ai')">🤖 AI</a>
+      <a onclick="showSection('gaming')">🎮 Gaming</a>
+      <a onclick="showSection('science')">🔬 Science</a>
+      <a onclick="showSection('sports')">🏆 Sports</a>
+      <a onclick="showSection('regional')">🗺 Regional</a>
+    </nav>
+    <button class="refresh-btn" onclick="refreshAll()" id="refreshBtn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      Refresh
+    </button>
+  </div>
+</header>
+
+<!-- BREAKING TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-label">⚡ BREAKING</div>
+  <div style="overflow:hidden;flex:1;">
+    <div class="ticker-track" id="tickerTrack">
+      <span class="ticker-item">Loading latest headlines...</span>
+    </div>
+  </div>
+</div>
+
+<!-- REGION BAR -->
+<div class="region-bar" id="regionBar" style="display:none;">
+  <div class="region-bar-inner">
+    <button class="region-btn active" onclick="loadRegion('europe')">🇪🇺 Europe</button>
+    <button class="region-btn" onclick="loadRegion('mideast')">🌙 Middle East</button>
+    <button class="region-btn" onclick="loadRegion('asia')">🌏 Asia</button>
+    <button class="region-btn" onclick="loadRegion('africa')">🌍 Africa</button>
+    <button class="region-btn" onclick="loadRegion('latam')">🌎 Latin America</button>
+    <button class="region-btn" onclick="loadRegion('oceania')">🦘 Oceania</button>
+  </div>
+</div>
+
+<!-- USA BANNER -->
+<div class="usa-banner">🇺🇸 <span>UNITED STATES</span> — TOP STORIES</div>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent">
+
+<!-- US SECTION -->
+<div id="section-us">
+  <div class="main-wrap">
+    <div>
+      <div class="section-label">
+        <span class="badge">🇺🇸 USA FEATURED</span>
+        <div class="section-line"></div>
+      </div>
+      <div id="heroCard"><div class="loading"><div class="spinner"></div>Loading top story...</div></div>
+
+      <div class="section-label">
+        <span class="badge">USA NEWS</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="news-grid" id="usGrid"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="section-label">
+          <span class="badge world">🌍 WORLD</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="sidebar-list" id="worldSidebar"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORLD SECTION -->
+<div id="section-world" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge world">🌍 WORLD NEWS</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="worldGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- POLITICS SECTION -->
+<div id="section-politics" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge politics">🏛 POLITICS</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="politicsGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- BUSINESS SECTION -->
+<div id="section-business" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge business">📈 BUSINESS</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="businessGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- TECH SECTION -->
+<div id="section-tech" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge tech">💻 TECHNOLOGY</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="techGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- SCIENCE SECTION -->
+<div id="section-science" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge" style="background:#2a9d8f;">🔬 SCIENCE &amp; HEALTH</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="scienceGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- SPORTS SECTION -->
+<div id="section-sports" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge" style="background:#e76f51;">🏆 SPORTS</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="sportsGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- AI SECTION -->
+<div id="section-ai" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge" style="background:#6c3483;">🤖 ARTIFICIAL INTELLIGENCE</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="aiGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- GAMING SECTION -->
+<div id="section-gaming" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge" style="background:#1a6b3c;">🎮 GAMING NEWS</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="gamingGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- REGIONAL SECTION -->
+<div id="section-regional" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge" style="background:#6d6875;">🗺 REGIONAL NEWS</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="world-grid" id="regionalGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- NEW ARTICLES TOAST -->
+<div id="newToast" style="display:none;position:fixed;bottom:24px;right:24px;background:var(--accent);color:white;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4);z-index:999;transition:all 0.3s;" onclick="applyNewArticles()">
+  ▲ <span id="toastMsg">New articles available</span>
+</div>
+
+</div><!-- end mainContent -->
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-copy">© 2026 NewsWatch — Live aggregator from 40+ sources: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · Sky · Euronews · CNBC · Bloomberg · TechCrunch · The Verge · ESPN & more.</div>
+    <div class="footer-sources">Live 24/7 · checks every 90s · 10 sections · 6 world regions · localStorage cache for instant loads</div>
+  </div>
+</footer>
+
+<script>
+// ── PROXY CHAIN ───────────────────────────────────────────────────────────────
+const PROXIES = [
+  url => `https://api.rss2json.com/v1/api.json?count=15&rss_url=${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://thingproxy.freeboard.io/fetch/${url}`,
+];
+
+function parseRSSXML(xml) {
+  try {
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    const isAtom = !!doc.querySelector('feed');
+    const itemEls = doc.querySelectorAll(isAtom ? 'entry' : 'item');
+    return Array.from(itemEls).map(el => {
+      const txt = tag => el.querySelector(tag)?.textContent?.trim() || '';
+      const attr = (tag, a) => el.querySelector(tag)?.getAttribute(a) || '';
+      const link = txt('link') || attr('link','href') || '';
+      const desc = txt('description') || txt('summary') || txt('content');
+      const content = txt('content\\:encoded') || txt('content') || desc;
+      let thumbnail = attr('media\\:thumbnail','url') || attr('media\\:content','url') || attr('enclosure','url') || '';
+      if (!thumbnail) { const m = content.match(/<img[^>]+src=["']([^"']+)["']/); if (m) thumbnail = m[1]; }
+      const pubDate = txt('pubDate') || txt('published') || txt('updated') || txt('dc\\:date') || '';
+      return { title: txt('title'), link, description: desc, content, pubDate, author: txt('author') || txt('dc\\:creator') || '', thumbnail };
+    }).filter(i => i.title && i.link);
+  } catch(e) { return []; }
+}
+
+// ── FEEDS ─────────────────────────────────────────────────────────────────────
+const FEEDS = {
+  // USA
+  npr:'https://feeds.npr.org/1001/rss.xml',
+  abc:'https://feeds.abcnews.com/abcnews/topstories',
+  cbs:'https://www.cbsnews.com/latest/rss/main',
+  nbc:'https://feeds.nbcnews.com/nbcnews/public/news',
+  cnn:'https://rss.cnn.com/rss/cnn_topstories.rss',
+  fox:'https://moxie.foxnews.com/google-publisher/latest.xml',
+  nyt:'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',
+  wapo:'https://feeds.washingtonpost.com/rss/national',
+  ap:'https://feeds.apnews.com/rss/apf-topnews',
+  thehill:'https://thehill.com/feed/',
+  axios:'https://api.axios.com/feed/',
+  vox:'https://www.vox.com/rss/index.xml',
+  atlantic:'https://feeds.theatlantic.com/TheAtlantic/all',
+  // Politics
+  npr_pol:'https://feeds.npr.org/1014/rss.xml',
+  politico:'https://www.politico.com/rss/politicopicks.xml',
+  thehill_pol:'https://thehill.com/homenews/feed/',
+  realclear:'https://www.realclearpolitics.com/index.xml',
+  guardian_us:'https://www.theguardian.com/us-news/rss',
+  // Business
+  npr_biz:'https://feeds.npr.org/1006/rss.xml',
+  cnbc:'https://www.cnbc.com/id/100003114/device/rss/rss.html',
+  marketwatch:'https://feeds.marketwatch.com/marketwatch/topstories/',
+  fortune:'https://fortune.com/feed/',
+  wsj:'https://feeds.a.dj.com/rss/RSSMarketsMain.xml',
+  economist:'https://www.economist.com/the-world-this-week/rss.xml',
+  // Tech
+  npr_tech:'https://feeds.npr.org/1019/rss.xml',
+  techcrunch:'https://techcrunch.com/feed/',
+  theverge:'https://www.theverge.com/rss/index.xml',
+  wired:'https://www.wired.com/feed/rss',
+  ars:'https://feeds.arstechnica.com/arstechnica/index',
+  engadget:'https://www.engadget.com/rss.xml',
+  // AI
+  ai_techcrunch:'https://techcrunch.com/category/artificial-intelligence/feed/',
+  ai_verge:'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml',
+  ai_mit:'https://www.technologyreview.com/feed/',
+  ai_venturebeat:'https://venturebeat.com/ai/feed/',
+  ai_wired:'https://www.wired.com/feed/tag/artificial-intelligence/rss',
+  ai_decoder:'https://the-decoder.com/feed/',
+  ai_ars:'https://feeds.arstechnica.com/arstechnica/index',
+  ai_zdnet:'https://www.zdnet.com/topic/artificial-intelligence/rss.xml',
+  // Gaming
+  ign:'https://feeds.ign.com/ign/all',
+  kotaku:'https://kotaku.com/rss',
+  polygon:'https://www.polygon.com/rss/index.xml',
+  pcgamer:'https://www.pcgamer.com/rss/',
+  eurogamer:'https://www.eurogamer.net/feed',
+  rps:'https://www.rockpapershotgun.com/feed/',
+  destructoid:'https://www.destructoid.com/feed/',
+  gamespot:'https://www.gamespot.com/feeds/mashup/',
+  // Science
+  npr_sci:'https://feeds.npr.org/1007/rss.xml',
+  sciamer:'https://www.scientificamerican.com/platform/syndication/rss/',
+  newscientist:'https://www.newscientist.com/feed/home/',
+  livescience:'https://www.livescience.com/feeds/all',
+  // Sports
+  espn:'https://www.espn.com/espn/rss/news',
+  cbssports:'https://www.cbssports.com/rss/headlines/',
+  nbcsports:'https://www.nbcsports.com/rss/news',
+  // World
+  bbc_world:'https://feeds.bbci.co.uk/news/world/rss.xml',
+  reuters:'https://feeds.reuters.com/reuters/worldNews',
+  guardian:'https://www.theguardian.com/world/rss',
+  aljazeera:'https://www.aljazeera.com/xml/rss/all.xml',
+  dw:'https://rss.dw.com/rdf/rss-en-all',
+  france24:'https://www.france24.com/en/rss',
+  sky:'https://feeds.skynews.com/feeds/rss/world.xml',
+  time:'https://time.com/feed/',
+  // Regional
+  bbc_eu:'https://feeds.bbci.co.uk/news/world/europe/rss.xml',
+  guardian_eu:'https://www.theguardian.com/world/europe-news/rss',
+  dw_eu:'https://rss.dw.com/rdf/rss-en-eu',
+  france24_eu:'https://www.france24.com/en/europe/rss',
+  bbc_me:'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml',
+  guardian_me:'https://www.theguardian.com/world/middleeast/rss',
+  bbc_asia:'https://feeds.bbci.co.uk/news/world/asia/rss.xml',
+  guardian_as:'https://www.theguardian.com/world/asia/rss',
+  dw_asia:'https://rss.dw.com/rdf/rss-en-as',
+  bbc_af:'https://feeds.bbci.co.uk/news/world/africa/rss.xml',
+  guardian_af:'https://www.theguardian.com/world/africa/rss',
+  africanews:'https://www.africanews.com/feed/',
+  bbc_la:'https://feeds.bbci.co.uk/news/world/latin_america/rss.xml',
+  guardian_la:'https://www.theguardian.com/world/americas/rss',
+  abc_au:'https://www.abc.net.au/news/feed/51120/rss.xml',
+  rnz:'https://www.rnz.co.nz/rss/news.xml',
+};
+
+const SECTION_FEEDS = {
+  us:       ['npr','abc','cbs','cnn','nbc','ap','thehill','axios','vox','atlantic'],
+  politics: ['npr_pol','politico','thehill_pol','realclear','guardian_us'],
+  business: ['npr_biz','cnbc','marketwatch','fortune','wsj','economist'],
+  tech:     ['npr_tech','techcrunch','theverge','wired','ars','engadget'],
+  ai:       ['ai_techcrunch','ai_verge','ai_mit','ai_venturebeat','ai_wired','ai_decoder','ai_zdnet'],
+  gaming:   ['ign','kotaku','polygon','pcgamer','eurogamer','rps','destructoid','gamespot'],
+  science:  ['npr_sci','sciamer','newscientist','livescience'],
+  sports:   ['espn','cbssports','nbcsports'],
+  world:    ['bbc_world','reuters','guardian','aljazeera','dw','france24','sky','time'],
+  europe:   ['bbc_eu','guardian_eu','dw_eu','france24_eu'],
+  mideast:  ['bbc_me','aljazeera','guardian_me'],
+  asia:     ['bbc_asia','guardian_as','dw_asia'],
+  africa:   ['bbc_af','guardian_af','africanews'],
+  latam:    ['bbc_la','guardian_la'],
+  oceania:  ['abc_au','rnz'],
+};
+
+// ── localStorage CACHE ────────────────────────────────────────────────────────
+const LS_KEY = 'nw_cache_v3';
+const cache = {};
+const CACHE_TTL = 3 * 60 * 1000; // 3 min in-memory
+const LS_TTL   = 15 * 60 * 1000; // 15 min localStorage
+
+function lsLoad() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    const stored = JSON.parse(raw);
+    const now = Date.now();
+    for (const [k,v] of Object.entries(stored)) {
+      if (now - v.ts < LS_TTL) cache[k] = v;
+    }
+  } catch(e) {}
+}
+function lsSave() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(cache)); } catch(e) {}
+}
+
+// ── XML PARSER ────────────────────────────────────────────────────────────────
+function parseRSSXML(xml) {
+  try {
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    if (doc.querySelector('parsererror')) return [];
+    const isAtom = !!doc.querySelector('feed');
+    return Array.from(doc.querySelectorAll(isAtom ? 'entry' : 'item')).map(el => {
+      const txt = tag => el.querySelector(tag)?.textContent?.trim() || '';
+      const attr = (tag, a) => el.querySelector(tag)?.getAttribute(a) || '';
+      const link = txt('link') || attr('link','href');
+      const desc = txt('description') || txt('summary') || txt('content');
+      const content = txt('content\\:encoded') || txt('content') || desc;
+      let thumbnail = attr('media\\:thumbnail','url') || attr('media\\:content','url') || attr('enclosure','url') || '';
+      if (!thumbnail) { const m = content.match(/<img[^>]+src=["']([^"']+)["']/); if(m) thumbnail=m[1]; }
+      return {
+        title: txt('title'), link, description: desc, content, thumbnail,
+        pubDate: txt('pubDate')||txt('published')||txt('updated')||new Date().toISOString(),
+        author: txt('author')||txt('dc\\:creator')||'',
+      };
+    }).filter(i => i.title && i.link);
+  } catch(e) { return []; }
+}
+
+// ── FETCH SINGLE FEED (proxy chain + retry) ───────────────────────────────────
+async function fetchFeed(key) {
+  if (!FEEDS[key]) return [];
+  if (cache[key] && Date.now() - cache[key].ts < CACHE_TTL) return cache[key].items;
+  const feedUrl = FEEDS[key];
+  for (let pi = 0; pi < PROXIES.length; pi++) {
+    try {
+      const res = await fetch(PROXIES[pi](feedUrl), { signal: AbortSignal.timeout(7000) });
+      if (!res.ok) continue;
+      let items = [];
+      if (pi === 0) {
+        const d = await res.json();
+        if (d.status === 'ok' && d.items?.length) items = d.items;
+      } else if (pi === 1) {
+        const d = await res.json();
+        items = parseRSSXML(d.contents || '');
+      } else {
+        items = parseRSSXML(await res.text());
+      }
+      if (items.length) {
+        cache[key] = { items, ts: Date.now() };
+        lsSave();
+        return items;
+      }
+    } catch(e) {}
+  }
+  return cache[key]?.items || []; // return stale if all proxies fail
+}
+
+// ── FETCH MULTIPLE FEEDS IN PARALLEL ─────────────────────────────────────────
+async function fetchMulti(keys, limit = 24) {
+  const results = await Promise.allSettled(keys.map(k => fetchFeed(k)));
+  const all = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+  const seen = new Set();
+  return all
+    .filter(i => { const k = i.title?.slice(0,80); if(seen.has(k)) return false; seen.add(k); return true; })
+    .sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate))
+    .slice(0, limit);
+}
+
+// ── GET CACHED SECTION ITEMS (instant render from cache) ─────────────────────
+function getCachedMulti(keys, limit = 24) {
+  const all = keys.flatMap(k => cache[k]?.items || []);
+  const seen = new Set();
+  return all
+    .filter(i => { const k = i.title?.slice(0,80); if(seen.has(k)) return false; seen.add(k); return true; })
+    .sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate))
+    .slice(0, limit);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr);
+  const m = Math.floor(diff/60000), h = Math.floor(m/60), d = Math.floor(h/24);
+  if (m < 1) return 'Just now';
+  if (m < 60) return `${m}m ago`;
+  if (h < 24) return `${h}h ago`;
+  return `${d}d ago`;
+}
+function getImg(item) {
+  if (item.thumbnail?.startsWith('http')) return item.thumbnail;
+  if (item.enclosure?.link?.startsWith('http')) return item.enclosure.link;
+  const m = (item.content||'').match(/<img[^>]+src="([^"]+)"/);
+  return m ? m[1] : null;
+}
+function stripHtml(h) {
+  return (h||'').replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/&quot;/g,'"').replace(/&#39;/g,"'").trim();
+}
+function srcLabel(item) {
+  const host = (item.link||'').split('/')[2]?.replace('www.','').replace('feeds.','') || '';
+  const MAP = {
+    'npr.org':'NPR','abcnews.go.com':'ABC','cbsnews.com':'CBS','nbcnews.com':'NBC',
+    'cnn.com':'CNN','foxnews.com':'Fox News','nytimes.com':'NY Times',
+    'washingtonpost.com':'WaPo','apnews.com':'AP','thehill.com':'The Hill',
+    'axios.com':'Axios','vox.com':'Vox','theatlantic.com':'The Atlantic',
+    'politico.com':'Politico','cnbc.com':'CNBC','marketwatch.com':'MarketWatch',
+    'fortune.com':'Fortune','wsj.com':'WSJ','economist.com':'Economist',
+    'techcrunch.com':'TechCrunch','theverge.com':'The Verge','wired.com':'Wired',
+    'arstechnica.com':'Ars','engadget.com':'Engadget',
+    'technologyreview.com':'MIT Tech Review','venturebeat.com':'VentureBeat',
+    'the-decoder.com':'The Decoder','zdnet.com':'ZDNet',
+    'ign.com':'IGN','kotaku.com':'Kotaku','polygon.com':'Polygon',
+    'pcgamer.com':'PC Gamer','eurogamer.net':'Eurogamer',
+    'rockpapershotgun.com':'RPS','destructoid.com':'Destructoid','gamespot.com':'GameSpot',
+    'scientificamerican.com':'Sci Am','newscientist.com':'New Scientist','livescience.com':'Live Science',
+    'espn.com':'ESPN','cbssports.com':'CBS Sports','nbcsports.com':'NBC Sports',
+    'bbc.co.uk':'BBC','bbc.com':'BBC','reuters.com':'Reuters',
+    'theguardian.com':'Guardian','aljazeera.com':'Al Jazeera','dw.com':'DW',
+    'france24.com':'France 24','news.sky.com':'Sky','time.com':'TIME',
+    'abc.net.au':'ABC AU','rnz.co.nz':'RNZ','africanews.com':'Africa News',
+  };
+  for (const [d,l] of Object.entries(MAP)) { if(host.includes(d)) return l; }
+  return item.author || host || 'News';
+}
+const PH = {us:'🇺🇸',world:'🌍',politics:'🏛',business:'📈',tech:'💻',ai:'🤖',gaming:'🎮',science:'🔬',sports:'🏆',regional:'🗺',europe:'🇪🇺',mideast:'🌙',asia:'🌏',africa:'🌍',latam:'🌎',oceania:'🦘'};
+
+function cardImg(item, sec, h=140) {
+  const src = getImg(item), em = PH[sec]||'📰';
+  if (src) return `<img class="news-card-img" src="${src}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" style="height:${h}px"><div class="news-card-img-ph" style="height:${h}px;display:none;">${em}</div>`;
+  return `<div class="news-card-img-ph" style="height:${h}px;">${em}</div>`;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderHero(item, sec='us') {
+  const src = getImg(item), em = PH[sec]||'📰';
+  const img = src
+    ? `<img class="hero-img" src="${src}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div class="hero-img-placeholder" style="display:none;">${em}</div>`
+    : `<div class="hero-img-placeholder">${em}</div>`;
+  return `<a class="hero-card" href="${item.link}" target="_blank" rel="noopener">${img}<div class="hero-content"><div class="hero-source">${srcLabel(item)}</div><div class="hero-title">${item.title}</div><div class="hero-desc">${stripHtml(item.description)}</div><div class="hero-meta"><span>${timeAgo(item.pubDate)}</span></div></div></a>`;
+}
+function renderCard(item, sec='us') {
+  return `<a class="news-card" href="${item.link}" target="_blank" rel="noopener">${cardImg(item,sec)}<div class="news-card-body"><div class="news-card-source">${srcLabel(item)}</div><div class="news-card-title">${item.title}</div><div class="news-card-time">${timeAgo(item.pubDate)}</div></div></a>`;
+}
+function renderSidebarItem(item, sec='world') {
+  const src = getImg(item), em = PH[sec]||'📰';
+  const thumb = src
+    ? `<img class="sidebar-thumb" src="${src}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div class="sidebar-thumb-ph" style="display:none;">${em}</div>`
+    : `<div class="sidebar-thumb-ph">${em}</div>`;
+  return `<a class="sidebar-item" href="${item.link}" target="_blank" rel="noopener">${thumb}<div class="sidebar-info"><div class="sidebar-source">${srcLabel(item)}</div><div class="sidebar-title">${item.title}</div><div class="sidebar-time">${timeAgo(item.pubDate)}</div></div></a>`;
+}
+
+// ── SPINNER HTML ──────────────────────────────────────────────────────────────
+const SPIN = '<div class="loading"><div class="spinner"></div></div>';
+
+// ── LIVE UPDATE SYSTEM ────────────────────────────────────────────────────────
+let pendingItems = [];
+let currentSection = 'us';
+
+function showToast(n) {
+  const t = document.getElementById('newToast');
+  document.getElementById('toastMsg').textContent = `${n} new article${n>1?'s':''} — click to load`;
+  t.style.display = 'block';
+  clearTimeout(t._hide);
+  t._hide = setTimeout(() => t.style.display='none', 12000);
+}
+function applyNewArticles() {
+  document.getElementById('newToast').style.display = 'none';
+  if (currentSection === 'us') renderUS(pendingItems);
+  else renderGrid(currentSection, currentSection+'Grid', pendingItems);
+  pendingItems = [];
+}
+
+// ── RENDER HELPERS ────────────────────────────────────────────────────────────
+function renderUS(items) {
+  if (!items.length) return;
+  document.getElementById('heroCard').innerHTML = renderHero(items[0], 'us');
+  document.getElementById('usGrid').innerHTML = items.slice(1,9).map(i=>renderCard(i,'us')).join('');
+  updateTicker(items.slice(0,15));
+}
+function renderGrid(sec, gridId, items) {
+  const el = document.getElementById(gridId);
+  if (!el) return;
+  if (!items.length) { el.innerHTML = '<div class="error-msg">No articles loaded yet — fetching in background…</div>'; return; }
+  el.innerHTML = items.map(i=>renderCard(i,sec)).join('');
+}
+function renderSidebar(items) {
+  const el = document.getElementById('worldSidebar');
+  if (!el || !items.length) return;
+  el.innerHTML = items.slice(0,7).map(i=>renderSidebarItem(i,'world')).join('');
+}
+
+// ── LOAD US (instant from cache, then refresh) ────────────────────────────────
+async function loadUS(silent=false) {
+  const keys = SECTION_FEEDS.us;
+  if (!silent) {
+    const cached = getCachedMulti(keys, 25);
+    if (cached.length) renderUS(cached);
+    else document.getElementById('heroCard').innerHTML = SPIN;
+  }
+  const fresh = await fetchMulti(keys, 25);
+  if (!fresh.length) return;
+  if (!silent) { renderUS(fresh); return; }
+  // Check if there are genuinely new items vs what's displayed
+  const topTitle = document.querySelector('.hero-title')?.textContent;
+  if (fresh[0]?.title !== topTitle) {
+    pendingItems = fresh;
+    showToast(Math.min(fresh.length, 5));
+  }
+}
+
+// ── LOAD SIDEBAR ──────────────────────────────────────────────────────────────
+async function loadWorldSidebar() {
+  const keys = SECTION_FEEDS.world.slice(0,3);
+  const cached = getCachedMulti(keys, 7);
+  if (cached.length) renderSidebar(cached);
+  const fresh = await fetchMulti(keys, 7);
+  renderSidebar(fresh);
+}
+
+// ── LOAD ANY SECTION (instant from cache, silent refresh) ─────────────────────
+async function loadSection(sec, gridId, silent=false) {
+  const keys = SECTION_FEEDS[sec] || [sec];
+  if (!silent) {
+    const cached = getCachedMulti(keys, 24);
+    if (cached.length) { renderGrid(sec, gridId, cached); }
+    else { const el=document.getElementById(gridId); if(el) el.innerHTML=SPIN; }
+  }
+  const fresh = await fetchMulti(keys, 24);
+  if (!fresh.length) return;
+  if (!silent) { renderGrid(sec, gridId, fresh); return; }
+  if (currentSection === sec) {
+    const firstCard = document.querySelector(`#${gridId} .news-card-title`)?.textContent;
+    if (fresh[0]?.title !== firstCard) { pendingItems=fresh; showToast(Math.min(fresh.length,5)); }
+  }
+}
+
+let currentRegion = 'europe';
+async function loadRegion(region) {
+  currentRegion = region;
+  document.querySelectorAll('.region-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(region.slice(0,4))));
+  const keys = SECTION_FEEDS[region] || [];
+  const cached = getCachedMulti(keys,24);
+  if (cached.length) renderGrid('regional','regionalGrid',cached);
+  else document.getElementById('regionalGrid').innerHTML = SPIN;
+  const fresh = await fetchMulti(keys,24);
+  renderGrid('regional','regionalGrid',fresh);
+}
+
+// ── TICKER ────────────────────────────────────────────────────────────────────
+function updateTicker(items) {
+  if (!items.length) return;
+  const html = items.map(i=>`<span class="ticker-item">${i.title}</span><span class="ticker-sep">◆</span>`).join('');
+  document.getElementById('tickerTrack').innerHTML = html+html;
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+const SECTIONS = ['us','world','politics','business','tech','ai','gaming','science','sports','regional'];
+function showSection(name) {
+  currentSection = name;
+  pendingItems = [];
+  document.getElementById('newToast').style.display = 'none';
+  SECTIONS.forEach(s => document.getElementById('section-'+s).style.display = s===name ? '' : 'none');
+  document.querySelectorAll('nav a').forEach((a,i) => a.classList.toggle('active', SECTIONS[i]===name));
+  document.getElementById('regionBar').style.display = name==='regional' ? '' : 'none';
+  if (name==='us') return;
+  if (name==='regional') { loadRegion(currentRegion); return; }
+  loadSection(name, name+'Grid');
+}
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('topDate').textContent = now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('topTime').textContent = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+// ── THEME ─────────────────────────────────────────────────────────────────────
+let dark = true;
+function toggleTheme() {
+  dark = !dark;
+  document.body.classList.toggle('light', !dark);
+  document.querySelector('.theme-btn').textContent = dark ? '☀ Light' : '🌙 Dark';
+}
+
+// ── MANUAL REFRESH ────────────────────────────────────────────────────────────
+async function refreshAll() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  Object.keys(cache).forEach(k => delete cache[k]);
+  try { localStorage.removeItem(LS_KEY); } catch(e) {}
+  await Promise.all([loadUS(), loadWorldSidebar()]);
+  if (currentSection !== 'us') {
+    if (currentSection==='regional') await loadRegion(currentRegion);
+    else await loadSection(currentSection, currentSection+'Grid');
+  }
+  btn.classList.remove('spinning');
+  document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── BACKGROUND PRELOADER — warms all sections silently ────────────────────────
+async function preloadAll() {
+  const allKeys = [...new Set(Object.values(SECTION_FEEDS).flat())];
+  // Fetch 4 at a time to avoid flooding proxies
+  for (let i=0; i<allKeys.length; i+=4) {
+    await Promise.allSettled(allKeys.slice(i,i+4).map(k=>fetchFeed(k)));
+    await new Promise(r=>setTimeout(r,400));
+  }
+  lsSave();
+}
+
+// ── LIVE 24/7 UPDATE LOOP ─────────────────────────────────────────────────────
+// Silently re-fetches active section every 90s, all sections every 4min
+let liveLoopCount = 0;
+async function liveLoop() {
+  liveLoopCount++;
+  // Active section check every cycle (90s)
+  if (currentSection==='us') await loadUS(true);
+  else if (currentSection==='regional') {
+    const keys = SECTION_FEEDS[currentRegion]||[];
+    const fresh = await fetchMulti(keys,24);
+    const firstCard = document.querySelector('#regionalGrid .news-card-title')?.textContent;
+    if(fresh.length && fresh[0]?.title!==firstCard){pendingItems=fresh;showToast(Math.min(fresh.length,5));}
+  } else {
+    await loadSection(currentSection, currentSection+'Grid', true);
+  }
+  // Full background preload every 4th cycle (~6 min)
+  if (liveLoopCount % 4 === 0) preloadAll();
+  // Update ticker from US feeds
+  const tickerItems = getCachedMulti(SECTION_FEEDS.us.slice(0,3), 15);
+  if (tickerItems.length) updateTicker(tickerItems);
+  document.getElementById('lastUpdated').textContent = 'Live · ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+lsLoad();
+updateClock();
+setInterval(updateClock, 1000);
+setInterval(liveLoop, 90 * 1000); // live check every 90 seconds
+
+(async () => {
+  // Show from localStorage cache immediately (zero wait)
+  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 25);
+  if (cachedUS.length) { renderUS(cachedUS); }
+  else { document.getElementById('heroCard').innerHTML = SPIN; }
+  const cachedWorld = getCachedMulti(SECTION_FEEDS.world.slice(0,3), 7);
+  if (cachedWorld.length) renderSidebar(cachedWorld);
+
+  // Fetch fresh data
+  await Promise.all([loadUS(), loadWorldSidebar()]);
+  document.getElementById('lastUpdated').textContent = 'Live · ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  // Warm all other sections in background
+  setTimeout(preloadAll, 2000);
+})();
+</script>
+</body>
+</html>
