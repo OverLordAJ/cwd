@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elden Ring — Complete Guide | Shadow of the Erdtree</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Complete guide for Elden Ring and Shadow of the Erdtree DLC — bosses, items, weapons, spells, and map locations.">
+</head>
+<body>
+
+<!-- Floating particle effect -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- ─── HEADER ─────────────────────────────────────────────── -->
+<header>
+  <div class="header-top">
+    <div class="site-title-group">
+      <div class="site-title">Elden Ring</div>
+      <div class="site-subtitle">Complete Guide &nbsp;·&nbsp; Shadow of the Erdtree</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="global-search" type="text" placeholder="Search bosses, items, weapons, spells…" autocomplete="off">
+    </div>
+  </div>
+
+  <nav class="nav-tabs" role="tablist">
+    <button class="nav-tab active" data-tab="bosses" role="tab">⚔ Bosses</button>
+    <button class="nav-tab" data-tab="items" role="tab">🗺 Item Locations</button>
+    <button class="nav-tab" data-tab="spells-weapons" role="tab">✦ Spells &amp; Weapons</button>
+  </nav>
+</header>
+
+<!-- ─── MAIN ───────────────────────────────────────────────── -->
+<main>
+
+  <!-- ── TAB 1: BOSSES ─────────────────────────────────────── -->
+  <section id="tab-bosses" class="tab-content active" role="tabpanel">
+
+    <!-- Main Game Bosses -->
+    <div class="section-header">
+      <h2 class="section-title">Main Game Bosses</h2>
+      <div class="section-ornament">
+        <div class="ornament-line"></div>
+        <div class="ornament-diamond"></div>
+        <div class="ornament-line"></div>
+      </div>
+    </div>
+    <div class="boss-grid" id="main-boss-grid">
+      <!-- Populated by app.js -->
+    </div>
+
+    <!-- DLC Divider -->
+    <div class="dlc-separator">
+      <div class="dlc-separator-inner">
+        <div class="dlc-title">Shadow of the Erdtree</div>
+        <div class="dlc-subtitle">DLC Bosses — Land of Shadow</div>
+      </div>
+    </div>
+
+    <!-- DLC Bosses -->
+    <div class="boss-grid" id="dlc-boss-grid">
+      <!-- Populated by app.js -->
+    </div>
+
+  </section>
+
+  <!-- ── TAB 2: ITEMS ───────────────────────────────────────── -->
+  <section id="tab-items" class="tab-content" role="tabpanel">
+
+    <div class="section-header">
+      <h2 class="section-title">Item Locations</h2>
+      <div class="section-ornament">
+        <div class="ornament-line"></div>
+        <div class="ornament-diamond"></div>
+        <div class="ornament-line"></div>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="map-wrap">
+      <div class="map-controls">
+        <div class="map-toggle-group">
+          <button class="map-type-btn active" data-maptype="main">Lands Between</button>
+          <button class="map-type-btn" data-maptype="dlc">Land of Shadow (DLC)</button>
+        </div>
+        <span class="map-hint">Click a region to filter · Click again to clear</span>
+      </div>
+      <div id="map-canvas"></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <label for="item-category-filter">Category:</label>
+      <select id="item-category-filter">
+        <option value="all">All Categories</option>
+        <option value="Map Fragment">Map Fragments</option>
+        <option value="Golden Seed">Golden Seeds</option>
+        <option value="Sacred Tear">Sacred Tears</option>
+        <option value="Key Item">Key Items</option>
+        <option value="DLC — Scadutree Blessing">DLC — Scadutree Blessings</option>
+        <option value="DLC — Spirit Ash Upgrade">DLC — Spirit Ash Upgrades</option>
+        <option value="DLC — Key Item">DLC — Key Items</option>
+      </select>
+      <button class="region-clear-btn" onclick="filterByRegion('__clear__'); activeRegionFilter='all'; document.querySelectorAll('.map-region').forEach(e=>e.classList.remove('selected')); renderItems();">Clear Region Filter</button>
+    </div>
+
+    <div id="item-grid">
+      <!-- Populated by app.js -->
+    </div>
+
+  </section>
+
+  <!-- ── TAB 3: SPELLS & WEAPONS ───────────────────────────── -->
+  <section id="tab-spells-weapons" class="tab-content" role="tabpanel">
+
+    <div class="section-header">
+      <h2 class="section-title">Spells &amp; Weapons</h2>
+      <div class="section-ornament">
+        <div class="ornament-line"></div>
+        <div class="ornament-diamond"></div>
+        <div class="ornament-line"></div>
+      </div>
+    </div>
+
+    <!-- Sub tabs -->
+    <div class="sub-tabs">
+      <button class="sub-tab active" data-sub="weapons">⚔ Weapons</button>
+      <button class="sub-tab" data-sub="sorceries">✦ Sorceries</button>
+      <button class="sub-tab" data-sub="incantations">✤ Incantations</button>
+    </div>
+
+    <!-- Map -->
+    <div class="map-wrap">
+      <div class="map-controls">
+        <div class="map-toggle-group">
+          <button class="map-type-btn active" data-maptype="main">Lands Between</button>
+          <button class="map-type-btn" data-maptype="dlc">Land of Shadow (DLC)</button>
+        </div>
+        <span class="map-hint">Click a region to filter by location · Click again to clear</span>
+      </div>
+      <div id="map-canvas-sw" style="position:relative;width:100%;height:280px;background:linear-gradient(145deg,#0c0c14 0%,#0a0c0a 100%);border:1px solid var(--border2);border-radius:12px;overflow:hidden;margin-bottom:1.5rem;">
+        <!-- Populated by renderMapSW() -->
+      </div>
+    </div>
+
+    <!-- Region clear -->
+    <div class="filter-bar">
+      <button class="region-clear-btn" onclick="activeRegionFilter='all'; document.querySelectorAll('.map-region').forEach(e=>e.classList.remove('selected')); filterSpellsWeapons();">Clear Region Filter</button>
+    </div>
+
+    <div id="spells-weapons-grid">
+      <!-- Populated by app.js -->
+    </div>
+
+  </section>
+
+</main>
+
+<!-- ─── BOSS MODAL ─────────────────────────────────────────── -->
+<div id="boss-modal" role="dialog" aria-modal="true" aria-labelledby="modal-boss-name">
+  <div class="modal-content">
+    <button id="modal-close" aria-label="Close">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ─── SEARCH OVERLAY ─────────────────────────────────────── -->
+<div id="search-overlay" role="dialog" aria-label="Search results">
+  <button id="search-close" aria-label="Close search">✕</button>
+  <div id="search-results"></div>
+</div>
+
+<!-- ─── FOOTER ─────────────────────────────────────────────── -->
+<footer>
+  <span>Elden Ring</span> &nbsp;&amp;&nbsp; <span>Shadow of the Erdtree</span>
+  &nbsp;—&nbsp; Fan Guide &nbsp;·&nbsp; All rights belong to <span>FromSoftware / Bandai Namco</span>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  // Wire up the second map canvas for the Spells & Weapons tab
+  (function() {
+    const originalRenderMap = window.renderMap;
+    let swRegions = REGIONS_MAIN;
+
+    function renderSWMap(type) {
+      const container = document.getElementById('map-canvas-sw');
+      if (!container) return;
+      const regions = type === 'dlc' ? REGIONS_DLC : REGIONS_MAIN;
+      swRegions = regions;
+      container.innerHTML = regions.map(r => {
+        const lines = r.label.split('\n');
+        return `<div class="map-region"
+          style="left:${r.x}%;top:${r.y}%;width:${r.w}%;height:${r.h}%;background:${r.color}22;border-color:${r.color}88;"
+          data-region="${r.id}"
+          onclick="filterByRegion('${r.id}'); filterSpellsWeapons();">
+          <span class="map-region-label">${lines.map(l => l.replace(/&/g,'&amp;').replace(/</g,'&lt;')).join('<br>')}</span>
+        </div>`;
+      }).join('');
+    }
+
+    // Patch map-type-btn for the SW tab section
+    document.addEventListener('DOMContentLoaded', () => {
+      renderSWMap('main');
+
+      // Re-render SW map when map type buttons inside SW tab are clicked
+      const swSection = document.getElementById('tab-spells-weapons');
+      swSection.querySelectorAll('.map-type-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          swSection.querySelectorAll('.map-type-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderSWMap(btn.dataset.maptype);
+          activeRegionFilter = 'all';
+          document.querySelectorAll('#map-canvas-sw .map-region').forEach(el => el.classList.remove('selected'));
+          filterSpellsWeapons();
+        });
+      });
+
+      // Keep region highlight in sync between both maps
+      const origFilterByRegion = window.filterByRegion;
+      window.filterByRegion = function(region) {
+        if (region === '__clear__') { activeRegionFilter = 'all'; return; }
+        if (activeRegionFilter === region) {
+          activeRegionFilter = 'all';
+        } else {
+          activeRegionFilter = region;
+        }
+        document.querySelectorAll('.map-region').forEach(el => {
+          el.classList.toggle('selected', el.dataset.region === activeRegionFilter);
+        });
+        if (window.activeTab === 'items') renderItems();
+        else filterSpellsWeapons();
+      };
+    });
+  })();
+</script>
+</body>
+</html>
