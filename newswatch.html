@@ -896,7 +896,7 @@ async function fetchFeed(key) {
 }
 
 // ── FETCH MULTIPLE FEEDS ──────────────────────────────────────────────────────
-async function fetchMulti(keys, limit = 80) {
+async function fetchMulti(keys, limit = 150) {
   const results = await Promise.allSettled(keys.map(k => fetchFeed(k)));
   const all = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
   const seen = new Set();
@@ -906,7 +906,7 @@ async function fetchMulti(keys, limit = 80) {
     .slice(0, limit);
 }
 
-function getCachedMulti(keys, limit = 80) {
+function getCachedMulti(keys, limit = 150) {
   const all = keys.flatMap(k => cache[k]?.items || []);
   const seen = new Set();
   return all
@@ -1187,7 +1187,7 @@ async function loadUS(silent=false) {
     if (cached.length) renderUS(cached);
     else document.getElementById('heroCard').innerHTML = SPIN;
   }
-  const fresh = await fetchMulti(keys, 60);
+  const fresh = await fetchMulti(keys, 150);
   if (!fresh.length) return;
   arcAdd(fresh, 'us');
   if (!silent) { renderUS(fresh); return; }
@@ -1216,7 +1216,7 @@ async function loadSection(sec, gridId, silent=false) {
       if(el) el.innerHTML = SPIN;
     }
   }
-  const fresh = await fetchMulti(keys, 80);
+  const fresh = await fetchMulti(keys, 150);
   if (!fresh.length) return;
   sectionItems[sec] = filterStrictly(fresh, sec);
   arcAdd(sectionItems[sec], sec);
@@ -1235,7 +1235,7 @@ async function loadRegion(region) {
   const cached = getCachedMulti(keys,60);
   if (cached.length) renderGrid('regional','regionalGrid',cached);
   else document.getElementById('regionalGrid').innerHTML = SPIN;
-  const fresh = await fetchMulti(keys,60);
+  const fresh = await fetchMulti(keys,150);
   if (fresh.length) arcAdd(fresh, region);
   renderGrid('regional','regionalGrid',fresh);
 }
