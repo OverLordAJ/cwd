@@ -215,6 +215,42 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ── TIMELINE TIERS ──────────────────────────────────────────────────── */
+.tier-block{margin-bottom:28px;}
+.tier-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid;}
+.tier-hdr.t-breaking{border-color:var(--accent);}
+.tier-hdr.t-recent{border-color:var(--gold);}
+.tier-hdr.t-week{border-color:var(--border);}
+.tier-hdr.t-archive{border-color:var(--muted);}
+.tier-label{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;}
+.tier-hdr.t-breaking .tier-label{color:var(--accent);}
+.tier-hdr.t-recent .tier-label{color:var(--gold);}
+.tier-hdr.t-week .tier-label,.tier-hdr.t-archive .tier-label{color:var(--muted);}
+.tier-count{font-size:10px;color:var(--muted);white-space:nowrap;}
+.age-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.age-badge.breaking{background:var(--accent);color:white;}
+.age-badge.recent{background:var(--gold);color:#111;}
+
+/* ── ARCHIVE ─────────────────────────────────────────────────────────── */
+.arc-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.arc-search{flex:1;min-width:220px;padding:10px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;font-family:inherit;transition:border 0.2s;}
+.arc-search:focus{border-color:var(--accent);}
+.arc-filters{display:flex;gap:6px;flex-wrap:wrap;}
+.arc-filter{padding:5px 12px;background:none;border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.arc-filter:hover{border-color:var(--accent);color:var(--accent);}
+.arc-filter.active{background:var(--accent);color:white;border-color:var(--accent);}
+.arc-list{display:flex;flex-direction:column;gap:8px;}
+.arc-item{display:flex;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;text-decoration:none;transition:all 0.2s;}
+.arc-item:hover{border-color:var(--accent);background:var(--hover);}
+.arc-thumb{width:72px;height:54px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--surface2);}
+.arc-thumb-ph{width:72px;height:54px;border-radius:6px;flex-shrink:0;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted);}
+.arc-info{flex:1;min-width:0;}
+.arc-src{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent2);margin-bottom:3px;}
+.arc-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.arc-meta{font-size:10px;color:var(--muted);margin-top:4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.arc-tag{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700;letter-spacing:0.5px;}
+.arc-empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:13px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;}
 </style>
 </head>
 <body>
@@ -251,6 +287,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
       <a onclick="showSection('science')">🔬 Science</a>
       <a onclick="showSection('sports')">🏆 Sports</a>
       <a onclick="showSection('regional')">🗺 Regional</a>
+      <a onclick="showSection('archive')">🗂 Archive</a>
     </nav>
     <button class="refresh-btn" onclick="refreshAll()" id="refreshBtn">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
@@ -471,6 +508,33 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
       <div class="section-line"></div>
     </div>
     <div class="world-grid" id="regionalGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- ARCHIVE SECTION -->
+<div id="section-archive" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge" style="background:#555;">🗂 ARCHIVE</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="arc-bar">
+      <input type="text" class="arc-search" id="arcSearch" placeholder="Search archived articles…" oninput="renderArchive()">
+      <div class="arc-filters">
+        <button class="arc-filter active" onclick="setArcSection('all',this)">All</button>
+        <button class="arc-filter" onclick="setArcSection('us',this)">🇺🇸 USA</button>
+        <button class="arc-filter" onclick="setArcSection('world',this)">🌍 World</button>
+        <button class="arc-filter" onclick="setArcSection('politics',this)">🏛 Politics</button>
+        <button class="arc-filter" onclick="setArcSection('business',this)">📈 Business</button>
+        <button class="arc-filter" onclick="setArcSection('tech',this)">💻 Tech</button>
+        <button class="arc-filter" onclick="setArcSection('ai',this)">🤖 AI</button>
+        <button class="arc-filter" onclick="setArcSection('gaming',this)">🎮 Gaming</button>
+        <button class="arc-filter" onclick="setArcSection('movies',this)">🎬 Movies</button>
+        <button class="arc-filter" onclick="setArcSection('science',this)">🔬 Science</button>
+        <button class="arc-filter" onclick="setArcSection('sports',this)">🏆 Sports</button>
+      </div>
+    </div>
+    <div id="arcList"><div class="arc-empty">Articles accumulate here as they age past 7 days. Visit sections regularly to build your archive.</div></div>
   </div>
 </div>
 
@@ -891,7 +955,7 @@ function filterSection(sec, platform, tabEl) {
     el.innerHTML = `<div class="no-results-msg">No "${platform}" articles loaded yet — try <strong>Refresh</strong> or switch to <strong>All</strong>.</div>`;
     return;
   }
-  el.innerHTML = filtered.map(i => renderCard(i, sec)).join('');
+  renderGrid(sec, gridId, filtered);
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -959,16 +1023,58 @@ function cardImg(item, sec, h=140) {
   return `<div class="news-card-img-ph" style="height:${h}px;">${em}</div>`;
 }
 
+// ── AGE TIERS ─────────────────────────────────────────────────────────────────
+function getAge(pubDate) {
+  const h = (Date.now() - new Date(pubDate).getTime()) / 3_600_000;
+  if (h < 24)  return 'breaking';
+  if (h < 48)  return 'recent';
+  if (h < 168) return 'week';
+  return 'archive';
+}
+function ageBadge(tier) {
+  if (tier === 'breaking') return `<span class="age-badge breaking">⚡ Breaking</span>`;
+  if (tier === 'recent')   return `<span class="age-badge recent">🕐 Yesterday</span>`;
+  return '';
+}
+
+// ── ARCHIVE STORE ─────────────────────────────────────────────────────────────
+const ARC_KEY = 'nw_arc_v1';
+let arcStore = {};
+
+function arcLoad() {
+  try { const r = localStorage.getItem(ARC_KEY); if (r) arcStore = JSON.parse(r); } catch(e) {}
+}
+function arcSave() {
+  const cutoff = Date.now() - 30 * 86_400_000; // 30-day eviction
+  for (const k of Object.keys(arcStore)) {
+    if (new Date(arcStore[k].pubDate).getTime() < cutoff) delete arcStore[k];
+  }
+  try { localStorage.setItem(ARC_KEY, JSON.stringify(arcStore)); } catch(e) {}
+}
+function arcAdd(items, sec) {
+  let changed = false;
+  for (const item of items) {
+    const key = (item.title||'').slice(0,80);
+    if (!key) continue;
+    if (!arcStore[key]) { arcStore[key] = {...item, section: sec}; changed = true; }
+  }
+  if (changed) arcSave();
+}
+
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function renderHero(item, sec='us') {
   const src = getImg(item), em = PH[sec]||'📰';
   const img = src
     ? `<img class="hero-img" src="${src}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div class="hero-img-placeholder" style="display:none;">${em}</div>`
     : `<div class="hero-img-placeholder">${em}</div>`;
-  return `<a class="hero-card" href="${item.link}" target="_blank" rel="noopener">${img}<div class="hero-content"><div class="hero-source">${srcLabel(item)}</div><div class="hero-title">${item.title}</div><div class="hero-desc">${stripHtml(item.description)}</div><div class="hero-meta"><span>${timeAgo(item.pubDate)}</span></div></div></a>`;
+  const tier = getAge(item.pubDate);
+  const badge = tier === 'breaking' ? `<div style="margin-bottom:8px;"><span class="age-badge breaking">⚡ Breaking News</span></div>` : '';
+  return `<a class="hero-card" href="${item.link}" target="_blank" rel="noopener">${img}<div class="hero-content">${badge}<div class="hero-source">${srcLabel(item)}</div><div class="hero-title">${item.title}</div><div class="hero-desc">${stripHtml(item.description)}</div><div class="hero-meta"><span>${timeAgo(item.pubDate)}</span></div></div></a>`;
 }
-function renderCard(item, sec='us') {
-  return `<a class="news-card" href="${item.link}" target="_blank" rel="noopener">${cardImg(item,sec)}<div class="news-card-body"><div class="news-card-source">${srcLabel(item)}</div><div class="news-card-title">${item.title}</div><div class="news-card-time">${timeAgo(item.pubDate)}</div></div></a>`;
+function renderCard(item, sec='us', tier=null) {
+  const t = tier || getAge(item.pubDate);
+  const badge = ageBadge(t);
+  return `<a class="news-card" href="${item.link}" target="_blank" rel="noopener">${cardImg(item,sec)}<div class="news-card-body">${badge ? `<div>${badge}</div>` : ''}<div class="news-card-source">${srcLabel(item)}</div><div class="news-card-title">${item.title}</div><div class="news-card-time">${timeAgo(item.pubDate)}</div></div></a>`;
 }
 function renderSidebarItem(item, sec='world') {
   const src = getImg(item), em = PH[sec]||'📰';
@@ -1001,15 +1107,71 @@ function applyNewArticles() {
 // ── RENDER HELPERS ────────────────────────────────────────────────────────────
 function renderUS(items) {
   if (!items.length) return;
-  document.getElementById('heroCard').innerHTML = renderHero(items[0], 'us');
-  document.getElementById('usGrid').innerHTML = items.slice(1).map(i=>renderCard(i,'us')).join('');
+
+  // Homepage: Breaking hero + Breaking grid. Recent moves to a secondary belt.
+  // Week/archive don't appear on the homepage at all (they live in section pages).
+  const breaking = items.filter(i => getAge(i.pubDate) === 'breaking');
+  const recent   = items.filter(i => getAge(i.pubDate) === 'recent');
+  const heroPool = breaking.length ? breaking : recent.length ? recent : items;
+
+  document.getElementById('heroCard').innerHTML = renderHero(heroPool[0], 'us');
+
+  let html = '';
+  const bRest = breaking.slice(1);
+  if (bRest.length) {
+    html += `<div class="tier-block">
+      <div class="tier-hdr t-breaking"><span class="tier-label">⚡ Breaking News</span><span class="tier-count">${bRest.length} stor${bRest.length!==1?'ies':'y'} — last 24 hrs</span><div class="section-line"></div></div>
+      <div class="news-grid">${bRest.map(i=>renderCard(i,'us','breaking')).join('')}</div>
+    </div>`;
+  }
+  if (recent.length) {
+    html += `<div class="tier-block">
+      <div class="tier-hdr t-recent"><span class="tier-label">🕐 Yesterday</span><span class="tier-count">${recent.length} article${recent.length!==1?'s':''} — 24–48 hrs ago</span><div class="section-line"></div></div>
+      <div class="news-grid">${recent.map(i=>renderCard(i,'us','recent')).join('')}</div>
+    </div>`;
+  }
+  // If feeds are very fresh (no recent/week), just render remaining breaking
+  if (!bRest.length && !recent.length) {
+    html = `<div class="news-grid">${items.slice(1).map(i=>renderCard(i,'us')).join('')}</div>`;
+  }
+
+  document.getElementById('usGrid').innerHTML = html;
   updateTicker(items.slice(0,20));
 }
+
 function renderGrid(sec, gridId, items) {
   const el = document.getElementById(gridId);
   if (!el) return;
   if (!items.length) { el.innerHTML = '<div class="error-msg">No articles loaded — fetching in background…</div>'; return; }
-  el.innerHTML = items.map(i=>renderCard(i,sec)).join('');
+
+  const tiers = { breaking:[], recent:[], week:[], archive:[] };
+  for (const item of items) tiers[getAge(item.pubDate)].push(item);
+
+  const G = (arr, tier, cls='world-grid') =>
+    `<div class="${cls}">${arr.map(i=>renderCard(i,sec,tier)).join('')}</div>`;
+
+  let html = '';
+  if (tiers.breaking.length) html += `<div class="tier-block">
+    <div class="tier-hdr t-breaking"><span class="tier-label">⚡ Breaking</span><span class="tier-count">${tiers.breaking.length} stor${tiers.breaking.length!==1?'ies':'y'} — last 24 hrs</span><div class="section-line"></div></div>
+    ${G(tiers.breaking,'breaking')}
+  </div>`;
+  if (tiers.recent.length) html += `<div class="tier-block">
+    <div class="tier-hdr t-recent"><span class="tier-label">🕐 Yesterday</span><span class="tier-count">${tiers.recent.length} article${tiers.recent.length!==1?'s':''}</span><div class="section-line"></div></div>
+    ${G(tiers.recent,'recent')}
+  </div>`;
+  if (tiers.week.length) html += `<div class="tier-block">
+    <div class="tier-hdr t-week"><span class="tier-label">📅 Earlier This Week</span><span class="tier-count">${tiers.week.length} article${tiers.week.length!==1?'s':''}</span><div class="section-line"></div></div>
+    ${G(tiers.week,'week')}
+  </div>`;
+
+  const arcSec = sec === 'regional' ? currentRegion : sec;
+  const arcCount = Object.values(arcStore).filter(a => a.section === arcSec && getAge(a.pubDate) === 'archive').length;
+  if (arcCount > 0) html += `<div class="tier-block">
+    <div class="tier-hdr t-archive"><span class="tier-label">🗂 Archive</span><span class="tier-count">${arcCount} older article${arcCount!==1?'s':''} stored</span><div class="section-line"></div></div>
+    <div style="padding:12px 0;"><button class="update-tab" onclick="showArchive('${arcSec}')">Browse ${arcSec.charAt(0).toUpperCase()+arcSec.slice(1)} Archive →</button></div>
+  </div>`;
+
+  el.innerHTML = html;
 }
 function renderSidebar(items) {
   const el = document.getElementById('worldSidebar');
@@ -1027,6 +1189,7 @@ async function loadUS(silent=false) {
   }
   const fresh = await fetchMulti(keys, 60);
   if (!fresh.length) return;
+  arcAdd(fresh, 'us');
   if (!silent) { renderUS(fresh); return; }
   const topTitle = document.querySelector('.hero-title')?.textContent;
   if (fresh[0]?.title !== topTitle) { pendingItems = fresh; showToast(Math.min(fresh.length,5)); }
@@ -1056,6 +1219,7 @@ async function loadSection(sec, gridId, silent=false) {
   const fresh = await fetchMulti(keys, 80);
   if (!fresh.length) return;
   sectionItems[sec] = filterStrictly(fresh, sec);
+  arcAdd(sectionItems[sec], sec);
   if (!silent) { renderGrid(sec, gridId, sectionItems[sec]); return; }
   if (currentSection === sec) {
     const firstCard = document.querySelector(`#${gridId} .news-card-title`)?.textContent;
@@ -1072,6 +1236,7 @@ async function loadRegion(region) {
   if (cached.length) renderGrid('regional','regionalGrid',cached);
   else document.getElementById('regionalGrid').innerHTML = SPIN;
   const fresh = await fetchMulti(keys,60);
+  if (fresh.length) arcAdd(fresh, region);
   renderGrid('regional','regionalGrid',fresh);
 }
 
@@ -1082,8 +1247,77 @@ function updateTicker(items) {
   document.getElementById('tickerTrack').innerHTML = html+html;
 }
 
+// ── ARCHIVE DISPLAY ───────────────────────────────────────────────────────────
+let arcSection = 'all';
+
+function setArcSection(sec, btn) {
+  arcSection = sec;
+  document.querySelectorAll('.arc-filter').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderArchive();
+}
+
+function showArchive(sec) {
+  showSection('archive');
+  if (sec && sec !== 'archive') {
+    arcSection = sec;
+    document.querySelectorAll('.arc-filter').forEach(b => {
+      b.classList.toggle('active', b.textContent.toLowerCase().includes(sec) || (sec==='all' && b.textContent==='All'));
+    });
+    renderArchive();
+  }
+}
+
+function renderArchive() {
+  const q = (document.getElementById('arcSearch')?.value || '').toLowerCase().trim();
+  const all = Object.values(arcStore);
+  const sevenDaysAgo = Date.now() - 7 * 86_400_000;
+
+  let filtered = all.filter(item => {
+    const age = new Date(item.pubDate).getTime();
+    // Archive = articles older than 7 days OR everything if browsing all
+    if (arcSection !== 'all' && item.section !== arcSection) return false;
+    if (q) {
+      const text = ((item.title||'') + ' ' + (item.description||'')).toLowerCase();
+      return q.split(/\s+/).every(w => text.includes(w));
+    }
+    return true;
+  });
+
+  // Sort newest-first; group by: true archive (7+ days) first, then week, then recent
+  filtered.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+  const arcEl = document.getElementById('arcList');
+  if (!arcEl) return;
+
+  if (!filtered.length) {
+    arcEl.innerHTML = `<div class="arc-empty">${q ? `No archived articles match "<strong>${q}</strong>".` : 'No archived articles yet — visit sections to start building your archive.'}</div>`;
+    return;
+  }
+
+  arcEl.innerHTML = `<div class="arc-list">${filtered.map(item => {
+    const src = getImg(item);
+    const thumb = src
+      ? `<img class="arc-thumb" src="${src}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="arc-thumb-ph" style="display:none">${PH[item.section]||'📰'}</div>`
+      : `<div class="arc-thumb-ph">${PH[item.section]||'📰'}</div>`;
+    const tier = getAge(item.pubDate);
+    const badge = tier === 'breaking' ? `<span class="age-badge breaking">⚡ Breaking</span> ` : tier === 'recent' ? `<span class="age-badge recent">🕐 Yesterday</span> ` : '';
+    return `<a class="arc-item" href="${item.link}" target="_blank" rel="noopener">
+      ${thumb}
+      <div class="arc-info">
+        <div class="arc-src">${srcLabel(item)}</div>
+        <div class="arc-title">${badge}${item.title}</div>
+        <div class="arc-meta">
+          <span>${timeAgo(item.pubDate)}</span>
+          ${item.section ? `<span class="arc-tag">${PH[item.section]||''} ${item.section.toUpperCase()}</span>` : ''}
+        </div>
+      </div>
+    </a>`;
+  }).join('')}</div>`;
+}
+
 // ── NAV ───────────────────────────────────────────────────────────────────────
-const SECTIONS = ['us','world','politics','business','tech','ai','gaming','movies','science','sports','regional'];
+const SECTIONS = ['us','world','politics','business','tech','ai','gaming','movies','science','sports','regional','archive'];
 function showSection(name) {
   currentSection = name;
   pendingItems = [];
@@ -1094,6 +1328,7 @@ function showSection(name) {
   document.getElementById('usaBanner').style.display = name==='us' ? '' : 'none';
   if (name==='us') return;
   if (name==='regional') { loadRegion(currentRegion); return; }
+  if (name==='archive') { renderArchive(); return; }
   loadSection(name, name+'Grid');
 }
 
@@ -1347,6 +1582,7 @@ setTimeout(() => {
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 lsLoad();
+arcLoad();
 updateClock();
 setInterval(updateClock, 1000);
 setInterval(liveLoop, 90 * 1000);
