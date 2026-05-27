@@ -251,6 +251,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
 .arc-meta{font-size:10px;color:var(--muted);margin-top:4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .arc-tag{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 6px;font-size:9px;font-weight:700;letter-spacing:0.5px;}
 .arc-empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:13px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;}
+
+/* ── SHOW MORE ───────────────────────────────────────────────────────── */
+.show-more-wrap{text-align:center;padding:16px 0 4px;}
+.show-more-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 24px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;width:100%;max-width:340px;}
+.show-more-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(230,57,70,0.06);}
 </style>
 </head>
 <body>
@@ -1104,6 +1109,34 @@ function applyNewArticles() {
   pendingItems = [];
 }
 
+// ── TIER PAGINATION ───────────────────────────────────────────────────────────
+const TIER_PAGE = 12;
+let _tierId = 0;
+const _tierRest = {};
+
+function renderTierItems(items, sec, tier, cls = 'world-grid') {
+  const uid = `t${++_tierId}`;
+  const visible = items.slice(0, TIER_PAGE);
+  const rest    = items.slice(TIER_PAGE);
+  let html = `<div class="${cls}" id="tg-${uid}">${visible.map(i => renderCard(i, sec, tier)).join('')}</div>`;
+  if (rest.length) {
+    _tierRest[uid] = { items: rest, sec, tier, cls };
+    const label = tier === 'breaking' ? 'breaking' : tier === 'recent' ? 'recent' : 'older';
+    html += `<div class="show-more-wrap" id="sm-${uid}">
+      <button class="show-more-btn" onclick="loadMoreTier('${uid}')">↓ Show ${rest.length} more ${label} articles</button>
+    </div>`;
+  }
+  return html;
+}
+
+function loadMoreTier(uid) {
+  const d = _tierRest[uid];
+  if (!d) return;
+  document.getElementById('tg-' + uid).innerHTML += d.items.map(i => renderCard(i, d.sec, d.tier)).join('');
+  document.getElementById('sm-' + uid)?.remove();
+  delete _tierRest[uid];
+}
+
 // ── RENDER HELPERS ────────────────────────────────────────────────────────────
 function renderUS(items) {
   if (!items.length) return;
@@ -1121,18 +1154,18 @@ function renderUS(items) {
   if (bRest.length) {
     html += `<div class="tier-block">
       <div class="tier-hdr t-breaking"><span class="tier-label">⚡ Breaking News</span><span class="tier-count">${bRest.length} stor${bRest.length!==1?'ies':'y'} — last 24 hrs</span><div class="section-line"></div></div>
-      <div class="news-grid">${bRest.map(i=>renderCard(i,'us','breaking')).join('')}</div>
+      ${renderTierItems(bRest,'us','breaking','news-grid')}
     </div>`;
   }
   if (recent.length) {
     html += `<div class="tier-block">
       <div class="tier-hdr t-recent"><span class="tier-label">🕐 Yesterday</span><span class="tier-count">${recent.length} article${recent.length!==1?'s':''} — 24–48 hrs ago</span><div class="section-line"></div></div>
-      <div class="news-grid">${recent.map(i=>renderCard(i,'us','recent')).join('')}</div>
+      ${renderTierItems(recent,'us','recent','news-grid')}
     </div>`;
   }
   // If feeds are very fresh (no recent/week), just render remaining breaking
   if (!bRest.length && !recent.length) {
-    html = `<div class="news-grid">${items.slice(1).map(i=>renderCard(i,'us')).join('')}</div>`;
+    html = renderTierItems(items.slice(1),'us',null,'news-grid');
   }
 
   document.getElementById('usGrid').innerHTML = html;
@@ -1147,21 +1180,18 @@ function renderGrid(sec, gridId, items) {
   const tiers = { breaking:[], recent:[], week:[], archive:[] };
   for (const item of items) tiers[getAge(item.pubDate)].push(item);
 
-  const G = (arr, tier, cls='world-grid') =>
-    `<div class="${cls}">${arr.map(i=>renderCard(i,sec,tier)).join('')}</div>`;
-
   let html = '';
   if (tiers.breaking.length) html += `<div class="tier-block">
     <div class="tier-hdr t-breaking"><span class="tier-label">⚡ Breaking</span><span class="tier-count">${tiers.breaking.length} stor${tiers.breaking.length!==1?'ies':'y'} — last 24 hrs</span><div class="section-line"></div></div>
-    ${G(tiers.breaking,'breaking')}
+    ${renderTierItems(tiers.breaking,sec,'breaking')}
   </div>`;
   if (tiers.recent.length) html += `<div class="tier-block">
     <div class="tier-hdr t-recent"><span class="tier-label">🕐 Yesterday</span><span class="tier-count">${tiers.recent.length} article${tiers.recent.length!==1?'s':''}</span><div class="section-line"></div></div>
-    ${G(tiers.recent,'recent')}
+    ${renderTierItems(tiers.recent,sec,'recent')}
   </div>`;
   if (tiers.week.length) html += `<div class="tier-block">
     <div class="tier-hdr t-week"><span class="tier-label">📅 Earlier This Week</span><span class="tier-count">${tiers.week.length} article${tiers.week.length!==1?'s':''}</span><div class="section-line"></div></div>
-    ${G(tiers.week,'week')}
+    ${renderTierItems(tiers.week,sec,'week')}
   </div>`;
 
   const arcSec = sec === 'regional' ? currentRegion : sec;
@@ -1183,7 +1213,7 @@ function renderSidebar(items) {
 async function loadUS(silent=false) {
   const keys = SECTION_FEEDS.us;
   if (!silent) {
-    const cached = getCachedMulti(keys, 60);
+    const cached = getCachedMulti(keys, 150);
     if (cached.length) renderUS(cached);
     else document.getElementById('heroCard').innerHTML = SPIN;
   }
@@ -1207,7 +1237,7 @@ async function loadWorldSidebar() {
 async function loadSection(sec, gridId, silent=false) {
   const keys = SECTION_FEEDS[sec] || [sec];
   if (!silent) {
-    const cached = getCachedMulti(keys, 80);
+    const cached = getCachedMulti(keys, 150);
     if (cached.length) {
       sectionItems[sec] = filterStrictly(cached, sec);
       renderGrid(sec, gridId, sectionItems[sec]);
@@ -1232,7 +1262,7 @@ async function loadRegion(region) {
   currentRegion = region;
   document.querySelectorAll('.region-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(region.slice(0,4))));
   const keys = SECTION_FEEDS[region] || [];
-  const cached = getCachedMulti(keys,60);
+  const cached = getCachedMulti(keys,150);
   if (cached.length) renderGrid('regional','regionalGrid',cached);
   else document.getElementById('regionalGrid').innerHTML = SPIN;
   const fresh = await fetchMulti(keys,150);
@@ -1379,7 +1409,7 @@ async function liveLoop() {
   if (currentSection==='us') await loadUS(true);
   else if (currentSection==='regional') {
     const keys = SECTION_FEEDS[currentRegion]||[];
-    const fresh = await fetchMulti(keys,60);
+    const fresh = await fetchMulti(keys,150);
     const firstCard = document.querySelector('#regionalGrid .news-card-title')?.textContent;
     if(fresh.length && fresh[0]?.title!==firstCard){pendingItems=fresh;showToast(Math.min(fresh.length,5));}
   } else {
@@ -1588,7 +1618,7 @@ setInterval(updateClock, 1000);
 setInterval(liveLoop, 90 * 1000);
 
 (async () => {
-  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 60);
+  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 150);
   if (cachedUS.length) { renderUS(cachedUS); }
   else { document.getElementById('heroCard').innerHTML = SPIN; }
   const cachedWorld = getCachedMulti(SECTION_FEEDS.world.slice(0,5), 10);
