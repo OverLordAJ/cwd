@@ -516,15 +516,15 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
 
 <footer>
   <div class="footer-inner">
-    <div class="footer-copy">© 2026 NewsWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire &amp; 40+ more.</div>
-    <div class="footer-sources">Live 24/7 · checks every 90s · 11 sections · 6 world regions · platform filters · AI assistant</div>
+    <div class="footer-copy">© 2026 NewsWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire · CBS Sports · Bleacher Report · SI · Phys.org · NASA · Nature · Science Daily · RFI · VOA · Fast Company · Inc. · HBR &amp; 70+ more.</div>
+    <div class="footer-sources">Live 24/7 · checks every 90s · 11 sections · 6 world regions · platform filters · AI assistant · up to 80 articles per section</div>
   </div>
 </footer>
 
 <script>
 // ── PROXY CHAIN ───────────────────────────────────────────────────────────────
 const PROXIES = [
-  url => `https://api.rss2json.com/v1/api.json?count=20&rss_url=${encodeURIComponent(url)}`,
+  url => `https://api.rss2json.com/v1/api.json?count=50&rss_url=${encodeURIComponent(url)}`,
   url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
   url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   url => `https://thingproxy.freeboard.io/fetch/${url}`,
@@ -552,6 +552,12 @@ const FEEDS = {
   thehill_pol:'https://thehill.com/homenews/feed/',
   realclear:'https://www.realclearpolitics.com/index.xml',
   guardian_us:'https://www.theguardian.com/us-news/rss',
+  cnn_pol:'https://rss.cnn.com/rss/cnn_allpolitics.rss',
+  abc_pol:'https://feeds.abcnews.com/abcnews/politicsheadlines',
+  fox_pol:'https://moxie.foxnews.com/google-publisher/politics.xml',
+  wapo_pol:'https://feeds.washingtonpost.com/rss/politics',
+  slate_pol:'https://feeds.slate.com/slate/news-and-politics',
+  nyt_pol:'https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml',
   // Business
   npr_biz:'https://feeds.npr.org/1006/rss.xml',
   cnbc:'https://www.cnbc.com/id/100003114/device/rss/rss.html',
@@ -560,6 +566,12 @@ const FEEDS = {
   wsj:'https://feeds.a.dj.com/rss/RSSMarketsMain.xml',
   economist:'https://www.economist.com/the-world-this-week/rss.xml',
   coindesk:'https://www.coindesk.com/arc/outboundfeeds/rss/',
+  reuters_biz:'https://feeds.reuters.com/reuters/businessNews',
+  fastco:'https://www.fastcompany.com/latest/rss?format=xml',
+  inc:'https://www.inc.com/rss',
+  barrons:'https://feeds.barrons.com/barrons/news',
+  hbr:'https://feeds.hbr.org/harvardbusiness',
+  quartz:'https://qz.com/rss',
   // Tech
   npr_tech:'https://feeds.npr.org/1019/rss.xml',
   techcrunch:'https://techcrunch.com/feed/',
@@ -606,12 +618,26 @@ const FEEDS = {
   sciamer:'https://www.scientificamerican.com/platform/syndication/rss/',
   newscientist:'https://www.newscientist.com/feed/home/',
   livescience:'https://www.livescience.com/feeds/all',
+  physorg:'https://phys.org/rss-feed/',
+  space_com:'https://www.space.com/feeds/all',
+  nasa:'https://www.nasa.gov/rss/dyn/breaking_news.rss',
+  popsci:'https://www.popsci.com/feed/',
+  nature:'https://www.nature.com/nature.rss',
+  sciencedaily:'https://www.sciencedaily.com/rss/all.xml',
+  nyt_sci:'https://rss.nytimes.com/services/xml/rss/nyt/Science.xml',
+  nyt_health:'https://rss.nytimes.com/services/xml/rss/nyt/Health.xml',
   // Sports
   espn:'https://www.espn.com/espn/rss/news',
   bbc_sport:'https://feeds.bbci.co.uk/sport/rss.xml',
   guardian_sport:'https://www.theguardian.com/sport/rss',
   sky_sport:'https://feeds.skynews.com/feeds/rss/sports.xml',
   yahoo_sport:'https://sports.yahoo.com/rss/',
+  cbs_sport:'https://www.cbssports.com/rss/headlines/',
+  bleacher:'https://bleacherreport.com/articles/feed',
+  si:'https://www.si.com/rss/si_com.rss',
+  nyt_sport:'https://rss.nytimes.com/services/xml/rss/nyt/Sports.xml',
+  ap_sport:'https://feeds.apnews.com/rss/apf-sports',
+  eurosport:'https://www.eurosport.com/rss.xml',
   // World
   bbc_world:'https://feeds.bbci.co.uk/news/world/rss.xml',
   reuters:'https://feeds.reuters.com/reuters/worldNews',
@@ -621,6 +647,12 @@ const FEEDS = {
   france24:'https://www.france24.com/en/rss',
   sky:'https://feeds.skynews.com/feeds/rss/world.xml',
   time:'https://time.com/feed/',
+  rfi:'https://www.rfi.fr/en/rss',
+  voa:'https://www.voanews.com/api/epiqq',
+  un_news:'https://news.un.org/feed/subscribe/en/news/all/rss.xml',
+  nyt_world:'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
+  ap_world:'https://feeds.apnews.com/rss/apf-worldnews',
+  cfr:'https://www.cfr.org/rss/global',
   // Regional
   bbc_eu:'https://feeds.bbci.co.uk/news/world/europe/rss.xml',
   guardian_eu:'https://www.theguardian.com/world/europe-news/rss',
@@ -641,22 +673,22 @@ const FEEDS = {
 };
 
 const SECTION_FEEDS = {
-  us:       ['npr','abc','cbs','cnn','nbc','ap','thehill','axios','vox','atlantic'],
-  politics: ['npr_pol','politico','thehill_pol','realclear','guardian_us'],
-  business: ['npr_biz','cnbc','marketwatch','fortune','wsj','economist','coindesk'],
+  us:       ['npr','abc','cbs','cnn','nbc','ap','thehill','axios','vox','atlantic','fox','wapo','nyt'],
+  politics: ['npr_pol','politico','thehill_pol','realclear','guardian_us','cnn_pol','abc_pol','fox_pol','wapo_pol','slate_pol','nyt_pol'],
+  business: ['npr_biz','cnbc','marketwatch','fortune','wsj','economist','coindesk','reuters_biz','fastco','inc','barrons','hbr','quartz'],
   tech:     ['npr_tech','techcrunch','theverge','wired','ars','engadget','nine5mac','nine5google','macrumors'],
   ai:       ['ai_techcrunch','ai_verge','ai_mit','ai_venturebeat','ai_wired','ai_decoder','ai_zdnet','ai_ars'],
   gaming:   ['ign','kotaku','polygon','pcgamer','eurogamer','rps','destructoid','gamespot','ps_blog','xbox_wire','nintendolife'],
   movies:   ['variety','deadline','thr','screenrant','collider','slashfilm','indiewire','thewrap','ew'],
-  science:  ['npr_sci','sciamer','newscientist','livescience'],
-  sports:   ['espn','bbc_sport','guardian_sport','sky_sport','yahoo_sport'],
-  world:    ['bbc_world','reuters','guardian','aljazeera','dw','france24','sky','time'],
-  europe:   ['bbc_eu','guardian_eu','dw_eu','france24_eu'],
-  mideast:  ['bbc_me','aljazeera','guardian_me'],
-  asia:     ['bbc_asia','guardian_as','dw_asia'],
-  africa:   ['bbc_af','guardian_af','africanews'],
-  latam:    ['bbc_la','guardian_la'],
-  oceania:  ['abc_au','rnz'],
+  science:  ['npr_sci','sciamer','newscientist','livescience','physorg','space_com','nasa','popsci','nature','sciencedaily','nyt_sci','nyt_health'],
+  sports:   ['espn','bbc_sport','guardian_sport','sky_sport','yahoo_sport','cbs_sport','bleacher','si','nyt_sport','ap_sport','eurosport'],
+  world:    ['bbc_world','reuters','guardian','aljazeera','dw','france24','sky','time','rfi','voa','un_news','nyt_world','ap_world','cfr'],
+  europe:   ['bbc_eu','guardian_eu','dw_eu','france24_eu','rfi'],
+  mideast:  ['bbc_me','aljazeera','guardian_me','rfi'],
+  asia:     ['bbc_asia','guardian_as','dw_asia','voa'],
+  africa:   ['bbc_af','guardian_af','africanews','voa'],
+  latam:    ['bbc_la','guardian_la','rfi'],
+  oceania:  ['abc_au','rnz','guardian'],
 };
 
 // ── STRICT TOPIC KEYWORD FILTERS per section ──────────────────────────────────
@@ -727,10 +759,10 @@ const PLATFORM_FILTERS = {
 };
 
 // ── localStorage CACHE ────────────────────────────────────────────────────────
-const LS_KEY = 'nw_cache_v4';
+const LS_KEY = 'nw_cache_v5';
 const cache = {};
-const CACHE_TTL = 3 * 60 * 1000;
-const LS_TTL   = 15 * 60 * 1000;
+const CACHE_TTL = 20 * 60 * 1000;
+const LS_TTL   = 8 * 60 * 60 * 1000;
 
 function lsLoad() {
   try {
@@ -800,7 +832,7 @@ async function fetchFeed(key) {
 }
 
 // ── FETCH MULTIPLE FEEDS ──────────────────────────────────────────────────────
-async function fetchMulti(keys, limit = 30) {
+async function fetchMulti(keys, limit = 80) {
   const results = await Promise.allSettled(keys.map(k => fetchFeed(k)));
   const all = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
   const seen = new Set();
@@ -810,7 +842,7 @@ async function fetchMulti(keys, limit = 30) {
     .slice(0, limit);
 }
 
-function getCachedMulti(keys, limit = 30) {
+function getCachedMulti(keys, limit = 80) {
   const all = keys.flatMap(k => cache[k]?.items || []);
   const seen = new Set();
   return all
@@ -828,7 +860,7 @@ function filterStrictly(items, sec) {
     const text = ' ' + ((item.title||'') + ' ' + (item.description||'')).toLowerCase() + ' ';
     return kws.some(kw => text.includes(kw));
   });
-  return filtered.length >= 5 ? filtered : items;
+  return filtered.length > 0 ? filtered : items;
 }
 
 // ── PLATFORM FILTER ───────────────────────────────────────────────────────────
@@ -909,6 +941,12 @@ function srcLabel(item) {
     'theguardian.com':'Guardian','aljazeera.com':'Al Jazeera','dw.com':'DW',
     'france24.com':'France 24','news.sky.com':'Sky','time.com':'TIME',
     'abc.net.au':'ABC AU','rnz.co.nz':'RNZ','africanews.com':'Africa News',
+    'cbssports.com':'CBS Sports','bleacherreport.com':'Bleacher Report','si.com':'Sports Illustrated',
+    'eurosport.com':'Eurosport','slate.com':'Slate','fastcompany.com':'Fast Company',
+    'inc.com':'Inc.','barrons.com':"Barron's",'hbr.org':'HBR','qz.com':'Quartz',
+    'phys.org':'Phys.org','space.com':'Space.com','nasa.gov':'NASA',
+    'popsci.com':'Popular Science','nature.com':'Nature','sciencedaily.com':'Science Daily',
+    'rfi.fr':'RFI','voanews.com':'VOA','news.un.org':'UN News','cfr.org':'CFR',
   };
   for (const [d,l] of Object.entries(MAP)) { if(host.includes(d)) return l; }
   return item.author || host || 'News';
@@ -964,8 +1002,8 @@ function applyNewArticles() {
 function renderUS(items) {
   if (!items.length) return;
   document.getElementById('heroCard').innerHTML = renderHero(items[0], 'us');
-  document.getElementById('usGrid').innerHTML = items.slice(1,9).map(i=>renderCard(i,'us')).join('');
-  updateTicker(items.slice(0,15));
+  document.getElementById('usGrid').innerHTML = items.slice(1).map(i=>renderCard(i,'us')).join('');
+  updateTicker(items.slice(0,20));
 }
 function renderGrid(sec, gridId, items) {
   const el = document.getElementById(gridId);
@@ -983,11 +1021,11 @@ function renderSidebar(items) {
 async function loadUS(silent=false) {
   const keys = SECTION_FEEDS.us;
   if (!silent) {
-    const cached = getCachedMulti(keys, 25);
+    const cached = getCachedMulti(keys, 60);
     if (cached.length) renderUS(cached);
     else document.getElementById('heroCard').innerHTML = SPIN;
   }
-  const fresh = await fetchMulti(keys, 25);
+  const fresh = await fetchMulti(keys, 60);
   if (!fresh.length) return;
   if (!silent) { renderUS(fresh); return; }
   const topTitle = document.querySelector('.hero-title')?.textContent;
@@ -995,10 +1033,10 @@ async function loadUS(silent=false) {
 }
 
 async function loadWorldSidebar() {
-  const keys = SECTION_FEEDS.world.slice(0,3);
-  const cached = getCachedMulti(keys, 7);
+  const keys = SECTION_FEEDS.world.slice(0,5);
+  const cached = getCachedMulti(keys, 10);
   if (cached.length) renderSidebar(cached);
-  const fresh = await fetchMulti(keys, 7);
+  const fresh = await fetchMulti(keys, 10);
   renderSidebar(fresh);
 }
 
@@ -1006,7 +1044,7 @@ async function loadWorldSidebar() {
 async function loadSection(sec, gridId, silent=false) {
   const keys = SECTION_FEEDS[sec] || [sec];
   if (!silent) {
-    const cached = getCachedMulti(keys, 30);
+    const cached = getCachedMulti(keys, 80);
     if (cached.length) {
       sectionItems[sec] = filterStrictly(cached, sec);
       renderGrid(sec, gridId, sectionItems[sec]);
@@ -1015,7 +1053,7 @@ async function loadSection(sec, gridId, silent=false) {
       if(el) el.innerHTML = SPIN;
     }
   }
-  const fresh = await fetchMulti(keys, 30);
+  const fresh = await fetchMulti(keys, 80);
   if (!fresh.length) return;
   sectionItems[sec] = filterStrictly(fresh, sec);
   if (!silent) { renderGrid(sec, gridId, sectionItems[sec]); return; }
@@ -1030,10 +1068,10 @@ async function loadRegion(region) {
   currentRegion = region;
   document.querySelectorAll('.region-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(region.slice(0,4))));
   const keys = SECTION_FEEDS[region] || [];
-  const cached = getCachedMulti(keys,24);
+  const cached = getCachedMulti(keys,60);
   if (cached.length) renderGrid('regional','regionalGrid',cached);
   else document.getElementById('regionalGrid').innerHTML = SPIN;
-  const fresh = await fetchMulti(keys,24);
+  const fresh = await fetchMulti(keys,60);
   renderGrid('regional','regionalGrid',fresh);
 }
 
@@ -1092,9 +1130,9 @@ async function refreshAll() {
 // ── BACKGROUND PRELOADER ──────────────────────────────────────────────────────
 async function preloadAll() {
   const allKeys = [...new Set(Object.values(SECTION_FEEDS).flat())];
-  for (let i=0; i<allKeys.length; i+=4) {
-    await Promise.allSettled(allKeys.slice(i,i+4).map(k=>fetchFeed(k)));
-    await new Promise(r=>setTimeout(r,400));
+  for (let i=0; i<allKeys.length; i+=8) {
+    await Promise.allSettled(allKeys.slice(i,i+8).map(k=>fetchFeed(k)));
+    await new Promise(r=>setTimeout(r,150));
   }
   lsSave();
 }
@@ -1106,14 +1144,14 @@ async function liveLoop() {
   if (currentSection==='us') await loadUS(true);
   else if (currentSection==='regional') {
     const keys = SECTION_FEEDS[currentRegion]||[];
-    const fresh = await fetchMulti(keys,24);
+    const fresh = await fetchMulti(keys,60);
     const firstCard = document.querySelector('#regionalGrid .news-card-title')?.textContent;
     if(fresh.length && fresh[0]?.title!==firstCard){pendingItems=fresh;showToast(Math.min(fresh.length,5));}
   } else {
     await loadSection(currentSection, currentSection+'Grid', true);
   }
   if (liveLoopCount % 4 === 0) preloadAll();
-  const tickerItems = getCachedMulti(SECTION_FEEDS.us.slice(0,3), 15);
+  const tickerItems = getCachedMulti(SECTION_FEEDS.us.slice(0,5), 25);
   if (tickerItems.length) updateTicker(tickerItems);
   document.getElementById('lastUpdated').textContent = 'Live · ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
 }
@@ -1314,17 +1352,23 @@ setInterval(updateClock, 1000);
 setInterval(liveLoop, 90 * 1000);
 
 (async () => {
-  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 25);
+  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 60);
   if (cachedUS.length) { renderUS(cachedUS); }
   else { document.getElementById('heroCard').innerHTML = SPIN; }
-  const cachedWorld = getCachedMulti(SECTION_FEEDS.world.slice(0,3), 7);
+  const cachedWorld = getCachedMulti(SECTION_FEEDS.world.slice(0,5), 10);
   if (cachedWorld.length) renderSidebar(cachedWorld);
 
   await Promise.all([loadUS(), loadWorldSidebar()]);
   document.getElementById('lastUpdated').textContent = 'Live · ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
 
-  setTimeout(preloadAll, 2000);
+  setTimeout(preloadAll, 500);
 })();
+
+// ── SERVICE WORKER ────────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/cwd/sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
+
