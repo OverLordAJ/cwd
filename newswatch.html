@@ -901,7 +901,7 @@ async function fetchFeed(key) {
 }
 
 // ── FETCH MULTIPLE FEEDS ──────────────────────────────────────────────────────
-async function fetchMulti(keys, limit = 150) {
+async function fetchMulti(keys, limit = 200) {
   const results = await Promise.allSettled(keys.map(k => fetchFeed(k)));
   const all = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
   const seen = new Set();
@@ -911,7 +911,7 @@ async function fetchMulti(keys, limit = 150) {
     .slice(0, limit);
 }
 
-function getCachedMulti(keys, limit = 150) {
+function getCachedMulti(keys, limit = 200) {
   const all = keys.flatMap(k => cache[k]?.items || []);
   const seen = new Set();
   return all
@@ -1213,11 +1213,11 @@ function renderSidebar(items) {
 async function loadUS(silent=false) {
   const keys = SECTION_FEEDS.us;
   if (!silent) {
-    const cached = getCachedMulti(keys, 150);
+    const cached = getCachedMulti(keys, 200);
     if (cached.length) renderUS(cached);
     else document.getElementById('heroCard').innerHTML = SPIN;
   }
-  const fresh = await fetchMulti(keys, 150);
+  const fresh = await fetchMulti(keys, 200);
   if (!fresh.length) return;
   arcAdd(fresh, 'us');
   if (!silent) { renderUS(fresh); return; }
@@ -1237,7 +1237,7 @@ async function loadWorldSidebar() {
 async function loadSection(sec, gridId, silent=false) {
   const keys = SECTION_FEEDS[sec] || [sec];
   if (!silent) {
-    const cached = getCachedMulti(keys, 150);
+    const cached = getCachedMulti(keys, 200);
     if (cached.length) {
       sectionItems[sec] = filterStrictly(cached, sec);
       renderGrid(sec, gridId, sectionItems[sec]);
@@ -1246,7 +1246,7 @@ async function loadSection(sec, gridId, silent=false) {
       if(el) el.innerHTML = SPIN;
     }
   }
-  const fresh = await fetchMulti(keys, 150);
+  const fresh = await fetchMulti(keys, 200);
   if (!fresh.length) return;
   sectionItems[sec] = filterStrictly(fresh, sec);
   arcAdd(sectionItems[sec], sec);
@@ -1262,10 +1262,10 @@ async function loadRegion(region) {
   currentRegion = region;
   document.querySelectorAll('.region-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(region.slice(0,4))));
   const keys = SECTION_FEEDS[region] || [];
-  const cached = getCachedMulti(keys,150);
+  const cached = getCachedMulti(keys,200);
   if (cached.length) renderGrid('regional','regionalGrid',cached);
   else document.getElementById('regionalGrid').innerHTML = SPIN;
-  const fresh = await fetchMulti(keys,150);
+  const fresh = await fetchMulti(keys,200);
   if (fresh.length) arcAdd(fresh, region);
   renderGrid('regional','regionalGrid',fresh);
 }
@@ -1397,7 +1397,7 @@ async function preloadAll() {
   const allKeys = [...new Set(Object.values(SECTION_FEEDS).flat())];
   for (let i=0; i<allKeys.length; i+=8) {
     await Promise.allSettled(allKeys.slice(i,i+8).map(k=>fetchFeed(k)));
-    await new Promise(r=>setTimeout(r,150));
+    await new Promise(r=>setTimeout(r,200));
   }
   lsSave();
 }
@@ -1409,7 +1409,7 @@ async function liveLoop() {
   if (currentSection==='us') await loadUS(true);
   else if (currentSection==='regional') {
     const keys = SECTION_FEEDS[currentRegion]||[];
-    const fresh = await fetchMulti(keys,150);
+    const fresh = await fetchMulti(keys,200);
     const firstCard = document.querySelector('#regionalGrid .news-card-title')?.textContent;
     if(fresh.length && fresh[0]?.title!==firstCard){pendingItems=fresh;showToast(Math.min(fresh.length,5));}
   } else {
@@ -1618,7 +1618,7 @@ setInterval(updateClock, 1000);
 setInterval(liveLoop, 90 * 1000);
 
 (async () => {
-  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 150);
+  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 200);
   if (cachedUS.length) { renderUS(cachedUS); }
   else { document.getElementById('heroCard').innerHTML = SPIN; }
   const cachedWorld = getCachedMulti(SECTION_FEEDS.world.slice(0,5), 10);
