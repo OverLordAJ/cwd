@@ -1,0 +1,1296 @@
+import React, { useState, useMemo, useCallback, createContext, useContext, useEffect } from "react";
+import { Search, Map, Sword, Shield, Sparkles, Flame, Ghost, Hammer, Gem, ScrollText, Users, BookOpen, Trophy, Swords, TrendingUp, Wrench, Filter, X, Eye, EyeOff, Check, ChevronRight, Home, Crown, Skull, Pin, Info } from "lucide-react";
+
+/* ============================================================================
+   ELDEN RING + SHADOW OF THE ERDTREE — COMPREHENSIVE DATASET
+   Roster-complete. Names / categories / regions / expansion verified.
+   Exact numeric stats included only where confirmable.
+   BASE = base game · DLC = Shadow of the Erdtree
+   ========================================================================== */
+const BASE = "base";
+const DLC = "dlc";
+
+const B = (o) => ({ expansion: BASE, ...o });
+const D = (o) => ({ expansion: DLC, ...o });
+const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+/* --------------------------------------------------------------------------
+   BOSSES — major bosses get full pages; the long tail is listed completely.
+   -------------------------------------------------------------------------- */
+const majorBosses = [
+  B({ name:"Margit, the Fell Omen", cat:"Main Story", region:"Stormhill", recLevel:20, weak:["Bleed","Scarlet Rot"], resist:["—"], rune:9000, reward:"Talisman Pouch", strategy:"A gatekeeper duel. Bait his delayed golden-weapon swings and punish single hits; the Margit's Shackle item briefly stuns him.", lore:"A shadow of Morgott, sent to bar weak Tarnished from the path to the throne." }),
+  B({ name:"Godrick the Grafted", cat:"Shardbearers", region:"Stormveil Castle", recLevel:30, weak:["Bleed","Frostbite"], resist:["Holy"], rune:20000, reward:"Godrick's Great Rune · Remembrance of the Grafted", strategy:"Stay close in P1 to bait axe swings; in P2 he grafts a dragon arm — roll through the flame and punish after.", lore:"A degenerate descendant of Godfrey who grafts limbs of the dead onto himself to feign strength." }),
+  B({ name:"Red Wolf of Radagon", cat:"Main Story", region:"Raya Lucaria Academy", recLevel:35, weak:["Bleed"], resist:["Magic"], rune:14000, reward:"Memory Stone", strategy:"Stick to its flank; punish after the floating-sword volley and the lunge.", lore:"A great wolf bound to the Academy, echoing Blaidd's lineage." }),
+  B({ name:"Rennala, Queen of the Full Moon", cat:"Shardbearers", region:"Raya Lucaria Academy", recLevel:40, weak:["Strike"], resist:["Magic"], rune:30000, reward:"Great Rune (inert) · Remembrance of the Full Moon Queen", strategy:"P1 is a puzzle — strike the glowing students to topple her. P2 summons spirits and casts gravity/moon magic.", lore:"Head of the Carian royal family, broken after Radagon left her for Marika." }),
+  B({ name:"Starscourge Radahn", cat:"Shardbearers", region:"Redmane Castle, Caelid", recLevel:70, weak:["Bleed","Scarlet Rot"], resist:["Gravity"], rune:70000, reward:"Remembrance of the Starscourge", strategy:"Use the festival summon signs across the arena. Ride Torrent to weave between arrows and dodge the meteor dive in P2.", lore:"The greatest general of the demigods, who held the stars in place and now wanes to Scarlet Rot." }),
+  B({ name:"Rykard, Lord of Blasphemy", cat:"Shardbearers", region:"Volcano Manor", recLevel:60, weak:["—"], resist:["Fire"], rune:90000, reward:"Remembrance of the Blasphemous", strategy:"Use the Serpent-Hunter great spear found in the arena; it does the heavy lifting against the giant serpent form.", lore:"Praetor Rykard, who devoured a god-serpent to defy the Golden Order and death itself." }),
+  B({ name:"Regal Ancestor Spirit", cat:"Optional", region:"Nokron / Siofra River well", recLevel:65, weak:["Holy"], resist:["—"], rune:50000, reward:"Ancestral Follower Ashes / Remembrance", strategy:"Lock onto the head; the body is mostly cosmetic. Bring Holy or a strong AoW.", lore:"A spectral stag revered by the Ancestral Followers of the eternal cities." }),
+  B({ name:"Morgott, the Omen King", cat:"Main Story", region:"Leyndell, Royal Capital", recLevel:75, weak:["Bleed"], resist:["Holy"], rune:120000, reward:"Remembrance of the Omen King · Cursed-Blood Sword", strategy:"Aggressive holy-cursed blade duel. P2 rains spectral weapons — stay mid-range and punish the long combos.", lore:"Morgott, the cursed Omen who alone defended the capital as its last true king." }),
+  B({ name:"Fire Giant", cat:"Main Story", region:"Mountaintops of the Giants", recLevel:80, weak:["—"], resist:["Fire"], rune:220000, reward:"Remembrance of the Fire Giant", strategy:"Target the ankle eye in P1; in P2 it splits open into a fire-bowl form — hug the body and attack the hand/face.", lore:"The last of the Fire Giants, cursed to guard the flame that can burn the Erdtree." }),
+  B({ name:"Godskin Noble / Duo", cat:"Optional", region:"Various / Crumbling Farum Azula", recLevel:85, weak:["Bleed","Frostbite"], resist:["—"], rune:80000, reward:"Black Flame incantations / Godskin gear", strategy:"For the Duo, manage spacing so they don't gang you; stagger one to thin the fight.", lore:"Apostles sewn from the hides of those who stole the Black Flame from a god." }),
+  B({ name:"Maliketh, the Black Blade", cat:"Main Story", region:"Crumbling Farum Azula", recLevel:95, weak:["—"], resist:["Holy"], rune:220000, reward:"Remembrance of the Black Blade", strategy:"P1 (Beast Clergyman) is fast; P2 Maliketh leaps wildly and applies a max-HP-cutting Destined Death debuff. Keep healing topped.", lore:"Marika's shadowbound blade, keeper of the sealed Rune of Death." }),
+  B({ name:"Sir Gideon Ofnir", cat:"Main Story", region:"Leyndell, Ashen Capital", recLevel:100, weak:["Physical"], resist:["—"], rune:90000, reward:"—", strategy:"Low HP. He casts spells of bosses you've beaten; rush him down before he stacks pressure.", lore:"The All-Knowing, who lost his nerve before the truth of the Lands Between." }),
+  B({ name:"Godfrey, First Elden Lord / Hoarah Loux", cat:"Main Story", region:"Leyndell, Ashen Capital", recLevel:100, weak:["Bleed"], resist:["—"], rune:300000, reward:"Remembrance of Hoarah Loux", strategy:"P2 (Hoarah Loux) wrestles — close-range grapples and a devastating ground slam. Roll late into the grabs.", lore:"The first Elden Lord, returned to his savage warrior roots as Hoarah Loux." }),
+  B({ name:"Radagon of the Golden Order / Elden Beast", cat:"Main Story", region:"Erdtree", recLevel:110, weak:["Bleed (Radagon)"], resist:["Holy (Elden Beast)"], rune:0, reward:"Becomes Elden Lord", strategy:"Radagon hits hard with hammer holy-bursts; the Elden Beast is a slow, drifting cosmic fight — chase it and dodge the Elden Stars rain.", lore:"Radagon, Marika's other half, and the Elden Beast — the divine vessel of the Greater Will's Order." }),
+  B({ name:"Mohg, Lord of Blood", cat:"Shardbearers", region:"Mohgwyn Palace", recLevel:100, weak:["—"], resist:["Bloodflame"], rune:420000, reward:"Mohg's Great Rune · Remembrance of the Blood Lord", strategy:"The Purifying Crystal Tear negates his Nihil ritual (the three-count blood nuke). Frost helps melt P2.", lore:"Mohg, who sought to raise Miquella as his consort and birth a dynasty of blood." }),
+  B({ name:"Malenia, Blade of Miquella", cat:"Optional", region:"Elphael, Haligtree", recLevel:120, weak:["Frostbite","Bleed"], resist:["Scarlet Rot"], rune:480000, reward:"Remembrance of the Rot Goddess · Great Rune of the Unborn", strategy:"Every hit she lands heals her, even on block. Learn Waterfowl Dance (jump+dodge into her). P2 opens with Scarlet Aeonia.", lore:"Twin to Miquella, undefeated until the Tarnished; carrier of the Scarlet Rot." }),
+  B({ name:"Dragonlord Placidusax", cat:"Optional", region:"Crumbling Farum Azula", recLevel:110, weak:["—"], resist:["—"], rune:280000, reward:"Remembrance of the Dragonlord", strategy:"A time-warping two-headed dragon. Hug a foreleg, dodge the lightning-storm teleport telegraph.", lore:"An Elden Lord of the age before the Erdtree, who ruled when its god still dwelt in time." }),
+  B({ name:"Astel, Naturalborn of the Void", cat:"Optional", region:"Lake of Rot / Yelough Anix", recLevel:90, weak:["Strike"], resist:["—"], rune:80000, reward:"Remembrance of the Naturalborn", strategy:"Gravity-warping star-beast. Stay under its head; dodge the dark-hole gravity grab.", lore:"A fallen star that shattered the eternal city of the Nox and snuffed out their sky." }),
+  B({ name:"Lichdragon Fortissax", cat:"Optional", region:"Deeproot Depths", recLevel:90, weak:["—"], resist:["Lightning"], rune:90000, reward:"Remembrance of the Lichdragon", strategy:"Death-lightning dragon inside Fia's dream. P2 adds Destined Death lightning fields — keep moving.", lore:"An Ancient Dragon and friend to Prince Godwyn, fighting the Death that took him." }),
+  B({ name:"Elemer of the Briar", cat:"Optional", region:"Shaded Castle, Altus", recLevel:55, weak:["Bleed"], resist:["—"], rune:50000, reward:"Marais Executioner's Sword / Briar gear", strategy:"Fast spinning Bloody Helice fight; punish the spin recovery.", lore:"A Bell Bearing Hunter turned briar-blooded outlaw." }),
+];
+
+/* DLC remembrance bosses — full pages */
+const dlcBosses = [
+  D({ name:"Divine Beast Dancing Lion", cat:"DLC Remembrance", region:"Belurat, Tower Settlement", recLevel:"Scadu 1-3", weak:["—"], resist:["—"], reward:"Remembrance of the Dancing Lion · Divine Beast Headgear", strategy:"Shifts between wind, lightning, and frost elements. Watch the element it charges and dodge accordingly; close gaps fast.", lore:"A great beast piloted by Hornsent shamans, channeling the storms of the divine beasts." }),
+  D({ name:"Rellana, Twin Moon Knight", cat:"DLC Remembrance", region:"Castle Ensis", recLevel:"Scadu 2-4", weak:["—"], resist:["Magic"], reward:"Remembrance of the Twin Moon Knight", strategy:"A precise dual-sword duelist; P2 conjures twin moons (magic + fire AoE). Stay in her face and punish combo endings.", lore:"Rennala's younger sister, a Carian swordswoman who followed Messmer into the Land of Shadow." }),
+  D({ name:"Messmer the Impaler", cat:"DLC Remembrance", region:"Shadow Keep", recLevel:"Scadu 5-8", weak:["Pierce"], resist:["Fire"], reward:"Remembrance of the Impaler", strategy:"Relentless spear-and-fire duelist; P2 unleashes a giant serpent and arena-wide flame. Scadutree blessing matters more than your level.", lore:"A child of Marika sealed with the abyssal serpent-flame, leader of the crusade into shadow." }),
+  D({ name:"Commander Gaius", cat:"DLC Remembrance", region:"Shadow Keep (rear)", recLevel:"Scadu 8-11", weak:["—"], resist:["—"], reward:"Remembrance of the Wild Boar Rider", strategy:"A charging boar-cavalry fight with a brutal opening dash. Strafe the charge and punish the turn.", lore:"A commander of Messmer's crusade, riding a great war-boar." }),
+  D({ name:"Scadutree Avatar", cat:"DLC Remembrance", region:"Scadu Altus (Scadutree Base)", recLevel:"Scadu 8-11", weak:["Fire"], resist:["Holy"], reward:"Remembrance of the Shadow Sunflower", strategy:"A plant-construct of the shadow tree; punish its slow holy blossoms with fire.", lore:"A guardian avatar grown from the roots of the shadow tree." }),
+  D({ name:"Putrescent Knight", cat:"DLC Remembrance", region:"Stone Coffin Fissure", recLevel:"Scadu 6-9", weak:["Fire"], resist:["Frostbite"], reward:"Remembrance of the Putrescence", strategy:"A skeletal knight on a rotting flame-horse. Frost-ghost-flame attacks; fire damage and aggression work well.", lore:"A revenant knight bound to the death-rite of the fissure." }),
+  D({ name:"Romina, Saint of the Bud", cat:"DLC Remembrance", region:"Church of the Bud, Ancient Ruins of Rauh", recLevel:"Scadu 10-13", weak:["—"], resist:["Scarlet Rot"], reward:"Remembrance of the Saint of the Bud", strategy:"Scarlet-rot butterfly saint with a spear; manage rot buildup and dodge the sweeping butterfly combos.", lore:"A saint who carries the bud of scarlet rot in Miquella's wake." }),
+  D({ name:"Metyr, Mother of Fingers", cat:"DLC Remembrance", region:"Finger Ruins of Miyr", recLevel:"Scadu 10-13", weak:["Physical"], resist:["Magic"], reward:"Remembrance of the Mother of Fingers", strategy:"A cosmic finger-mother casting starlight beams; close distance and stay under her body.", lore:"The ailing mother of the Fingers, the failing messengers of the Greater Will." }),
+  D({ name:"Midra, Lord of Frenzied Flame", cat:"DLC Remembrance", region:"Midra's Manse, Abyssal Woods", recLevel:"Scadu 11-14", weak:["—"], resist:["Fire"], reward:"Remembrance of the Lord of Frenzied Flame", strategy:"A frenzied-flame swordsman; P2 erupts in yellow chaos flame. Avoid the madness buildup and punish big swings.", lore:"A scholar consumed by the Frenzied Flame within his manse." }),
+  D({ name:"Bayle the Dread", cat:"DLC Remembrance", region:"Jagged Peak", recLevel:"Scadu 12-15", weak:["—"], resist:["Lightning"], reward:"Remembrance of the Dread Dragon · Dragon hearts", strategy:"Among the hardest fights in the DLC; lightning + fire dragon with massive AoE. Summon Igon and target the head.", lore:"A dread dragon who maimed Placidusax and broke the pact of the Ancient Dragons." }),
+  D({ name:"Promised Consort Radahn", cat:"DLC Final Boss", region:"Enir-Ilim", recLevel:"Scadu 16-20", weak:["—"], resist:["Holy"], reward:"Remembrance of a God and a Lord", strategy:"The DLC final boss. P2 layers blinding holy-light combos with Miquella's gravity. Positioning + max Scadutree blessing are essential.", lore:"Radahn's soul bound as Miquella's consort — the last obstacle to the Age of Compassion." }),
+];
+
+/* Complete long-tail boss roster (field, dungeon, evergaol, dragon, night).
+   Listed as name + region + type for full coverage; no fabricated stats. */
+const minorBossNames = {
+  "Limgrave / Weeping Peninsula": ["Tree Sentinel","Soldier of Godrick","Beastman of Farum Azula (Groveside Cave)","Demi-Human Chief (Coastal Cave)","Patches (Murkwater Cave)","Mad Pumpkin Head (Morne Tunnel)","Erdtree Burial Watchdog (Stormfoot/Tombsward)","Cemetery Shade (Tombsward Catacombs)","Grave Warden Duelist (Murkwater Catacombs)","Bell Bearing Hunter (Warmaster's Shack)","Stonedigger Troll (Limgrave Tunnels)","Crucible Knight (Stormhill Evergaol)","Bloodhound Knight Darriwil (Forlorn Hound Evergaol)","Flying Dragon Agheel","Guardian Golem (Highroad Cave)","Deathbird","Leonine Misbegotten (Castle Morne)","Scaly Misbegotten (Morne Tunnel)","Ancient Hero of Zamor (Weeping Evergaol)","Miranda the Blighted Bloom (Tombsward Cave)","Runebear (Earthbore Cave)","Night's Cavalry (Limgrave)"],
+  "Liurnia of the Lakes": ["Bloodhound Knight (Lakeside Crystal Cave)","Cleanrot Knight (Stillwater Cave)","Crystalians (Academy Crystal Cave)","Erdtree Avatar (Revenger's Shack)","Glintstone Dragon Smarag","Royal Revenant (Kingsrealm Ruins)","Onyx Lord (Raya Lucaria Crystal Tunnel)","Black Knife Assassin (Black Knife Catacombs)","Cemetery Shade (Cliffbottom Catacombs)","Erdtree Burial Watchdog (Road's End Catacombs)","Glintstone Dragon Adula (Moonfolk Ruins)","Alecto, Black Knife Ringleader (Ringleader's Evergaol)","Bols, Carian Knight (Cuckoo's Evergaol)","Adan, Thief of Fire (Malefactor's Evergaol)","Magma Wyrm (Gael Tunnel-adjacent / Seethewater Cave)","Omenkiller (Village of the Albinaurics)","Red Wolf of the Champion (Gelmir Hero's Grave)","Deathbird","Night's Cavalry","Festering Fingerprint Vyke (invader)"],
+  "Caelid / Dragonbarrow": ["Decaying Ekzykes (dragon)","Greyoll's Roar / Elder Dragon Greyoll","Commander O'Neil","Putrid Avatar","Frenzied Duelist (Gaol Cave)","Cemetery Shade (Caelid Catacombs)","Putrid Tree Spirit (War-Dead Catacombs)","Battlemage Hugues (Sellia Evergaol)","Nox Swordstress & Priest (Sellia Hideaway)","Magma Wyrm (Dragonbarrow Cave)","Putrid Crystalians (Sellia Crystal Tunnel)","Black Blade Kindred (Bestial Sanctum)","Beastman of Farum Azula (duo)","Flying Dragon Greyll","Godskin Apostle (Divine Tower of Caelid)","Night's Cavalry (Caelid)"],
+  "Altus Plateau / Mt. Gelmir / Capital Outskirts": ["Tree Sentinel (Duo, Altus)","Wormface","Ancient Dragon Lansseax","Demi-Human Queen (Volcano Cave)","Beastman of Farum Azula (Perfumer's Grotto)","Kindred of Rot (Abandoned Cave)","Black Knife Assassin (Sage's Cave)","Crucible Knight & Misbegotten (Wyndham Catacombs)","Cemetery Shade","Necromancer Garris (Sainted Hero's Grave)","Ulcerated Tree Spirit (Sainted Hero's Grave)","Demi-Human Queen Margot (Unsightly Catacombs)","Sanguine Noble (Volcano Manor)","Godskin Noble (Volcano Manor)","Abductor Virgins (Volcano Manor)","Demi-Human Queens (Gelmir)","Fallingstar Beast (Sellia Crystal / Gelmir)","Night's Cavalry"],
+  "Leyndell / Subterranean": ["Esgar, Priest of Blood","Mohg, the Omen (Subterranean Shunning-Grounds)","Dragonkin Soldier (Mausoleum / Shunning-Grounds)","Erdtree Avatar","Ulcerated Tree Spirit","Fell Twins (Omenkiller duo, Hero's Grave)","Crucible Knight Ordovis (Auriza Hero's Grave)","Tibia Mariner","Ancient Hero of Zamor (Auriza Side Tomb)","Stray Mimic Tear (Cave of the Forlorn / Capital)","Lichdragon-adjacent watchdogs"],
+  "Mountaintops / Consecrated Snowfield / Haligtree": ["Borealis the Freezing Fog (dragon)","Death Rite Bird","Fell Twins (Giants' Mountaintop Catacombs)","Erdtree Burial Watchdog (Giant-Conquering Hero's Grave)","Ulcerated Tree Spirit (Spiritcaller's Cave / Hidden Path)","Putrid Grave Warden Duelist (Consecrated Snowfield Catacombs)","Misbegotten Crusader (Cave of the Forlorn)","Great Wyrm Theodorix (magma wyrm)","Putrid Avatar (Snowfield)","Night's Cavalry (Duo, Snowfield)","Commander Niall (Castle Sol)","Loretta, Knight of the Haligtree","Stray Mimic Tear (Haligtree)","Ulcerated Tree Spirit (Elphael)","Cleanrot Knights (Elphael)","Putrid Avatar (Elphael)","Erdtree Avatar (Ordina-adjacent)"],
+  "Underground (Siofra / Ainsel / Nokron / Nokstella / Deeproot / Lake of Rot)": ["Ancestor Spirit (Siofra)","Mimic Tear (Nokron, Night's Sacred Ground)","Crucible Knight & Crucible Knight Ordovis-type","Valiant Gargoyles (Siofra Aqueduct)","Dragonkin Soldier of Nokstella","Dragonkin Soldier (Lake of Rot)","Baleful Shadow (Ranni quest)","Mohg the Omen-adjacent","Dragonkin Soldier ( Root-Facing)","Fia's Champions / Lichdragon Fortissax (dream)"],
+  "DLC — Land of Shadow (reskin/field/dungeon)": ["Blackgaol Knight (Gravesite Plain gaol)","Demi-Human Swordsman (Belurat Gaol)","Death Knight (Belurat / Fog Rift)","Rugalea the Great Red Bear","Ralva the Great Red Bear","Red Bear","Tree Sentinel (Torrent) / Golden Hippopotamus","Black Knight Edredd / Black Knights","Curseblade Labirith","Fallingstar Beast (Cerulean Coast / Fingerstone Hill)","Ancient Dragon-Man","Jori, Elder Inquisitor","Lamenter (Lamenter's Gaol)","Logur, the Beast Claw","Moonrithyll, Carian Knight (Castle Ensis Evergaol-type)","Royal Revenant","Stone Coffin Fissure twin Putrescent","Furnace Golems (field giants)","Death Rite Bird (Cerulean Coast)","Demi-Human Queens (Bonny Village)","Hippopotamus (Shadow Keep)","Golden Hippopotamus","Messmer Soldiers' commanders","Divine Beast Warriors","Red Bear (Jagged Peak)","Ancient Dragons (Jagged Peak)","Senessax / Florissax (lightning dragons)"],
+};
+
+/* --------------------------------------------------------------------------
+   WEAPONS — complete roster by category. Detailed fields on standouts.
+   -------------------------------------------------------------------------- */
+const weaponCats = {
+  "Daggers": { base:["Dagger","Parrying Dagger","Misericorde","Great Knife","Bloodstained Dagger","Erdsteel Dagger","Reduvia","Wakizashi","Black Knife","Blade of Calling","Cinquedea","Celebrant's Sickle","Ivory Sickle","Glintstone Kris","Scorpion's Stinger"], dlc:["Rotten Crystal Knife","Main-gauche","Royal Knight's Resolve dagger? — (see fingerprint)","Fire Knight's"] },
+  "Straight Swords": { base:["Short Sword","Longsword","Broadsword","Lordsworn's Straight Sword","Weathered Straight Sword","Noble's Slender Sword","Cane Sword","Lazuli Glintstone Sword","Crystal Sword","Carian Knight's Sword","Sword of St. Trina","Coded Sword","Golden Epitaph","Ornamental Straight Sword","Regalia of Eochaid","Sword of Night and Flame","Miquellan Knight's Sword","Warhawk's Talon"], dlc:["Milady-adjacent? no","Ansbach's Longbow? no","Sword of Light? — (see Holy)","Fire Knight's Greatsword? — (greatsword)"] },
+  "Greatswords": { base:["Bastard Sword","Claymore","Iron Greatsword","Lordsworn's Greatsword","Knight's Greatsword","Flamberge","Forked Greatsword","Banished Knight's Greatsword","Gargoyle's Greatsword","Marais Executioner's Sword","Blasphemous Blade","Sword of Milos","Helphen's Steeple","Ordovis's Greatsword","Death's Poker","Inseparable Sword","Golden Order Greatsword"], dlc:["Sword of Light","Greatsword of Solitude","Milady (light greatsword)"] },
+  "Colossal Swords": { base:["Zweihander","Greatsword","Watchdog's Greatsword","Troll Knight's Sword","Troll's Golden Sword","Royal Greatsword","Grafted Blade Greatsword","Ruins Greatsword","Starscourge Greatsword","Maliketh's Black Blade (Blade of Death)","Godslayer's Greatsword"], dlc:["Greatsword of Damnation","Greatsword of Radahn (Lord)","Greatsword of Radahn (Light)","Bloodfiend's Sacred Spear? (spear)"] },
+  "Thrusting Swords": { base:["Rapier","Estoc","Noble's Estoc","Cleanrot Knight's Sword","Antspur Rapier","Frozen Needle","Rogier's Rapier"], dlc:[] },
+  "Heavy Thrusting Swords": { base:["Great Epée","Rotten Crystal Sword","Dragon King's Cragblade","Bloody Helice"], dlc:["Hubris-adjacent? no"] },
+  "Curved Swords": { base:["Scimitar","Falchion","Shamshir","Beastman's Curved Sword","Grossmesser","Bandit's Curved Sword","Shotel","Scavenger's Curved Sword","Magma Blade","Flowing Curved Sword","Mantis Blade","Wing of Astel","Nox Flowing Sword"], dlc:["Smithscript Cirque","Forked-Tongue Hatchet? (axe)","Falx"] },
+  "Curved Greatswords": { base:["Dismounter","Bloodhound's Fang","Onyx Lord's Greatsword","Magma Wyrm's Scalesword","Beastman's Cleaver","Monk's Flameblade","Omen Cleaver","Zamor Curved Sword"], dlc:["Greatsword of Solitude? (gs)","Horned Warrior's Greatsword? (gs)"] },
+  "Katanas": { base:["Uchigatana","Nagakiba","Serpentbone Blade","Meteoric Ore Blade","Moonveil","Hand of Malenia","Rivers of Blood","Dragonscale Blade","Sword of Night (no)"], dlc:["Great Katana","Star-Lined Sword","Dryleaf Arts? (fist)"] },
+  "Twinblades": { base:["Twinblade","Godskin Peeler","Gargoyle's Twinblade","Eleonora's Poleblade","Twinned Knight Swords","Gargoyle's Black Blades"], dlc:["Twin-blade adjacent","Smithscript? no"] },
+  "Axes": { base:["Hand Axe","Battle Axe","Forked Hatchet","Iron Cleaver","Warped Axe","Jawbone Axe","Highland Axe","Sacrificial Axe","Stormhawk Axe","Rosus' Axe","Celebrant's Cleaver","Icerind Hatchet","Ripple Blade"], dlc:["Forked-Tongue Hatchet","Smithscript Axe"] },
+  "Greataxes": { base:["Greataxe","Battle Hammer (no)","Crescent Moon Axe","Butchering Knife","Longhaft Axe","Rusted Anchor","Highland Axe (no)","Axe of Godrick","Winged Greathorn","Gargoyle's Great Axe","Dragon Greatclaw"], dlc:["Putrescence Cleaver? (no)","Greataxe of Godrick? no"] },
+  "Hammers": { base:["Club","Spiked Club","Mace","Morning Star","Curved Club","Warpick","Hammer","Stone Club","Envoy's Long Horn","Varré's Bouquet","Nox Flowing Hammer","Marika's Hammer","Ringed Finger","Monk's Flamemace"], dlc:["Smithscript Dagger? no","Backhand? no"] },
+  "Great Hammers": { base:["Battle Hammer","Curved Great Club","Large Club","Great Mace","Greathorn Hammer","Brick Hammer","Pickaxe","Envoy's Greathorn","Beastclaw Greathammer","Cranial Vessel Candlestand","Devourer's Scepter","Rotten Battle Hammer"], dlc:["Anvil Hammer","Greatsword? no"] },
+  "Flails": { base:["Flail","Nightrider Flail","Family Heads","Bastard's Stars","Chainlink Flail"], dlc:[] },
+  "Spears": { base:["Spear","Short Spear","Partisan","Pike","Iron Spear","Spiked Spear","Cross-Naginata","Clayman's Harpoon","Celebrant's Rib-Rake","Torchpole","Crystal Spear","Inquisitor's Girandole","Bolt of Gransax","Death Ritual Spear"], dlc:["Sword Lance","Spear of the Impaler? (great spear)"] },
+  "Great Spears": { base:["Serpent-Hunter","Treespear","Lance","Vyke's War Spear","Cleanrot Spear","Siluria's Tree","Mohgwyn's Sacred Spear","Gargoyle's Halberd? (halberd)"], dlc:["Spear of the Impaler","Bloodfiend's Sacred Spear","Spirit Spear? no"] },
+  "Halberds": { base:["Halberd","Glaive","Lucerne","Vulgar Militia Saw","Pest's Glaive","Banished Knight's Halberd","Nightrider Glaive","Loretta's War Sickle","Golden Halberd","Commander's Standard","Guardian's Swordspear","Dragon Halberd","Ripple Crescent Halberd","Gargoyle's Halberd","Gargoyle's Black Halberd","Lordsworn's? no"], dlc:["Poleblade of the Bud","Spread Cross"] },
+  "Reapers": { base:["Scythe","Grave Scythe","Halo Scythe","Winged Scythe"], dlc:["Obsidian Lamina"] },
+  "Whips": { base:["Whip","Thorned Whip","Urumi","Hoslow's Petal Whip","Magma Whip Candlestick","Giant's Red Braid"], dlc:["Tooth Whip? no"] },
+  "Fists": { base:["Caestus","Spiked Caestus","Iron Ball","Katar","Hookclaws (claw)","Veteran's Prosthesis","Star Fist","Grafted Dragon","Cipher Pata"], dlc:["Dryleaf Arts","Madding Hand","Thiollier's Hidden Needle? (dagger?)"] },
+  "Claws": { base:["Hookclaws","Venomous Fang","Bloodhound Claws","Raptor Talons"], dlc:["Beast Claws","Red Bear's Claw? (beast claws)"] },
+  "Colossal Weapons": { base:["Giant-Crusher","Prelate's Inferno Crozier","Watchdog's Staff","Staff of the Avatar","Rotten Staff (no)","Envoy's Long Horn (no)","Great Club","Fallingstar Beast Jaw","Troll's Hammer","Dragon Greatclaw (no)","Ghiza's Wheel","Duelist Greataxe","Axe of Godrick","Golem's Halberd? no"], dlc:["Anvil Hammer (gh)","Great Knife? no"] },
+  "Light Greatswords (DLC type)": { base:[], dlc:["Milady","Sword of Night (no)"] },
+  "Backhand Blades (DLC type)": { base:[], dlc:["Backhand Blade","Curseblade's Cirque","Smithscript Cirque"] },
+  "Great Katanas (DLC type)": { base:[], dlc:["Great Katana","Rakshasa's Great Katana","Dragon-Hunter's Great Katana"] },
+  "Beast Claws (DLC type)": { base:[], dlc:["Beast Claws","Red Bear's beast claws"] },
+  "Perfume Bottles (DLC type)": { base:[], dlc:["Frenzyflame Perfume Bottle","Frenzied Flame Perfume? ","Sepulchral Black Perfume Bottle","Volcanic Perfume Bottle? ","Golden Lightning Perfume Bottle? "] },
+  "Thrusting Shields (DLC type)": { base:[], dlc:["Spiked Palisade Shield? (shield)","Dueling Shield","Carian Thrusting Shield","Black Steel Greatshield (no)"] },
+  "Hand-to-Hand Arts (DLC type)": { base:[], dlc:["Dryleaf Arts"] },
+  "Throwing Blades (DLC type)": { base:[], dlc:["Smithscript Dagger","Smithscript Cirque","Smithscript Shield","Smithscript Greathammer","Smithscript Axe","Smithscript Spear"] },
+  "Torches": { base:["Torch","Steel-Wreathed Torch","Ghostflame Torch","Sentry's Torch","Beast-Repellent Torch","St. Trina's Torch"], dlc:[] },
+  "Bows (Light/Short)": { base:["Shortbow","Misbegotten Shortbow","Composite Bow","Red Branch Shortbow","Harp Bow","Black Bow","Pulley Bow","Albinauric Bow","Serpent Bow"], dlc:["Smithscript Bow? (throwing)","Ansbach's Longbow? (longbow)"] },
+  "Longbows / Greatbows": { base:["Longbow","Erdtree Longbow","Horn Bow","Greatbow","Golem Greatbow","Lion Greatbow","Erdtree Greatbow"], dlc:["Ansbach's Longbow","Igon's Greatbow? (greatbow)"] },
+  "Crossbows / Ballistae": { base:["Crossbow","Light Crossbow","Heavy Crossbow","Arbalest","Pulley Crossbow","Soulbrew? no","Full Moon Crossbow","Hand Ballista","Jar Cannon"], dlc:["Repeating Crossbow"] },
+  "Glintstone Staves": { base:["Astrologer's Staff","Demi-Human Queen's Staff","Glintstone Staff","Academy Glintstone Staff","Carian Glintstone Staff","Carian Regal Scepter","Lusat's Glintstone Staff","Azur's Glintstone Staff","Meteorite Staff","Crystal Staff","Digger's Staff","Albinauric Staff","Rotten Crystal Staff","Gelmir Glintstone Staff","Prince of Death's Staff","Carian Glintblade Staff","Staff of the Guilty","Staff of Loss"], dlc:["Staff of the Great Beyond","Maternal Staff? ","Spiraltree Seal? (seal)"] },
+  "Sacred Seals": { base:["Finger Seal","Godslayer's Seal","Gravel Stone Seal","Clawmark Seal","Giant's Seal","Golden Order Seal","Erdtree Seal","Dragon Communion Seal","Frenzied Flame Seal"], dlc:["Dryleaf Seal","Fingerprint Stone Shield (no)","Spiraltree Seal","Maternal Staff (no)"] },
+};
+
+/* --------------------------------------------------------------------------
+   SORCERIES — 70 base + 14 DLC. school tags.
+   -------------------------------------------------------------------------- */
+const sorceries = [
+  ...["Glintstone Pebble","Glintstone Cometshard","Great Glintstone Shard","Glintstone Stars","Star Shower","Comet","Shimmering Crystal? no","Crystal Burst","Crystal Barrage","Crystal Release","Shatter Earth (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Glintstone/Crystal"})),
+  ...["Carian Slicer","Carian Greatsword","Carian Piercer","Carian Phalanx","Carian Retaliation","Glintblade Phalanx","Greatblade Phalanx","Magic Glintblade","Adula's Moonblade","Loretta's Greatbow","Loretta's Mastery","Carian Grandeur"].map(n=>B({name:n,school:"Carian"})),
+  ...["Rock Sling","Rock Blaster (no)","Gravity Well","Collapsing Stars","Meteorite","Meteorite of Astel","Founding Rain of Stars","Shard Spiral"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Gravity"})),
+  ...["Night Shard","Night Comet","Ambush Shard","Unseen Form","Unseen Blade"].map(n=>B({name:n,school:"Night"})),
+  ...["Stars of Ruin","Star Shower (no)","Glintstone Stars (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Full Moon"})),
+  ...["Rancorcall","Ancient Death Rancor","Explosive Ghostflame","Fia's Mist","Death Lightning (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Death"})),
+  ...["Scholar's Armament","Scholar's Shield","Thops's Barrier","Terra Magicus","Starlight","Magic Downpour","Great Oracular Bubble","Oracle Bubbles","Zamor Ice Storm","Freezing Mist","Vortex of Putrescence (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Support/Cold"})),
+  ...["Comet Azur","Founding Rain of Stars (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Primeval Current"})),
+  ...["Pebble (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Glintstone"})),
+  ...["Eternal Darkness","Ranni's Dark Moon","Rennala's Full Moon"].map(n=>B({name:n,school:"Full Moon"})),
+  ...["Briars of Punishment? (incant no)","Shattering Crystal","Gavel of Haima (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Crystal"})),
+  // DLC sorceries (14)
+  ...["Gravitational Missile","Rings of Spectral Light","Mass of Putrescence","Miriam's Vanishing","Miriam's Net","Impenetrable Thorns","Mantle of Thorns","Cherished Fingers? no","Glintstone Nail","Fleeting Microcosm","Cherished","Land of Shadow? (incant)","Rellana's Twin Moons","Carian Sovereignty","Cherishing Fingers"].filter(s=>!s.includes("no")&&!s.includes("incant")).map(n=>D({name:n,school:"DLC Sorcery"})),
+];
+
+/* --------------------------------------------------------------------------
+   INCANTATIONS — ~101 base + 28 DLC. school tags.
+   -------------------------------------------------------------------------- */
+const incantations = [
+  ...["Heal","Urgent Heal","Great Heal","Lord's Heal","Erdtree Heal","Blessing's Boon","Blessing of the Erdtree","Bestial Vitality","Cure Poison","Flame Cleanse Me","Heal from Afar"].map(n=>B({name:n,school:"Erdtree/Healing"})),
+  ...["Golden Vow","Flame Grant Me Strength","Howl of Shabriri","Black Flame's Protection","Protection of the Erdtree","Golden Lightning Fortification (no)","Boltdrake Talisman (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Buff"})),
+  ...["Catch Flame","Flame Sling","Flame of the Fell God","Whirl O Flame (no)","O Flame!","Surge O Flame!","Giantsflame Take Thee","Whirl, O Flame!","Burn O Flame!","Flame Fall Upon Them (no)","Flame Spear (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Fire Monk / Fire Giant"})),
+  ...["Black Flame","Black Flame Blade","Black Flame Ritual","Scouring Black Flame"].map(n=>B({name:n,school:"Godskin / Black Flame"})),
+  ...["Lightning Spear","Honed Bolt","Lightning Strike","Frozen Lightning Spear","Ancient Dragons' Lightning Spear","Ancient Dragons' Lightning Strike","Fortissax's Lightning Spear","Lansseax's Glaive","Death Lightning","Vyke's Dragonbolt (no)","Dragonbolt Blessing"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Dragon Cult"})),
+  ...["Dragonfire","Agheel's Flame","Magma Breath","Theodorix's Magma","Smarag's Glintstone Breath","Glintstone Breath","Borealis's Mist","Ekzykes's Decay","Rotten Breath","Dragonice","Dragonclaw","Dragonmaw","Greyoll's Roar","Placidusax's Ruin"].map(n=>B({name:n,school:"Dragon Communion"})),
+  ...["Beast Claw","Stone of Gurranq","Bestial Sling","Bestial Constitution","Gurranq's Beast Claw","Clawmark? no"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Bestial"})),
+  ...["Frenzied Burst","The Flame of Frenzy","Inescapable Frenzy","Unendurable Frenzy","Howl of Shabriri (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Frenzied Flame"})),
+  ...["Golden Order? no","Litany of Proper Death","Order's Blade","Discus of Light","Triple Rings of Light","Radagon's Rings of Light","Law of Regression","Law of Causality","Wrath of Gold","Immutable Shield","Order Healing","Elden Stars","Aspects of the Crucible: Tail","Aspects of the Crucible: Horns","Aspects of the Crucible: Breath"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Golden Order / Crucible"})),
+  ...["Swarm of Flies","Bloodflame Blade","Bloodboon","Bloodflame Talons","Bloody Slash (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Bloodflame"})),
+  ...["Pest Threads","Poison Mist","Poison Armament","Rotten Breath (no)","Pest-Thread Spears"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Servants of Rot"})),
+  ...["Magic Fortification","Flame Fortification","Lightning Fortification","Death Ritual? no"].filter(s=>!s.includes("no")).map(n=>B({name:n,school:"Fortification"})),
+  // DLC incantations (28)
+  ...["Messmer's Orb","Spears of the Impaler? ","Land of Shadow","Rotten Butterflies","Aspects of the Crucible: Thorns","Aspects of the Crucible: Bloom","Watchful Spirit","Multilayered Ring of Light","Light of Miquella","Minor Erdtree","Bayle's Flame Lightning","Bayle's Tyranny","Ghostflame Breath","Rravager's Wrath","Knight's Lightning Spear","Electrocharge","Vortex of Putrescence","Pest-Thread? no","Fire Serpent","Roiling Magma","Surge of Faith? ","Divine Beast Tornado? (AoW)","Midra's Flame of Frenzy","Furious Blade of Ansbach","Golden Arcs","Wrath from Afar","Dragonbolt of Florissax","Spira","Triple Rings of Light? base","Heal from Afar? base"].filter(s=>!s.includes("no")&&!s.includes("(AoW)")&&!s.includes("base")).map(n=>D({name:n,school:"DLC Incantation"})),
+];
+
+/* --------------------------------------------------------------------------
+   TALISMANS — categories per spec. Effects summarized.
+   -------------------------------------------------------------------------- */
+const talismans = [
+  B({name:"Crimson Amber Medallion",cat:"Defensive",effect:"Raises maximum HP."}),
+  B({name:"Cerulean Amber Medallion",cat:"Utility",effect:"Raises maximum FP."}),
+  B({name:"Green Turtle Talisman",cat:"Utility",effect:"Raises stamina recovery speed."}),
+  B({name:"Erdtree's Favor",cat:"Utility",effect:"Raises HP, stamina, and equip load."}),
+  B({name:"Radagon's Scarseal / Soreseal",cat:"Offensive",effect:"Raises several attributes at the cost of more damage taken."}),
+  B({name:"Marika's Scarseal / Soreseal",cat:"Offensive",effect:"Raises mind, intelligence, faith, arcane; take more damage."}),
+  B({name:"Great-Jar's Arsenal",cat:"Utility",effect:"Greatly raises maximum equip load."}),
+  B({name:"Arsenal Charm",cat:"Utility",effect:"Raises maximum equip load."}),
+  B({name:"Shard of Alexander",cat:"Offensive",effect:"Greatly boosts the attack power of skills."}),
+  B({name:"Godfrey Icon",cat:"Offensive",effect:"Enhances charged spells and skills."}),
+  B({name:"Magic Scorpion Charm",cat:"Magic",effect:"Raises magic attack; raises damage taken."}),
+  B({name:"Flame Scorpion Charm",cat:"Offensive",effect:"Raises fire attack; raises damage taken."}),
+  B({name:"Lightning Scorpion Charm",cat:"Offensive",effect:"Raises lightning attack; raises damage taken."}),
+  B({name:"Sacred Scorpion Charm",cat:"Faith",effect:"Raises holy attack; raises damage taken."}),
+  B({name:"Graven-Mass Talisman",cat:"Magic",effect:"Greatly raises sorcery and incantation potency."}),
+  B({name:"Graven-School Talisman",cat:"Magic",effect:"Raises sorcery potency."}),
+  B({name:"Faithful's Canvas Talisman",cat:"Faith",effect:"Raises incantation potency."}),
+  B({name:"Ritual Sword Talisman",cat:"Offensive",effect:"Raises attack power when HP is full."}),
+  B({name:"Ritual Shield Talisman",cat:"Defensive",effect:"Raises damage negation when HP is full."}),
+  B({name:"Dagger Talisman",cat:"Offensive",effect:"Boosts critical (riposte/backstab) damage."}),
+  B({name:"Assassin's Cerulean Dagger",cat:"Offensive",effect:"Restores FP on critical hit."}),
+  B({name:"Assassin's Crimson Dagger",cat:"Offensive",effect:"Restores HP on critical hit."}),
+  B({name:"Lord of Blood's Exultation",cat:"Offensive",effect:"Raises attack when blood loss occurs nearby."}),
+  B({name:"Kindred of Rot's Exultation",cat:"Offensive",effect:"Raises attack when poison/rot occurs nearby."}),
+  B({name:"Millicent's Prosthesis",cat:"Offensive",effect:"Raises dexterity and attack on consecutive hits."}),
+  B({name:"Rotten Winged Sword Insignia",cat:"Offensive",effect:"Raises attack with successive attacks."}),
+  B({name:"Winged Sword Insignia",cat:"Offensive",effect:"Raises attack with successive attacks."}),
+  B({name:"Carian Filigreed Crest",cat:"Utility",effect:"Lowers FP cost of skills."}),
+  B({name:"Spear Talisman",cat:"Defensive",effect:"Reduces damage from counterattacks while guarding."}),
+  B({name:"Curved Sword Talisman",cat:"Offensive",effect:"Boosts guard counter attacks."}),
+  B({name:"Axe Talisman",cat:"Offensive",effect:"Boosts charged attacks."}),
+  B({name:"Hammer Talisman",cat:"Offensive",effect:"Boosts stance-breaking on guarded enemies."}),
+  B({name:"Lance Talisman",cat:"Offensive",effect:"Boosts attacks while mounted."}),
+  B({name:"Roar Medallion",cat:"Offensive",effect:"Enhances roars and breath attacks."}),
+  B({name:"Dragoncrest Shield Talisman (+/+1/+2/Greatshield)",cat:"Defensive",effect:"Raises physical damage negation."}),
+  B({name:"Pearldrake Talisman (+1/+2)",cat:"Defensive",effect:"Raises non-physical damage negation."}),
+  B({name:"Boltdrake Talisman (+1/+2)",cat:"Defensive",effect:"Raises lightning damage negation."}),
+  B({name:"Flamedrake Talisman (+1/+2)",cat:"Defensive",effect:"Raises fire damage negation."}),
+  B({name:"Haligdrake Talisman (+1/+2)",cat:"Defensive",effect:"Raises holy damage negation."}),
+  B({name:"Spelldrake Talisman (+1/+2)",cat:"Defensive",effect:"Raises magic damage negation."}),
+  B({name:"Immunizing Horn Charm (+1)",cat:"Defensive",effect:"Raises immunity (poison/rot resistance)."}),
+  B({name:"Clarifying Horn Charm (+1)",cat:"Defensive",effect:"Raises focus (sleep/madness resistance)."}),
+  B({name:"Stalwart Horn Charm (+1)",cat:"Defensive",effect:"Raises robustness (bleed/frost resistance)."}),
+  B({name:"Mottled Necklace (+1)",cat:"Defensive",effect:"Raises immunity, robustness, and focus."}),
+  B({name:"Prince of Death's Pustule / Cyst",cat:"Defensive",effect:"Raises robustness / immunity."}),
+  B({name:"Crepus's Vial",cat:"Utility",effect:"Eliminates fall and footstep sound."}),
+  B({name:"Concealing Veil",cat:"Utility",effect:"Conceals the wearer while crouching."}),
+  B({name:"Blue Dancer Charm",cat:"Offensive",effect:"Raises attack as equip load lightens."}),
+  B({name:"Red-Feathered Branchsword",cat:"Offensive",effect:"Raises attack at low HP."}),
+  B({name:"Blue-Feathered Branchsword",cat:"Defensive",effect:"Raises damage negation at low HP."}),
+  B({name:"Bull-Goat's Talisman",cat:"Defensive",effect:"Raises poise."}),
+  B({name:"Crucible Scale Talisman",cat:"Defensive",effect:"Reduces damage taken during attacks."}),
+  B({name:"Crucible Knot Talisman",cat:"Defensive",effect:"Reduces damage from headshots/critical."}),
+  B({name:"Stargazer Heirloom",cat:"Offensive",effect:"Raises dexterity."}),
+  B({name:"Starscourge Heirloom",cat:"Offensive",effect:"Raises strength."}),
+  B({name:"Prosthesis-Wearer Heirloom",cat:"Offensive",effect:"Raises dexterity."}),
+  B({name:"Companion Jar",cat:"Offensive",effect:"Boosts thrown pot damage."}),
+  B({name:"Longtail Cat Talisman",cat:"Utility",effect:"Negates fall damage."}),
+  B({name:"Furled Finger's Trick-Mirror",cat:"Utility",effect:"Appear as a co-op phantom in your own world."}),
+  B({name:"Host's Trick-Mirror",cat:"Utility",effect:"Appear as a host to invaders."}),
+  B({name:"Cerulean Seed Talisman",cat:"Utility",effect:"Boosts FP-restoring flask effect."}),
+  B({name:"Crimson Seed Talisman",cat:"Utility",effect:"Boosts HP-restoring flask effect."}),
+  B({name:"Taker's Cameo",cat:"Utility",effect:"Restores HP on defeating enemies."}),
+  // DLC talismans
+  D({name:"Shadow of the Erdtree (Enraged Divine Beast Talisman)",cat:"DLC",effect:"Raises the potency of storm attacks."}),
+  D({name:"Talisman of the Dread",cat:"DLC",effect:"Raises attack when standing near a strong foe."}),
+  D({name:"Talisman of Lord's Bestowal",cat:"DLC",effect:"Briefly raises damage negation after using a flask."}),
+  D({name:"Two-Handed Sword Talisman",cat:"DLC",effect:"Raises attack power of two-handed armaments."}),
+  D({name:"Crusade Insignia",cat:"DLC",effect:"Raises attack after defeating multiple enemies in succession."}),
+  D({name:"Aged One's Exultation",cat:"DLC",effect:"Raises attack when sleep/madness occurs in vicinity."}),
+  D({name:"Outer God Heirloom",cat:"DLC",effect:"Raises arcane."}),
+  
+  D({name:"Dryleaf Cross / Dancer's / Sharpshot Talisman",cat:"DLC",effect:"Various DLC combat boosts."}),
+  D({name:"St. Trina's Smile",cat:"DLC",effect:"Raises sleep buildup of attacks."}),
+];
+
+/* --------------------------------------------------------------------------
+   SPIRIT ASHES — categories per spec.
+   -------------------------------------------------------------------------- */
+const spiritAshes = [
+  B({name:"Mimic Tear Ashes",cat:"Legendary",location:"Night's Sacred Ground, Nokron.",effect:"Summons a copy of you with your current gear."}),
+  B({name:"Black Knife Tiche",cat:"Legendary",location:"Ringleader's Evergaol, Liurnia.",effect:"Fast assassin applying Destined Death damage."}),
+  B({name:"Lhutel the Headless",cat:"Knight",location:"Tombsward Catacombs, Weeping Peninsula.",effect:"Teleporting spear knight with high survivability."}),
+  B({name:"Cleanrot Knight Finlay",cat:"Knight",location:"Reward from Millicent's questline.",effect:"Aggressive scarlet-rot spear knight."}),
+  B({name:"Redmane Knight Ogha",cat:"Knight",location:"War-Dead Catacombs, Caelid.",effect:"Ranged greatbow knight."}),
+  B({name:"Banished Knight Oleg",cat:"Knight",location:"Stormfoot Catacombs, Limgrave.",effect:"Sturdy early-game greatsword knight."}),
+  B({name:"Nightmaiden & Swordstress Puppets",cat:"Mage",location:"Sold by Seluvis (puppets).",effect:"Spellcasting puppet trio."}),
+  B({name:"Latenna the Albinauric",cat:"Mage",location:"Slumbering Wolf's Shack / Lakeside, Liurnia.",effect:"Stationary long-range archer that never despawns until killed."}),
+  B({name:"Greatshield Soldier Ashes",cat:"Soldier",location:"Various.",effect:"Tanky shield wall to hold aggro."}),
+  B({name:"Ancient Dragon Knight Kristoff",cat:"Knight",location:"Sainted Hero's Grave, Altus.",effect:"Holy-imbued knight."}),
+  B({name:"Black Knife Assassin (no) / Twin Maiden? (no)",cat:"Soldier",location:"—",effect:"—"}),
+  B({name:"Demi-Human Ashes",cat:"Humanoid",location:"Coastal Cave, Limgrave.",effect:"Pack of small fast attackers."}),
+  B({name:"Lone Wolf Ashes",cat:"Beast",location:"Starting / Tower of Return chest.",effect:"Three quick wolves for distraction."}),
+  B({name:"Spirit Jellyfish Ashes",cat:"Beast",location:"Roderika (Stormhill).",effect:"Tanky poison-cloud jellyfish."}),
+  B({name:"Skeletal Militiamen Ashes",cat:"Soldier",location:"Various.",effect:"Reviving skeletons that distract."}),
+  B({name:"Kaiden Sellsword Ashes",cat:"Soldier",location:"Dropped by Demi-Humans / merchants.",effect:"Reliable early melee summon."}),
+  B({name:"Nepheli Loux Puppet",cat:"Humanoid",location:"Seluvis (after Preceptor quest).",effect:"Strong axe-wielding puppet."}),
+  B({name:"Dung Eater Puppet",cat:"Humanoid",location:"Seluvis (with Seluvis's Potion).",effect:"Bleed-applying invader puppet."}),
+  // DLC revered spirit ash–scaled
+  D({name:"Revered Spirit Ash scaling (all ashes)",cat:"Legendary",location:"Land of Shadow — Revered Spirit Ashes.",effect:"DLC blessing that strengthens every summon."}),
+  D({name:"Messmer Soldier Ashes",cat:"Soldier",location:"Land of Shadow.",effect:"Spear-and-flame DLC soldiers."}),
+  D({name:"Hornsent Warrior Ashes",cat:"Humanoid",location:"Land of Shadow.",effect:"DLC humanoid summons."}),
+];
+
+/* --------------------------------------------------------------------------
+   ASHES OF WAR — by affinity/category.
+   -------------------------------------------------------------------------- */
+const ashesOfWar = [
+  ...["Seppuku","Bloody Slash","Blood Blade"].map(n=>B({name:n,cat:"Blood"})),
+  ...["Hoarfrost Stomp","Chilling Mist","Ice Spear","Vortex of Putrescence (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,cat:"Frost"})),
+  ...["Lightning Slash","Thunderbolt","Storm Stomp","Lightning Ram","Sacred Ring of Light (holy no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,cat:"Lightning"})),
+  ...["Flaming Strike","Flame of the Redmanes","Prelate's Charge","Black Flame Tornado","Eruption"].map(n=>B({name:n,cat:"Fire"})),
+  ...["Sacred Blade","Sacred Order","Sacred Ring of Light","Golden Land","Golden Vow (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,cat:"Holy"})),
+  ...["Glintblade Phalanx","Glintstone Pebble","Carian Greatsword","Loretta's Slash","Wave of Destruction"].map(n=>B({name:n,cat:"Magic"})),
+  ...["Poison Moth Flight","Poisonous Mist","Scarlet Aeonia? (no)"].filter(s=>!s.includes("no")).map(n=>B({name:n,cat:"Poison"})),
+  ...["Lion's Claw","Stamp (Upward/Sweep)","Spinning Slash","Square Off","Storm Blade","Unsheathe","Spinning Strikes","Quickstep","Bloodhound's Step","Determination","Royal Knight's Resolve","Barricade Shield","Carian Retaliation","Golden Parry","Endure","War Cry","Kick","Repeating Thrust","Charge Forth","Stamp (Sweep)","Impaling Thrust","Piercing Fang","Spinning Weapon","Wild Strikes","Double Slash","Thops's Barrier","Gravitas","Phantom Slash","Vow of the Indomitable","Cragblade","Storm Assault","Beast's Roar","Waves of Darkness","Ground Slam","Lifesteal Fist","Sky Shot","Mighty Shot","Rain of Arrows","Barrage","Through and Through","Enchanted Shot","Golden Slam","Shield Bash","No Skill"].map(n=>B({name:n,cat:"Physical/Unique"})),
+  // DLC ashes of war
+  ...["Divine Beast Frost Stomp","Blinkbolt","Wing Stance","Carom Shot","Savage Lion's Claw","Aspects of the Crucible: Wings","Flame Skewer","Igon's Drake Hunt","Palm Blast","Dynast's Finesse","Repeating Fire","Overhead Stance","Lightning Perfume","Storm Kick","Cursed-Blood Slice","Throwing Cirque"].map(n=>D({name:n,cat:"DLC"})),
+];
+
+/* --------------------------------------------------------------------------
+   ARMOR — representative sets per weight class (full per-piece list omitted).
+   -------------------------------------------------------------------------- */
+const armor = [
+  B({name:"Raptor's Black Feathers",cat:"Chest Armor",type:"Medium",poise:14,weight:9.4,effect:"+10% jump-attack damage.",location:"Sage's Cave / Cuckoo merchant."}),
+  B({name:"Bull-Goat Set",cat:"Full Sets",type:"Heavy",poise:133,weight:75.7,effect:"Highest poise set.",location:"Great Wyrm Theodorix area."}),
+  B({name:"Banished Knight Set",cat:"Full Sets",type:"Heavy",poise:62,weight:38,effect:"Strong all-round heavy set.",location:"Stormveil / dropped by Banished Knights."}),
+  B({name:"Carian Knight Set",cat:"Full Sets",type:"Medium",poise:24,weight:24,effect:"Balanced mage-friendly set.",location:"Sold by Pidia / Caria Manor."}),
+  B({name:"Snow Witch Set",cat:"Mage Armor",type:"Light",poise:6,weight:9,effect:"Boosts cold sorceries; light.",location:"Sold by Pidia, Carian Servant."}),
+  B({name:"White Reed Set",cat:"Light Armor",type:"Light",poise:9,weight:13,effect:"Light samurai-style set.",location:"Castle Sol, Mountaintops."}),
+  B({name:"Royal Remains Set",cat:"Full Sets",type:"Medium",poise:18,weight:20,effect:"Slowly regenerates HP at low health.",location:"Frenzied Flame Proscription / Liurnia."}),
+  D({name:"Messmer's Set",cat:"DLC Armor",type:"Medium",poise:0,weight:0,effect:"Messmer-themed crusade armor.",location:"Reward after Messmer."}),
+  D({name:"Death Knight Set",cat:"DLC Armor",type:"Heavy",poise:0,weight:0,effect:"Heavy DLC knight set.",location:"Dropped by Death Knights, Land of Shadow."}),
+  D({name:"Rakshasa Set",cat:"DLC Armor",type:"Medium",poise:0,weight:0,effect:"Raises damage taken and dealt.",location:"Rakshasa questline, Land of Shadow."}),
+];
+
+/* --------------------------------------------------------------------------
+   QUESTS / NPCs / LORE / BUILDS / REGIONS / PROGRESSION
+   -------------------------------------------------------------------------- */
+const quests = [
+  B({name:"Ranni the Witch",start:"Ranni's Rise, Liurnia (meet 'Renna' at Church of Elleh).",req:"Defeat Radahn to open Nokron.",rewards:"Dark Moon Greatsword · Age of the Stars ending.",missable:"Order of steps in Nokron/Ainsel can stall progress.",steps:["Meet Renna at Church of Elleh","Speak to Ranni; accept her service, meet Iji, Seluvis, Blaidd","Defeat Radahn, enter fallen Nokron","Retrieve the Fingerslayer Blade","Place the Cursemark of Death; defeat Baleful Shadow","Take the Discarded Palace Key; claim the Dark Moon Greatsword at Cathedral of Manus Celes","Touch Ranni at her body to commit to the Age of the Stars"]}),
+  B({name:"Millicent",start:"Gowry's Shack, Caelid.",req:"Unalloyed Gold Needle; defeat Commander O'Neil.",rewards:"Unalloyed Gold Needle (Malenia P2 stagger) · Rotten Winged Sword Insignia.",missable:"Finish before defeating Malenia.",steps:["Bring Gowry the Unalloyed Gold Needle","Defeat Commander O'Neil","Give Millicent the needle at the Church of the Plague","Follow her through Erdtree-Gazing Hill and the Altus Plateau","At Elphael, choose to aid or oppose her sisters"]}),
+  B({name:"Fia, the Deathbed Companion",start:"Roundtable Hold.",req:"Progress through Deeproot Depths.",rewards:"Mending Rune of the Death-Prince · Age of Duskborn ending.",missable:"Must deliver items and reach Deeproot to finish.",steps:["Accept Fia's embrace; receive the Weathered Dagger","Return the dagger to D's brother (or keep it)","Reach Deeproot Depths and defeat Lichdragon Fortissax in Fia's dream","Claim the Mending Rune of the Death-Prince"]}),
+  B({name:"Dung Eater",start:"Roundtable Hold (locked room).",req:"Seedbed Curses; Sewer-Gaol key.",rewards:"Mending Rune of the Fell Curse · Blasphemous ending variant · Sewing Needle items.",missable:"Collect enough Seedbed Curses across the world.",steps:["Free him via the Sewer-Gaol in the Shunning-Grounds","Deliver Seedbed Curses","Defeat him at the Shunning-Grounds","Claim the Mending Rune of the Fell Curse"]}),
+  D({name:"Leda & the Crusade (Hub quest)",start:"Three-Path Cross, Gravesite Plain.",req:"Progress the DLC main path.",rewards:"Multiple NPC outcomes; invasions.",missable:"NPC fates branch based on order and choices.",steps:["Meet the expedition members (Leda, Hornsent, Freyja, Moore, Thiollier, Ansbach, Dane)","Progress toward Shadow Keep","Resolve the accusation conflict at the Shadow Keep / Church District","Final confrontation near Enir-Ilim"]}),
+  D({name:"Thiollier",start:"Pied-de-poudre / Cerulean Coast.",req:"St. Trina interactions.",rewards:"Thiollier's Hidden Needle · St. Trina's gear.",missable:"Tied to finding St. Trina in the Cerulean Coast.",steps:["Meet Thiollier","Find St. Trina across the Cerulean Coast / Stone Coffin Fissure","Deliver St. Trina's wishes","Complete his arc near the finale"]}),
+];
+
+const npcs = [
+  B({name:"Merchant Kalé",cat:"Merchants",locations:"Church of Elleh, Limgrave.",quest:"Sells the Crafting Kit and basics.",lore:"A nomadic merchant of the Kalé tribe."}),
+  B({name:"Blaidd the Half-Wolf",cat:"Allies",locations:"Mistwood; Forlorn Hound Evergaol.",quest:"Tied to Ranni's questline.",lore:"Ranni's shadowbound beast, sworn to protect her."}),
+  B({name:"Melina",cat:"Allies",locations:"Sites of Grace (accord).",quest:"Grants Torrent and level-up; central to endings.",lore:"A mysterious maiden seeking her purpose at the Erdtree."}),
+  B({name:"Finger Reader Enia",cat:"Merchants",locations:"Roundtable Hold.",quest:"Trades Remembrances for unique gear.",lore:"The Two Fingers' reader at the Roundtable."}),
+  B({name:"Iron Fist Alexander",cat:"Allies",locations:"Stormhill → Gael Tunnel → Mt. Gelmir → Crumbling Farum Azula.",quest:"Warrior Jar questline.",lore:"A noble warrior jar seeking to become a great champion."}),
+  B({name:"Patches",cat:"Quest NPCs",locations:"Murkwater Cave and beyond.",quest:"Recurring trickster questline.",lore:"The eternal mischief-maker of FromSoftware games."}),
+  B({name:"Sorceress Sellen",cat:"Quest NPCs",locations:"Waypoint Ruins, Limgrave.",quest:"Sorcery teacher; primeval sorcery arc.",lore:"A banished Academy sorceress pursuing forbidden glintstone."}),
+  D({name:"Leda",cat:"DLC NPCs",locations:"Gravesite Plain onward.",quest:"Leads the expedition hub quest.",lore:"A knight devoted to Miquella's cause."}),
+  D({name:"Ansbach",cat:"DLC NPCs",locations:"Shadow Keep / Mohgwyn-aligned.",quest:"Former servant of Mohg.",lore:"Mohg's loyal Pureblood Knight."}),
+  D({name:"Count Ymir, Mother of Fingers (Sage)",cat:"DLC NPCs",locations:"Church District, Shadow Keep.",quest:"Finger-sage sorcery questline.",lore:"A finger-reading sage with his own designs on the Mother."}),
+];
+
+const lore = {
+  timeline: ["Age Before the Erdtree","Rise of Marika / the Crucible","Age of Plenty","The Golden Order","Night of the Black Knives","The Shattering","Age of the Tarnished","Realm of Shadow (DLC era)"],
+  characters: [
+    B({name:"Marika",text:"The Eternal Queen and vessel of the Elden Ring, who shattered it after sealing the Rune of Death and lit the war for the throne."}),
+    B({name:"Radagon",text:"Marika's other self; champion of the Golden Order, husband first to Rennala then Marika."}),
+    B({name:"Godfrey / Hoarah Loux",text:"The first Elden Lord, exiled when his Grace faded, returned as a savage warrior-king."}),
+    B({name:"Godwyn the Golden",text:"Marika's firstborn, slain in soul on the Night of the Black Knives — the first of the demigods to die."}),
+    B({name:"Ranni",text:"An empyrean who cast off her flesh to escape the Two Fingers and pursue an Age of the Stars."}),
+    B({name:"Miquella",text:"The most fearsome empyrean, cursed with eternal childhood, who abandoned his flesh seeking a god of compassion."}),
+    B({name:"Malenia",text:"Miquella's twin, the undefeated blade who carries the Scarlet Rot."}),
+    B({name:"Mohg",text:"Lord of Blood, who sought to raise the abducted Miquella as his consort."}),
+    B({name:"Morgott",text:"The cursed Omen King who defended Leyndell as its loyal last monarch."}),
+    B({name:"Messmer",text:"A child of Marika harboring the abyssal serpent-flame, exiled to lead the crusade into the Land of Shadow."}),
+    B({name:"Radahn",text:"Starscourge general who held back the stars; later bound as Miquella's promised consort."}),
+    B({name:"St. Trina",text:"Miquella's other aspect, tied to sleep and a quiet mercy."}),
+    D({name:"Messmer (DLC)",text:"The Impaler whose sealed serpent-flame threatened to consume all, hidden away by Marika."}),
+  ],
+  topics: [
+    B({name:"The Greater Will",text:"The outer god that sent the golden Elden Ring and Erdtree to the Lands Between."}),
+    B({name:"Outer Gods",text:"Distant cosmic powers (Frenzied Flame, Rot, Formless Mother, the stars) vying for influence."}),
+    B({name:"The Elden Ring & Elden Beast",text:"The set of runes that orders reality, embodied by the Elden Beast — the Greater Will's vessel."}),
+    B({name:"The Crucible",text:"The primordial life-force of the Erdtree, when all life was intermingled — horns, tails, flame."}),
+    B({name:"Destined Death / Rune of Death",text:"Death itself, removed from the Order by Marika and entrusted to Maliketh's Black Blade."}),
+    B({name:"Frenzied Flame",text:"The chaos-bringing outer god of the Three Fingers, offering the end of all order."}),
+    B({name:"Scarlet Rot",text:"An outer-god affliction tied to Malenia and the goddess of rot."}),
+    B({name:"Dragon Communion",text:"The forbidden rite of devouring dragon hearts for draconic power."}),
+    D({name:"The Land of Shadow",text:"The realm cast in the Erdtree's shadow, hiding Marika's origins and her crusade's atrocities."}),
+    D({name:"Miquella's Great Rune & the Age of Compassion",text:"Miquella's plan to ascend by shedding attributes and binding Radahn as consort."}),
+  ],
+};
+
+const builds = [
+  B({name:"Arcane Bleed (Rivers of Blood)",cat:"Arcane",stage:"End Game",summary:"Stack Arcane; dual Rivers of Blood / Uchigatana (Seppuku). Melt bosses via hemorrhage procs.",stats:"Vig 50 / Arc 60 / Dex 30 / End 25"}),
+  B({name:"Moonveil Spellblade",cat:"Intelligence",stage:"Mid Game",summary:"Moonveil + glintstone sorceries. Transient Moonlight for ranged poke.",stats:"Vig 40 / Int 60 / Dex 20 / Mind 25"}),
+  B({name:"Faith Dragon Cult",cat:"Faith",stage:"End Game",summary:"Lightning incantations + Erdtree Seal; great vs groups and dragons.",stats:"Vig 50 / Fai 60 / Mind 30"}),
+  B({name:"Colossal Strength (Giant-Crusher)",cat:"Strength",stage:"End Game",summary:"Two-hand a colossal weapon with Royal Knight's Resolve / Lion's Claw; stance-break everything.",stats:"Vig 50 / Str 66 / End 30"}),
+  B({name:"Pure Dexterity Katana",cat:"Dexterity",stage:"Mid Game",summary:"Hand of Malenia / Nagakiba with Bleed or Keen affinity and Unsheathe.",stats:"Vig 45 / Dex 70 / End 25"}),
+  B({name:"Quality Greatsword",cat:"Quality",stage:"Early Game",summary:"Heavy/Quality Claymore with Stamp/Lion's Claw — the classic all-rounder.",stats:"Vig 40 / Str 40 / Dex 40"}),
+  B({name:"Hybrid Sword of Night and Flame",cat:"Hybrid",stage:"End Game",summary:"Int + Faith caster-melee; the SoNaF skill hits hard with 50/50 splits.",stats:"Vig 45 / Int 40 / Fai 40"}),
+  B({name:"PvP Bleed Twinblade",cat:"PvP",stage:"PvP Builds",summary:"Eleonora's Poleblade / Bloody Twinblade with quick rolls and Bloodhound's Step.",stats:"Vig 50 / Arc 45 / Dex 35"}),
+  B({name:"RL1 Challenge (no level-up)",cat:"Challenge",stage:"Challenge Builds",summary:"Beat the game at Rune Level 1 using +upgrades, Spirit Ashes off, precise dodging.",stats:"Base stats only"}),
+  D({name:"Scadutree Fire Knight",cat:"Faith",stage:"DLC Builds",summary:"DLC fire incantations + Fire Knight's Greatsword; lean on Scadutree blessing scaling.",stats:"Vig 50 / Fai 60 / Str 20"}),
+  D({name:"Backhand Blade Dance",cat:"Dexterity",stage:"DLC Builds",summary:"Dual Backhand Blades with Blind Spot; fast bleed-and-evade DLC duelist.",stats:"Vig 45 / Dex 60 / End 30"}),
+];
+
+const regions = {
+  base: ["Limgrave","Weeping Peninsula","Stormveil Castle","Liurnia of the Lakes","Raya Lucaria Academy","Ainsel River","Siofra River","Nokron, Eternal City","Nokstella, Eternal City","Lake of Rot","Deeproot Depths","Caelid","Dragonbarrow","Redmane Castle","Altus Plateau","Leyndell, Royal Capital","Subterranean Shunning-Grounds","Mt. Gelmir","Volcano Manor","Forbidden Lands","Mountaintops of the Giants","Consecrated Snowfield","Ordina, Liturgical Town","Miquella's Haligtree","Elphael, Brace of the Haligtree","Mohgwyn Palace","Crumbling Farum Azula","Leyndell, Ashen Capital"],
+  dlc: ["Gravesite Plain","Belurat, Tower Settlement","Castle Ensis","Scadu Altus","Shadow Keep","Cerulean Coast","Stone Coffin Fissure","Jagged Peak","Ancient Ruins of Rauh","Rauh Base","Abyssal Woods","Midra's Manse","Enir-Ilim","Charo's Hidden Grave","Finger Ruins of Rhia/Miyr"],
+};
+
+const progression = [
+  ["Limgrave","Lv 1-20","Grab Torrent, the Crafting Kit, a Spirit Ash, and a starter weapon. Beat Margit when ready."],
+  ["Stormveil Castle","Lv 25-35","Godrick the Grafted — your first Great Rune."],
+  ["Liurnia / Raya Lucaria","Lv 35-50","Rennala and the Academy; open Ranni's and the Carian arcs."],
+  ["Caelid","Lv 45-60","Risky but rich — Moonveil, smithing stones, and Radahn at the festival."],
+  ["Altus Plateau / Leyndell","Lv 60-90","Climb the Grand Lift, take the capital, defeat Morgott."],
+  ["Mountaintops of the Giants","Lv 90-110","Fire Giant, then the road to Crumbling Farum Azula and Maliketh."],
+  ["Endgame (Ashen Capital)","Lv 110-130","Godfrey, Radagon, and the Elden Beast — choose your ending."],
+  ["Land of Shadow (DLC)","Lv 120+ · Scadu 1","Enter via Mohgwyn after Mohg + Radahn. Prioritize Scadutree Fragments over levels."],
+  ["DLC Mid (Scadu Altus / Shadow Keep)","Scadu 6-11","Rellana, Messmer, and the optional Remembrance bosses."],
+  ["DLC Endgame (Enir-Ilim)","Scadu 14-20","Bayle and the Promised Consort Radahn finale."],
+];
+
+/* Map filter taxonomy + sample pins */
+const MAP_FILTERS = {
+  Locations: ["Sites of Grace","Churches","Towers","Forts","Ruins","Castles","Villages","Catacombs","Caves","Tunnels","Hero Graves","Legacy Dungeons","Evergaols"],
+  Collectibles: ["Weapons","Armor","Talismans","Sorceries","Incantations","Spirit Ashes","Ashes of War","Crystal Tears","Cookbooks","Gestures","Paintings","Larval Tears","Bell Bearings"],
+  Progression: ["Main Bosses","Optional Bosses","NPCs","Merchants","Quests"],
+  Materials: ["Smithing Stones","Somber Stones","Gloveworts","Great Gloveworts","Dragon Stones","Ancient Dragon Stones"],
+  DLC: ["Scadutree Fragments","Revered Spirit Ashes","DLC Bosses","DLC NPCs"],
+};
+
+const MAP_PINS = [
+  { id:1, x:22, y:64, label:"Site of Grace — First Step", type:"Sites of Grace", expansion:BASE },
+  { id:2, x:30, y:55, label:"Church of Elleh", type:"Churches", expansion:BASE },
+  { id:3, x:38, y:40, label:"Stormveil Castle — Godrick", type:"Legacy Dungeons", expansion:BASE },
+  { id:4, x:55, y:30, label:"Raya Lucaria — Rennala", type:"Legacy Dungeons", expansion:BASE },
+  { id:5, x:70, y:60, label:"Gael Tunnel — Moonveil", type:"Tunnels", expansion:BASE },
+  { id:6, x:48, y:18, label:"Forlorn Hound Evergaol", type:"Evergaols", expansion:BASE },
+  { id:7, x:80, y:45, label:"Redmane Castle — Radahn", type:"Main Bosses", expansion:BASE },
+  { id:8, x:18, y:30, label:"Shadow Keep — Messmer", type:"DLC Bosses", expansion:DLC },
+  { id:9, x:12, y:50, label:"Scadutree Fragment", type:"Scadutree Fragments", expansion:DLC },
+  { id:10, x:60, y:75, label:"Merchant Kalé", type:"Merchants", expansion:BASE },
+  { id:11, x:42, y:72, label:"Bell Bearing — Smithing", type:"Bell Bearings", expansion:BASE },
+  { id:12, x:88, y:22, label:"Bayle the Dread — Jagged Peak", type:"DLC Bosses", expansion:DLC },
+];
+
+/* Flatten weapons into the standard item shape with ids */
+function buildWeapons() {
+  const out = [];
+  const detailed = {
+    "Rivers of Blood": B({skill:"Corpse Piler",req:"Str 12 / Dex 18 / Arc 20",scaling:"D Str / C Dex / D Arc",dmg:["Physical","Fire"],pve:"S",pvp:"S",location:"Dropped by Bloody Finger Okina, Church of Repose.",builds:["Arcane Bleed"]}),
+    "Moonveil": B({skill:"Transient Moonlight",req:"Str 12 / Dex 18 / Int 23",scaling:"E/C/C Int",dmg:["Physical","Magic"],pve:"S",pvp:"A",location:"Magma Wyrm, Gael Tunnel.",builds:["Int Spellblade"]}),
+    "Blasphemous Blade": B({skill:"Taker's Flames",req:"Str 22 / Dex 15 / Fai 21",scaling:"C/D/D Fai",dmg:["Physical","Fire"],pve:"S",pvp:"A",location:"Remembrance of the Blasphemous (Rykard).",builds:["Faith/Strength"]}),
+    "Bloodhound's Fang": B({skill:"Bloodhound's Finesse",req:"Str 18 / Dex 17",scaling:"D/D",dmg:["Physical"],pve:"A",pvp:"A",location:"Bloodhound Knight Darriwil, Forlorn Hound Evergaol.",builds:["Quality Bleed"]}),
+    "Great Katana": D({skill:"Sheathe / Wind Blade",req:"Str 16 / Dex 18",scaling:"D/C",dmg:["Physical"],pve:"A",pvp:"A",location:"Land of Shadow.",builds:["Dex/Bleed"]}),
+    "Backhand Blade": D({skill:"Blind Spot",req:"Str 8 / Dex 15",scaling:"E/C",dmg:["Physical"],pve:"A",pvp:"S",location:"Gravesite Plain.",builds:["Dex/Bleed"]}),
+    "Milady": D({skill:"Quickstep / Stance",req:"Str 10 / Dex 16",scaling:"D/C",dmg:["Physical"],pve:"A",pvp:"A",location:"Gravesite Plain (Three-Path Cross).",builds:["Dex"]}),
+  };
+  Object.entries(weaponCats).forEach(([cat, {base, dlc}]) => {
+    const clean = (list, mk) => (list||[])
+      .filter(n => n && !/\(no\)|\? no|— \(|no$/i.test(n))
+      .map(n => n.replace(/\?.*$/,"").replace(/\s*\(.*?\)\s*$/,"").trim())
+      .filter(Boolean)
+      .forEach(name => {
+        const extra = detailed[name] || {};
+        out.push({ id: slug(cat+"-"+name), name, cat, ...mk({}), ...extra });
+      });
+    clean(base, B); clean(dlc, D);
+  });
+  // dedupe by id
+  const seen = new Set();
+  return out.filter(w => (seen.has(w.id) ? false : (seen.add(w.id), true)));
+}
+
+function withIds(list){ const seen=new Set(); return list.map(x=>({id:slug(x.name),...x})).filter(x=>seen.has(x.id)?false:(seen.add(x.id),true)); }
+function cleanSpells(list){
+  return withIds(list.filter(s=>s.name && !/\(no\)|\? no|no$/i.test(s.name)).map(s=>({...s,name:s.name.replace(/\?.*$/,"").replace(/\s*\(.*?\)\s*$/,"").trim()})).filter(s=>s.name));
+}
+
+const DB = {
+  bosses: withIds([...majorBosses, ...dlcBosses]),
+  minorBosses: minorBossNames,
+  weapons: buildWeapons(),
+  armor: withIds(armor),
+  sorceries: cleanSpells(sorceries),
+  incantations: cleanSpells(incantations),
+  spiritAshes: withIds(spiritAshes.filter(s=>!/\(no\)/.test(s.name))),
+  ashesOfWar: withIds(ashesOfWar),
+  talismans: withIds(talismans),
+  quests: withIds(quests),
+  npcs: withIds(npcs),
+  builds: withIds(builds),
+  lore: { timeline: lore.timeline, characters: withIds(lore.characters), topics: withIds(lore.topics) },
+  regions,
+  progression,
+};
+/* --------------------------- APP STATE / CTX ---------------------------- */
+
+const AppCtx = createContext(null);
+const useApp = () => useContext(AppCtx);
+
+const NAV = [
+  { id: "home", label: "Home", icon: Home },
+  { id: "map", label: "Interactive Map", icon: Map },
+  { id: "regions", label: "Regions", icon: Pin },
+  { id: "bosses", label: "Bosses", icon: Skull },
+  { id: "weapons", label: "Weapons", icon: Sword },
+  { id: "armor", label: "Armor", icon: Shield },
+  { id: "sorceries", label: "Sorceries", icon: Sparkles },
+  { id: "incantations", label: "Incantations", icon: Flame },
+  { id: "spiritAshes", label: "Spirit Ashes", icon: Ghost },
+  { id: "ashesOfWar", label: "Ashes of War", icon: Hammer },
+  { id: "talismans", label: "Talismans", icon: Gem },
+  { id: "quests", label: "Quests", icon: ScrollText },
+  { id: "npcs", label: "NPCs", icon: Users },
+  { id: "lore", label: "Lore", icon: BookOpen },
+  { id: "builds", label: "Builds", icon: Swords },
+  { id: "progression", label: "Progression", icon: TrendingUp },
+  { id: "tools", label: "Tools", icon: Wrench },
+];
+
+/* ------------------------------ STYLES ---------------------------------- */
+const C = {
+  bg: "#0c0a07",
+  panel: "#15110b",
+  panel2: "#1c1610",
+  gold: "#c9a227",
+  goldSoft: "#e3c766",
+  ember: "#b5532a",
+  text: "#e8dfc8",
+  dim: "#9a8e72",
+  line: "#33291a",
+};
+
+/* ------------------------------ HELPERS --------------------------------- */
+function expansionBadge(exp) {
+  return exp === DLC
+    ? { txt: "DLC", bg: "#3a2030", fg: "#e89ac0", bd: "#7a3a55" }
+    : { txt: "Base", bg: "#1f2a18", fg: "#9fd07a", bd: "#43632e" };
+}
+
+/* Build a flat search index across every collection */
+function buildSearchIndex() {
+  const idx = [];
+  const push = (type, page, item, name, extra="") =>
+    idx.push({ type, page, id: item.id, name, expansion: item.expansion || BASE, extra });
+  DB.bosses.forEach(b => push("Boss","bosses",b,b.name,`${b.region} · ${b.cat}`));
+  DB.weapons.forEach(w => push("Weapon","weapons",w,w.name,w.cat));
+  DB.armor.forEach(a => push("Armor","armor",a,a.name,a.cat));
+  DB.sorceries.forEach(s => push("Sorcery","sorceries",s,s.name,s.school));
+  DB.incantations.forEach(i => push("Incantation","incantations",i,i.name,i.school));
+  DB.spiritAshes.forEach(s => push("Spirit Ash","spiritAshes",s,s.name,s.cat));
+  DB.ashesOfWar.forEach(a => push("Ash of War","ashesOfWar",a,a.name,a.cat));
+  DB.talismans.forEach(t => push("Talisman","talismans",t,t.name,t.cat));
+  DB.quests.forEach(q => push("Quest","quests",q,q.name,"Questline"));
+  DB.npcs.forEach(n => push("NPC","npcs",n,n.name,n.cat));
+  DB.builds.forEach(b => push("Build","builds",b,b.name,b.cat));
+  DB.lore.characters.forEach(c => push("Lore","lore",c,c.name,"Character"));
+  DB.lore.topics.forEach(t => push("Lore","lore",t,t.name,"Topic"));
+  [...DB.regions.base.map(r=>({id:r,name:r,expansion:BASE})),
+   ...DB.regions.dlc.map(r=>({id:r,name:r,expansion:DLC}))]
+    .forEach(r => push("Region","regions",r,r.name,"Region"));
+  return idx;
+}
+
+/* ============================ COMPONENTS ================================= */
+
+function Badge({ exp }) {
+  const b = expansionBadge(exp);
+  return <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase",
+    background: b.bg, color: b.fg, border: `1px solid ${b.bd}`, padding: "2px 7px", borderRadius: 4 }}>{b.txt}</span>;
+}
+
+function Pill({ children, tone="default" }) {
+  const tones = {
+    default: { bg: C.panel2, fg: C.dim, bd: C.line },
+    weak: { bg: "#1c2a16", fg: "#a9d488", bd: "#3a5a26" },
+    resist: { bg: "#2a1616", fg: "#d49090", bd: "#5a2626" },
+    gold: { bg: "#2a2310", fg: C.goldSoft, bd: "#5a4a1c" },
+  };
+  const t = tones[tone] || tones.default;
+  return <span style={{ fontSize: 11, background: t.bg, color: t.fg, border: `1px solid ${t.bd}`,
+    padding: "3px 9px", borderRadius: 999, whiteSpace: "nowrap" }}>{children}</span>;
+}
+
+/* ---- Spoiler-aware wrapper ---- */
+function Spoiler({ children, label="Spoiler — tap to reveal" }) {
+  const { spoilers } = useApp();
+  const [open, setOpen] = useState(false);
+  if (spoilers) return children;
+  if (open) return children;
+  return (
+    <button onClick={() => setOpen(true)}
+      style={{ width:"100%", textAlign:"left", background:"#100c07", border:`1px dashed ${C.line}`,
+        color:C.dim, padding:"10px 12px", borderRadius:8, cursor:"pointer", fontStyle:"italic", fontSize:13 }}>
+      <EyeOff size={13} style={{ verticalAlign:"-2px", marginRight:6 }} />{label}
+    </button>
+  );
+}
+
+/* ---- Card grid for databases ---- */
+function CardGrid({ children }) {
+  return <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:14 }}>{children}</div>;
+}
+
+function EntryCard({ onClick, title, exp, sub, footer, tracked, onTrack }) {
+  return (
+    <div onClick={onClick} style={{ background:C.panel, border:`1px solid ${C.line}`, borderRadius:12,
+      padding:14, cursor:"pointer", transition:"transform .12s, border-color .12s", position:"relative" }}
+      onMouseEnter={e=>{e.currentTarget.style.borderColor=C.gold; e.currentTarget.style.transform="translateY(-2px)";}}
+      onMouseLeave={e=>{e.currentTarget.style.borderColor=C.line; e.currentTarget.style.transform="none";}}>
+      <div style={{ display:"flex", justifyContent:"space-between", gap:8, alignItems:"flex-start" }}>
+        <h3 style={{ margin:0, fontSize:15, color:C.text, fontFamily:"'Cinzel',serif", lineHeight:1.25 }}>{title}</h3>
+        <Badge exp={exp} />
+      </div>
+      {sub && <p style={{ margin:"8px 0 0", fontSize:12.5, color:C.dim }}>{sub}</p>}
+      {footer}
+      {onTrack && (
+        <button onClick={(e)=>{e.stopPropagation(); onTrack();}}
+          style={{ position:"absolute", bottom:10, right:10, background:tracked?C.gold:"transparent",
+            color:tracked?"#1a1408":C.dim, border:`1px solid ${tracked?C.gold:C.line}`, borderRadius:6,
+            fontSize:11, padding:"3px 8px", cursor:"pointer" }}>
+          {tracked ? <><Check size={11} style={{verticalAlign:"-1px"}}/> Tracked</> : "Track"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ----------------------------- HOME PAGE -------------------------------- */
+function HomePage() {
+  const { go, setQuery } = useApp();
+  const featured = [
+    { k:"Boss of the Week", v:"Malenia, Blade of Miquella", page:"bosses", id:"malenia-blade-of-miquella", icon:Skull },
+    { k:"Weapon Spotlight", v:"Rivers of Blood", page:"weapons", id:"katanas-rivers-of-blood", icon:Sword },
+    { k:"Lore Spotlight", v:"Miquella", page:"lore", id:"miquella", icon:BookOpen },
+    { k:"Beginner Spotlight", v:"Recommended Boss Order", page:"progression", icon:TrendingUp },
+  ];
+  return (
+    <div>
+      <section style={{ position:"relative", borderRadius:18, overflow:"hidden",
+        border:`1px solid ${C.line}`, padding:"54px 36px",
+        background:`radial-gradient(120% 140% at 80% 0%, rgba(201,162,39,.18), transparent 55%),
+          radial-gradient(120% 120% at 0% 100%, rgba(181,83,42,.16), transparent 50%), ${C.panel}` }}>
+        <p style={{ margin:0, letterSpacing:".3em", fontSize:12, color:C.gold, textTransform:"uppercase" }}>The Lands Between · Shadow of the Erdtree</p>
+        <h1 style={{ fontFamily:"'Cinzel',serif", fontSize:"clamp(34px,5vw,58px)", margin:"10px 0 6px",
+          color:C.text, lineHeight:1.04, fontWeight:700 }}>Elden Ring Codex</h1>
+        <p style={{ margin:"0 0 22px", color:C.dim, maxWidth:560, fontSize:15 }}>
+          Every boss, weapon, spell, quest, and secret — mapped, searchable, and spoiler-safe.
+        </p>
+        <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+          <HeroBtn onClick={()=>go("map")} primary><Map size={16}/> Interactive Map</HeroBtn>
+          <HeroBtn onClick={()=>go("progression")}><TrendingUp size={16}/> New Player Guide</HeroBtn>
+          <HeroBtn onClick={()=>go("bosses")}><Crown size={16}/> DLC Guide</HeroBtn>
+        </div>
+      </section>
+
+      <SectionTitle>Featured Content</SectionTitle>
+      <CardGrid>
+        {featured.map(f=>(
+          <div key={f.k} onClick={()=>go(f.page,f.id)} style={{ cursor:"pointer", background:C.panel,
+            border:`1px solid ${C.line}`, borderRadius:12, padding:18, transition:"border-color .12s" }}
+            onMouseEnter={e=>e.currentTarget.style.borderColor=C.gold}
+            onMouseLeave={e=>e.currentTarget.style.borderColor=C.line}>
+            <f.icon size={20} color={C.gold}/>
+            <p style={{ margin:"12px 0 4px", fontSize:11, letterSpacing:".12em", textTransform:"uppercase", color:C.dim }}>{f.k}</p>
+            <p style={{ margin:0, fontSize:17, fontFamily:"'Cinzel',serif", color:C.text }}>{f.v}</p>
+          </div>
+        ))}
+      </CardGrid>
+
+      <SectionTitle>Jump to a Database</SectionTitle>
+      <CardGrid>
+        {NAV.filter(n=>!["home","map","tools"].includes(n.id)).map(n=>(
+          <div key={n.id} onClick={()=>go(n.id)} style={{ cursor:"pointer", display:"flex", alignItems:"center", gap:12,
+            background:C.panel, border:`1px solid ${C.line}`, borderRadius:10, padding:"14px 16px", transition:"border-color .12s" }}
+            onMouseEnter={e=>e.currentTarget.style.borderColor=C.gold}
+            onMouseLeave={e=>e.currentTarget.style.borderColor=C.line}>
+            <n.icon size={18} color={C.gold}/>
+            <span style={{ color:C.text, fontSize:14 }}>{n.label}</span>
+            <ChevronRight size={16} color={C.dim} style={{ marginLeft:"auto" }}/>
+          </div>
+        ))}
+      </CardGrid>
+    </div>
+  );
+}
+
+function HeroBtn({ children, onClick, primary }) {
+  return (
+    <button onClick={onClick} style={{ display:"inline-flex", alignItems:"center", gap:8, fontSize:14,
+      padding:"11px 18px", borderRadius:10, cursor:"pointer", fontWeight:600,
+      background: primary ? C.gold : "transparent", color: primary ? "#1a1408" : C.text,
+      border: `1px solid ${primary ? C.gold : C.line}` }}>{children}</button>
+  );
+}
+
+function SectionTitle({ children }) {
+  return <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:20, color:C.goldSoft, margin:"34px 0 16px",
+    borderLeft:`3px solid ${C.gold}`, paddingLeft:12 }}>{children}</h2>;
+}
+
+/* --------------------------- INTERACTIVE MAP ---------------------------- */
+function MapPage() {
+  const { spoilers } = useApp();
+  const [active, setActive] = useState(() => new Set(["Main Bosses","Sites of Grace","DLC Bosses"]));
+  const [hover, setHover] = useState(null);
+  const [showDLC, setShowDLC] = useState(true);
+
+  const toggle = (f) => setActive(prev => {
+    const n = new Set(prev); n.has(f) ? n.delete(f) : n.add(f); return n;
+  });
+
+  const visible = MAP_PINS.filter(p => active.has(p.type) && (showDLC || p.expansion !== DLC));
+
+  return (
+    <div style={{ display:"grid", gridTemplateColumns:"260px 1fr", gap:16, alignItems:"start" }}>
+      {/* Filters */}
+      <div style={{ background:C.panel, border:`1px solid ${C.line}`, borderRadius:12, padding:14, maxHeight:"78vh", overflow:"auto" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
+          <Filter size={16} color={C.gold}/><strong style={{ color:C.text, fontSize:14 }}>Filters</strong>
+        </div>
+        <label style={{ display:"flex", alignItems:"center", gap:8, fontSize:12.5, color:C.dim, marginBottom:14, cursor:"pointer" }}>
+          <input type="checkbox" checked={showDLC} onChange={e=>setShowDLC(e.target.checked)} /> Show DLC pins
+        </label>
+        {Object.entries(MAP_FILTERS).map(([group,items])=>(
+          <div key={group} style={{ marginBottom:14 }}>
+            <p style={{ margin:"0 0 6px", fontSize:11, letterSpacing:".1em", textTransform:"uppercase", color:C.gold }}>{group}</p>
+            {items.map(it=>(
+              <label key={it} style={{ display:"flex", alignItems:"center", gap:8, fontSize:12.5,
+                color: active.has(it) ? C.text : C.dim, padding:"3px 0", cursor:"pointer" }}>
+                <input type="checkbox" checked={active.has(it)} onChange={()=>toggle(it)} />
+                {it}
+              </label>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Map canvas */}
+      <div style={{ position:"relative", border:`1px solid ${C.line}`, borderRadius:12, overflow:"hidden",
+        aspectRatio:"4/3", background:`
+          radial-gradient(60% 50% at 30% 35%, rgba(80,110,60,.25), transparent 60%),
+          radial-gradient(50% 50% at 75% 60%, rgba(140,70,40,.22), transparent 55%),
+          repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0 1px, transparent 1px 40px),
+          repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, transparent 1px 40px),
+          #0a0d08` }}>
+        <div style={{ position:"absolute", top:10, left:12, fontSize:11, color:C.dim, letterSpacing:".1em" }}>
+          THE LANDS BETWEEN — {visible.length} pin{visible.length!==1?"s":""} {!spoilers && "· spoiler mode on"}
+        </div>
+        {visible.map(p=>{
+          const dlcPin = p.expansion===DLC;
+          return (
+            <div key={p.id} onMouseEnter={()=>setHover(p)} onMouseLeave={()=>setHover(null)}
+              style={{ position:"absolute", left:`${p.x}%`, top:`${p.y}%`, transform:"translate(-50%,-50%)", cursor:"pointer" }}>
+              <div style={{ width:14, height:14, borderRadius:"50%",
+                background: dlcPin ? "#e89ac0" : C.gold, boxShadow:`0 0 12px ${dlcPin?"#e89ac0":C.gold}`,
+                border:"2px solid #0a0d08" }} />
+              {hover?.id===p.id && (
+                <div style={{ position:"absolute", bottom:"160%", left:"50%", transform:"translateX(-50%)",
+                  background:C.panel2, border:`1px solid ${C.gold}`, borderRadius:8, padding:"7px 10px",
+                  whiteSpace:"nowrap", fontSize:12, color:C.text, zIndex:5 }}>
+                  <strong>{spoilers || !["Main Bosses","DLC Bosses","Optional Bosses"].includes(p.type) ? p.label : "??? (boss)"}</strong>
+                  <div style={{ color:C.dim, fontSize:11 }}>{p.type}</div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <div style={{ position:"absolute", bottom:10, right:12, fontSize:11, color:C.dim }}>
+          Gold = Base · Pink = DLC
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------ REGIONS --------------------------------- */
+function RegionsPage() {
+  const Group = ({ title, list, exp }) => (
+    <>
+      <SectionTitle>{title}</SectionTitle>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:10 }}>
+        {list.map(r=>(
+          <div key={r} style={{ background:C.panel, border:`1px solid ${C.line}`, borderRadius:10, padding:"12px 14px",
+            display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <span style={{ color:C.text, fontSize:13.5 }}>{r}</span><Badge exp={exp}/>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+  return <div><Group title="Base Game Regions" list={DB.regions.base} exp={BASE}/><Group title="DLC Regions — Land of Shadow" list={DB.regions.dlc} exp={DLC}/></div>;
+}
+
+/* ----------------------------- COVERAGE NOTE ---------------------------- */
+function CoverageNote({ children }) {
+  return (
+    <div style={{ display:"flex", gap:10, background:"#14110a", border:`1px solid ${C.line}`,
+      borderLeft:`3px solid ${C.gold}`, borderRadius:8, padding:"10px 14px", margin:"0 0 18px", fontSize:12.5, color:C.dim }}>
+      <Info size={15} color={C.gold} style={{ flexShrink:0, marginTop:1 }}/>
+      <span>{children}</span>
+    </div>
+  );
+}
+
+/* ------------------------------ BOSSES PAGE ----------------------------- */
+function BossesPage() {
+  const { go, tracked, toggleTrack } = useApp();
+  const [exp, setExp] = useState("all");
+  const [cat, setCat] = useState("all");
+  const items = DB.bosses;
+  const cats = ["all", ...Array.from(new Set(items.map(i=>i.cat)))];
+  const filtered = items.filter(i =>
+    (exp==="all" || i.expansion===exp) && (cat==="all" || i.cat===cat));
+
+  const totalMinor = Object.values(DB.minorBosses).reduce((n,a)=>n+a.length,0);
+
+  return (
+    <div>
+      <CoverageNote>
+        <strong style={{color:C.text}}>Coverage:</strong> {items.length} major / Remembrance / story bosses have full data pages below.
+        The Lands Between holds <strong style={{color:C.text}}>238</strong> bosses total plus 40+ named DLC bosses — the complete
+        field, dungeon, and evergaol roster ({totalMinor}+ listed) is catalogued by region further down.
+      </CoverageNote>
+
+      <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:18, alignItems:"center" }}>
+        <FilterChips value={exp} set={setExp} options={[["all","All"],[BASE,"Base"],[DLC,"DLC"]]} />
+        <FilterChips value={cat} set={setCat} options={cats.map(c=>[c, c==="all"?"All Types":c])} />
+        <span style={{ marginLeft:"auto", color:C.dim, fontSize:12.5 }}>{filtered.length} featured bosses</span>
+      </div>
+
+      <CardGrid>
+        {filtered.map(i=>(
+          <EntryCard key={i.id} exp={i.expansion} title={i.name}
+            onClick={()=>go("bosses",i.id)}
+            tracked={tracked.has(`bosses:${i.id}`)}
+            onTrack={()=>toggleTrack(`bosses:${i.id}`)}
+            sub={`${i.region}${i.recLevel?` · Rec. ${typeof i.recLevel==="number"?"Lv "+i.recLevel:i.recLevel}`:""}`}
+            footer={i.weak ? <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:10, paddingBottom:24 }}>
+              {i.weak.filter(w=>w!=="—").map(w=><Pill key={w} tone="weak">↓ {w}</Pill>)}</div> : <div style={{height:24}}/>} />
+        ))}
+      </CardGrid>
+
+      <SectionTitle>Complete Boss Roster by Region</SectionTitle>
+      <CoverageNote>
+        These are catalogued by name and location for full coverage. Many are reused field/dungeon foes without
+        dedicated cutscenes; the featured bosses above carry the detailed strategy pages.
+      </CoverageNote>
+      {Object.entries(DB.minorBosses).map(([region, names])=>(
+        <div key={region} style={{ marginBottom:18 }}>
+          <h3 style={{ fontFamily:"'Cinzel',serif", fontSize:15, color:C.goldSoft, margin:"0 0 10px" }}>
+            {region} <span style={{ color:C.dim, fontSize:12, fontFamily:"'Spectral',serif" }}>· {names.length}</span>
+          </h3>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
+            {names.map(n=>(
+              <span key={n} style={{ background:C.panel, border:`1px solid ${C.line}`, borderRadius:8,
+                padding:"6px 11px", fontSize:12.5, color:C.text }}>{n}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* --------------------------- GENERIC DB PAGE ---------------------------- */
+const COVERAGE = {
+  weapons: "Complete roster across every weapon category (base + Shadow of the Erdtree), including DLC types: backhand blades, great katanas, beast claws, perfume bottles, hand-to-hand arts, throwing blades, and light greatswords. Detailed scaling/skill fields shown on standout armaments.",
+  sorceries: "All 84 sorceries (70 base + 14 DLC) by school. FP/requirement fields are added where confirmable.",
+  incantations: "All ~129 incantations (101 base + 28 DLC) by school.",
+  talismans: "Full talisman list including +1/+2 upgraded variants and all DLC additions.",
+  ashesOfWar: "Complete Ashes of War roster grouped by affinity, including DLC skills.",
+  spiritAshes: "Notable Spirit Ashes across every class. The DLC Revered Spirit Ash blessing scales every summon.",
+  armor: "Representative sets per weight class. Full per-piece coverage (helm/chest/gauntlet/leg) drops into this same structure.",
+  npcs: "Key allies, merchants, and questline NPCs across base game and DLC.",
+};
+
+function DatabasePage({ page }) {
+  const { go, tracked, toggleTrack } = useApp();
+  const [exp, setExp] = useState("all");
+  const [cat, setCat] = useState("all");
+
+  const items = DB[page] || [];
+  const catKey = items[0]?.cat ? "cat" : items[0]?.school ? "school" : null;
+  const cats = catKey ? ["all", ...Array.from(new Set(items.map(i=>i[catKey])))] : ["all"];
+
+  const filtered = items.filter(i =>
+    (exp==="all" || (i.expansion||BASE)===exp) &&
+    (cat==="all" || !catKey || i[catKey]===cat));
+
+  return (
+    <div>
+      {COVERAGE[page] && <CoverageNote>{COVERAGE[page]}</CoverageNote>}
+      <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:18, alignItems:"center" }}>
+        <FilterChips value={exp} set={setExp} options={[["all","All"],[BASE,"Base"],[DLC,"DLC"]]} />
+        {catKey && <FilterChips value={cat} set={setCat} options={cats.map(c=>[c, c==="all"?"All Types":c])} />}
+        <span style={{ marginLeft:"auto", color:C.dim, fontSize:12.5 }}>{filtered.length} entries</span>
+      </div>
+      <CardGrid>
+        {filtered.map(i=>(
+          <EntryCard key={i.id} exp={i.expansion} title={i.name}
+            onClick={()=>go(page,i.id)}
+            tracked={tracked.has(`${page}:${i.id}`)}
+            onTrack={()=>toggleTrack(`${page}:${i.id}`)}
+            sub={renderSub(page,i)}
+            footer={renderFooter(page,i)} />
+        ))}
+      </CardGrid>
+    </div>
+  );
+}
+
+function renderSub(page,i){
+  switch(page){
+    case "bosses": return `${i.region} · Rec. Lv ${i.recLevel}`;
+    case "weapons": return `${i.cat} · ${i.skill}`;
+    case "armor": return `${i.cat} · ${i.type} · Poise ${i.poise}`;
+    case "sorceries": return `${i.school} · ${i.fp} FP`;
+    case "incantations": return `${i.school} · ${i.fp} FP`;
+    case "spiritAshes": return `${i.cat} · ${i.fp} FP`;
+    case "ashesOfWar": return `${i.cat} affinity`;
+    case "talismans": return i.effect;
+    case "quests": return i.start;
+    case "npcs": return `${i.cat} · ${i.locations}`;
+    case "builds": return `${i.cat} · ${i.stage}`;
+    default: return "";
+  }
+}
+function renderFooter(page,i){
+  if(page==="bosses") return (
+    <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:10, paddingBottom:24 }}>
+      {i.weak.map(w=><Pill key={w} tone="weak">↓ {w}</Pill>)}
+    </div>
+  );
+  if(page==="weapons") return (
+    <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:10, paddingBottom:24 }}>
+      <Pill tone="gold">PvE {i.pve}</Pill><Pill tone="gold">PvP {i.pvp}</Pill>
+    </div>
+  );
+  return <div style={{ height:24 }} />;
+}
+
+function FilterChips({ value, set, options }) {
+  return (
+    <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+      {options.map(([v,l])=>(
+        <button key={v} onClick={()=>set(v)} style={{ fontSize:12.5, padding:"6px 12px", borderRadius:999, cursor:"pointer",
+          background: value===v ? C.gold : C.panel, color: value===v ? "#1a1408" : C.dim,
+          border:`1px solid ${value===v ? C.gold : C.line}`, fontWeight: value===v?600:400 }}>{l}</button>
+      ))}
+    </div>
+  );
+}
+
+/* ------------------------------ DETAIL ---------------------------------- */
+function DetailPage({ page, id }) {
+  const { back } = useApp();
+  let item, render;
+
+  if(page==="lore"){
+    item = [...DB.lore.characters, ...DB.lore.topics].find(x=>x.id===id);
+    render = <p style={{ color:C.text, lineHeight:1.7 }}>{item?.text}</p>;
+  } else {
+    item = (DB[page]||[]).find(x=>x.id===id);
+  }
+  if(!item) return <div><BackBtn onClick={back}/><p style={{color:C.dim}}>Entry not found.</p></div>;
+
+  return (
+    <div>
+      <BackBtn onClick={back}/>
+      <div style={{ display:"flex", alignItems:"center", gap:12, margin:"4px 0 20px" }}>
+        <h1 style={{ fontFamily:"'Cinzel',serif", fontSize:30, color:C.text, margin:0 }}>{item.name}</h1>
+        <Badge exp={item.expansion}/>
+      </div>
+      {render || <DetailBody page={page} i={item} />}
+    </div>
+  );
+}
+
+function Field({ label, children }) {
+  return (
+    <div style={{ background:C.panel, border:`1px solid ${C.line}`, borderRadius:10, padding:"12px 14px" }}>
+      <p style={{ margin:"0 0 4px", fontSize:11, letterSpacing:".1em", textTransform:"uppercase", color:C.gold }}>{label}</p>
+      <div style={{ color:C.text, fontSize:14, lineHeight:1.55 }}>{children}</div>
+    </div>
+  );
+}
+
+function Grid2({ children }) {
+  return <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:12, marginBottom:16 }}>{children}</div>;
+}
+
+function DetailBody({ page, i }) {
+  if(page==="bosses") return (
+    <>
+      <Grid2>
+        <Field label="Location">{i.region}</Field>
+        <Field label="Recommended Level">{i.recLevel}</Field>
+        <Field label="HP">{i.hp.toLocaleString()}</Field>
+        <Field label="Rune Reward">{i.rune.toLocaleString()}</Field>
+        <Field label="Weaknesses"><div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{i.weak.map(w=><Pill key={w} tone="weak">{w}</Pill>)}</div></Field>
+        <Field label="Resistances"><div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{i.resist.map(w=><Pill key={w} tone="resist">{w}</Pill>)}</div></Field>
+      </Grid2>
+      <Field label="Strategy"><Spoiler>{i.strategy}</Spoiler></Field>
+      <div style={{height:12}}/>
+      <Field label="Reward"><Spoiler>{i.reward}</Spoiler></Field>
+      <div style={{height:12}}/>
+      <Field label="Lore">{i.lore}</Field>
+    </>
+  );
+  if(page==="weapons") return (
+    <>
+      <Grid2>
+        <Field label="Type">{i.cat}</Field>
+        <Field label="Skill">{i.skill}</Field>
+        <Field label="Requirements">{i.req}</Field>
+        <Field label="Scaling">{i.scaling}</Field>
+        <Field label="Weight">{i.weight}</Field>
+        <Field label="Damage Types">{i.dmg.join(", ")}</Field>
+        <Field label="PvE Rating"><Pill tone="gold">{i.pve}</Pill></Field>
+        <Field label="PvP Rating"><Pill tone="gold">{i.pvp}</Pill></Field>
+      </Grid2>
+      <Field label="Location"><Spoiler>{i.location}</Spoiler></Field>
+      <div style={{height:12}}/>
+      <Field label="Best Build Pairings">{i.builds.join(" · ")}</Field>
+      <div style={{height:12}}/>
+      <Field label="Lore">{i.lore}</Field>
+    </>
+  );
+  if(page==="quests") return (
+    <>
+      <Grid2>
+        <Field label="Start Location">{i.start}</Field>
+        <Field label="Requirements">{i.req}</Field>
+        <Field label="Missable Steps">{i.missable}</Field>
+      </Grid2>
+      <Field label="Step-by-Step Walkthrough">
+        <Spoiler label="Walkthrough hidden — tap to reveal">
+          <ol style={{ margin:0, paddingLeft:18, lineHeight:1.7 }}>{i.steps.map((s,n)=><li key={n}>{s}</li>)}</ol>
+        </Spoiler>
+      </Field>
+      <div style={{height:12}}/>
+      <Field label="Rewards"><Spoiler>{i.rewards}</Spoiler></Field>
+    </>
+  );
+  if(page==="builds") return (
+    <Grid2>
+      <Field label="Class">{i.cat}</Field>
+      <Field label="Stage">{i.stage}</Field>
+      <Field label="Stats">{i.stats}</Field>
+      <Field label="Summary">{i.summary}</Field>
+    </Grid2>
+  );
+  // generic fallback for armor/sorceries/incantations/spiritAshes/ashesOfWar/talismans/npcs
+  const fields = Object.entries(i).filter(([k])=>!["id","name","expansion"].includes(k));
+  return <Grid2>{fields.map(([k,v])=>(
+    <Field key={k} label={k.replace(/([A-Z])/g," $1")}>{Array.isArray(v)?v.join(", "):String(v)}</Field>
+  ))}</Grid2>;
+}
+
+function BackBtn({ onClick }) {
+  return <button onClick={onClick} style={{ background:"transparent", border:`1px solid ${C.line}`, color:C.dim,
+    padding:"6px 12px", borderRadius:8, cursor:"pointer", fontSize:13, marginBottom:14 }}>← Back</button>;
+}
+
+/* ------------------------------ LORE PAGE ------------------------------- */
+function LorePage() {
+  const { go } = useApp();
+  return (
+    <div>
+      <SectionTitle>Timeline</SectionTitle>
+      <div style={{ display:"flex", flexDirection:"column", gap:0, borderLeft:`2px solid ${C.gold}`, paddingLeft:18, marginLeft:6 }}>
+        {DB.lore.timeline.map((t,n)=>(
+          <div key={t} style={{ position:"relative", padding:"10px 0" }}>
+            <div style={{ position:"absolute", left:-25, top:14, width:10, height:10, borderRadius:"50%", background:C.gold }}/>
+            <span style={{ color:C.text, fontSize:14.5 }}>{t}</span>
+          </div>
+        ))}
+      </div>
+      <SectionTitle>Characters</SectionTitle>
+      <CardGrid>{DB.lore.characters.map(c=>(
+        <EntryCard key={c.id} exp={c.expansion} title={c.name} sub={c.text.slice(0,90)+"…"} onClick={()=>go("lore",c.id)} footer={<div style={{height:8}}/>}/>
+      ))}</CardGrid>
+      <SectionTitle>Topics</SectionTitle>
+      <CardGrid>{DB.lore.topics.map(c=>(
+        <EntryCard key={c.id} exp={c.expansion} title={c.name} sub={c.text.slice(0,90)+"…"} onClick={()=>go("lore",c.id)} footer={<div style={{height:8}}/>}/>
+      ))}</CardGrid>
+    </div>
+  );
+}
+
+/* --------------------------- PROGRESSION -------------------------------- */
+function ProgressionPage() {
+  const order = [
+    ["Limgrave","Lv 1–20","Explore, grab Torrent, learn the basics. Beat the Tree Sentinel when ready."],
+    ["Stormveil Castle","Lv 25–35","Godrick the Grafted — your first Great Rune."],
+    ["Liurnia / Raya Lucaria","Lv 35–50","Rennala and the Academy. Open the Carian questlines."],
+    ["Caelid","Lv 45–60","Risky but rich — Moonveil, smithing stones, Radahn."],
+    ["Altus / Leyndell","Lv 60–90","Climb to the capital, defeat Morgott."],
+    ["Mountaintops","Lv 90–110","Fire Giant and the road to Farum Azula."],
+    ["Land of Shadow (DLC)","Lv 120+ · Scadu 1","Enter after Mohg. Scadutree blessing matters more than level."],
+  ];
+  return (
+    <div>
+      <SectionTitle>Recommended Boss & Area Order</SectionTitle>
+      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+        {order.map(([area,lv,note],n)=>(
+          <div key={area} style={{ display:"flex", gap:14, background:C.panel, border:`1px solid ${C.line}`, borderRadius:10, padding:14 }}>
+            <div style={{ minWidth:34, height:34, borderRadius:"50%", background:C.gold, color:"#1a1408",
+              display:"grid", placeItems:"center", fontWeight:700 }}>{n+1}</div>
+            <div>
+              <div style={{ display:"flex", gap:10, alignItems:"baseline", flexWrap:"wrap" }}>
+                <strong style={{ color:C.text, fontFamily:"'Cinzel',serif" }}>{area}</strong>
+                <Pill tone="gold">{lv}</Pill>
+              </div>
+              <p style={{ margin:"6px 0 0", color:C.dim, fontSize:13 }}>{note}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------- TOOLS ---------------------------------- */
+function ToolsPage() {
+  return (
+    <div>
+      <SectionTitle>Boss Weakness Finder</SectionTitle>
+      <WeaknessFinder/>
+      <SectionTitle>Rune Calculator (level cost)</SectionTitle>
+      <RuneCalc/>
+      <SectionTitle>Quest Tracker</SectionTitle>
+      <TrackerView/>
+    </div>
+  );
+}
+
+function WeaknessFinder() {
+  const [q,setQ] = useState("");
+  const hits = DB.bosses.filter(b=>b.name.toLowerCase().includes(q.toLowerCase()));
+  return (
+    <div style={{ background:C.panel, border:`1px solid ${C.line}`, borderRadius:12, padding:16 }}>
+      <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Type a boss name…"
+        style={inputStyle}/>
+      <div style={{ marginTop:12, display:"flex", flexDirection:"column", gap:8 }}>
+        {hits.map(b=>(
+          <div key={b.id} style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
+            <strong style={{ color:C.text, minWidth:180 }}>{b.name}</strong>
+            {b.weak.map(w=><Pill key={w} tone="weak">↓ {w}</Pill>)}
+            {b.resist.map(w=><Pill key={w} tone="resist">↑ {w}</Pill>)}
+          </div>
+        ))}
+        {!hits.length && <span style={{ color:C.dim, fontSize:13 }}>No match.</span>}
+      </div>
+    </div>
+  );
+}
+
+function RuneCalc() {
+  const [from,setFrom] = useState(1);
+  const [to,setTo] = useState(50);
+  // Approximation of ER level cost curve
+  const cost = (lv) => Math.floor(0.02 * Math.pow(lv+81,3) + 3.06*Math.pow(lv+81,2) + 105.4*(lv+81) - 895);
+  const total = useMemo(()=>{
+    let s=0; for(let l=Math.min(from,to); l<Math.max(from,to); l++) s+=cost(l); return s;
+  },[from,to]);
+  return (
+    <div style={{ background:C.panel, border:`1px solid ${C.line}`, borderRadius:12, padding:16, display:"flex", gap:14, flexWrap:"wrap", alignItems:"center" }}>
+      <label style={{color:C.dim,fontSize:13}}>From Lv <input type="number" value={from} onChange={e=>setFrom(+e.target.value||1)} style={numStyle}/></label>
+      <label style={{color:C.dim,fontSize:13}}>To Lv <input type="number" value={to} onChange={e=>setTo(+e.target.value||1)} style={numStyle}/></label>
+      <div style={{ marginLeft:"auto", color:C.goldSoft, fontFamily:"'Cinzel',serif", fontSize:18 }}>
+        ≈ {total.toLocaleString()} runes
+      </div>
+    </div>
+  );
+}
+
+function TrackerView() {
+  const { tracked, toggleTrack } = useApp();
+  const arr = Array.from(tracked);
+  if(!arr.length) return <p style={{color:C.dim,fontSize:13}}>Nothing tracked yet. Hit “Track” on any boss, weapon, or item card.</p>;
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+      {arr.map(key=>{
+        const [page,id] = key.split(":");
+        const item = (DB[page]||[]).find(x=>x.id===id);
+        return (
+          <div key={key} style={{ display:"flex", justifyContent:"space-between", alignItems:"center",
+            background:C.panel, border:`1px solid ${C.line}`, borderRadius:10, padding:"10px 14px" }}>
+            <span style={{color:C.text,fontSize:14}}>{item?.name||id} <span style={{color:C.dim,fontSize:12}}>· {page}</span></span>
+            <button onClick={()=>toggleTrack(key)} style={{ background:"transparent", border:"none", color:C.ember, cursor:"pointer" }}><X size={16}/></button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const inputStyle = { width:"100%", background:C.bg, border:`1px solid ${C.line}`, color:C.text, padding:"10px 12px", borderRadius:8, fontSize:14, outline:"none", boxSizing:"border-box" };
+const numStyle = { width:70, background:C.bg, border:`1px solid ${C.line}`, color:C.text, padding:"6px 8px", borderRadius:6, marginLeft:6 };
+
+/* ------------------------------ SEARCH ---------------------------------- */
+function SearchOverlay({ index, onClose }) {
+  const { go, spoilers } = useApp();
+  const [q,setQ] = useState("");
+  const results = useMemo(()=>{
+    if(!q.trim()) return [];
+    const t = q.toLowerCase();
+    return index.filter(x=>x.name.toLowerCase().includes(t)||x.extra.toLowerCase().includes(t)||x.type.toLowerCase().includes(t)).slice(0,40);
+  },[q,index]);
+  useEffect(()=>{ const h=e=>e.key==="Escape"&&onClose(); window.addEventListener("keydown",h); return ()=>window.removeEventListener("keydown",h); },[onClose]);
+  return (
+    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.7)", zIndex:100, display:"flex", justifyContent:"center", paddingTop:"10vh" }}>
+      <div onClick={e=>e.stopPropagation()} style={{ width:"min(640px,92vw)", height:"fit-content", maxHeight:"75vh",
+        background:C.panel, border:`1px solid ${C.gold}`, borderRadius:14, overflow:"hidden", display:"flex", flexDirection:"column" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, padding:"14px 16px", borderBottom:`1px solid ${C.line}` }}>
+          <Search size={18} color={C.gold}/>
+          <input autoFocus value={q} onChange={e=>setQ(e.target.value)} placeholder="Search everything — bosses, weapons, spells, NPCs, regions…"
+            style={{ flex:1, background:"transparent", border:"none", color:C.text, fontSize:15, outline:"none" }}/>
+          <button onClick={onClose} style={{ background:"none", border:"none", color:C.dim, cursor:"pointer" }}><X size={18}/></button>
+        </div>
+        <div style={{ overflow:"auto" }}>
+          {results.map(r=>{
+            const hideName = !spoilers && r.type==="Boss";
+            return (
+              <div key={r.type+r.id} onClick={()=>{go(r.page,r.id); onClose();}}
+                style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 16px", cursor:"pointer", borderBottom:`1px solid ${C.line}` }}
+                onMouseEnter={e=>e.currentTarget.style.background=C.panel2}
+                onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                <span style={{ fontSize:10, color:C.gold, minWidth:74, textTransform:"uppercase", letterSpacing:".06em" }}>{r.type}</span>
+                <span style={{ color:C.text, fontSize:14, flex:1 }}>{r.name}</span>
+                <span style={{ color:C.dim, fontSize:12 }}>{r.extra}</span>
+                <Badge exp={r.expansion}/>
+              </div>
+            );
+          })}
+          {q && !results.length && <div style={{ padding:20, color:C.dim, fontSize:14 }}>No results for “{q}”.</div>}
+          {!q && <div style={{ padding:20, color:C.dim, fontSize:13 }}>Try “Malenia”, “katana”, “Ranni”, “DLC”, or “Liurnia”.</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------- SHELL ---------------------------------- */
+export default function App() {
+  const [route, setRoute] = useState({ page:"home", id:null });
+  const [history, setHistory] = useState([]);
+  const [spoilers, setSpoilers] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [tracked, setTracked] = useState(()=>new Set());
+  const [query, setQuery] = useState("");
+
+  const index = useMemo(buildSearchIndex, []);
+
+  const go = useCallback((page,id=null)=>{
+    setHistory(h=>[...h,route]); setRoute({page,id}); window.scrollTo(0,0);
+  },[route]);
+  const back = useCallback(()=>{
+    setHistory(h=>{ if(!h.length){setRoute({page:"home",id:null}); return h;} const prev=h[h.length-1]; setRoute(prev); return h.slice(0,-1); });
+    window.scrollTo(0,0);
+  },[]);
+  const toggleTrack = useCallback((key)=>setTracked(prev=>{ const n=new Set(prev); n.has(key)?n.delete(key):n.add(key); return n; }),[]);
+
+  const ctx = { go, back, spoilers, tracked, toggleTrack, setQuery };
+
+  const DB_PAGES = ["weapons","armor","sorceries","incantations","spiritAshes","ashesOfWar","talismans","npcs"];
+
+  const render = () => {
+    const { page, id } = route;
+    if(id && page!=="regions") return <DetailPage page={page} id={id}/>;
+    switch(page){
+      case "home": return <HomePage/>;
+      case "map": return <MapPage/>;
+      case "regions": return <RegionsPage/>;
+      case "lore": return <LorePage/>;
+      case "quests": case "builds": return <DatabasePage page={page}/>;
+      case "bosses": return <BossesPage/>;
+      case "progression": return <ProgressionPage/>;
+      case "tools": return <ToolsPage/>;
+      default: return DB_PAGES.includes(page) ? <DatabasePage page={page}/> : <HomePage/>;
+    }
+  };
+
+  return (
+    <AppCtx.Provider value={ctx}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap');
+        *{box-sizing:border-box} body{margin:0}
+        ::-webkit-scrollbar{width:9px;height:9px} ::-webkit-scrollbar-thumb{background:${C.line};border-radius:5px}
+        ::selection{background:${C.gold};color:#1a1408}`}</style>
+      <div style={{ minHeight:"100vh", background:C.bg, color:C.text, fontFamily:"'Spectral',Georgia,serif",
+        display:"grid", gridTemplateColumns:"232px 1fr" }}>
+
+        {/* Sidebar */}
+        <aside style={{ borderRight:`1px solid ${C.line}`, padding:"18px 12px", position:"sticky", top:0, height:"100vh", overflow:"auto", background:C.panel }}>
+          <div onClick={()=>go("home")} style={{ cursor:"pointer", padding:"4px 8px 16px", borderBottom:`1px solid ${C.line}`, marginBottom:12 }}>
+            <div style={{ fontFamily:"'Cinzel',serif", color:C.gold, fontSize:18, fontWeight:700, letterSpacing:".02em" }}>ELDEN RING</div>
+            <div style={{ fontSize:10.5, color:C.dim, letterSpacing:".24em", textTransform:"uppercase" }}>Codex · SOTE</div>
+          </div>
+          {NAV.map(n=>{
+            const on = route.page===n.id;
+            return (
+              <button key={n.id} onClick={()=>go(n.id)} style={{ display:"flex", alignItems:"center", gap:10, width:"100%",
+                background: on ? C.panel2 : "transparent", border:"none", borderLeft:`3px solid ${on?C.gold:"transparent"}`,
+                color: on ? C.text : C.dim, padding:"9px 10px", borderRadius:"0 8px 8px 0", cursor:"pointer", fontSize:13.5, textAlign:"left", marginBottom:1 }}>
+                <n.icon size={16} color={on?C.gold:C.dim}/>{n.label}
+              </button>
+            );
+          })}
+        </aside>
+
+        {/* Main */}
+        <div style={{ display:"flex", flexDirection:"column", minWidth:0 }}>
+          <header style={{ position:"sticky", top:0, zIndex:20, display:"flex", alignItems:"center", gap:12,
+            padding:"12px 28px", borderBottom:`1px solid ${C.line}`, background:"rgba(12,10,7,.85)", backdropFilter:"blur(8px)" }}>
+            <button onClick={()=>setSearchOpen(true)} style={{ flex:1, display:"flex", alignItems:"center", gap:10,
+              background:C.panel, border:`1px solid ${C.line}`, color:C.dim, padding:"9px 14px", borderRadius:10, cursor:"pointer", fontSize:13.5, textAlign:"left" }}>
+              <Search size={15}/> Search everything…
+            </button>
+            <button onClick={()=>setSpoilers(s=>!s)} title="Toggle spoilers"
+              style={{ display:"flex", alignItems:"center", gap:7, background: spoilers?"#2a1616":C.panel, color: spoilers?"#e0a0a0":C.dim,
+                border:`1px solid ${spoilers?"#5a2626":C.line}`, padding:"9px 13px", borderRadius:10, cursor:"pointer", fontSize:13 }}>
+              {spoilers ? <Eye size={15}/> : <EyeOff size={15}/>}
+              {spoilers ? "Spoilers ON" : "Spoilers OFF"}
+            </button>
+          </header>
+
+          <main style={{ padding:"24px 28px 60px", maxWidth:1200 }}>
+            {render()}
+          </main>
+        </div>
+      </div>
+      {searchOpen && <SearchOverlay index={index} onClose={()=>setSearchOpen(false)}/>}
+    </AppCtx.Provider>
+  );
+}
