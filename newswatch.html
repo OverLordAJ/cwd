@@ -428,6 +428,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
       <button class="update-tab" onclick="filterSection('ai','chatgpt',this)">🟢 ChatGPT</button>
       <button class="update-tab" onclick="filterSection('ai','grok',this)">✖ Grok</button>
       <button class="update-tab" onclick="filterSection('ai','meta',this)">🔷 Meta AI</button>
+      <button class="update-tab" onclick="filterSection('ai','copilot',this)">🟣 Copilot</button>
+      <button class="update-tab" onclick="filterSection('ai','perplexity',this)">🔮 Perplexity</button>
+      <button class="update-tab" onclick="filterSection('ai','deepseek',this)">🐋 DeepSeek</button>
+      <button class="update-tab" onclick="filterSection('ai','mistral',this)">🌬 Mistral</button>
+      <button class="update-tab" onclick="filterSection('ai','imagevideo',this)">🎨 Image/Video</button>
     </div>
     <div class="world-grid" id="aiGrid"><div class="loading"><div class="spinner"></div></div></div>
   </div>
@@ -446,6 +451,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
       <button class="update-tab" onclick="filterSection('gaming','playstation',this)">🎮 PlayStation</button>
       <button class="update-tab" onclick="filterSection('gaming','xbox',this)">🟩 Xbox</button>
       <button class="update-tab" onclick="filterSection('gaming','nintendo',this)">🔴 Nintendo</button>
+      <button class="update-tab" onclick="filterSection('gaming','events',this)">🎉 Events &amp; Showcases</button>
+      <button class="update-tab" onclick="filterSection('gaming','esports',this)">🏆 Esports</button>
     </div>
     <div class="world-grid" id="gamingGrid"><div class="loading"><div class="spinner"></div></div></div>
   </div>
@@ -460,6 +467,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
     </div>
     <div class="update-tabs" id="movies-tabs">
       <button class="update-tab active" onclick="filterSection('movies','all',this)">🎬 All</button>
+      <button class="update-tab" onclick="filterSection('movies','trailers',this)">🎞 Trailers</button>
       <button class="update-tab" onclick="filterSection('movies','streaming',this)">📺 Streaming</button>
       <button class="update-tab" onclick="filterSection('movies','boxoffice',this)">🎟 Box Office</button>
       <button class="update-tab" onclick="filterSection('movies','tv',this)">📡 TV Shows</button>
@@ -586,14 +594,14 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
 <footer>
   <div class="footer-inner">
     <div class="footer-copy">© 2026 NewsWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire · CBS Sports · Bleacher Report · SI · Phys.org · NASA · Nature · Science Daily · RFI · VOA · Fast Company · Inc. · HBR &amp; 70+ more.</div>
-    <div class="footer-sources">Live 24/7 · checks every 90s · 11 sections · 6 world regions · platform filters · AI assistant · up to 80 articles per section</div>
+    <div class="footer-sources">Live 24/7 · checks every 90s · 11 sections · 6 world regions · platform filters · AI assistant · up to 200 articles per section</div>
   </div>
 </footer>
 
 <script>
 // ── PROXY CHAIN ───────────────────────────────────────────────────────────────
 const PROXIES = [
-  url => `https://api.rss2json.com/v1/api.json?count=50&rss_url=${encodeURIComponent(url)}`,
+  url => `https://api.rss2json.com/v1/api.json?count=100&rss_url=${encodeURIComponent(url)}`,
   url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
   url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   url => `https://thingproxy.freeboard.io/fetch/${url}`,
@@ -660,6 +668,8 @@ const FEEDS = {
   ai_decoder:'https://the-decoder.com/feed/',
   ai_zdnet:'https://www.zdnet.com/topic/artificial-intelligence/rss.xml',
   ai_ars:'https://feeds.arstechnica.com/arstechnica/ai/',
+  ai_googleblog:'https://blog.google/technology/ai/rss/',
+  ai_huggingface:'https://huggingface.co/blog/feed.xml',
   // Movies / Entertainment
   variety:'https://variety.com/feed/',
   deadline:'https://deadline.com/feed/',
@@ -746,7 +756,7 @@ const SECTION_FEEDS = {
   politics: ['npr_pol','politico','thehill_pol','realclear','guardian_us','cnn_pol','abc_pol','fox_pol','wapo_pol','slate_pol','nyt_pol'],
   business: ['npr_biz','cnbc','marketwatch','fortune','wsj','economist','coindesk','reuters_biz','fastco','inc','barrons','hbr','quartz'],
   tech:     ['npr_tech','techcrunch','theverge','wired','ars','engadget','nine5mac','nine5google','macrumors'],
-  ai:       ['ai_techcrunch','ai_verge','ai_mit','ai_venturebeat','ai_wired','ai_decoder','ai_zdnet','ai_ars'],
+  ai:       ['ai_techcrunch','ai_verge','ai_mit','ai_venturebeat','ai_wired','ai_decoder','ai_zdnet','ai_ars','ai_googleblog','ai_huggingface'],
   gaming:   ['ign','kotaku','polygon','pcgamer','eurogamer','rps','destructoid','gamespot','ps_blog','xbox_wire','nintendolife'],
   movies:   ['variety','deadline','thr','screenrant','collider','slashfilm','indiewire','thewrap','ew'],
   science:  ['npr_sci','sciamer','newscientist','livescience','physorg','space_com','nasa','popsci','nature','sciencedaily','nyt_sci','nyt_health'],
@@ -763,8 +773,8 @@ const SECTION_FEEDS = {
 // ── STRICT TOPIC KEYWORD FILTERS per section ──────────────────────────────────
 // Articles must match at least one keyword to appear in that tab
 const SECTION_TOPIC_KW = {
-  ai:       ['artificial intelligence',' ai ','ai-','machine learning','neural','llm','language model','chatgpt','claude','gemini','openai','anthropic','deepmind','chatbot','generative','gpt-','foundation model','reasoning model','multimodal','agentic','ai agent','vibe coding','claude code','mcp ','model context','ai safety','alignment','inference','fine-tun'],
-  gaming:   ['game','gaming','gamer','console','playstation','xbox','nintendo','steam','esport','esports','video game','pc game'],
+  ai:       ['artificial intelligence',' ai ','ai-','machine learning','neural','llm','language model','chatgpt','claude','gemini','openai','anthropic','deepmind','chatbot','generative','gpt-','foundation model','reasoning model','multimodal','agentic','ai agent','vibe coding','claude code','mcp ','model context','ai safety','alignment','inference','fine-tun','copilot','perplexity','deepseek','mistral','grok','llama','midjourney','sora','stable diffusion','hugging face','runway','nvidia','ai model','ai tool','ai startup','ai chip'],
+  gaming:   ['game','gaming','gamer','console','playstation','xbox','nintendo','steam','esport','esports','video game','pc game','game awards','summer game fest','gamescom','state of play','nintendo direct','showcase','tokyo game show'],
   movies:   ['movie','film','cinema','hollywood','box office','streaming','netflix','disney','hbo','theatrical','trailer','director','cast','sequel','series','episode'],
   tech:     ['tech','technology','software','hardware','app','smartphone','iphone','android','computer','device','silicon','startup','developer','api','chip','processor'],
   science:  ['science','research','study','discovery','space','nasa','spacex','biology','chemistry','physics','climate','environment','health','medical','vaccine','disease'],
@@ -780,8 +790,13 @@ const PLATFORM_FILTERS = {
     claude:  ['claude','anthropic','claude 4','claude 3','opus 4','sonnet 4','haiku 4','claude opus','claude sonnet','claude haiku','claude code','mcp server','model context protocol','constitutional ai','claude.ai'],
     gemini:  ['gemini','google ai','google deepmind','deepmind','bard','gemini 2','gemini ultra','gemini pro','gemini flash','google gemini'],
     chatgpt: ['chatgpt','openai','gpt-4','gpt-5','gpt4','gpt5',' o1 ',' o3 ',' o4 ','openai','sora','dall-e','whisper'],
-    grok:    ['grok','xai','x.ai','elon musk ai'],
-    meta:    ['llama','meta ai','meta llm',"meta's ai",'meta artificial'],
+    grok:    ['grok','xai','x.ai','elon musk ai','grok 3','grok 4'],
+    meta:    ['llama','meta ai','meta llm',"meta's ai",'meta artificial','llama 3','llama 4'],
+    copilot: ['copilot','microsoft copilot','github copilot','copilot studio','m365 copilot','copilot+'],
+    perplexity: ['perplexity','perplexity ai','perplexity.ai','comet browser'],
+    deepseek: ['deepseek','deepseek-r1','deepseek r1','deepseek v3','deepseek-v3'],
+    mistral:  ['mistral','mistral ai','le chat','mixtral','codestral'],
+    imagevideo: ['midjourney','sora','dall-e','dall·e','stable diffusion','runway','runwayml','veo','google veo','firefly','adobe firefly','image generat','video generat','text-to-image','text-to-video','image model','video model'],
   },
   gaming: {
     all: [],
@@ -789,6 +804,8 @@ const PLATFORM_FILTERS = {
     playstation: ['playstation','ps5','ps4','ps6','sony','psvr','playstation 5','playstation 6','playstation blog'],
     xbox:        ['xbox','game pass','series x','series s','microsoft gaming','halo','forza','xbox wire'],
     nintendo:    ['nintendo','switch','mario','zelda','pokemon','switch 2','splatoon','kirby','metroid','fire emblem','animal crossing'],
+    events:      ['the game awards','game awards','summer game fest','gamescom','e3','tokyo game show','state of play','nintendo direct','xbox showcase','xbox games showcase','playstation showcase','developer_direct','developer direct','showcase','world premiere','reveal trailer','gameplay reveal','wholesome direct','pax ','game fest','games conference','reveal event','live showcase','announced'],
+    esports:     ['esport','esports','tournament','championship','league of legends','valorant','counter-strike','cs2','dota','overwatch league','worlds 2','major','grand finals','pro league','competitive','lan event','prize pool'],
   },
   tech: {
     all: [],
@@ -799,6 +816,7 @@ const PLATFORM_FILTERS = {
   },
   movies: {
     all: [],
+    trailers:  ['trailer','teaser','official trailer','teaser trailer','final trailer','first trailer','new trailer','red band','red-band','first look','sneak peek','first footage','watch the trailer','trailer drop','trailer release','trailer reveal','full trailer','drops trailer','releases trailer','debuts trailer'],
     streaming: ['netflix','disney+','hbo','max','amazon prime','apple tv+','paramount+','hulu','peacock','streaming'],
     boxoffice: ['box office','opening weekend','theaters','theatrical','debuts','grosses','domestic','opening day'],
     tv:        ['tv series','tv show','television','sitcom','drama series','limited series','miniseries','season ','episode '],
@@ -901,7 +919,7 @@ async function fetchFeed(key) {
 }
 
 // ── FETCH MULTIPLE FEEDS ──────────────────────────────────────────────────────
-async function fetchMulti(keys, limit = 200) {
+async function fetchMulti(keys, limit = 400) {
   const results = await Promise.allSettled(keys.map(k => fetchFeed(k)));
   const all = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
   const seen = new Set();
@@ -911,7 +929,7 @@ async function fetchMulti(keys, limit = 200) {
     .slice(0, limit);
 }
 
-function getCachedMulti(keys, limit = 200) {
+function getCachedMulti(keys, limit = 400) {
   const all = keys.flatMap(k => cache[k]?.items || []);
   const seen = new Set();
   return all
@@ -1110,7 +1128,7 @@ function applyNewArticles() {
 }
 
 // ── TIER PAGINATION ───────────────────────────────────────────────────────────
-const TIER_PAGE = 12;
+const TIER_PAGE = 24;
 let _tierId = 0;
 const _tierRest = {};
 
@@ -1206,18 +1224,18 @@ function renderGrid(sec, gridId, items) {
 function renderSidebar(items) {
   const el = document.getElementById('worldSidebar');
   if (!el || !items.length) return;
-  el.innerHTML = items.slice(0,7).map(i=>renderSidebarItem(i,'world')).join('');
+  el.innerHTML = items.slice(0,12).map(i=>renderSidebarItem(i,'world')).join('');
 }
 
 // ── LOAD US ───────────────────────────────────────────────────────────────────
 async function loadUS(silent=false) {
   const keys = SECTION_FEEDS.us;
   if (!silent) {
-    const cached = getCachedMulti(keys, 200);
+    const cached = getCachedMulti(keys, 400);
     if (cached.length) renderUS(cached);
     else document.getElementById('heroCard').innerHTML = SPIN;
   }
-  const fresh = await fetchMulti(keys, 200);
+  const fresh = await fetchMulti(keys, 400);
   if (!fresh.length) return;
   arcAdd(fresh, 'us');
   if (!silent) { renderUS(fresh); return; }
@@ -1227,9 +1245,9 @@ async function loadUS(silent=false) {
 
 async function loadWorldSidebar() {
   const keys = SECTION_FEEDS.world.slice(0,5);
-  const cached = getCachedMulti(keys, 10);
+  const cached = getCachedMulti(keys, 20);
   if (cached.length) renderSidebar(cached);
-  const fresh = await fetchMulti(keys, 10);
+  const fresh = await fetchMulti(keys, 20);
   renderSidebar(fresh);
 }
 
@@ -1237,7 +1255,7 @@ async function loadWorldSidebar() {
 async function loadSection(sec, gridId, silent=false) {
   const keys = SECTION_FEEDS[sec] || [sec];
   if (!silent) {
-    const cached = getCachedMulti(keys, 200);
+    const cached = getCachedMulti(keys, 400);
     if (cached.length) {
       sectionItems[sec] = filterStrictly(cached, sec);
       renderGrid(sec, gridId, sectionItems[sec]);
@@ -1246,7 +1264,7 @@ async function loadSection(sec, gridId, silent=false) {
       if(el) el.innerHTML = SPIN;
     }
   }
-  const fresh = await fetchMulti(keys, 200);
+  const fresh = await fetchMulti(keys, 400);
   if (!fresh.length) return;
   sectionItems[sec] = filterStrictly(fresh, sec);
   arcAdd(sectionItems[sec], sec);
@@ -1262,10 +1280,10 @@ async function loadRegion(region) {
   currentRegion = region;
   document.querySelectorAll('.region-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(region.slice(0,4))));
   const keys = SECTION_FEEDS[region] || [];
-  const cached = getCachedMulti(keys,200);
+  const cached = getCachedMulti(keys,400);
   if (cached.length) renderGrid('regional','regionalGrid',cached);
   else document.getElementById('regionalGrid').innerHTML = SPIN;
-  const fresh = await fetchMulti(keys,200);
+  const fresh = await fetchMulti(keys,400);
   if (fresh.length) arcAdd(fresh, region);
   renderGrid('regional','regionalGrid',fresh);
 }
@@ -1409,7 +1427,7 @@ async function liveLoop() {
   if (currentSection==='us') await loadUS(true);
   else if (currentSection==='regional') {
     const keys = SECTION_FEEDS[currentRegion]||[];
-    const fresh = await fetchMulti(keys,200);
+    const fresh = await fetchMulti(keys,400);
     const firstCard = document.querySelector('#regionalGrid .news-card-title')?.textContent;
     if(fresh.length && fresh[0]?.title!==firstCard){pendingItems=fresh;showToast(Math.min(fresh.length,5));}
   } else {
