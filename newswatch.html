@@ -433,6 +433,12 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
       <button class="update-tab" onclick="filterSection('ai','deepseek',this)">🐋 DeepSeek</button>
       <button class="update-tab" onclick="filterSection('ai','mistral',this)">🌬 Mistral</button>
       <button class="update-tab" onclick="filterSection('ai','imagevideo',this)">🎨 Image/Video</button>
+      <button class="update-tab" onclick="filterSection('ai','nvidia',this)">🟩 NVIDIA</button>
+      <button class="update-tab" onclick="filterSection('ai','apple',this)">🍎 Apple Intelligence</button>
+      <button class="update-tab" onclick="filterSection('ai','amazon',this)">📦 Amazon</button>
+      <button class="update-tab" onclick="filterSection('ai','qwen',this)">🔶 Alibaba Qwen</button>
+      <button class="update-tab" onclick="filterSection('ai','cohere',this)">🔗 Cohere</button>
+      <button class="update-tab" onclick="filterSection('ai','stability',this)">🖌 Stability AI</button>
     </div>
     <div class="world-grid" id="aiGrid"><div class="loading"><div class="spinner"></div></div></div>
   </div>
@@ -453,6 +459,15 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
       <button class="update-tab" onclick="filterSection('gaming','nintendo',this)">🔴 Nintendo</button>
       <button class="update-tab" onclick="filterSection('gaming','events',this)">🎉 Events &amp; Showcases</button>
       <button class="update-tab" onclick="filterSection('gaming','esports',this)">🏆 Esports</button>
+      <button class="update-tab" onclick="filterSection('gaming','trailers',this)">🎞 Trailers</button>
+      <button class="update-tab" onclick="filterSection('gaming','rockstar',this)">🤠 Rockstar</button>
+      <button class="update-tab" onclick="filterSection('gaming','ubisoft',this)">🌀 Ubisoft</button>
+      <button class="update-tab" onclick="filterSection('gaming','ea',this)">⚽ EA</button>
+      <button class="update-tab" onclick="filterSection('gaming','activision',this)">🔫 Activision Blizzard</button>
+      <button class="update-tab" onclick="filterSection('gaming','bethesda',this)">☢ Bethesda</button>
+      <button class="update-tab" onclick="filterSection('gaming','capcom',this)">🧟 Capcom</button>
+      <button class="update-tab" onclick="filterSection('gaming','square',this)">🗡 Square Enix</button>
+      <button class="update-tab" onclick="filterSection('gaming','fromsoft',this)">🔥 FromSoftware</button>
     </div>
     <div class="world-grid" id="gamingGrid"><div class="loading"><div class="spinner"></div></div></div>
   </div>
@@ -773,8 +788,8 @@ const SECTION_FEEDS = {
 // ── STRICT TOPIC KEYWORD FILTERS per section ──────────────────────────────────
 // Articles must match at least one keyword to appear in that tab
 const SECTION_TOPIC_KW = {
-  ai:       ['artificial intelligence',' ai ','ai-','machine learning','neural','llm','language model','chatgpt','claude','gemini','openai','anthropic','deepmind','chatbot','generative','gpt-','foundation model','reasoning model','multimodal','agentic','ai agent','vibe coding','claude code','mcp ','model context','ai safety','alignment','inference','fine-tun','copilot','perplexity','deepseek','mistral','grok','llama','midjourney','sora','stable diffusion','hugging face','runway','nvidia','ai model','ai tool','ai startup','ai chip'],
-  gaming:   ['game','gaming','gamer','console','playstation','xbox','nintendo','steam','esport','esports','video game','pc game','game awards','summer game fest','gamescom','state of play','nintendo direct','showcase','tokyo game show'],
+  ai:       ['artificial intelligence',' ai ','ai-','machine learning','neural','llm','language model','chatgpt','claude','gemini','openai','anthropic','deepmind','chatbot','generative','gpt-','foundation model','reasoning model','multimodal','agentic','ai agent','vibe coding','claude code','mcp ','model context','ai safety','alignment','inference','fine-tun','copilot','perplexity','deepseek','mistral','grok','llama','midjourney','sora','stable diffusion','hugging face','runway','nvidia','ai model','ai tool','ai startup','ai chip','apple intelligence','bedrock','amazon nova','qwen','alibaba','cohere','stability ai','jensen huang','blackwell'],
+  gaming:   ['game','gaming','gamer','console','playstation','xbox','nintendo','steam','esport','esports','video game','pc game','game awards','summer game fest','gamescom','state of play','nintendo direct','showcase','tokyo game show','rockstar','gta','grand theft auto','red dead','ubisoft','assassin','far cry','electronic arts','battlefield','apex legends','blizzard','call of duty','diablo','bethesda','elder scrolls','fallout','starfield','capcom','resident evil','square enix','final fantasy','fromsoftware','elden ring','dark souls'],
   movies:   ['movie','film','cinema','hollywood','box office','streaming','netflix','disney','hbo','theatrical','trailer','director','cast','sequel','series','episode'],
   tech:     ['tech','technology','software','hardware','app','smartphone','iphone','android','computer','device','silicon','startup','developer','api','chip','processor'],
   science:  ['science','research','study','discovery','space','nasa','spacex','biology','chemistry','physics','climate','environment','health','medical','vaccine','disease'],
@@ -797,6 +812,12 @@ const PLATFORM_FILTERS = {
     deepseek: ['deepseek','deepseek-r1','deepseek r1','deepseek v3','deepseek-v3'],
     mistral:  ['mistral','mistral ai','le chat','mixtral','codestral'],
     imagevideo: ['midjourney','sora','dall-e','dall·e','stable diffusion','runway','runwayml','veo','google veo','firefly','adobe firefly','image generat','video generat','text-to-image','text-to-video','image model','video model'],
+    nvidia:     ['nvidia','jensen huang','blackwell','cuda','nvidia ai','h100','h200','b200','gb200','nvidia gpu','nvidia chip','tensor core','dgx'],
+    apple:      ['apple intelligence','apple ai','siri','apple foundation model','on-device ai','private cloud compute','apple silicon ai'],
+    amazon:     ['amazon ai','aws ai','bedrock','amazon nova','titan model','alexa+','trainium','inferentia','amazon q','anthropic amazon'],
+    qwen:       ['qwen','alibaba','alibaba cloud','tongyi','qwen 2','qwen 3','qwen2','qwen3'],
+    cohere:     ['cohere','command r','command-r','command a','aya model'],
+    stability:  ['stability ai','stable diffusion','stable video','stable audio','stability'],
   },
   gaming: {
     all: [],
@@ -806,6 +827,15 @@ const PLATFORM_FILTERS = {
     nintendo:    ['nintendo','switch','mario','zelda','pokemon','switch 2','splatoon','kirby','metroid','fire emblem','animal crossing'],
     events:      ['the game awards','game awards','summer game fest','gamescom','e3','tokyo game show','state of play','nintendo direct','xbox showcase','xbox games showcase','playstation showcase','developer_direct','developer direct','showcase','world premiere','reveal trailer','gameplay reveal','wholesome direct','pax ','game fest','games conference','reveal event','live showcase','announced'],
     esports:     ['esport','esports','tournament','championship','league of legends','valorant','counter-strike','cs2','dota','overwatch league','worlds 2','major','grand finals','pro league','competitive','lan event','prize pool'],
+    trailers:    ['trailer','teaser','gameplay trailer','reveal trailer','announcement trailer','launch trailer','cinematic trailer','official trailer','gameplay reveal','story trailer','debut trailer','new trailer','game trailer','first look','first gameplay','watch the trailer'],
+    rockstar:    ['rockstar','rockstar games','gta','grand theft auto','gta 6','gta vi','red dead','take-two','take two','take2'],
+    ubisoft:     ['ubisoft','assassin','far cry','rainbow six','watch dogs','prince of persia','tom clancy','splinter cell','the crew'],
+    ea:          ['electronic arts',' ea ','ea sports','battlefield','the sims','apex legends','madden','ea fc','dragon age','need for speed','dead space','bioware','respawn'],
+    activision:  ['activision','blizzard','call of duty','warzone','world of warcraft','diablo','overwatch','candy crush','hearthstone','starcraft','king '],
+    bethesda:    ['bethesda','elder scrolls','fallout','starfield','doom','zenimax','dishonored','the outer worlds','indiana jones'],
+    capcom:      ['capcom','resident evil','monster hunter','street fighter','devil may cry','mega man','dragons dogma','ace attorney'],
+    square:      ['square enix','final fantasy','kingdom hearts','dragon quest','octopath','tomb raider','nier'],
+    fromsoft:    ['fromsoftware','from software','elden ring','dark souls','bloodborne','shadow of the erdtree','sekiro','armored core','nightreign','hidetaka miyazaki'],
   },
   tech: {
     all: [],
