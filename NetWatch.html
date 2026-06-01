@@ -3,18 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NewsWatch — Global News, USA First</title>
+<title>NetWatch — Global News, USA First</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#0d0f14;--surface:#161922;--surface2:#1e2330;--border:#2a2f3d;
-  --text:#e8eaf0;--muted:#7a8099;--accent:#e63946;--accent2:#457b9d;
-  --gold:#f4a261;--green:#2a9d8f;--usa:#b22234;--usa2:#3c3b6e;
-  --card:#1a1d28;--hover:#222638;
+  --bg:#08090d;--surface:#0d0f15;--surface2:#12151d;--border:#242b38;
+  --text:#dbe9f4;--muted:#5f6f80;--accent:#ff003c;--accent2:#00e5ff;
+  --gold:#fcee0a;--green:#00ff9f;--usa:#ff003c;--usa2:#00e5ff;
+  --card:#0c0e14;--hover:#141821;
 }
 .light{
-  --bg:#f0f2f7;--surface:#ffffff;--surface2:#e8ebf4;--border:#d0d5e8;
-  --text:#1a1d2e;--muted:#5a6080;--card:#ffffff;--hover:#f5f7ff;
+  --bg:#dfe3ec;--surface:#eef1f8;--surface2:#dde2ee;--border:#b9c2d4;
+  --text:#0c1018;--muted:#4f5a6b;--accent:#d6003a;--accent2:#0086a8;
+  --card:#eef1f8;--hover:#e6eaf3;
 }
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;transition:background 0.3s,color 0.3s;}
 
@@ -44,7 +46,7 @@ nav a.active{color:var(--accent);}
 .region-bar-inner{max-width:1400px;margin:0 auto;display:flex;gap:2px;padding:6px 0;}
 .region-btn{padding:5px 13px;border-radius:5px;border:1px solid transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;background:none;transition:all 0.2s;white-space:nowrap;}
 .region-btn:hover{background:var(--hover);color:var(--text);}
-.region-btn.active{background:var(--accent2);color:white;border-color:var(--accent2);}
+.region-btn.active{background:var(--accent2);color:#08090d;border-color:var(--accent2);}
 
 /* SOURCE PILLS */
 .source-grid{max-width:1400px;margin:0 auto 28px;padding:0 20px;display:flex;flex-wrap:wrap;gap:8px;}
@@ -256,6 +258,58 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
 .show-more-wrap{text-align:center;padding:16px 0 4px;}
 .show-more-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 24px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;width:100%;max-width:340px;}
 .show-more-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(230,57,70,0.06);}
+
+/* ══════════════════ NETWATCH · CYBERPUNK 2077 SKIN ══════════════════ */
+body{font-family:'Rajdhani','Segoe UI',system-ui,sans-serif;letter-spacing:0.3px;position:relative;}
+
+/* CRT scanlines + neon ambient glow */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;
+  background:repeating-linear-gradient(0deg,rgba(0,229,255,0.035) 0px,rgba(0,229,255,0.035) 1px,transparent 2px,transparent 3px);
+  opacity:0.55;}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(circle at 18% -5%,rgba(255,0,60,0.10),transparent 45%),
+             radial-gradient(circle at 92% 12%,rgba(0,229,255,0.10),transparent 42%);}
+
+/* tech typography */
+.tier-label,.section-label h2,.region-btn,.update-tab,.badge,.age-badge,.ticker-label,nav a{
+  font-family:'Rajdhani','Segoe UI',sans-serif;text-transform:uppercase;letter-spacing:1px;}
+.topbar,.footer-sources,.hero-meta,.news-card-time,.sidebar-time,.arc-meta,.chat-hdr p,.tier-count{
+  font-family:'Share Tech Mono',monospace;}
+
+/* LOGO — neon + glitch */
+.logo{font-family:'Orbitron','Segoe UI',sans-serif;font-weight:900;color:var(--gold);
+  text-transform:uppercase;text-shadow:0 0 8px rgba(252,238,10,0.45),2px 0 var(--accent),-2px 0 var(--accent2);}
+.logo span{color:var(--accent2);text-shadow:0 0 12px rgba(0,229,255,0.65);}
+.logo small{font-family:'Share Tech Mono',monospace;color:var(--accent);letter-spacing:3px;text-shadow:none;}
+@keyframes nw-glitch{0%,90%,100%{transform:translate(0);}92%{transform:translate(-2px,1px);}94%{transform:translate(2px,-1px);}96%{transform:translate(-1px,0);}}
+.logo:hover{animation:nw-glitch 0.45s steps(2) infinite;}
+
+/* neon structural edges */
+header{border-bottom:1px solid var(--accent2);box-shadow:0 1px 20px rgba(0,229,255,0.12);}
+.region-bar{border-bottom:1px solid rgba(0,229,255,0.25);}
+.ticker-wrap{box-shadow:inset 0 0 22px rgba(255,0,60,0.45);}
+.section-label h2{color:var(--accent2);text-shadow:0 0 8px rgba(0,229,255,0.35);}
+nav a.active{color:var(--gold);}
+
+/* buttons — angular HUD chips */
+.refresh-btn{clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
+  box-shadow:0 0 12px rgba(255,0,60,0.5);text-transform:uppercase;letter-spacing:1.5px;}
+.update-tab.active{box-shadow:0 0 12px rgba(255,0,60,0.45);}
+.region-btn.active{box-shadow:0 0 12px rgba(0,229,255,0.5);}
+
+/* cards — clipped corners + neon hover */
+.news-card,.hero-card,.arc-item{clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));}
+.news-card:hover,.hero-card:hover{box-shadow:0 0 0 1px var(--accent2),0 8px 30px rgba(0,229,255,0.22);}
+.hero-source,.news-card-source{color:var(--gold);}
+
+/* tier headers */
+.tier-hdr.t-breaking .tier-label{text-shadow:0 0 8px rgba(255,0,60,0.6);}
+.tier-hdr.t-recent .tier-label{color:var(--gold);text-shadow:0 0 8px rgba(252,238,10,0.5);}
+
+/* chat — netrunner console */
+.chat-fab{box-shadow:0 0 24px rgba(255,0,60,0.6);}
+.chat-hdr{background:linear-gradient(135deg,#08090d 0%,#1a0033 100%);border-bottom:1px solid var(--accent2);}
+.chat-panel{box-shadow:0 0 0 1px var(--accent2),0 16px 56px rgba(0,0,0,0.6);}
 </style>
 </head>
 <body>
@@ -277,7 +331,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
 <header>
   <div class="header-inner">
     <div class="logo">
-      News<span>Watch</span>
+      Net<span>Watch</span>
       <small>Global Coverage · USA First</small>
     </div>
     <nav>
@@ -574,7 +628,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
 </div><!-- end mainContent -->
 
 <!-- ── CHATBOT ─────────────────────────────────────────── -->
-<button class="chat-fab" onclick="toggleChat()" title="NewsWatch AI Assistant">
+<button class="chat-fab" onclick="toggleChat()" title="NetWatch AI Assistant">
   💬
   <span class="chat-fab-badge" id="chatBadge" style="display:none;">!</span>
 </button>
@@ -584,7 +638,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
     <div class="chat-hdr-info">
       <div class="chat-hdr-avatar">📰</div>
       <div>
-        <h3>NewsWatch AI</h3>
+        <h3>NetWatch AI</h3>
         <p>Article Finder &amp; Source Checker</p>
       </div>
     </div>
@@ -608,7 +662,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:24px
 
 <footer>
   <div class="footer-inner">
-    <div class="footer-copy">© 2026 NewsWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire · CBS Sports · Bleacher Report · SI · Phys.org · NASA · Nature · Science Daily · RFI · VOA · Fast Company · Inc. · HBR &amp; 70+ more.</div>
+    <div class="footer-copy">© 2026 NetWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire · CBS Sports · Bleacher Report · SI · Phys.org · NASA · Nature · Science Daily · RFI · VOA · Fast Company · Inc. · HBR &amp; 70+ more.</div>
     <div class="footer-sources">Live 24/7 · checks every 90s · 11 sections · 6 world regions · platform filters · AI assistant · up to 200 articles per section</div>
   </div>
 </footer>
@@ -1488,7 +1542,7 @@ function toggleChat() {
   if (chatOpen) document.getElementById('chatInput').focus();
 }
 
-const WELCOME_MSG = `<p>Hi! I'm the <strong>NewsWatch AI Assistant</strong>.</p>
+const WELCOME_MSG = `<p>Hi! I'm the <strong>NetWatch AI Assistant</strong>.</p>
 <p style="margin-top:6px;">I can help you:</p>
 <ul style="margin:8px 0 8px 16px;font-size:12px;color:var(--muted);">
   <li>🔍 <strong>Find articles</strong> on any topic</li>
