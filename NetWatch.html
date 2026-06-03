@@ -310,6 +310,53 @@ nav a.active{color:var(--gold);}
 .chat-fab{box-shadow:0 0 24px rgba(255,0,60,0.6);}
 .chat-hdr{background:linear-gradient(135deg,#08090d 0%,#1a0033 100%);border-bottom:1px solid var(--accent2);}
 .chat-panel{box-shadow:0 0 0 1px var(--accent2),0 16px 56px rgba(0,0,0,0.6);}
+
+/* ══════════════════ MOBILE / RESPONSIVE ══════════════════ */
+html,body{max-width:100%;overflow-x:hidden;}
+
+@media(max-width:768px){
+  /* header: logo + refresh on top row, nav becomes a scrollable strip below */
+  header{padding:0 12px;}
+  .header-inner{flex-wrap:wrap;gap:10px;padding:10px 0;}
+  .logo{font-size:22px;}
+  .refresh-btn{order:2;padding:7px 12px;}
+  nav{order:3;width:100%;flex-wrap:nowrap;overflow-x:auto;gap:3px;padding-bottom:4px;
+    -webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+  nav::-webkit-scrollbar{height:3px;}
+  nav a{flex:0 0 auto;font-size:11px;padding:6px 10px;}
+
+  /* section filter tabs: single scrollable row instead of stacking 16+ chips */
+  .update-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;gap:6px;
+    -webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+  .update-tabs::-webkit-scrollbar{height:3px;}
+  .update-tab{flex:0 0 auto;}
+
+  /* tighter gutters */
+  .main-wrap{padding:16px 12px;gap:18px;}
+  .world-section{padding:0 12px;}
+  .source-grid{padding:0 12px;}
+}
+
+@media(max-width:560px){
+  .topbar{flex-wrap:wrap;gap:3px 10px;font-size:10px;padding:5px 12px;}
+  .topbar-left{gap:10px;flex-wrap:wrap;}
+  .logo{font-size:20px;}
+  .logo small{font-size:9px;letter-spacing:2px;}
+  .ticker-label{padding:0 10px;font-size:10px;}
+  .hero-img,.hero-img-placeholder{height:190px;}
+  .hero-content{padding:16px;}
+  .hero-title{font-size:18px;}
+  .hero-desc{-webkit-line-clamp:2;}
+  .news-grid,.world-grid{grid-template-columns:1fr;}
+  .region-btn{font-size:10px;padding:5px 10px;}
+  .arc-bar{flex-direction:column;align-items:stretch;}
+  .arc-search{min-width:0;}
+  .footer-inner{flex-direction:column;align-items:flex-start;gap:6px;}
+  /* chat fills the screen comfortably on phones */
+  .chat-panel{height:min(70vh,560px);bottom:80px;}
+  .chat-fab{width:52px;height:52px;bottom:18px;right:18px;}
+  #newToast{right:12px;bottom:84px;}
+}
 </style>
 </head>
 <body>
