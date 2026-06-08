@@ -390,6 +390,7 @@ html,body{max-width:100%;overflow-x:hidden;}
       <a onclick="showSection('ai')">🤖 AI</a>
       <a onclick="showSection('gaming')">🎮 Gaming</a>
       <a onclick="showSection('movies')">🎬 Movies</a>
+      <a onclick="showSection('gossip')">💋 Gossip</a>
       <a onclick="showSection('science')">🔬 Science</a>
       <a onclick="showSection('sports')">🏆 Sports</a>
       <a onclick="showSection('regional')">🗺 Regional</a>
@@ -593,6 +594,30 @@ html,body{max-width:100%;overflow-x:hidden;}
   </div>
 </div>
 
+<!-- GOSSIP SECTION -->
+<div id="section-gossip" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge" style="background:#d6336c;">💋 CELEBRITY GOSSIP</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="update-tabs" id="gossip-tabs">
+      <button class="update-tab active" onclick="filterSection('gossip','all',this)">💋 All Gossip</button>
+      <button class="update-tab" onclick="filterSection('gossip','relationships',this)">💕 Relationships</button>
+      <button class="update-tab" onclick="filterSection('gossip','family',this)">👶 Family &amp; Personal</button>
+      <button class="update-tab" onclick="filterSection('gossip','rumors',this)">🤫 Rumors</button>
+      <button class="update-tab" onclick="filterSection('gossip','fashion',this)">👗 Fashion &amp; Looks</button>
+      <button class="update-tab" onclick="filterSection('gossip','social',this)">📱 Social Media</button>
+      <button class="update-tab" onclick="filterSection('gossip','scandals',this)">🔥 Scandals</button>
+      <button class="update-tab" onclick="filterSection('gossip','drama',this)">🎭 Industry Drama</button>
+      <button class="update-tab" onclick="filterSection('gossip','wealth',this)">💰 Wealth &amp; Luxury</button>
+      <button class="update-tab" onclick="filterSection('gossip','reality',this)">📺 Reality TV</button>
+      <button class="update-tab" onclick="filterSection('gossip','royals',this)">👑 Royals</button>
+    </div>
+    <div class="world-grid" id="gossipGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
 <!-- SCIENCE SECTION -->
 <div id="section-science" style="display:none;">
   <div class="world-section">
@@ -659,6 +684,7 @@ html,body{max-width:100%;overflow-x:hidden;}
         <button class="arc-filter" onclick="setArcSection('ai',this)">🤖 AI</button>
         <button class="arc-filter" onclick="setArcSection('gaming',this)">🎮 Gaming</button>
         <button class="arc-filter" onclick="setArcSection('movies',this)">🎬 Movies</button>
+        <button class="arc-filter" onclick="setArcSection('gossip',this)">💋 Gossip</button>
         <button class="arc-filter" onclick="setArcSection('science',this)">🔬 Science</button>
         <button class="arc-filter" onclick="setArcSection('sports',this)">🏆 Sports</button>
       </div>
@@ -698,6 +724,7 @@ html,body{max-width:100%;overflow-x:hidden;}
     <span class="qchip" onclick="chipSend('research help')">📚 Research Help</span>
     <span class="qchip" onclick="chipSend('latest AI news')">🤖 AI News</span>
     <span class="qchip" onclick="chipSend('gaming updates')">🎮 Gaming</span>
+    <span class="qchip" onclick="chipSend('celebrity gossip')">💋 Gossip</span>
   </div>
   <div class="chat-input-row">
     <input class="chat-input" id="chatInput" type="text" placeholder="Ask anything — search news, verify sources..." onkeydown="if(event.key==='Enter')sendChat()">
@@ -709,8 +736,8 @@ html,body{max-width:100%;overflow-x:hidden;}
 
 <footer>
   <div class="footer-inner">
-    <div class="footer-copy">© 2026 NetWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire · CBS Sports · Bleacher Report · SI · Phys.org · NASA · Nature · Science Daily · RFI · VOA · Fast Company · Inc. · HBR &amp; 70+ more.</div>
-    <div class="footer-sources">Live 24/7 · checks every 90s · 11 sections · 6 world regions · platform filters · AI assistant · up to 200 articles per section</div>
+    <div class="footer-copy">© 2026 NetWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire · CBS Sports · Bleacher Report · SI · Phys.org · NASA · Nature · Science Daily · RFI · VOA · Fast Company · Inc. · HBR · TMZ · Page Six · People · Us Weekly · E! News · Vanity Fair · Vogue · HELLO! &amp; 70+ more.</div>
+    <div class="footer-sources">Live 24/7 · checks every 90s · 12 sections · 6 world regions · platform filters · AI assistant · up to 200 articles per section</div>
   </div>
 </footer>
 
@@ -796,6 +823,21 @@ const FEEDS = {
   indiewire:'https://www.indiewire.com/feed/',
   thewrap:'https://www.thewrap.com/feed/',
   ew:'https://ew.com/feed/',
+  // Gossip / Celebrity
+  tmz:'https://www.tmz.com/rss.xml',
+  pagesix:'https://pagesix.com/feed/',
+  people:'https://people.com/feed/',
+  usweekly:'https://www.usmagazine.com/feed/',
+  enews:'https://www.eonline.com/syndication/feeds/rssfeeds/topstories.xml',
+  justjared:'https://www.justjared.com/feed/',
+  hollywoodlife:'https://hollywoodlife.com/feed/',
+  dailymail_showbiz:'https://www.dailymail.co.uk/tvshowbiz/index.rss',
+  vanityfair:'https://www.vanityfair.com/feed/rss',
+  thecut:'https://www.thecut.com/rss.xml',
+  vogue:'https://www.vogue.com/feed/rss',
+  popsugar:'https://www.popsugar.com/celebrity/feed',
+  etonline:'https://www.etonline.com/rss',
+  hello_royals:'https://www.hellomagazine.com/rss/',
   // Gaming
   ign:'https://feeds.ign.com/ign/all',
   kotaku:'https://kotaku.com/rss',
@@ -875,6 +917,7 @@ const SECTION_FEEDS = {
   ai:       ['ai_techcrunch','ai_verge','ai_mit','ai_venturebeat','ai_wired','ai_decoder','ai_zdnet','ai_ars','ai_googleblog','ai_huggingface'],
   gaming:   ['ign','kotaku','polygon','pcgamer','eurogamer','rps','destructoid','gamespot','ps_blog','xbox_wire','nintendolife'],
   movies:   ['variety','deadline','thr','screenrant','collider','slashfilm','indiewire','thewrap','ew'],
+  gossip:   ['tmz','pagesix','people','usweekly','enews','justjared','hollywoodlife','dailymail_showbiz','vanityfair','thecut','vogue','popsugar','etonline','hello_royals'],
   science:  ['npr_sci','sciamer','newscientist','livescience','physorg','space_com','nasa','popsci','nature','sciencedaily','nyt_sci','nyt_health'],
   sports:   ['espn','bbc_sport','guardian_sport','sky_sport','yahoo_sport','cbs_sport','bleacher','si','nyt_sport','ap_sport','eurosport'],
   world:    ['bbc_world','reuters','guardian','aljazeera','dw','france24','sky','time','rfi','voa','un_news','nyt_world','ap_world','cfr'],
@@ -952,6 +995,19 @@ const PLATFORM_FILTERS = {
     boxoffice: ['box office','opening weekend','theaters','theatrical','debuts','grosses','domestic','opening day'],
     tv:        ['tv series','tv show','television','sitcom','drama series','limited series','miniseries','season ','episode '],
     reviews:   ['review','rating','stars','critics','rotten tomatoes','metacritic','audience','score'],
+  },
+  gossip: {
+    all: [],
+    relationships: ['dating','couple','boyfriend','girlfriend','romance','romantic','engaged','engagement','wedding','married','marries','marriage','divorce','divorces','split','splits','breakup','break up','broke up','exes',' ex-','reconcil','rekindl','new flame','spotted together','pda','holding hands','relationship','linked','goes public','step out','steps out'],
+    family: ['pregnan','expecting','baby','newborn','welcomes','welcomed','gives birth','child','children','kids','son','daughter','mom ','mum ','dad ','father','mother','parent','family feud','family dispute','estranged','custody','co-parent','lifestyle','at home','household'],
+    rumors: ['rumor','rumour','rumored','rumoured','reportedly','speculation','speculates','allegedly','sources say','source claims','insider','unconfirmed','sparks rumors','sparks speculation','fuels speculation','hints at','appears to','seemingly','fans think','fans speculate'],
+    fashion: ['red carpet','red-carpet','street style','outfit','look','gown','dress','fashion','style','met gala','runway','designer','plastic surgery','cosmetic','botox','filler','makeover','transformation','new look','glam','stuns in','wore','wears','flaunt','debuts new'],
+    social: ['instagram','tiktok','twitter',' x post','posts','shares','deleted','clap back','claps back','goes viral','viral','slams','responds','reacts','reaction','comment','story','selfie','snap','caption','followers','liked','unfollow','social media','online'],
+    scandals: ['scandal','controversy','controversial','lawsuit','sues','sued','suing','backlash','accused','accusation','allegation','apology','apologizes','apologises','arrested','arrest','court','trial','settlement','fired','axed','cancel','canceled','cancelled','denies','denied','embarrass'],
+    drama: ['feud','feuding','clash','clashes','beef','shades','throws shade','slams','hits back','claps back','dispute','tension','fallout','co-star','rivalry','rivals','war of words','diss','calls out','called out','drama','spat','exchange','rift','snub'],
+    wealth: ['mansion','home','house','estate','property','vacation','holiday','getaway','yacht','private jet','car','lamborghini','ferrari','rolls-royce','net worth','luxury','splurge','splash','spent','million','billion','buys','bought','purchase','mortgage','gala','lavish','extravagant'],
+    reality: ['reality','kardashian','jenner','real housewives','housewives','love island','the bachelor','bachelorette','reality star','reality tv','rhoa','rhobh','rhoc','rhony','below deck','dancing with the stars','strictly','survivor','big brother','the traitors','vanderpump','selling sunset'],
+    royals: ['royal','royals','prince','princess','duke','duchess','queen','king ','king charles','monarch','monarchy','prince william','princess of wales','kate middleton','catherine','prince harry','meghan','duchess of sussex','buckingham','kensington','palace','windsor','sandringham','balmoral','coronation','jubilee'],
   },
   sports: {
     all: [],
@@ -1148,6 +1204,11 @@ function srcLabel(item) {
     'variety.com':'Variety','deadline.com':'Deadline','hollywoodreporter.com':'THR',
     'screenrant.com':'Screen Rant','collider.com':'Collider','slashfilm.com':'/Film',
     'indiewire.com':'IndieWire','thewrap.com':'The Wrap','ew.com':'EW',
+    'tmz.com':'TMZ','pagesix.com':'Page Six','people.com':'People',
+    'usmagazine.com':'Us Weekly','eonline.com':'E! News','justjared.com':'Just Jared',
+    'hollywoodlife.com':'Hollywood Life','dailymail.co.uk':'Daily Mail','dailymail.com':'Daily Mail',
+    'vanityfair.com':'Vanity Fair','thecut.com':'The Cut','vogue.com':'Vogue',
+    'popsugar.com':'PopSugar','etonline.com':'ET','hellomagazine.com':'HELLO!',
     'ign.com':'IGN','kotaku.com':'Kotaku','polygon.com':'Polygon',
     'pcgamer.com':'PC Gamer','eurogamer.net':'Eurogamer',
     'rockpapershotgun.com':'RPS','destructoid.com':'Destructoid','gamespot.com':'GameSpot',
@@ -1169,7 +1230,7 @@ function srcLabel(item) {
   for (const [d,l] of Object.entries(MAP)) { if(host.includes(d)) return l; }
   return item.author || host || 'News';
 }
-const PH = {us:'🇺🇸',world:'🌍',politics:'🏛',business:'📈',tech:'💻',ai:'🤖',gaming:'🎮',movies:'🎬',science:'🔬',sports:'🏆',regional:'🗺',europe:'🇪🇺',mideast:'🌙',asia:'🌏',africa:'🌍',latam:'🌎',oceania:'🦘'};
+const PH = {us:'🇺🇸',world:'🌍',politics:'🏛',business:'📈',tech:'💻',ai:'🤖',gaming:'🎮',movies:'🎬',gossip:'💋',science:'🔬',sports:'🏆',regional:'🗺',europe:'🇪🇺',mideast:'🌙',asia:'🌏',africa:'🌍',latam:'🌎',oceania:'🦘'};
 
 function cardImg(item, sec, h=140) {
   const src = getImg(item), em = PH[sec]||'📰';
@@ -1496,7 +1557,7 @@ function renderArchive() {
 }
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
-const SECTIONS = ['us','world','politics','business','tech','ai','gaming','movies','science','sports','regional','archive'];
+const SECTIONS = ['us','world','politics','business','tech','ai','gaming','movies','gossip','science','sports','regional','archive'];
 function showSection(name) {
   currentSection = name;
   pendingItems = [];
@@ -1612,12 +1673,12 @@ const SOURCE_TIERS = {
     cls: 'trust-t2', icon: '🔵'
   },
   'Tier 3 — Reliable in Their Niche': {
-    domains: ['techcrunch.com','theverge.com','wired.com','arstechnica.com','engadget.com','technologyreview.com','venturebeat.com','zdnet.com','theatlantic.com','vox.com','scientificamerican.com','espn.com','ign.com','variety.com','deadline.com','hollywoodreporter.com','kotaku.com','polygon.com','pcgamer.com'],
+    domains: ['techcrunch.com','theverge.com','wired.com','arstechnica.com','engadget.com','technologyreview.com','venturebeat.com','zdnet.com','theatlantic.com','vox.com','scientificamerican.com','espn.com','ign.com','variety.com','deadline.com','hollywoodreporter.com','kotaku.com','polygon.com','pcgamer.com','people.com','eonline.com','vanityfair.com','vogue.com','etonline.com','usmagazine.com','tmz.com','pagesix.com'],
     desc: 'Specialized publications with strong editorial standards within their domain. Less reliable for topics outside their core coverage.',
     cls: 'trust-t3', icon: '🟡'
   },
   'Use With Caution': {
-    domains: ['breitbart.com','infowars.com','naturalnews.com','thegatewaypundit.com','beforeitsnews.com','worldnewsdailyreport.com','empirenews.net'],
+    domains: ['breitbart.com','infowars.com','naturalnews.com','thegatewaypundit.com','beforeitsnews.com','worldnewsdailyreport.com','empirenews.net','dailymail.co.uk','dailymail.com','hollywoodlife.com'],
     desc: 'Known for misleading content, satire presented as news, or significant editorial bias. Verify any claims independently.',
     cls: 'trust-bad', icon: '⚠️'
   },
@@ -1786,4 +1847,5 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+
 
