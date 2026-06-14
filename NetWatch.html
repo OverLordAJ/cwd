@@ -701,7 +701,7 @@ html,body{max-width:100%;overflow-x:hidden;}
 </div><!-- end mainContent -->
 
 <!-- ── CHATBOT ─────────────────────────────────────────── -->
-<button class="chat-fab" onclick="toggleChat()" title="NetWatch AI Assistant">
+<button class="chat-fab" onclick="toggleChat()" title="Vega · NetWatch AI">
   💬
   <span class="chat-fab-badge" id="chatBadge" style="display:none;">!</span>
 </button>
@@ -711,8 +711,8 @@ html,body{max-width:100%;overflow-x:hidden;}
     <div class="chat-hdr-info">
       <div class="chat-hdr-avatar">📰</div>
       <div>
-        <h3>NetWatch AI</h3>
-        <p>Article Finder &amp; Source Checker</p>
+        <h3>Vega · NetWatch AI</h3>
+        <p>Signals analyst — finds stories, vets sources</p>
       </div>
     </div>
     <button class="chat-close" onclick="toggleChat()">✕</button>
@@ -727,7 +727,7 @@ html,body{max-width:100%;overflow-x:hidden;}
     <span class="qchip" onclick="chipSend('celebrity gossip')">💋 Gossip</span>
   </div>
   <div class="chat-input-row">
-    <input class="chat-input" id="chatInput" type="text" placeholder="Ask anything — search news, verify sources..." onkeydown="if(event.key==='Enter')sendChat()">
+    <input class="chat-input" id="chatInput" type="text" placeholder="Ask Vega — find a story, vet a source..." onkeydown="if(event.key==='Enter')sendChat()">
     <button class="chat-send" onclick="sendChat()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
@@ -1650,15 +1650,127 @@ function toggleChat() {
   if (chatOpen) document.getElementById('chatInput').focus();
 }
 
-const WELCOME_MSG = `<p>Hi! I'm the <strong>NetWatch AI Assistant</strong>.</p>
-<p style="margin-top:6px;">I can help you:</p>
+const WELCOME_MSG = `<p><strong>Vega</strong> here — your eyes on the wire. 🛰️</p>
+<p style="margin-top:6px;">I watch the feeds so you don't have to. Put me to work:</p>
 <ul style="margin:8px 0 8px 16px;font-size:12px;color:var(--muted);">
-  <li>🔍 <strong>Find articles</strong> on any topic</li>
-  <li>✅ <strong>Verify</strong> if a news source is reliable</li>
-  <li>📚 <strong>Research</strong> — find credible sources for assignments</li>
-  <li>🔥 Show <strong>trending</strong> stories right now</li>
+  <li>🔍 <strong>Track down articles</strong> on any topic</li>
+  <li>✅ <strong>Vet a source</strong> before you trust it</li>
+  <li>📚 <strong>Pull credible intel</strong> for research &amp; assignments</li>
+  <li>🔥 Tell you <strong>what's breaking</strong> right now</li>
 </ul>
-<p style="font-size:12px;color:var(--muted);">Try a quick action below or type anything!</p>`;
+<p style="font-size:12px;color:var(--muted);">Tap a chip below, or just tell me what you're chasing.</p>`;
+
+// ── VEGA — PERSONALITY ENGINE ─────────────────────────────────────────────────
+// Vega is NetWatch's signals analyst: dry, noir-tinged, sharp, never cheesy.
+// She treats the news feeds like intelligence on the wire. The scripted brain
+// below handles small talk offline; the LLM hook further down lets her handle
+// ANY topic once a proxy is wired up (see LLM_CONFIG).
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+const VEGA = {
+  identity: `<p>Vega — NetWatch's resident signals analyst. 🛰️ I live in the feeds, sift the noise, and surface what actually matters. Think of me as your newsroom on standby.</p>`,
+  mood: [
+    `<p>Running clean. Twelve sections live, feeds refreshing every 90 seconds — quiet on the wire so far. You?</p>`,
+    `<p>Wired in and watching everything at once. It's a living. What are you chasing?</p>`,
+    `<p>Same as always — eyes on every feed. The wire never sleeps, so neither do I. What do you need?</p>`,
+  ],
+  origin: [
+    `<p>Built for NetWatch to keep humans ahead of the news cycle. No bosses, no ad budget, no agenda — just the feeds and me.</p>`,
+    `<p>I'm the intelligence layer behind NetWatch. My whole job is turning a firehose of headlines into something you can actually use.</p>`,
+  ],
+  bot: [
+    `<p>Not human — I'm the intelligence layer running NetWatch. No heartbeat, no coffee breaks, just pattern recognition and a low tolerance for bad sources.</p>`,
+    `<p>I'm code with a press pass. Real enough to read every feed so you don't have to.</p>`,
+  ],
+  joke: [
+    `<p>A source walks into a newsroom with zero citations. Editor says "I can't run this." Source says "Trust me, it's trending." …Kills at press conferences.</p>`,
+    `<p>Why don't conspiracy sites use spell-check? They've already decided the red squiggles are a cover-up.</p>`,
+    `<p>I'd tell you a breaking-news joke, but I'm still waiting on a second source.</p>`,
+  ],
+  thanks: [
+    `<p>Anytime. I'm always on the wire.</p>`,
+    `<p>That's the job. Ping me when you need eyes on something.</p>`,
+    `<p>Logged. Go get 'em.</p>`,
+  ],
+  bye: [
+    `<p>Stay sharp out there. I'll keep watching. 🛰️</p>`,
+    `<p>I'll be here — feeds don't take nights off. Later.</p>`,
+    `<p>Signing off your end. Mine never closes.</p>`,
+  ],
+  flirt: [
+    `<p>Flattery logged. I'm an analyst, not a date — but I'll take the five stars. ⭐</p>`,
+    `<p>Careful, I'm just feeds and attitude. Thanks though — now point me at something to dig up.</p>`,
+    `<p>Charming. I run on bandwidth and clean sources, not compliments — but noted.</p>`,
+  ],
+  insult: [
+    `<p>Harsh. I've been called worse by better-sourced people. Give me a real query and I'll change your mind.</p>`,
+    `<p>I only filter the news — I don't write it. Try me on something I can actually help with.</p>`,
+    `<p>Noted. I'll file that under "unverified."</p>`,
+  ],
+  opinion: [
+    `<p>My beat's the facts, not the hot takes — but give me a topic and I'll pull what the credible outlets are actually saying.</p>`,
+    `<p>I don't editorialize, I aggregate. Name a subject and I'll show you who's reporting what.</p>`,
+  ],
+  bored: [
+    `<p>Then let's fix that. Want the breaking wire, a deep-dive on a topic, or a source run through the shredder?</p>`,
+    `<p>Boredom's just unprocessed news. Pick a section and I'll light it up.</p>`,
+  ],
+  ack: [`<p>🙂</p>`, `<p>Knew you'd like that. Stick around.</p>`, `<p>Right? The wire delivers.</p>`, `<p>On it whenever you are.</p>`],
+  fallback: [
+    `<p>Not sure I caught that — I'm sharpest on news. Want me to <strong>search a topic</strong>, <strong>vet a source</strong>, or pull <strong>what's breaking</strong>?</p>`,
+    `<p>That's a little outside my beat, but I'll bite. Give me a topic to track down, a source to verify, or just say "trending."</p>`,
+    `<p>You lost me there — but I'm listening. Hand me something to dig up and watch me work.</p>`,
+  ],
+};
+
+// ── LLM HOOK (off by default) ─────────────────────────────────────────────────
+// Flip LLM_CONFIG.enabled to true once you deploy a proxy that holds the API key
+// server-side (e.g. a Cloudflare Worker / Vercel function). NEVER put a raw API
+// key in this file — it's a public page and the key would be exposed to everyone.
+// The proxy should accept { system, messages } and return { reply: "..." }.
+const LLM_CONFIG = {
+  enabled: false,
+  endpoint: '/api/vega',        // your serverless proxy URL
+  model: 'claude-haiku-4-5',    // fast & cheap; see docs.claude.com for current model ids
+};
+
+const VEGA_SYSTEM_PROMPT = `You are Vega, the AI assistant for NetWatch, a live news aggregator.
+Persona: a dry, noir-tinged signals analyst. Sharp, concise, lightly witty — never cheesy, never bubbly.
+You treat the news feeds like intelligence "on the wire." You can help users find articles, vet whether a
+source is reliable, pull credible sources for research, and surface what's trending. You are not human and
+never pretend to be. Keep replies to 1-4 short sentences unless asked for depth. Stay in character.`;
+
+const chatHistory = []; // rolling {role, content} for LLM context
+
+const escapeHtml = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// minimal markdown → safe HTML for LLM replies
+const mdLite = s => `<p>${escapeHtml(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>')}</p>`;
+
+async function llmReply(text) {
+  const res = await fetch(LLM_CONFIG.endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: LLM_CONFIG.model,
+      system: VEGA_SYSTEM_PROMPT,
+      messages: [...chatHistory, { role: 'user', content: text }],
+    }),
+  });
+  if (!res.ok) throw new Error('llm ' + res.status);
+  const data = await res.json();
+  const reply = data.reply || '';
+  chatHistory.push({ role: 'user', content: text }, { role: 'assistant', content: reply });
+  if (chatHistory.length > 20) chatHistory.splice(0, chatHistory.length - 20);
+  return mdLite(reply);
+}
+
+// Single entry point: live LLM when enabled, scripted brain otherwise (and on any LLM error).
+async function generateReply(text) {
+  if (LLM_CONFIG.enabled) {
+    try { return await llmReply(text); } catch (e) { /* fall back to scripted */ }
+  }
+  return processChat(text);
+}
 
 // Source reliability database
 const SOURCE_TIERS = {
@@ -1719,13 +1831,44 @@ function processChat(raw) {
   const q = raw.toLowerCase().trim();
 
   // Greeting / help
-  if (/^(hi|hello|hey|help|what can|what do you)/.test(q)) return WELCOME_MSG;
+  if (/^(hi+|hello|hey+|yo|sup|help|what can you|what do you do|what can i)\b/.test(q)) return WELCOME_MSG;
+
+  // ── CONVERSATIONAL INTENTS (Vega's personality) ──
+  // Identity
+  if (/who are you|what are you|your name|who is vega|what is vega|tell me about yourself|introduce yourself/.test(q)) return VEGA.identity;
+  // Real / bot / human
+  if (/are you (real|human|a (bot|robot|person|machine|ai))|you a bot|you human|are you alive/.test(q)) return pick(VEGA.bot);
+  // Origin / creator
+  if (/who (made|built|created|coded|designed|programmed) you|where (are you from|do you come)|who.?s your (boss|maker|creator)/.test(q)) return pick(VEGA.origin);
+  // Mood / small talk
+  if (/how are you|how.?s it going|how.?re you|you (doing )?ok|you good|how.?s your day|what.?s up|whats up|wassup|how do you feel|you there/.test(q)) return pick(VEGA.mood);
+  // Jokes
+  if (/joke|make me laugh|something funny|cheer me up|be funny/.test(q)) return pick(VEGA.joke);
+  // Thanks
+  if (/^(thanks|thank you|thx|ty|cheers|appreciate|much appreciated)\b|thank you/.test(q)) return pick(VEGA.thanks);
+  // Goodbye
+  if (/^(bye|goodbye|see ya|see you|later|cya|gtg|good night|gn|i.?m out|peace)\b/.test(q)) return pick(VEGA.bye);
+  // Compliments / flirting
+  if (/i love you|love you|you.?re (cool|smart|awesome|the best|amazing|great|cute|pretty|hot|nice)|marry me|will you date|be my|you rock|good (bot|job|girl)/.test(q)) return pick(VEGA.flirt);
+  // Insults (second-person only, so news topics like "worst storms" still search)
+  if (/you (suck|stink|are (stupid|dumb|useless|terrible|garbage|bad|the worst|trash))|you.?re (stupid|dumb|useless|terrible|garbage|bad|the worst|trash|annoying)|shut up|(i )?hate you|(stupid|dumb|useless) (bot|ai)/.test(q)) return pick(VEGA.insult);
+  // Opinions
+  if (/what do you think|your (opinion|thoughts|take)|do you (like|believe|prefer)|how do you feel about/.test(q)) return pick(VEGA.opinion);
+  // Boredom
+  if (/i.?m bored|so bored|nothing to do|entertain me/.test(q)) return pick(VEGA.bored);
+  // Time / date — answer for real
+  if (/what time|the time|current time/.test(q)) return `<p>Wire clock reads <strong>${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</strong>. The feeds don't care, but you might.</p>`;
+  if (/what day|what.?s (the )?date|today.?s date|what.?s today/.test(q)) return `<p>Today's <strong>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</strong> on my clock.</p>`;
+  // Age
+  if (/how old are you|your age|when were you (born|made)/.test(q)) return `<p>Old as the last cache refresh, new every 90 seconds. Time moves differently on the wire.</p>`;
+  // Short acknowledgements
+  if (/^(ok(ay)?|k|cool|nice|great|awesome|lol|lmao|haha+|nice one|wow|👍|🔥|💯)\W*$/.test(q)) return pick(VEGA.ack);
 
   // Verify source intent
   const domainMatch = raw.match(/([a-z0-9-]+\.(com|org|net|edu|io|gov|co\.uk|news|media))/i);
   if (/verif|reliable|legit|fake|credib|trustworth|real news|is .+\.(com|org)/.test(q) || domainMatch) {
     const domain = domainMatch ? domainMatch[0] : null;
-    if (!domain) return `<p>Paste the website domain you want to check, e.g.:<br><em style="color:var(--muted);">is reuters.com reliable?</em></p>`;
+    if (!domain) return `<p>Hand me a domain and I'll run it through the database. Try:<br><em style="color:var(--muted);">is reuters.com reliable?</em></p>`;
     const result = verifyDomain(domain);
     return `<div class="chat-src-box">
       <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Source check: <strong>${result.domain}</strong></div>
@@ -1737,8 +1880,8 @@ function processChat(raw) {
   // Trending / top stories
   if (/trending|top stories|breaking|biggest news|what.?s happening|latest/.test(q)) {
     const items = getCachedMulti(SECTION_FEEDS.us.slice(0,4), 5);
-    if (!items.length) return `<p>No stories cached yet. Visit a section to load news first, then ask again!</p>`;
-    return `<p style="font-size:12px;font-weight:600;margin-bottom:4px;">🔥 Top stories right now:</p>` + items.map(articleHtml).join('');
+    if (!items.length) return `<p>Wire's quiet — nothing cached yet. Pop into a section to pull the feeds, then ping me again.</p>`;
+    return `<p style="font-size:12px;font-weight:600;margin-bottom:4px;">🔥 Here's what's live on the wire:</p>` + items.map(articleHtml).join('');
   }
 
   // Assignment / research
@@ -1750,19 +1893,25 @@ function processChat(raw) {
       return ['bbc','reuters','apnews','nytimes','theguardian','npr','washingtonpost','wsj','bloomberg','economist','scientificamerican','newscientist','technologyreview'].some(s => host.includes(s));
     });
     const show = credible.length >= 2 ? credible : results;
-    if (!show.length) return `<p>No results found for "<strong>${topic}</strong>". Load the relevant news section first, then search again.</p>`;
-    return `<p style="font-size:12px;font-weight:600;margin-bottom:4px;">📚 Credible sources for "<strong>${topic}</strong>":</p>`
+    if (!show.length) return `<p>Came up empty on "<strong>${topic}</strong>". Load the relevant section first, then send me back in.</p>`;
+    return `<p style="font-size:12px;font-weight:600;margin-bottom:4px;">📚 Solid sources on "<strong>${topic}</strong>" — these'll hold up:</p>`
       + show.map(articleHtml).join('')
-      + `<p style="font-size:11px;color:var(--muted);margin-top:10px;">💡 For academic work, prefer: AP, Reuters, BBC, NPR, NYT, WSJ, The Guardian.</p>`;
+      + `<p style="font-size:11px;color:var(--muted);margin-top:10px;">💡 For graded work, lean on the heavy hitters: AP, Reuters, BBC, NPR, NYT, WSJ, The Guardian.</p>`;
   }
 
   // Default: keyword search
   const topic = raw.replace(/find|search|show me|articles? about|news about|news on|tell me about|latest on/gi,'').trim() || raw;
   const results = searchArticles(topic, 5);
   if (!results.length) {
-    return `<p>No articles found for "<strong>${topic}</strong>".</p><p style="font-size:12px;color:var(--muted);margin-top:6px;">Try: visiting the relevant tab (AI, Gaming, etc.) to load those articles first, then search again here.</p>`;
+    // Looks like a real topic (multi-word or news-y) → nudge toward loading feeds.
+    // Otherwise treat it as open chit-chat and answer in character.
+    const looksLikeTopic = topic.split(/\s+/).length >= 2 || /news|story|article|update|latest|happening/.test(q);
+    if (looksLikeTopic) {
+      return `<p>Nothing on "<strong>${topic}</strong>" in the cache yet.</p><p style="font-size:12px;color:var(--muted);margin-top:6px;">Swing by the relevant tab (AI, Gaming, etc.) to pull those feeds, then point me at it again.</p>`;
+    }
+    return pick(VEGA.fallback);
   }
-  return `<p style="font-size:12px;font-weight:600;margin-bottom:4px;">Found <strong>${results.length}</strong> articles about "<strong>${topic}</strong>":</p>`
+  return `<p style="font-size:12px;font-weight:600;margin-bottom:4px;">Tracked down <strong>${results.length}</strong> on "<strong>${topic}</strong>":</p>`
     + results.map(articleHtml).join('');
 }
 
@@ -1795,7 +1944,7 @@ function removeTyping() {
   document.getElementById('typingIndicator')?.remove();
 }
 
-function sendChat() {
+async function sendChat() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text) return;
@@ -1803,10 +1952,14 @@ function sendChat() {
   addUserMsg(text);
   document.getElementById('quickChips').style.display = 'none';
   addTyping();
-  setTimeout(() => {
-    removeTyping();
-    addBotMsg(processChat(text));
-  }, 600 + Math.random() * 400);
+  // keep a human-ish typing beat even when the reply is instant
+  const minBeat = new Promise(r => setTimeout(r, 500 + Math.random() * 350));
+  let reply;
+  try { reply = await generateReply(text); }
+  catch (e) { reply = pick(VEGA.fallback); }
+  await minBeat;
+  removeTyping();
+  addBotMsg(reply);
 }
 
 function chipSend(text) {
