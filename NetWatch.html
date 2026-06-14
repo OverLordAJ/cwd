@@ -737,7 +737,7 @@ html,body{max-width:100%;overflow-x:hidden;}
 <footer>
   <div class="footer-inner">
     <div class="footer-copy">© 2026 NetWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire · CBS Sports · Bleacher Report · SI · Phys.org · NASA · Nature · Science Daily · RFI · VOA · Fast Company · Inc. · HBR · TMZ · Page Six · People · Us Weekly · E! News · Vanity Fair · Vogue · HELLO! &amp; 70+ more.</div>
-    <div class="footer-sources">Live 24/7 · checks every 90s · 12 sections · 6 world regions · platform filters · AI assistant · up to 200 articles per section</div>
+    <div class="footer-sources">Live 24/7 · checks every 90s · 12 sections · 6 world regions · platform filters · AI assistant · up to 250 articles per section</div>
   </div>
 </footer>
 
@@ -1828,7 +1828,7 @@ setInterval(updateClock, 1000);
 setInterval(liveLoop, 90 * 1000);
 
 (async () => {
-  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 200);
+  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 250);
   if (cachedUS.length) { renderUS(cachedUS); }
   else { document.getElementById('heroCard').innerHTML = SPIN; }
   const cachedWorld = getCachedMulti(SECTION_FEEDS.world.slice(0,5), 10);
