@@ -390,6 +390,7 @@ html,body{max-width:100%;overflow-x:hidden;}
       <a onclick="showSection('ai')">🤖 AI</a>
       <a onclick="showSection('gaming')">🎮 Gaming</a>
       <a onclick="showSection('movies')">🎬 Movies</a>
+      <a onclick="showSection('music')">🎵 Music</a>
       <a onclick="showSection('gossip')">💋 Gossip</a>
       <a onclick="showSection('science')">🔬 Science</a>
       <a onclick="showSection('sports')">🏆 Sports</a>
@@ -594,6 +595,28 @@ html,body{max-width:100%;overflow-x:hidden;}
   </div>
 </div>
 
+<!-- MUSIC SECTION -->
+<div id="section-music" style="display:none;">
+  <div class="world-section">
+    <div class="section-label">
+      <span class="badge" style="background:#9d4edd;">🎵 MUSIC</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="update-tabs" id="music-tabs">
+      <button class="update-tab active" onclick="filterSection('music','all',this)">🎵 All Music</button>
+      <button class="update-tab" onclick="filterSection('music','releases',this)">💿 New Releases</button>
+      <button class="update-tab" onclick="filterSection('music','pop',this)">🎤 Pop</button>
+      <button class="update-tab" onclick="filterSection('music','hiphop',this)">🎧 Hip-Hop</button>
+      <button class="update-tab" onclick="filterSection('music','rock',this)">🎸 Rock</button>
+      <button class="update-tab" onclick="filterSection('music','country',this)">🤠 Country</button>
+      <button class="update-tab" onclick="filterSection('music','electronic',this)">🎛 Electronic</button>
+      <button class="update-tab" onclick="filterSection('music','live',this)">🎫 Tours &amp; Live</button>
+      <button class="update-tab" onclick="filterSection('music','charts',this)">📊 Charts</button>
+    </div>
+    <div class="world-grid" id="musicGrid"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
 <!-- GOSSIP SECTION -->
 <div id="section-gossip" style="display:none;">
   <div class="world-section">
@@ -684,6 +707,7 @@ html,body{max-width:100%;overflow-x:hidden;}
         <button class="arc-filter" onclick="setArcSection('ai',this)">🤖 AI</button>
         <button class="arc-filter" onclick="setArcSection('gaming',this)">🎮 Gaming</button>
         <button class="arc-filter" onclick="setArcSection('movies',this)">🎬 Movies</button>
+        <button class="arc-filter" onclick="setArcSection('music',this)">🎵 Music</button>
         <button class="arc-filter" onclick="setArcSection('gossip',this)">💋 Gossip</button>
         <button class="arc-filter" onclick="setArcSection('science',this)">🔬 Science</button>
         <button class="arc-filter" onclick="setArcSection('sports',this)">🏆 Sports</button>
@@ -724,6 +748,7 @@ html,body{max-width:100%;overflow-x:hidden;}
     <span class="qchip" onclick="chipSend('research help')">📚 Research Help</span>
     <span class="qchip" onclick="chipSend('latest AI news')">🤖 AI News</span>
     <span class="qchip" onclick="chipSend('gaming updates')">🎮 Gaming</span>
+    <span class="qchip" onclick="chipSend('latest music news')">🎵 Music</span>
     <span class="qchip" onclick="chipSend('celebrity gossip')">💋 Gossip</span>
   </div>
   <div class="chat-input-row">
@@ -736,8 +761,8 @@ html,body{max-width:100%;overflow-x:hidden;}
 
 <footer>
   <div class="footer-inner">
-    <div class="footer-copy">© 2026 NetWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire · CBS Sports · Bleacher Report · SI · Phys.org · NASA · Nature · Science Daily · RFI · VOA · Fast Company · Inc. · HBR · TMZ · Page Six · People · Us Weekly · E! News · Vanity Fair · Vogue · HELLO! &amp; 70+ more.</div>
-    <div class="footer-sources">Live 24/7 · checks every 90s · 12 sections · 6 world regions · platform filters · AI assistant · up to 250 articles per section</div>
+    <div class="footer-copy">© 2026 NetWatch — Live aggregator: NPR · ABC · CBS · NBC · CNN · Fox · NYT · WaPo · AP · Axios · BBC · Reuters · Al Jazeera · Guardian · DW · France 24 · CNBC · Bloomberg · TechCrunch · The Verge · ESPN · IGN · PlayStation Blog · Xbox Wire · CBS Sports · Bleacher Report · SI · Phys.org · NASA · Nature · Science Daily · RFI · VOA · Fast Company · Inc. · HBR · TMZ · Page Six · People · Us Weekly · E! News · Vanity Fair · Vogue · HELLO! · Pitchfork · Rolling Stone · Billboard · Stereogum · Consequence · NME · SPIN · Loudwire &amp; 70+ more.</div>
+    <div class="footer-sources">Live 24/7 · checks every 90s · 13 sections · 6 world regions · platform filters · AI assistant · up to 300 articles per section</div>
   </div>
 </footer>
 
@@ -838,6 +863,17 @@ const FEEDS = {
   popsugar:'https://www.popsugar.com/celebrity/feed',
   etonline:'https://www.etonline.com/rss',
   hello_royals:'https://www.hellomagazine.com/rss/',
+  // Music
+  pitchfork:'https://pitchfork.com/feed/feed-news/rss',
+  rollingstone_music:'https://www.rollingstone.com/music/feed/',
+  billboard:'https://www.billboard.com/feed/',
+  stereogum:'https://www.stereogum.com/feed/',
+  consequence:'https://consequence.net/feed/',
+  nme:'https://www.nme.com/news/music/feed',
+  spin:'https://www.spin.com/feed/',
+  loudwire:'https://loudwire.com/feed/',
+  npr_music:'https://feeds.npr.org/1039/rss.xml',
+  brooklynvegan:'https://www.brooklynvegan.com/feed/',
   // Gaming
   ign:'https://feeds.ign.com/ign/all',
   kotaku:'https://kotaku.com/rss',
@@ -917,6 +953,7 @@ const SECTION_FEEDS = {
   ai:       ['ai_techcrunch','ai_verge','ai_mit','ai_venturebeat','ai_wired','ai_decoder','ai_zdnet','ai_ars','ai_googleblog','ai_huggingface'],
   gaming:   ['ign','kotaku','polygon','pcgamer','eurogamer','rps','destructoid','gamespot','ps_blog','xbox_wire','nintendolife'],
   movies:   ['variety','deadline','thr','screenrant','collider','slashfilm','indiewire','thewrap','ew'],
+  music:    ['pitchfork','rollingstone_music','billboard','stereogum','consequence','nme','spin','loudwire','npr_music','brooklynvegan'],
   gossip:   ['tmz','pagesix','people','usweekly','enews','justjared','hollywoodlife','dailymail_showbiz','vanityfair','thecut','vogue','popsugar','etonline','hello_royals'],
   science:  ['npr_sci','sciamer','newscientist','livescience','physorg','space_com','nasa','popsci','nature','sciencedaily','nyt_sci','nyt_health'],
   sports:   ['espn','bbc_sport','guardian_sport','sky_sport','yahoo_sport','cbs_sport','bleacher','si','nyt_sport','ap_sport','eurosport'],
@@ -935,6 +972,7 @@ const SECTION_TOPIC_KW = {
   ai:       ['artificial intelligence',' ai ','ai-','machine learning','neural','llm','language model','chatgpt','claude','gemini','openai','anthropic','deepmind','chatbot','generative','gpt-','foundation model','reasoning model','multimodal','agentic','ai agent','vibe coding','claude code','mcp ','model context','ai safety','alignment','inference','fine-tun','copilot','perplexity','deepseek','mistral','grok','llama','midjourney','sora','stable diffusion','hugging face','runway','nvidia','ai model','ai tool','ai startup','ai chip','apple intelligence','bedrock','amazon nova','qwen','alibaba','cohere','stability ai','jensen huang','blackwell'],
   gaming:   ['game','gaming','gamer','console','playstation','xbox','nintendo','steam','esport','esports','video game','pc game','game awards','summer game fest','gamescom','state of play','nintendo direct','showcase','tokyo game show','rockstar','gta','grand theft auto','red dead','ubisoft','assassin','far cry','electronic arts','battlefield','apex legends','blizzard','call of duty','diablo','bethesda','elder scrolls','fallout','starfield','capcom','resident evil','square enix','final fantasy','fromsoftware','elden ring','dark souls'],
   movies:   ['movie','film','cinema','hollywood','box office','streaming','netflix','disney','hbo','theatrical','trailer','director','cast','sequel','series','episode'],
+  music:    ['music','song','album','single','ep ','track','artist','band','rapper','singer','musician','tour','concert','festival','billboard','chart','grammy','spotify','apple music','soundcloud','record label','debut album','new music','releases','dropped','vinyl','remix','collab','feat.','genre','pop','hip-hop','hip hop','rap','rock','country music','indie','r&b','jazz','metal','punk','edm','dj '],
   tech:     ['tech','technology','software','hardware','app','smartphone','iphone','android','computer','device','silicon','startup','developer','api','chip','processor'],
   science:  ['science','research','study','discovery','space','nasa','spacex','biology','chemistry','physics','climate','environment','health','medical','vaccine','disease'],
   sports:   ['sport','sports','nfl','nba','mlb','nhl','mls','fifa','league','player','coach','team','match','championship','tournament','olympic','basketball','football','soccer','baseball','tennis'],
@@ -995,6 +1033,17 @@ const PLATFORM_FILTERS = {
     boxoffice: ['box office','opening weekend','theaters','theatrical','debuts','grosses','domestic','opening day'],
     tv:        ['tv series','tv show','television','sitcom','drama series','limited series','miniseries','season ','episode '],
     reviews:   ['review','rating','stars','critics','rotten tomatoes','metacritic','audience','score'],
+  },
+  music: {
+    all: [],
+    releases:   ['new album','new single','new song','new music','new ep','releases','released','drops','dropped','debut album','out now','announces album','shares song','shares track','unveils','premiere','first listen','listen to','new track','surprise album','reissue'],
+    pop:        ['pop ','taylor swift','beyonce','beyoncé','ariana grande','dua lipa','olivia rodrigo','sabrina carpenter','billie eilish','the weeknd','bruno mars','justin bieber','selena gomez','katy perry','lady gaga','chappell roan','charli xcx','k-pop','bts','blackpink'],
+    hiphop:     ['hip-hop','hip hop',' rap ','rapper','drake','kendrick lamar','travis scott','kanye','ye ','j. cole','nicki minaj','cardi b','doja cat','lil ','21 savage','future ','metro boomin','tyler the creator','playboi carti','megan thee stallion','sza'],
+    rock:       [' rock ','rock band','metal','punk','indie rock','alternative','foo fighters','metallica','coldplay','arctic monkeys','the rolling stones','pearl jam','green day','linkin park','guitar','riff','grunge','hard rock','classic rock','shoegaze'],
+    country:    ['country music','country star','nashville','morgan wallen','luke combs','zach bryan','chris stapleton','kacey musgraves','carrie underwood','blake shelton','dolly parton','jelly roll','lainey wilson','country album','grand ole opry','bluegrass'],
+    electronic: ['electronic','edm','techno','house music','dance music','dj ','calvin harris','skrillex','deadmau5','daft punk','fred again','disclosure','flume','rave','synth','dubstep','trance','producer','remix','beat drop'],
+    live:       ['tour','tours','touring','concert','residency','festival','coachella','glastonbury','lollapalooza','bonnaroo','live show','world tour','tour dates','setlist','headlining','headline','on stage','sold out','arena tour','stadium tour','announces tour'],
+    charts:     ['billboard','hot 100','billboard 200','chart','charts','number one','no. 1','tops the chart','debuts at','first week','streams','streaming numbers','sales','certified','platinum','gold ','grammy','grammys','vmas','brit awards','album of the year'],
   },
   gossip: {
     all: [],
@@ -1208,6 +1257,9 @@ function srcLabel(item) {
     'usmagazine.com':'Us Weekly','eonline.com':'E! News','justjared.com':'Just Jared',
     'hollywoodlife.com':'Hollywood Life','dailymail.co.uk':'Daily Mail','dailymail.com':'Daily Mail',
     'vanityfair.com':'Vanity Fair','thecut.com':'The Cut','vogue.com':'Vogue',
+    'pitchfork.com':'Pitchfork','rollingstone.com':'Rolling Stone','billboard.com':'Billboard',
+    'stereogum.com':'Stereogum','consequence.net':'Consequence','nme.com':'NME',
+    'spin.com':'SPIN','loudwire.com':'Loudwire','brooklynvegan.com':'BrooklynVegan',
     'popsugar.com':'PopSugar','etonline.com':'ET','hellomagazine.com':'HELLO!',
     'ign.com':'IGN','kotaku.com':'Kotaku','polygon.com':'Polygon',
     'pcgamer.com':'PC Gamer','eurogamer.net':'Eurogamer',
@@ -1230,7 +1282,7 @@ function srcLabel(item) {
   for (const [d,l] of Object.entries(MAP)) { if(host.includes(d)) return l; }
   return item.author || host || 'News';
 }
-const PH = {us:'🇺🇸',world:'🌍',politics:'🏛',business:'📈',tech:'💻',ai:'🤖',gaming:'🎮',movies:'🎬',gossip:'💋',science:'🔬',sports:'🏆',regional:'🗺',europe:'🇪🇺',mideast:'🌙',asia:'🌏',africa:'🌍',latam:'🌎',oceania:'🦘'};
+const PH = {us:'🇺🇸',world:'🌍',politics:'🏛',business:'📈',tech:'💻',ai:'🤖',gaming:'🎮',movies:'🎬',music:'🎵',gossip:'💋',science:'🔬',sports:'🏆',regional:'🗺',europe:'🇪🇺',mideast:'🌙',asia:'🌏',africa:'🌍',latam:'🌎',oceania:'🦘'};
 
 function cardImg(item, sec, h=140) {
   const src = getImg(item), em = PH[sec]||'📰';
@@ -1557,7 +1609,7 @@ function renderArchive() {
 }
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
-const SECTIONS = ['us','world','politics','business','tech','ai','gaming','movies','gossip','science','sports','regional','archive'];
+const SECTIONS = ['us','world','politics','business','tech','ai','gaming','movies','music','gossip','science','sports','regional','archive'];
 function showSection(name) {
   currentSection = name;
   pendingItems = [];
@@ -1981,7 +2033,7 @@ setInterval(updateClock, 1000);
 setInterval(liveLoop, 90 * 1000);
 
 (async () => {
-  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 250);
+  const cachedUS = getCachedMulti(SECTION_FEEDS.us, 300);
   if (cachedUS.length) { renderUS(cachedUS); }
   else { document.getElementById('heroCard').innerHTML = SPIN; }
   const cachedWorld = getCachedMulti(SECTION_FEEDS.world.slice(0,5), 10);
