@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECLIPSE: Fall of the Titans — The Five Hunts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#07090f; --ash:#151a26; --bone:#8b93a3; --ember:#ff7a1a;
+    --gold:#ffd27a; --blood:#c9303f; --steel:#3a4457;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:var(--void);overflow:hidden;
+    font-family:'IBM Plex Sans',system-ui,sans-serif;color:var(--bone)}
+  #wrap{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+  canvas{background:var(--void);max-width:100%;max-height:100%;aspect-ratio:16/9;display:block;box-shadow:0 0 120px rgba(255,122,26,.06)}
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse at 50% 30%, rgba(21,26,38,.94), rgba(7,9,15,.98));
+    flex-direction:column;text-align:center;padding:20px;z-index:10;overflow-y:auto}
+  .overlay.hidden{display:none}
+  h1{font-family:'Cinzel',serif;font-weight:800;font-size:clamp(24px,4.2vw,52px);
+    letter-spacing:.14em;color:var(--gold);text-shadow:0 0 40px rgba(255,122,26,.35)}
+  h1 span{color:var(--ember)}
+  .sub{font-family:'Cinzel',serif;font-weight:600;letter-spacing:.4em;font-size:clamp(10px,1.2vw,13px);
+    color:var(--bone);margin-top:6px;text-transform:uppercase}
+  .lore{max-width:640px;margin:16px auto 6px;line-height:1.6;font-size:14px;color:#aab2c2}
+  .lore b{color:var(--gold)}
+  .controls{display:grid;grid-template-columns:repeat(4,minmax(120px,180px));gap:6px 22px;margin:14px auto;text-align:left;font-size:12px}
+  .controls div{display:flex;justify-content:space-between;border-bottom:1px solid rgba(139,147,163,.15);padding:4px 0}
+  kbd{font-family:'IBM Plex Sans';font-weight:600;color:var(--gold);background:var(--ash);
+    border:1px solid var(--steel);border-radius:4px;padding:0 7px;font-size:11px}
+  .bestiary{display:grid;grid-template-columns:repeat(5,minmax(150px,190px));gap:12px;margin:18px auto 6px}
+  .card{background:var(--ash);border:1px solid var(--steel);border-radius:4px;padding:12px 12px 14px;
+    cursor:pointer;text-align:left;transition:transform .12s, border-color .12s, box-shadow .12s;position:relative}
+  .card:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 8px 30px rgba(255,122,26,.18)}
+  .card:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .card.slain{opacity:.55;border-color:#2a3142}
+  .card.slain::after{content:'SLAIN';position:absolute;top:10px;right:10px;font-family:'Cinzel',serif;
+    font-weight:800;font-size:11px;letter-spacing:.2em;color:var(--blood)}
+  .card canvas{width:100%;height:86px;background:transparent;box-shadow:none;aspect-ratio:auto}
+  .card .num{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.25em;color:var(--ember)}
+  .card h3{font-family:'Cinzel',serif;font-weight:800;font-size:14.5px;color:#e6e9f0;letter-spacing:.06em;margin:2px 0 0}
+  .card .epi{font-style:italic;font-size:11.5px;color:var(--gold);margin-bottom:6px}
+  .card p{font-size:11px;line-height:1.5;color:#98a0b3;min-height:48px}
+  .card .meta{font-size:10px;letter-spacing:.12em;color:var(--bone);margin-top:8px;text-transform:uppercase;
+    display:flex;justify-content:space-between}
+  button{margin-top:16px;font-family:'Cinzel',serif;font-weight:800;letter-spacing:.25em;font-size:15px;
+    color:var(--void);background:linear-gradient(180deg,var(--gold),var(--ember));
+    border:none;padding:12px 42px;cursor:pointer;text-transform:uppercase;border-radius:2px;
+    transition:transform .12s ease, box-shadow .12s ease}
+  button:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(255,122,26,.4)}
+  button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+  .stat{font-size:13.5px;color:#aab2c2;margin-top:3px}
+  .stat b{color:var(--gold)}
+  #endTitle.defeat{color:var(--blood);text-shadow:0 0 40px rgba(201,48,63,.4)}
+  .kael{display:flex;gap:18px;align-items:center;max-width:640px;margin:10px auto;text-align:left;
+    background:rgba(21,26,38,.6);border:1px solid var(--steel);border-radius:4px;padding:12px 16px}
+  .kael canvas{width:84px;height:120px;box-shadow:none;aspect-ratio:auto;flex:none}
+  .kael h3{font-family:'Cinzel',serif;color:#e6e9f0;font-size:16px;letter-spacing:.08em}
+  .kael .epi{color:var(--gold);font-style:italic;font-size:12px;margin-bottom:4px}
+  .kael p{font-size:12px;line-height:1.55;color:#98a0b3}
+  .kael b{color:var(--ember)}
+  .hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:#5b6373;z-index:5}
+  @media (prefers-reduced-motion: reduce){ button,.card{transition:none} }
+  @media (max-width:1100px){ .bestiary{grid-template-columns:repeat(3,minmax(150px,190px))} .controls{grid-template-columns:repeat(2,minmax(150px,200px))}}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game" width="1280" height="720"></canvas>
+
+  <div id="title" class="overlay">
+    <h1>ECLIPSE<br><span>FALL OF THE TITANS</span></h1>
+    <div class="sub">The Five Hunts · Titan Bestiary</div>
+
+    <div class="kael">
+      <canvas id="kaelPortrait" width="84" height="120"></canvas>
+      <div>
+        <h3>KAEL, THE LAST TITANBORN</h3>
+        <div class="epi">He who carries the rune of the dead gods</div>
+        <p>Late twenties. Weathered. A <b>Titan rune burns across his left arm</b> — the mark that
+        lets a mortal wound a god. He carries a <b>bone-forged greatsword</b> cut from the first
+        Titan his bloodline felled, and a black cloak torn by every hunt since.</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div><span>Move</span><kbd>A / D</kbd></div>
+      <div><span>Jump</span><kbd>W</kbd></div>
+      <div><span>Dodge (i-frames)</span><kbd>Space</kbd></div>
+      <div><span>Light attack</span><kbd>J</kbd></div>
+      <div><span>Heavy attack</span><kbd>K</kbd></div>
+      <div><span>Flask ×3</span><kbd>E</kbd></div>
+      <div><span>Pause</span><kbd>P</kbd></div>
+      <div><span>Mute</span><kbd>M</kbd></div>
+    </div>
+
+    <div class="bestiary" id="bestiary"></div>
+    <p class="lore" style="font-size:12px;margin-top:10px">Every Titan: shatter the <b>armor at both ankles</b>,
+      destroy the cores, force the fall — then <b>strike the heart</b>. The eclipse advances while you fight.
+      At totality, the Titan evolves beyond killing.</p>
+  </div>
+
+  <div id="end" class="overlay hidden">
+    <h1 id="endTitle">TITAN FELLED</h1>
+    <div class="sub" id="endSub">Expedition report</div>
+    <p class="lore" id="endLore"></p>
+    <div class="stat" id="stTime"></div>
+    <div class="stat" id="stEclipse"></div>
+    <div class="stat" id="stFlasks"></div>
+    <button id="retryBtn">Return to the Bestiary</button>
+  </div>
+</div>
+<div class="hint">Vertical-slice prototype v2 · keyboard required · best on desktop</div>
+
+<script>
+"use strict";
+// ============================================================ setup
+const cvs = document.getElementById('game');
+const ctx = cvs.getContext('2d');
+const W = 1280, H = 720, GROUND = 640;
+
+const keys = {};
+let muted = false;
+addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'KeyM') muted = !muted;
+  if (e.code === 'KeyP' && state === 'play') paused = !paused;
+  if (['Space','KeyW','ArrowUp'].includes(e.code)) e.preventDefault();
+});
+addEventListener('keyup', e => keys[e.code] = false);
+
+// ---- tiny synth sfx
+let AC = null;
+function sfx(type){
+  if (muted) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+    o.connect(g); g.connect(AC.destination);
+    const P = {
+      hit:[220,.08,'square',.16], heavy:[110,.16,'sawtooth',.22],
+      crack:[640,.12,'square',.20], core:[520,.28,'triangle',.25],
+      hurt:[90,.22,'sawtooth',.28], roll:[340,.06,'sine',.10],
+      roar:[55,.9,'sawtooth',.30], flask:[700,.3,'sine',.15],
+      bolt:[880,.14,'square',.22],
+    }[type] || [200,.1,'sine',.1];
+    o.type = P[2]; o.frequency.setValueAtTime(P[0], t);
+    o.frequency.exponentialRampToValueAtTime(Math.max(30,P[0]*.45), t+P[1]);
+    g.gain.setValueAtTime(P[3], t);
+    g.gain.exponentialRampToValueAtTime(.001, t+P[1]);
+    o.start(t); o.stop(t+P[1]+.02);
+  }catch(e){}
+}
+
+// ============================================================ TITAN BESTIARY
+// Same combat geometry for all five (ankle/ankle/heart) — different skins,
+// environments, attack pools, stats. Leviathan is skinned as a serpent but
+// fights on the same skeleton: fins for ankles, skull-light for the heart.
+const TITANS = [
+  {
+    id:'colossus', num:'I', name:'COLOSSUS TITAN', epi:'The World Bearer', height:'~800 FT',
+    desc:'A wandering titan whose back carries entire cities. Its footsteps reshape the lands.',
+    pal:{ body:'#4a3d33', edge:'#6b5847', dark:'#241d16', eye:'#ffcf6a', eye2:'#ff9a3a',
+      sky1:[36,32,44], sky2:'#0d0b10', ground:'#1a1510', accent:'#ffd27a' },
+    env:'plains', parts:{plate:60, core:70, hPlate:90, hCore:130},
+    pools:{ p1:['stomp','sweep','slam'], p2:['stomp','sweep','slam','beam'] },
+    dmgMul:1.0, eclipse:260, phase2:.6,
+    partLabels:['LEFT ANKLE','RIGHT ANKLE','HEART'],
+    kill:'The World Bearer falls. The city on his back survives the collapse — its people will build a kingdom inside his ribs.',
+  },
+  {
+    id:'leviathan', num:'II', name:'LEVIATHAN TITAN', epi:'The Storm Bringer', height:'~3 MILES',
+    desc:'A sea titan that slumbers beneath the oceans. When it rises, it brings cataclysmic storms.',
+    pal:{ body:'#1c2a3f', edge:'#31517a', dark:'#0c141f', eye:'#7ad4ff', eye2:'#3aa0ff',
+      sky1:[16,24,44], sky2:'#060a14', ground:'#0d1826', accent:'#7ad4ff' },
+    env:'sea', parts:{plate:70, core:80, hPlate:100, hCore:140},
+    pools:{ p1:['sweep','slam','bolt'], p2:['sweep','slam','bolt','beam'] },
+    dmgMul:1.1, eclipse:240, phase2:.55,
+    partLabels:['LEFT FIN','RIGHT FIN','STORM HEART'],
+    kill:'The Storm Bringer beaches on a coast it shattered. The seas go quiet for the first time in a thousand years.',
+  },
+  {
+    id:'mountain', num:'III', name:'MOUNTAIN TITAN', epi:'The Earth Shaper', height:'~1200 FT',
+    desc:'A titan of stone and earth. Its presence creates mountains, earthquakes, and eruptions.',
+    pal:{ body:'#3a3632', edge:'#5c5148', dark:'#1c1917', eye:'#ff6a3a', eye2:'#ff3b1a',
+      sky1:[40,26,24], sky2:'#100a08', ground:'#211a14', accent:'#ff8a4a' },
+    env:'volcano', parts:{plate:85, core:95, hPlate:115, hCore:160},
+    pools:{ p1:['stomp','slam','rockfall'], p2:['stomp','slam','rockfall','beam'] },
+    dmgMul:1.25, eclipse:230, phase2:.55,
+    partLabels:['LEFT KNEE','RIGHT KNEE','MOLTEN CORE'],
+    kill:'The Earth Shaper becomes the mountain range he always resembled. Rivers will carve valleys through his spine.',
+  },
+  {
+    id:'forest', num:'IV', name:'FOREST TITAN', epi:'The Green Mother', height:'~700 FT',
+    desc:'An ancient titan of life. Civilizations grow upon her body. She destroys those who poison the world.',
+    pal:{ body:'#243424', edge:'#3f5c38', dark:'#101a10', eye:'#baff7a', eye2:'#7ad46a',
+      sky1:[22,34,26], sky2:'#080f0a', ground:'#141d12', accent:'#baff7a' },
+    env:'forest', parts:{plate:80, core:90, hPlate:110, hCore:150},
+    pools:{ p1:['sweep','slam','roots'], p2:['sweep','slam','roots','beam'] },
+    dmgMul:1.2, eclipse:220, phase2:.55,
+    partLabels:['LEFT ROOT','RIGHT ROOT','HEART BLOOM'],
+    kill:'The Green Mother does not die — she takes seed. A forest erupts from her body that will outlive every kingdom.',
+  },
+  {
+    id:'eclipse', num:'V', name:'ECLIPSE TITAN', epi:'The World Ender', height:'UNKNOWN',
+    desc:'The progenitor of all titans. It exists between realms, bringing darkness and the end of civilizations.',
+    pal:{ body:'#141018', edge:'#33243f', dark:'#07050a', eye:'#ffb35a', eye2:'#ff5a2a',
+      sky1:[20,10,26], sky2:'#050308', ground:'#100a14', accent:'#c9303f' },
+    env:'void', parts:{plate:95, core:110, hPlate:130, hCore:190},
+    pools:{ p1:['stomp','sweep','slam','bolt','beam'], p2:['stomp','sweep','slam','bolt','rockfall','roots','beam'] },
+    dmgMul:1.4, eclipse:170, phase2:.35,
+    partLabels:['LEFT VOID','RIGHT VOID','ECLIPSE HEART'],
+    kill:'The World Ender unravels. For one breath, every eclipse in history runs backward. Kael\u2019s rune goes dark — the hunt is over.',
+  },
+];
+const slain = { colossus:false, leviathan:false, mountain:false, forest:false, eclipse:false };
+let cur = TITANS[0];
+
+// ============================================================ state
+let state = 'title', paused = false;
+let shake = 0, hitstop = 0, tGame = 0;
+let particles = [], dmgNums = [], rings = [], bolts = [], rocks = [], spikes = [];
+
+const player = {};
+const titan = {};
+
+function resetGame(def){
+  cur = def || TITANS[0];
+  Object.assign(player, {
+    x: 180, y: GROUND, vx: 0, vy: 0, w: 26, h: 48, face: 1,
+    hp: 100, maxHp: 100, st: 100, maxSt: 100,
+    onGround: true, dodgeT: 0, dodgeCd: 0, atkT: 0, atkCd: 0, atkKind: null,
+    hurtT: 0, flasks: 3, flaskT: 0, dead: false, flasksUsed: 0
+  });
+  const P = cur.parts;
+  Object.assign(titan, {
+    cx: 950, kneel: 0, kneelTarget: 0,
+    state: 'idle', stT: 1.8, atk: null, atkT: 0,
+    phase: 1, enraged: false, kneelCycle: 0, downedForever: false,
+    parts: {
+      lAnkle: { plate:P.plate, plateMax:P.plate, core:P.core, coreMax:P.core, dead:false, label:cur.partLabels[0] },
+      rAnkle: { plate:P.plate, plateMax:P.plate, core:P.core, coreMax:P.core, dead:false, label:cur.partLabels[1] },
+      heart:  { plate:P.hPlate, plateMax:P.hPlate, core:P.hCore, coreMax:P.hCore, dead:false, label:cur.partLabels[2] },
+    },
+    eyeGlow: 0
+  });
+  if (cur.id==='eclipse') titan.phase = 2; // the World Ender starts evolved
+  particles=[]; dmgNums=[]; rings=[]; bolts=[]; rocks=[]; spikes=[];
+  tGame = 0; shake = 0; hitstop = 0; paused = false;
+}
+
+function tOff(){ return titan.kneel * 235; }
+function partPos(key){
+  const o = tOff(), c = titan.cx;
+  if (key === 'lAnkle') return { x: c-115, y: GROUND-52, r: 40 };
+  if (key === 'rAnkle') return { x: c+115, y: GROUND-52, r: 40 };
+  if (key === 'heart')  return { x: c-8,  y: 300 + o,    r: 46 };
+  return {x:c,y:0,r:0};
+}
+function legsBroken(){ return titan.parts.lAnkle.dead && titan.parts.rAnkle.dead; }
+
+// ============================================================ player: KAEL
+function updatePlayer(dt){
+  const p = player;
+  if (p.dead) return;
+  const acting = p.atkT > 0 || p.flaskT > 0;
+
+  let mv = 0;
+  if (keys['KeyA']||keys['ArrowLeft'])  mv -= 1;
+  if (keys['KeyD']||keys['ArrowRight']) mv += 1;
+  if (p.dodgeT > 0){ p.vx = p.face * 9.5; }
+  else if (!acting){ p.vx = mv * 4.6; if (mv !== 0) p.face = mv; }
+  else p.vx *= .8;
+
+  if ((keys['KeyW']||keys['ArrowUp']) && p.onGround && !acting && p.dodgeT<=0){
+    p.vy = -13.5; p.onGround = false;
+  }
+  if (keys['Space'] && p.dodgeCd<=0 && p.st>=22 && !acting){
+    p.dodgeT = .38; p.dodgeCd = .75; p.st -= 22; sfx('roll');
+  }
+  if (keys['KeyE'] && p.flasks>0 && p.flaskT<=0 && p.atkT<=0 && p.onGround){
+    p.flaskT = .9; p.flasks--; p.flasksUsed++;
+  }
+  if (p.flaskT > 0){
+    p.flaskT -= dt;
+    if (p.flaskT <= 0){ p.hp = Math.min(p.maxHp, p.hp+45); sfx('flask');
+      burst(p.x, p.y-30, '#ffd27a', 14); }
+  }
+  if (p.atkCd<=0 && p.atkT<=0 && p.flaskT<=0 && p.dodgeT<=0){
+    if (keys['KeyJ'] && p.st>=10){ p.atkKind='light'; p.atkT=.28; p.atkCd=.42; p.st-=10; }
+    else if (keys['KeyK'] && p.st>=26){ p.atkKind='heavy'; p.atkT=.55; p.atkCd=.9; p.st-=26; }
+  }
+  if (p.atkT > 0){
+    const was = p.atkT; p.atkT -= dt;
+    const strike = p.atkKind==='light' ? .14 : .2;
+    if (was > strike && p.atkT <= strike) doStrike(p.atkKind);
+  }
+
+  p.atkCd = Math.max(0, p.atkCd-dt);
+  p.dodgeT = Math.max(0, p.dodgeT-dt);
+  p.dodgeCd = Math.max(0, p.dodgeCd-dt);
+  p.hurtT = Math.max(0, p.hurtT-dt);
+  if (p.atkT<=0 && p.dodgeT<=0) p.st = Math.min(p.maxSt, p.st + 26*dt);
+
+  p.vy += 32*dt*2.2;
+  p.x += p.vx; p.y += p.vy;
+  p.x = Math.max(30, Math.min(W-30, p.x));
+  if (p.y >= GROUND){ p.y = GROUND; p.vy = 0; p.onGround = true; }
+
+  if (p.hp <= 0 && !p.dead){ p.dead = true; setTimeout(()=>endGame(false), 900); }
+}
+
+function doStrike(kind){
+  const p = player;
+  const range = kind==='light' ? 74 : 94; // bone greatsword reach
+  const hx = p.x + p.face*range*.6, hy = p.y - 26;
+  let hitAny = false;
+  for (const key of ['lAnkle','rAnkle','heart']){
+    const part = titan.parts[key];
+    if (part.dead) continue;
+    const pos = partPos(key);
+    if (key==='heart' && titan.kneel < .85) continue;
+    const dx = hx-pos.x, dy = hy-pos.y;
+    if (dx*dx+dy*dy < (pos.r+range*.55)**2){
+      hitAny = true;
+      const plateDmg = kind==='light'?8:19;
+      const coreDmg  = kind==='light'?13:30;
+      if (part.plate > 0){
+        part.plate -= plateDmg;
+        dmg(pos.x, pos.y-30, plateDmg, '#aab2c2');
+        burst(hx, hy, '#8b93a3', 6); sfx(kind==='light'?'hit':'heavy');
+        if (part.plate <= 0){ part.plate = 0; sfx('crack'); shake = Math.max(shake,10);
+          burst(pos.x,pos.y,cur.pal.accent,24);
+          dmg(pos.x, pos.y-60, 'ARMOR SHATTERED', '#ffd27a', true); }
+      } else {
+        part.core -= coreDmg;
+        dmg(pos.x, pos.y-30, coreDmg, cur.pal.accent);
+        burst(hx, hy, cur.pal.accent, 10); sfx('core');
+        hitstop = Math.max(hitstop, kind==='heavy'?.08:.04);
+        if (part.core <= 0){ part.core = 0; part.dead = true;
+          shake = Math.max(shake, 18); burst(pos.x,pos.y,'#ff3b1a',40);
+          dmg(pos.x,pos.y-70, part.label+' DESTROYED', cur.pal.accent, true); sfx('roar');
+          onPartKilled(key);
+        }
+      }
+    }
+  }
+  if (!hitAny) sfx('roll');
+}
+
+function onPartKilled(key){
+  if (key==='heart'){ setTimeout(()=>endGame(true), 1400); titan.state='dying'; titan.atk=null; return; }
+  if (legsBroken()){
+    titan.downedForever = true;
+    dmg(titan.cx, 200, 'THE TITAN FALLS TO ITS KNEES', '#ffd27a', true);
+  }
+}
+
+function hurtPlayer(amount, kx){
+  const p = player;
+  if (p.dodgeT > 0 || p.hurtT > 0 || p.dead) return;
+  let a = amount * cur.dmgMul;
+  if (titan.enraged) a *= 1.35;
+  p.hp -= a;
+  p.hurtT = .8; p.vx = kx*6; p.vy = -6; p.onGround = false;
+  shake = Math.max(shake, 12); sfx('hurt');
+  burst(p.x, p.y-24, '#c9303f', 12);
+}
+
+// ============================================================ titan AI
+function updateTitan(dt){
+  const t = titan;
+  if (t.state === 'dying'){ t.kneelTarget = 1; t.kneel = Math.min(1, t.kneel + dt*.6); return; }
+
+  const frac = Math.min(1, tGame/cur.eclipse);
+  if (frac >= cur.phase2 && t.phase===1){ t.phase = 2; sfx('roar');
+    dmg(t.cx, 160, 'THE ECLIPSE DEEPENS — THE TITAN EVOLVES', '#c9303f', true);
+    shake = Math.max(shake, 16); }
+  if (frac >= 1 && !t.enraged){ t.enraged = true; sfx('roar');
+    dmg(t.cx, 160, 'TOTALITY — IT ASCENDS BEYOND KILLING', '#c9303f', true); shake = 20; }
+  if (t.enraged) player.hp -= 3.2*dt;
+
+  if (t.downedForever){
+    t.kneelCycle += dt;
+    const period = 20, downFor = 8;
+    t.kneelTarget = (t.kneelCycle % period) < downFor ? 1 : 0;
+  }
+  t.kneel += (t.kneelTarget - t.kneel) * Math.min(1, dt*2.2);
+  const kneeling = t.kneel > .6;
+
+  if (!t.atk){
+    t.stT -= dt * (t.phase===2 ? 1.5 : 1) * (t.enraged? 1.8:1);
+    if (t.stT <= 0 && !kneeling){
+      const pool = t.phase>=2 ? cur.pools.p2 : cur.pools.p1;
+      t.atk = pool[(Math.random()*pool.length)|0];
+      t.atkT = 0;
+    } else if (t.stT <= 0 && kneeling){
+      t.atk = 'tremor'; t.atkT = 0;
+    }
+  } else {
+    t.atkT += dt;
+    runAttack(t.atk, t.atkT, dt);
+  }
+}
+
+let beamX = 0, beamDir = 1, slamX = 0, sweepX = 0;
+function endAtk(){ titan.atk = null; titan.stT = (titan.phase===2? 1.4:2.2) + Math.random()*1.2; }
+
+function runAttack(kind, at, dt){
+  const p = player, t = titan;
+  if (kind==='stomp'){
+    if (at < .9){ t.eyeGlow = at/.9; }
+    else if (at < .95){
+      shake = Math.max(shake,14); sfx('heavy');
+      rings.push({x:t.cx-115, y:GROUND, r:10, sp:420, dmg:20});
+      rings.push({x:t.cx+115, y:GROUND, r:10, sp:420, dmg:20});
+      t.atkT = 1;
+    } else if (at > 1.5) endAtk();
+  }
+  else if (kind==='sweep'){
+    const dur = t.phase===2 ? 1.0 : 1.35;
+    if (at < .7){ sweepX = t.cx-180; }
+    else if (at < .7+dur){
+      const k = (at-.7)/dur;
+      sweepX = (t.cx-160) - k*(t.cx-160-40);
+      const hy = GROUND-42;
+      if (Math.abs(p.x - sweepX) < 70 && p.y > hy-60 && p.onGround) hurtPlayer(24, -1);
+    } else endAtk();
+  }
+  else if (kind==='slam'){
+    if (at < .8){ slamX = at<.05 ? Math.max(120, Math.min(700, p.x)) : slamX; }
+    else if (at < .9){
+      shake = Math.max(shake,16); sfx('heavy');
+      if (Math.abs(p.x - slamX) < 110 && p.onGround) hurtPlayer(30, p.x<slamX?-1:1);
+      rings.push({x:slamX, y:GROUND, r:8, sp:300, dmg:14});
+      burst(slamX, GROUND-10, '#8b93a3', 20);
+      t.atkT = 1;
+    } else if (at > 1.9) endAtk();
+  }
+  else if (kind==='beam'){
+    if (at < .8){ beamX = 80; beamDir = 1; t.eyeGlow = 1; }
+    else if (at < 3.2){
+      beamX += beamDir * 320 * dt;
+      if (beamX > W-120) beamDir = -1;
+      if (Math.abs(p.x-beamX) < 34 && p.y > GROUND-160) { p.hp -= 26*dt*cur.dmgMul; p.hurtT = Math.max(p.hurtT,.1);
+        if (Math.random()<.3) burst(p.x,p.y-20,'#c9303f',3); }
+    } else { t.eyeGlow = 0; endAtk(); }
+  }
+  else if (kind==='bolt'){ // Leviathan lightning: 3 telegraphed strikes
+    if (at < .05 && bolts.length===0){
+      for (let i=0;i<3;i++) bolts.push({x: 90+Math.random()*640, t:-.9 - i*.35, struck:false});
+    }
+    let done = true;
+    for (const b of bolts){ b.t += dt;
+      if (b.t >= 0 && !b.struck){ b.struck = true; sfx('bolt'); shake = Math.max(shake,8);
+        if (Math.abs(p.x-b.x)<40 && p.onGround) hurtPlayer(26, p.x<b.x?-1:1);
+        burst(b.x, GROUND-8, cur.pal.eye, 14); }
+      if (b.t < .25) done = false;
+    }
+    if (done && at > 1.2){ bolts = []; endAtk(); }
+  }
+  else if (kind==='rockfall'){ // Mountain: falling debris on marked spots
+    if (at < .05 && rocks.length===0){
+      for (let i=0;i<4;i++) rocks.push({x: 90+Math.random()*640, y:-40-i*90, vy:0, tele:.9, landed:false});
+    }
+    let done = true;
+    for (const r of rocks){
+      if (r.tele > 0){ r.tele -= dt; done = false; continue; }
+      if (!r.landed){ r.vy += 60*dt; r.y += r.vy*dt*60;
+        if (r.y >= GROUND-14){ r.y = GROUND-14; r.landed = true; shake=Math.max(shake,7); sfx('heavy');
+          if (Math.abs(p.x-r.x)<48 && p.onGround) hurtPlayer(24, p.x<r.x?-1:1);
+          burst(r.x, GROUND-10, cur.pal.edge, 10);
+        } else done = false;
+      }
+    }
+    if (done && at > 2.2){ rocks = []; endAtk(); }
+  }
+  else if (kind==='roots'){ // Forest: spikes erupt under the hunter
+    if (at < .05 && spikes.length===0){
+      for (let i=0;i<3;i++) spikes.push({x:0, tele:.75 + i*.55, h:0, live:0, hit:false, armed:false});
+    }
+    let done = true;
+    for (const s of spikes){
+      if (!s.armed && s.tele < .55){ s.x = p.x; s.armed = true; } // lock-on late in telegraph
+      if (s.tele > 0){ s.tele -= dt; if (!s.armed) s.x = p.x; done = false; continue; }
+      if (s.live < .5){ s.live += dt; s.h = Math.min(90, s.h + 700*dt); done = false;
+        if (!s.hit && Math.abs(p.x-s.x)<26 && p.y > GROUND - s.h - 10){ s.hit = true; hurtPlayer(22, p.x<s.x?-1:1); }
+      } else { s.h = Math.max(0, s.h - 300*dt); if (s.h>0) done=false; }
+    }
+    if (done && at > 2.6){ spikes = []; endAtk(); }
+  }
+  else if (kind==='tremor'){
+    if (at < .6){}
+    else if (at < .7){ shake = Math.max(shake,8);
+      rings.push({x:t.cx, y:GROUND, r:10, sp:260, dmg:10}); t.atkT=1; }
+    else if (at > 1.4) endAtk();
+  }
+}
+
+function updateRings(dt){
+  for (const r of rings){
+    r.r += r.sp*dt;
+    const p = player;
+    const d = Math.abs(p.x - r.x);
+    if (Math.abs(d - r.r) < 26 && p.y > GROUND-30 && p.onGround) hurtPlayer(r.dmg, p.x<r.x?-1:1);
+  }
+  rings = rings.filter(r => r.r < W*1.2);
+}
+
+// ============================================================ fx
+function burst(x,y,col,n){
+  for (let i=0;i<n;i++) particles.push({
+    x,y, vx:(Math.random()-.5)*7, vy:-Math.random()*7-1,
+    life:.5+Math.random()*.5, col, s:2+Math.random()*3 });
+}
+function dmg(x,y,v,col,big){ dmgNums.push({x,y,v,col,life:big?2.2:.9,big}); }
+function updateFx(dt){
+  for (const p of particles){ p.x+=p.vx; p.y+=p.vy; p.vy+=.35; p.life-=dt; }
+  particles = particles.filter(p=>p.life>0);
+  for (const d of dmgNums){ d.y -= 26*dt; d.life -= dt; }
+  dmgNums = dmgNums.filter(d=>d.life>0);
+}
+
+// ============================================================ render
+function draw(){
+  ctx.save();
+  if (shake>0){ ctx.translate((Math.random()-.5)*shake, (Math.random()-.5)*shake); shake*=.88; if(shake<.4)shake=0; }
+
+  const frac = Math.min(1, tGame/cur.eclipse);
+  const pal = cur.pal;
+
+  // ---- sky
+  const sky = ctx.createLinearGradient(0,0,0,H);
+  const s1 = pal.sky1;
+  sky.addColorStop(0, `rgb(${Math.max(4,s1[0]-s1[0]*frac*.6)|0},${Math.max(4,s1[1]-s1[1]*frac*.6)|0},${Math.max(6,s1[2]-s1[2]*frac*.5)|0})`);
+  sky.addColorStop(1, pal.sky2);
+  ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+
+  // ---- eclipse (signature timer)
+  const ex=200, ey=120, er=52;
+  ctx.save();
+  ctx.shadowColor = titan.enraged ? '#c9303f' : '#ffd27a';
+  ctx.shadowBlur = 60;
+  ctx.fillStyle = titan.enraged ? '#ff5a4a' : '#ffe9b8';
+  ctx.beginPath(); ctx.arc(ex,ey,er,0,7); ctx.fill();
+  ctx.restore();
+  ctx.save(); ctx.beginPath();
+  ctx.arc(ex - (er*2.4)*(1-frac), ey, er+3, 0, 7); ctx.fillStyle='#0a0c14'; ctx.fill();
+  ctx.restore();
+  if (frac > .92){
+    ctx.strokeStyle = 'rgba(255,90,74,.8)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(ex,ey,er+5,0,7); ctx.stroke();
+  }
+  if (cur.id==='eclipse'){ // the World Ender carries a second eclipse
+    ctx.save(); ctx.shadowColor='#ff7a1a'; ctx.shadowBlur=30;
+    ctx.strokeStyle='rgba(255,122,26,.85)'; ctx.lineWidth=4;
+    ctx.beginPath(); ctx.arc(430, 80, 26, 0, 7); ctx.stroke(); ctx.restore();
+    ctx.fillStyle='#07050a'; ctx.beginPath(); ctx.arc(430,80,24,0,7); ctx.fill();
+  }
+
+  drawEnvironment(frac);
+  drawTitan(frac);
+
+  // ---- ground
+  ctx.fillStyle = pal.ground; ctx.fillRect(0,GROUND,W,H-GROUND);
+  ctx.strokeStyle = 'rgba(139,147,163,.25)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(0,GROUND); ctx.lineTo(W,GROUND); ctx.stroke();
+
+  // shockwave rings
+  for (const r of rings){
+    ctx.strokeStyle = 'rgba(255,122,26,.7)'; ctx.lineWidth=5;
+    ctx.beginPath(); ctx.moveTo(r.x-r.r, GROUND); ctx.lineTo(r.x-r.r, GROUND-22);
+    ctx.moveTo(r.x+r.r, GROUND); ctx.lineTo(r.x+r.r, GROUND-22); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,122,26,.12)';
+    ctx.fillRect(r.x-r.r, GROUND-22, 6, 22); ctx.fillRect(r.x+r.r-6, GROUND-22, 6, 22);
+  }
+  // slam telegraph
+  if (titan.atk==='slam' && titan.atkT < .8){
+    ctx.fillStyle = `rgba(201,48,63,${.15+.25*Math.sin(tGame*20)**2})`;
+    ctx.fillRect(slamX-110, GROUND-6, 220, 6);
+  }
+  // beam
+  if (titan.atk==='beam' && titan.atkT>=.8 && titan.atkT<3.2){
+    const g = ctx.createLinearGradient(beamX,0,beamX,GROUND);
+    g.addColorStop(0,'rgba(255,90,74,0)'); g.addColorStop(1,'rgba(255,90,74,.85)');
+    ctx.fillStyle = g; ctx.fillRect(beamX-16, 140, 32, GROUND-140);
+    ctx.fillStyle = pal.eye; ctx.fillRect(beamX-3, 140, 6, GROUND-140);
+  }
+  // lightning bolts
+  for (const b of bolts){
+    if (b.t < 0){ // telegraph marker
+      ctx.fillStyle = `rgba(122,212,255,${.2+.3*Math.sin(tGame*24)**2})`;
+      ctx.fillRect(b.x-30, GROUND-5, 60, 5);
+    } else if (b.t < .18){
+      ctx.strokeStyle = '#dff4ff'; ctx.lineWidth = 4;
+      ctx.beginPath(); let yy=0, xx=b.x;
+      ctx.moveTo(xx,0);
+      while (yy < GROUND){ yy += 60; xx += (Math.random()-.5)*36; ctx.lineTo(xx, Math.min(yy,GROUND)); }
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(122,212,255,.5)'; ctx.lineWidth = 10; ctx.stroke();
+    }
+  }
+  // falling rocks
+  for (const r of rocks){
+    if (r.tele > 0){
+      ctx.fillStyle = `rgba(255,138,74,${.2+.3*Math.sin(tGame*22)**2})`;
+      ctx.fillRect(r.x-40, GROUND-5, 80, 5);
+    } else if (!r.landed || true){
+      ctx.fillStyle = pal.edge;
+      ctx.beginPath(); ctx.moveTo(r.x-16,r.y+12); ctx.lineTo(r.x-6,r.y-14); ctx.lineTo(r.x+12,r.y-8);
+      ctx.lineTo(r.x+16,r.y+12); ctx.closePath(); ctx.fill();
+    }
+  }
+  // root spikes
+  for (const s of spikes){
+    if (s.tele > 0){
+      ctx.fillStyle = `rgba(186,255,122,${.2+.3*Math.sin(tGame*22)**2})`;
+      ctx.fillRect(s.x-22, GROUND-5, 44, 5);
+    } else if (s.h > 0){
+      ctx.fillStyle = pal.edge;
+      ctx.beginPath(); ctx.moveTo(s.x-16, GROUND); ctx.lineTo(s.x, GROUND-s.h); ctx.lineTo(s.x+16, GROUND);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = pal.accent;
+      ctx.beginPath(); ctx.moveTo(s.x-4, GROUND-s.h*.55); ctx.lineTo(s.x, GROUND-s.h); ctx.lineTo(s.x+4, GROUND-s.h*.55);
+      ctx.closePath(); ctx.fill();
+    }
+  }
+
+  drawKael(ctx, player.x, player.y, player, false);
+
+  for (const p of particles){ ctx.globalAlpha = Math.max(0,p.life); ctx.fillStyle=p.col;
+    ctx.fillRect(p.x,p.y,p.s,p.s); }
+  ctx.globalAlpha = 1;
+  for (const d of dmgNums){
+    ctx.globalAlpha = Math.min(1, d.life*1.6);
+    ctx.font = d.big ? '700 22px Cinzel, serif' : '600 16px "IBM Plex Sans"';
+    ctx.fillStyle = d.col; ctx.textAlign='center';
+    ctx.fillText(d.v, d.x, d.y);
+  }
+  ctx.globalAlpha = 1;
+
+  drawHUD(frac);
+  if (paused){
+    ctx.fillStyle='rgba(7,9,15,.7)'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#ffd27a'; ctx.font='800 42px Cinzel,serif'; ctx.textAlign='center';
+    ctx.fillText('PAUSED', W/2, H/2);
+  }
+  ctx.restore();
+}
+
+// ---- per-titan backdrops
+function drawEnvironment(frac){
+  const pal = cur.pal;
+  if (cur.env==='plains'){
+    ctx.fillStyle = 'rgba(21,26,38,.8)';
+    ctx.beginPath(); ctx.moveTo(0,520);
+    for (let x=0;x<=W;x+=80) ctx.lineTo(x, 480+Math.sin(x*.013)*36);
+    ctx.lineTo(W,720); ctx.lineTo(0,720); ctx.fill();
+    ctx.strokeStyle='rgba(139,147,163,.22)'; ctx.lineWidth=7;
+    for (let i=0;i<5;i++){ ctx.beginPath();
+      ctx.arc(90+i*44, 560, 120-i*6, Math.PI*1.05, Math.PI*1.6); ctx.stroke(); }
+  }
+  else if (cur.env==='sea'){
+    // storm waves
+    ctx.fillStyle = 'rgba(20,40,64,.55)';
+    for (let row=0; row<3; row++){
+      const yb = 540 + row*34;
+      ctx.beginPath(); ctx.moveTo(0,yb);
+      for (let x=0;x<=W;x+=40) ctx.lineTo(x, yb + Math.sin(x*.03 + tGame*(1.4+row*.4))*8);
+      ctx.lineTo(W,720); ctx.lineTo(0,720); ctx.fill();
+    }
+    // wrecked ship mast
+    ctx.strokeStyle='rgba(139,147,163,.35)'; ctx.lineWidth=6;
+    ctx.beginPath(); ctx.moveTo(140,GROUND); ctx.lineTo(180,470); ctx.moveTo(150,520); ctx.lineTo(220,505); ctx.stroke();
+    // ambient rain
+    ctx.strokeStyle='rgba(122,212,255,.18)'; ctx.lineWidth=1.5;
+    for (let i=0;i<40;i++){ const rx=(i*97 + tGame*400)%W, ry=(i*173 + tGame*640)%GROUND;
+      ctx.beginPath(); ctx.moveTo(rx,ry); ctx.lineTo(rx-6,ry+16); ctx.stroke(); }
+  }
+  else if (cur.env==='volcano'){
+    ctx.fillStyle = 'rgba(48,26,20,.8)';
+    ctx.beginPath(); ctx.moveTo(0,540);
+    for (let x=0;x<=W;x+=60) ctx.lineTo(x, 470+Math.abs(Math.sin(x*.02))*70);
+    ctx.lineTo(W,720); ctx.lineTo(0,720); ctx.fill();
+    // lava seams
+    ctx.strokeStyle='rgba(255,106,58,.5)'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(60,530); ctx.lineTo(120,600); ctx.moveTo(300,505); ctx.lineTo(340,590); ctx.stroke();
+    // embers rising
+    ctx.fillStyle='rgba(255,138,74,.6)';
+    for (let i=0;i<24;i++){ const exx=(i*151)%W, eyy=GROUND - ((i*89 + tGame*60)%420);
+      ctx.fillRect(exx, eyy, 2.4, 2.4); }
+  }
+  else if (cur.env==='forest'){
+    // canopy silhouettes
+    ctx.fillStyle = 'rgba(24,40,26,.75)';
+    for (let i=0;i<7;i++){ const tx = 40+i*105, th = 100+((i*37)%90);
+      ctx.beginPath(); ctx.moveTo(tx, GROUND); ctx.lineTo(tx, GROUND-th);
+      ctx.lineTo(tx-34, GROUND-th+40); ctx.moveTo(tx,GROUND-th); ctx.lineTo(tx+30, GROUND-th+34);
+      ctx.lineWidth=10; ctx.strokeStyle='rgba(24,40,26,.75)'; ctx.stroke();
+      ctx.beginPath(); ctx.arc(tx, GROUND-th-18, 42, 0, 7); ctx.fill(); }
+    // drifting spores
+    ctx.fillStyle='rgba(186,255,122,.4)';
+    for (let i=0;i<20;i++){ const sx=(i*131 + tGame*24)%W, sy=140+((i*211)%420) + Math.sin(tGame+i)*10;
+      ctx.fillRect(sx,sy,2.2,2.2); }
+  }
+  else if (cur.env==='void'){
+    // shattered spires + starfield
+    ctx.fillStyle='rgba(230,233,240,.5)';
+    for (let i=0;i<50;i++){ ctx.globalAlpha=.2+((i*7)%10)/14;
+      ctx.fillRect((i*127)%W, (i*211)%420, 1.6, 1.6); }
+    ctx.globalAlpha=1;
+    ctx.fillStyle = 'rgba(30,20,40,.8)';
+    for (let i=0;i<5;i++){ const sx=60+i*130;
+      ctx.beginPath(); ctx.moveTo(sx-26,GROUND); ctx.lineTo(sx, 430-((i*53)%110)); ctx.lineTo(sx+22,GROUND); ctx.fill(); }
+  }
+}
+
+function drawTitan(frac){
+  const t = titan, o = tOff(), c = t.cx, pal = cur.pal;
+  ctx.save();
+  if (t.state==='dying'){ ctx.translate(c, GROUND); ctx.rotate(t.kneel*.12); ctx.translate(-c,-GROUND); }
+
+  const body = pal.body, edge = pal.edge;
+
+  if (cur.id==='leviathan'){
+    // serpent body: arched coil instead of legs/torso
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.moveTo(c-260, GROUND);
+    ctx.quadraticCurveTo(c-240, 200+o, c-8, 150+o);
+    ctx.quadraticCurveTo(c+260, 190+o, c+270, GROUND);
+    ctx.lineTo(c+150, GROUND);
+    ctx.quadraticCurveTo(c+150, 330+o, c-8, 300+o);
+    ctx.quadraticCurveTo(c-150, 330+o, c-150, GROUND);
+    ctx.closePath(); ctx.fill();
+    // dorsal blade fins
+    ctx.fillStyle = edge;
+    for (let i=0;i<7;i++){
+      const k=i/6, fx = c-220 + k*440;
+      const fy = 150+o + Math.sin(k*Math.PI)* -0 + (1-Math.sin(k*Math.PI))*160;
+      ctx.beginPath(); ctx.moveTo(fx-16,fy+30); ctx.lineTo(fx+6, fy-60 - Math.sin(k*Math.PI)*30); ctx.lineTo(fx+28,fy+30); ctx.fill();
+    }
+    // head at left of arch
+    ctx.fillStyle = body;
+    roundRect(c-150, 90+o, 180, 110, 26);
+    ctx.fillStyle = edge; // jaw blades
+    for (let i=0;i<6;i++){ ctx.beginPath();
+      ctx.moveTo(c-140+i*26, 196+o); ctx.lineTo(c-132+i*26, 224+o); ctx.lineTo(c-124+i*26, 196+o); ctx.fill(); }
+    // storm glow lines
+    ctx.strokeStyle = 'rgba(122,212,255,.45)'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(c-200,260+o); ctx.quadraticCurveTo(c-8, 210+o, c+200, 260+o); ctx.stroke();
+    // eyes
+    eyes(c-96, 140+o, pal);
+  } else {
+    // humanoid frame (Colossus / Mountain / Forest / Eclipse skins)
+    ctx.fillStyle = body;
+    roundRect(c-160, 330+o, 92, GROUND-(330+o), 18);
+    roundRect(c+68,  330+o, 92, GROUND-(330+o), 18);
+    roundRect(c-230, 140+o, 452, 240, 34);
+    ctx.fillStyle = edge;
+    for (let i=0;i<6;i++){
+      const sx = c-210+i*84;
+      ctx.beginPath(); ctx.moveTo(sx,150+o); ctx.lineTo(sx+22, 90+o - (i%2)*22); ctx.lineTo(sx+44,150+o); ctx.fill();
+    }
+    ctx.fillStyle = body;
+    roundRect(c-300, 180+o, 66, 330, 26);
+    roundRect(c+238, 180+o, 66, 330, 26);
+    ctx.fillStyle = edge;
+    for (const ax of [c-300, c+238]){
+      for (let i=0;i<3;i++){ ctx.beginPath();
+        ctx.moveTo(ax+8+i*20, 505+o); ctx.lineTo(ax+16+i*20, 560+o); ctx.lineTo(ax+26+i*20, 505+o); ctx.fill(); }
+    }
+    ctx.fillStyle = body;
+    roundRect(c-92, 46+o, 184, 116, 30);
+    ctx.beginPath(); ctx.moveTo(c-88,70+o); ctx.lineTo(c-150,18+o); ctx.lineTo(c-70,52+o); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(c+88,70+o); ctx.lineTo(c+150,18+o); ctx.lineTo(c+70,52+o); ctx.fill();
+    eyes(c, 100+o, pal, true);
+    ctx.fillStyle = '#c8ceda';
+    for (let i=0;i<7;i++){ ctx.beginPath();
+      ctx.moveTo(c-58+i*18, 150+o); ctx.lineTo(c-52+i*18, 168+o); ctx.lineTo(c-46+i*18, 150+o); ctx.fill(); }
+
+    // ---- skin details per titan
+    if (cur.id==='colossus'){
+      // city on the back: towers + lit windows
+      ctx.fillStyle = pal.dark;
+      const bx = c-190;
+      const hts = [70,110,86,130,74,96];
+      for (let i=0;i<6;i++){ ctx.fillRect(bx+i*64, 140+o-hts[i], 36, hts[i]); }
+      ctx.fillStyle = '#ffd27a';
+      for (let i=0;i<6;i++) for (let wnd=0; wnd<3; wnd++){
+        if ((i+wnd)%2===0) ctx.fillRect(bx+i*64+10, 140+o-hts[i]+14+wnd*22, 5, 7); }
+    }
+    else if (cur.id==='mountain'){
+      // strata lines + lava cracks
+      ctx.strokeStyle='rgba(28,25,23,.8)'; ctx.lineWidth=4;
+      for (let i=0;i<4;i++){ ctx.beginPath(); ctx.moveTo(c-220, 190+o+i*46);
+        ctx.lineTo(c+220, 182+o+i*46); ctx.stroke(); }
+      ctx.strokeStyle='rgba(255,106,58,.6)'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(c-60,150+o); ctx.lineTo(c-30,240+o); ctx.lineTo(c-70,320+o); ctx.stroke();
+      // snow caps on shoulders
+      ctx.fillStyle='rgba(230,233,240,.5)';
+      ctx.beginPath(); ctx.moveTo(c-210,150+o); ctx.lineTo(c-166,112+o); ctx.lineTo(c-122,150+o); ctx.fill();
+    }
+    else if (cur.id==='forest'){
+      // antler branches + moss + waterfall
+      ctx.strokeStyle = edge; ctx.lineWidth=8;
+      ctx.beginPath(); ctx.moveTo(c-70,52+o); ctx.lineTo(c-120,-8+o); ctx.moveTo(c-104,20+o); ctx.lineTo(c-150,4+o);
+      ctx.moveTo(c+70,52+o); ctx.lineTo(c+120,-8+o); ctx.moveTo(c+104,20+o); ctx.lineTo(c+150,4+o); ctx.stroke();
+      ctx.fillStyle='rgba(63,92,56,.9)';
+      for (let i=0;i<8;i++){ ctx.beginPath();
+        ctx.arc(c-190+i*56, 148+o, 20+(i%3)*7, Math.PI, 0); ctx.fill(); }
+      ctx.fillStyle='rgba(170,210,255,.35)';
+      ctx.fillRect(c+130, 200+o, 10, 180);
+    }
+    else if (cur.id==='eclipse'){
+      // void tendrils + inner eclipse ring on chest
+      ctx.strokeStyle='rgba(51,36,63,.9)'; ctx.lineWidth=6;
+      for (let i=0;i<5;i++){ ctx.beginPath();
+        ctx.moveTo(c-200+i*100, 140+o);
+        ctx.quadraticCurveTo(c-220+i*100, 40+o - (i%2)*30, c-160+i*100, -10+o);
+        ctx.stroke(); }
+      ctx.save(); ctx.shadowColor='#ff7a1a'; ctx.shadowBlur=24;
+      ctx.strokeStyle='rgba(255,122,26,.8)'; ctx.lineWidth=4;
+      ctx.beginPath(); ctx.arc(c-8, 300+o, 62, 0, 7); ctx.stroke(); ctx.restore();
+    }
+  }
+
+  // weak points (shared)
+  for (const key of ['lAnkle','rAnkle','heart']){
+    const part = t.parts[key], pos = partPos(key);
+    if (part.dead){
+      ctx.fillStyle = 'rgba(60,20,20,.9)';
+      ctx.beginPath(); ctx.arc(pos.x,pos.y,pos.r*.7,0,7); ctx.fill();
+      continue;
+    }
+    if (part.plate > 0){
+      ctx.fillStyle = '#39435a'; ctx.strokeStyle='#556184'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.arc(pos.x,pos.y,pos.r,0,7); ctx.fill(); ctx.stroke();
+      const cracks = Math.floor((1-part.plate/part.plateMax)*6);
+      ctx.strokeStyle='#0d1119'; ctx.lineWidth=2;
+      for (let i=0;i<cracks;i++){ ctx.beginPath();
+        const a = i*1.1+.4;
+        ctx.moveTo(pos.x,pos.y);
+        ctx.lineTo(pos.x+Math.cos(a)*pos.r*.9, pos.y+Math.sin(a)*pos.r*.9); ctx.stroke(); }
+      ctx.fillStyle='#8b93a3';
+      for (let i=0;i<4;i++){ const a=i*1.57+.78;
+        ctx.beginPath(); ctx.arc(pos.x+Math.cos(a)*pos.r*.68, pos.y+Math.sin(a)*pos.r*.68, 3.4,0,7); ctx.fill(); }
+    } else {
+      const heartLocked = key==='heart' && t.kneel < .85;
+      const pulse = .8 + .25*Math.sin(tGame*6);
+      ctx.save(); ctx.shadowColor=pal.eye2; ctx.shadowBlur=30*pulse;
+      ctx.fillStyle = heartLocked ? hexA(pal.eye2,.45) : pal.eye2;
+      ctx.beginPath(); ctx.arc(pos.x,pos.y,pos.r*.62*pulse,0,7); ctx.fill();
+      ctx.restore();
+      ctx.fillStyle='#ffe9b8';
+      ctx.beginPath(); ctx.arc(pos.x,pos.y,pos.r*.22,0,7); ctx.fill();
+    }
+  }
+
+  const heart = t.parts.heart;
+  if (t.kneel>.85 && !heart.dead){
+    ctx.fillStyle='#ffd27a'; ctx.font='600 15px "IBM Plex Sans"'; ctx.textAlign='center';
+    ctx.fillText(heart.plate>0 ? cur.partLabels[2]+' EXPOSED — BREAK THE PLATE' : 'STRIKE — '+cur.partLabels[2], c-8, 220+o);
+    ctx.beginPath(); ctx.moveTo(c-8, 232+o); ctx.lineTo(c-16,246+o); ctx.lineTo(c,246+o); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function eyes(x, y, pal, pair){
+  const glow = .5 + .5*Math.sin(tGame*4) * .3 + titan.eyeGlow*.5;
+  ctx.save(); ctx.shadowColor = pal.eye2; ctx.shadowBlur = 26*glow+8;
+  ctx.fillStyle = pal.eye;
+  ctx.beginPath();
+  if (pair){ ctx.arc(x-42, y, 12, 0, 7); ctx.arc(x+42, y, 12, 0, 7); }
+  else { ctx.arc(x, y, 13, 0, 7); }
+  ctx.fill(); ctx.restore();
+}
+function hexA(hex, a){
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// ============================================================ KAEL renderer
+// Torn black cloak · dark hair · titan rune on the LEFT arm · bone greatsword
+function drawKael(c2, x, y, p, portrait){
+  c2.save();
+  c2.translate(x, y);
+  const t = tGame;
+  if (!portrait){
+    if (p.hurtT>0 && Math.floor(t*20)%2===0) c2.globalAlpha = .4;
+    if (p.dodgeT>0){ c2.rotate(p.face * (1-p.dodgeT/.38) * 6.28); }
+  }
+  const face = portrait ? 1 : p.face;
+  const dead = !portrait && p.dead;
+  const moving = !portrait && Math.abs(p.vx) > .5;
+
+  // --- bone greatsword on the back when idle (Guts carry)
+  const attacking = !portrait && p.atkT > 0;
+  if (!attacking && !dead){
+    c2.save();
+    c2.rotate(face * -0.6);
+    boneBlade(c2, 0, -34, 58, face);
+    c2.restore();
+  }
+
+  // --- torn black cloak (behind body)
+  c2.fillStyle = dead ? '#20242e' : '#0d0f16';
+  c2.beginPath();
+  const sway = moving ? Math.sin(t*10)*3 : Math.sin(t*2)*1.5;
+  c2.moveTo(-11, -46);
+  c2.lineTo(11, -46);
+  c2.lineTo(15 - face*3 + sway*.4, -6);
+  // ragged hem
+  c2.lineTo(10 + sway, 0); c2.lineTo(6, -7); c2.lineTo(1 + sway*.6, 1);
+  c2.lineTo(-4, -6); c2.lineTo(-9 + sway, 1); c2.lineTo(-14 - face*2, -8);
+  c2.closePath(); c2.fill();
+
+  // --- legs
+  c2.fillStyle = '#1a1e28';
+  c2.fillRect(-8,-13,6,13); c2.fillRect(2,-13,6,13);
+  // --- torso (dark leathers)
+  c2.fillStyle = dead ? '#3a3f4c' : '#232837';
+  roundRectOn(c2, -9, -46, 18, 34, 5);
+  // belt
+  c2.fillStyle = '#3d3426'; c2.fillRect(-9,-18,18,4);
+
+  // --- RIGHT arm (plain, far side)
+  c2.fillStyle = '#232837';
+  c2.fillRect(face>0 ? -12 : 7, -42, 5, 20);
+
+  // --- head: weathered face + dark hair
+  c2.fillStyle = '#c9a184'; // weathered skin
+  c2.beginPath(); c2.arc(0,-53,7.5,0,7); c2.fill();
+  c2.fillStyle = '#15161c'; // dark hair, swept back
+  c2.beginPath(); c2.arc(-face*1.5,-56,7.6, Math.PI*.95, Math.PI*2.05); c2.fill();
+  c2.fillRect(-8, -58, 16, 4);
+  // stubble shadow + scar
+  c2.fillStyle = 'rgba(21,22,28,.45)';
+  c2.fillRect(-5,-50,10,3);
+  c2.strokeStyle = '#8a6a55'; c2.lineWidth=1;
+  c2.beginPath(); c2.moveTo(face*2,-58); c2.lineTo(face*4,-51); c2.stroke();
+
+  // --- LEFT arm with the TITAN RUNE (always drawn on screen-visible side)
+  const armX = face>0 ? 6 : -11;
+  c2.fillStyle = '#232837';
+  c2.fillRect(armX, -42, 5, 21);
+  // bare forearm
+  c2.fillStyle = '#c9a184';
+  c2.fillRect(armX, -28, 5, 8);
+  // glowing rune lines
+  if (!dead){
+    const pulse = .6 + .4*Math.sin(t*5);
+    c2.save();
+    c2.shadowColor = '#ff7a1a'; c2.shadowBlur = 10*pulse + 4;
+    c2.strokeStyle = `rgba(255,140,40,${.65+.35*pulse})`;
+    c2.lineWidth = 1.6;
+    c2.beginPath();
+    c2.moveTo(armX+1, -41); c2.lineTo(armX+4, -36); c2.lineTo(armX+1, -31);
+    c2.lineTo(armX+4, -26); c2.lineTo(armX+2, -21);
+    c2.moveTo(armX+3.5, -39); c2.lineTo(armX+1, -34);
+    c2.stroke();
+    c2.restore();
+  }
+
+  // --- bone greatsword swing
+  if (attacking){
+    const k = 1 - p.atkT/(p.atkKind==='light'?.28:.55);
+    const a = -1.6 + k*2.6;
+    const len = p.atkKind==='light'?52:68;
+    c2.save();
+    c2.translate(face*6,-32);
+    c2.rotate(face>0 ? a : Math.PI-a);
+    boneBlade(c2, 0, 0, len, 1);
+    c2.restore();
+    // slash arc
+    c2.strokeStyle = `rgba(240,234,220,${.5*(1-k)})`; c2.lineWidth=9;
+    c2.beginPath();
+    c2.arc(face*8,-30, len*.9, face>0?-1.4:2.8, face>0?(-1.4+k*2.4):(2.8+k*2.4));
+    c2.stroke();
+  }
+
+  // flask channel
+  if (!portrait && p.flaskT>0){
+    c2.fillStyle='rgba(255,210,122,.9)';
+    c2.fillRect(-16,-66, 32*(1-p.flaskT/.9), 4);
+  }
+  c2.restore();
+}
+// massive pale blade cut from titan bone
+function boneBlade(c2, x, y, len, dir){
+  // blade
+  c2.fillStyle = '#e8e2d2';
+  c2.beginPath();
+  c2.moveTo(x, y-3); c2.lineTo(x+dir*len, y-1.5);
+  c2.lineTo(x+dir*(len+7), y+1); c2.lineTo(x+dir*len, y+4.5); c2.lineTo(x, y+6);
+  c2.closePath(); c2.fill();
+  // marrow groove
+  c2.strokeStyle = '#b9b09a'; c2.lineWidth = 1.4;
+  c2.beginPath(); c2.moveTo(x+dir*4, y+1.5); c2.lineTo(x+dir*(len-6), y+1.5); c2.stroke();
+  // guard + wrapped grip
+  c2.fillStyle = '#4b3f30';
+  c2.fillRect(x-dir*2 - (dir<0?4:0), y-6, 4, 15);
+  c2.fillStyle = '#2b2318';
+  c2.fillRect(x-dir*12 - (dir<0?10:0), y-1, 10, 5);
+}
+function roundRectOn(c2,x,y,w,h,r){
+  c2.beginPath();
+  c2.moveTo(x+r,y); c2.arcTo(x+w,y,x+w,y+h,r); c2.arcTo(x+w,y+h,x,y+h,r);
+  c2.arcTo(x,y+h,x,y,r); c2.arcTo(x,y,x+w,y,r); c2.fill();
+}
+
+function drawHUD(frac){
+  bar(28, 26, 300, 14, player.hp/player.maxHp, '#c9303f', 'KAEL — VITALITY');
+  bar(28, 52, 230, 10, player.st/player.maxSt, '#3f9e6e', 'STAMINA');
+  for (let i=0;i<3;i++){
+    ctx.strokeStyle='#556184'; ctx.lineWidth=2;
+    ctx.strokeRect(28+i*26, 72, 18, 22);
+    if (i < player.flasks){ ctx.fillStyle='#ffd27a'; ctx.fillRect(31+i*26, 78, 12, 13); }
+  }
+  ctx.fillStyle='#8b93a3'; ctx.font='600 10px "IBM Plex Sans"'; ctx.textAlign='left';
+  ctx.fillText('TITAN-BLOOD  [E]', 28, 108);
+
+  ctx.textAlign='center';
+  ctx.font='700 13px Cinzel, serif';
+  ctx.fillStyle = frac>cur.phase2 ? '#ff5a4a' : '#ffd27a';
+  ctx.fillText(titan.enraged ? 'TOTALITY' : `ECLIPSE ${Math.floor(frac*100)}%`, W/2, 30);
+  ctx.strokeStyle='#39435a'; ctx.lineWidth=2; ctx.strokeRect(W/2-140, 38, 280, 8);
+  ctx.fillStyle = frac>cur.phase2 ? '#c9303f' : '#ff7a1a';
+  ctx.fillRect(W/2-140, 38, 280*frac, 8);
+
+  ctx.textAlign='right'; ctx.font='700 14px Cinzel, serif'; ctx.fillStyle='#c8ceda';
+  ctx.fillText(cur.name + ' — ' + cur.epi.toUpperCase(), W-28, 30);
+  let y = 44;
+  for (const key of ['lAnkle','rAnkle','heart']){
+    const part = titan.parts[key];
+    ctx.font='600 10px "IBM Plex Sans"';
+    ctx.fillStyle = part.dead ? '#5b6373' : '#8b93a3';
+    ctx.fillText(part.label + (part.dead?' — DESTROYED': part.plate>0?' — ARMORED':' — EXPOSED'), W-28, y+9);
+    const v = part.dead?0 : part.plate>0 ? part.plate/part.plateMax : part.core/part.coreMax;
+    const col = part.dead? '#39435a' : part.plate>0 ? '#8b93a3' : cur.pal.accent;
+    ctx.fillStyle='#151a26'; ctx.fillRect(W-238, y+14, 210, 7);
+    ctx.fillStyle=col; ctx.fillRect(W-238, y+14, 210*v, 7);
+    y += 32;
+  }
+
+  ctx.textAlign='center'; ctx.font='600 12px "IBM Plex Sans"'; ctx.fillStyle='#aab2c2';
+  let obj;
+  if (!legsBroken()) obj = `Shatter both ${cur.partLabels[0].split(' ')[1]} plates, then destroy the cores beneath`;
+  else if (!titan.parts.heart.dead) obj = titan.kneel>.85 ? `It falls — jump and strike the ${cur.partLabels[2]}` : 'It will fall again soon. Survive.';
+  else obj = '';
+  ctx.fillText(obj, W/2, H-16);
+}
+
+function bar(x,y,w,h,v,col,label){
+  ctx.fillStyle='#151a26'; ctx.fillRect(x,y,w,h);
+  ctx.fillStyle=col; ctx.fillRect(x,y,Math.max(0,w*v),h);
+  ctx.strokeStyle='#39435a'; ctx.lineWidth=1.5; ctx.strokeRect(x,y,w,h);
+  ctx.fillStyle='#8b93a3'; ctx.font='600 9px "IBM Plex Sans"'; ctx.textAlign='left';
+  ctx.fillText(label, x, y-4);
+}
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.fill();
+}
+
+// ============================================================ loop
+let last = 0;
+function loop(ts){
+  requestAnimationFrame(loop);
+  const dt = Math.min(.033, (ts-last)/1000 || .016); last = ts;
+  if (state !== 'play') return;
+  if (paused){ draw(); return; }
+  if (hitstop > 0){ hitstop -= dt; draw(); return; }
+  tGame += dt;
+  updatePlayer(dt);
+  updateTitan(dt);
+  updateRings(dt);
+  updateFx(dt);
+  draw();
+}
+requestAnimationFrame(loop);
+
+// ============================================================ flow + bestiary UI
+const titleEl = document.getElementById('title');
+const endEl = document.getElementById('end');
+document.getElementById('retryBtn').onclick = () => {
+  endEl.classList.add('hidden'); titleEl.classList.remove('hidden');
+  state = 'title'; buildBestiary();
+};
+
+function buildBestiary(){
+  const host = document.getElementById('bestiary');
+  host.innerHTML = '';
+  for (const T of TITANS){
+    const card = document.createElement('div');
+    card.className = 'card' + (slain[T.id] ? ' slain' : '');
+    card.tabIndex = 0;
+    card.innerHTML = `<div class="num">TITAN ${T.num}</div><h3>${T.name}</h3>
+      <div class="epi">${T.epi}</div>
+      <canvas width="170" height="86"></canvas>
+      <p>${T.desc}</p>
+      <div class="meta"><span>HEIGHT ${T.height}</span><span>${'✦'.repeat(TITANS.indexOf(T)+1)}</span></div>`;
+    const go = () => startHunt(T);
+    card.onclick = go;
+    card.onkeydown = e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); go(); } };
+    host.appendChild(card);
+    drawCardSilhouette(card.querySelector('canvas'), T);
+  }
+}
+
+// tiny silhouette per card
+function drawCardSilhouette(cv, T){
+  const c2 = cv.getContext('2d');
+  const w = cv.width, h = cv.height, pal = T.pal;
+  const g = c2.createLinearGradient(0,0,0,h);
+  g.addColorStop(0, `rgb(${pal.sky1[0]+8},${pal.sky1[1]+8},${pal.sky1[2]+10})`);
+  g.addColorStop(1, pal.sky2);
+  c2.fillStyle = g; c2.fillRect(0,0,w,h);
+  // little eclipse
+  c2.fillStyle = '#ffe9b8'; c2.beginPath(); c2.arc(24,18,9,0,7); c2.fill();
+  c2.fillStyle = pal.sky2; c2.beginPath(); c2.arc(20,18,8,0,7); c2.fill();
+  c2.fillStyle = pal.body;
+  if (T.id==='leviathan'){
+    c2.beginPath();
+    c2.moveTo(10,h); c2.quadraticCurveTo(40,18, 85,14); c2.quadraticCurveTo(140,20, 160,h);
+    c2.lineTo(120,h); c2.quadraticCurveTo(110,48, 85,46); c2.quadraticCurveTo(52,48, 48,h);
+    c2.closePath(); c2.fill();
+    c2.fillStyle = pal.edge;
+    for (let i=0;i<5;i++){ const k=i/4, fx=30+k*110;
+      c2.beginPath(); c2.moveTo(fx-4, 30); c2.lineTo(fx+3, 8); c2.lineTo(fx+10, 30); c2.fill(); }
+  } else {
+    c2.fillRect(58,34,54,30);           // torso
+    c2.fillRect(64,64,14,h-64); c2.fillRect(92,64,14,h-64); // legs
+    c2.fillRect(70,16,30,20);           // head
+    c2.fillStyle = pal.edge;
+    c2.beginPath(); c2.moveTo(70,20); c2.lineTo(58,6); c2.lineTo(74,14); c2.fill();
+    c2.beginPath(); c2.moveTo(100,20); c2.lineTo(112,6); c2.lineTo(96,14); c2.fill();
+    if (T.id==='colossus'){ c2.fillStyle=T.pal.dark;
+      for(let i=0;i<4;i++) c2.fillRect(60+i*13, 22-((i*7)%12), 8, 14+((i*7)%12)); }
+    if (T.id==='forest'){ c2.strokeStyle=pal.edge; c2.lineWidth=3;
+      c2.beginPath(); c2.moveTo(72,16); c2.lineTo(62,2); c2.moveTo(98,16); c2.lineTo(108,2); c2.stroke(); }
+  }
+  // eyes
+  c2.save(); c2.shadowColor=pal.eye2; c2.shadowBlur=8; c2.fillStyle=pal.eye;
+  c2.beginPath();
+  if (T.id==='leviathan') c2.arc(70,24,3,0,7);
+  else { c2.arc(78,24,3,0,7); c2.arc(92,24,3,0,7); }
+  c2.fill(); c2.restore();
+  // human for scale
+  c2.fillStyle = '#c8ceda';
+  c2.fillRect(16, h-9, 2.4, 7);
+}
+
+function startHunt(T){
+  resetGame(T);
+  titleEl.classList.add('hidden');
+  endEl.classList.add('hidden');
+  state = 'play';
+  if (AC && AC.state==='suspended') AC.resume();
+}
+
+function endGame(won){
+  if (state !== 'play') return;
+  state = 'end';
+  if (won) slain[cur.id] = true;
+  const frac = Math.min(1, tGame/cur.eclipse);
+  const T = document.getElementById('endTitle');
+  const allDead = TITANS.every(x => slain[x.id]);
+  T.textContent = won ? (allDead ? 'THE FIVE HUNTS ARE DONE' : 'TITAN FELLED') : 'THE HUNT FAILS';
+  T.classList.toggle('defeat', !won);
+  document.getElementById('endLore').textContent = won
+    ? (allDead
+        ? 'All five Titans lie still. The rune on Kael\u2019s arm fades to a scar. Somewhere beneath the bone-fields, something older than the Titans opens one eye. (New Game+ awaits in the full design.)'
+        : cur.kill)
+    : `Kael\u2019s body joins the bone-fields beneath ${cur.name.toLowerCase().replace(' titan','')}\u2019s shadow. The eclipse crawls on. In one hundred days, this Titan becomes a world-ending threat.`;
+  document.getElementById('stTime').innerHTML = `Expedition length: <b>${Math.floor(tGame/60)}m ${Math.floor(tGame%60)}s</b>`;
+  document.getElementById('stEclipse').innerHTML = `Eclipse at ${won?'kill':'death'}: <b>${Math.floor(frac*100)}%</b>${frac>=1?' (totality reached)':''}`;
+  document.getElementById('stFlasks').innerHTML = `Flasks used: <b>${player.flasksUsed} / 3</b>`;
+  endEl.classList.remove('hidden');
+}
+
+// ---- boot
+resetGame(TITANS[0]);
+buildBestiary();
+// Kael portrait on the title screen
+(function(){
+  const pc = document.getElementById('kaelPortrait');
+  const c2 = pc.getContext('2d');
+  c2.fillStyle = '#0b0e16'; c2.fillRect(0,0,84,120);
+  c2.save(); c2.translate(0,0); c2.scale(1.5,1.5);
+  drawKael(c2, 28, 74, {face:1, atkT:0, hurtT:0, dodgeT:0, vx:0, flaskT:0, dead:false}, true);
+  c2.restore();
+})();
+draw();
+</script>
+</body>
+</html>
