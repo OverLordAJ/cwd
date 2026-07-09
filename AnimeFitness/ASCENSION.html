@@ -468,6 +468,8 @@ img{max-width:100%}
     <div class="xpbar"><div class="xpfill" id="bigXpFill"></div></div>
     <div class="lbl"><span id="bigXpText">0 XP</span><span id="bigLvlText">LV 1</span></div>
   </div>
+  <button class="btn danger reveal" id="resetBtn" style="display:block;max-width:560px;margin:28px auto 0">⟲ RESET STORY ARC (LEVEL RESET)</button>
+  <p class="section-sub reveal" style="margin:10px auto 0;font-size:.85rem">Wipes XP, levels, streaks, badges, sessions and timeline — a true New Game.</p>
 </section>
 
 <!-- ACHIEVEMENTS -->
@@ -846,6 +848,25 @@ const clashObs=new IntersectionObserver(es=>es.forEach(e=>{
   clashObs.disconnect();
 }),{threshold:.35});
 clashObs.observe(document.getElementById("clash"));
+
+/* ================= LEVEL RESET ================= */
+let resetArmed=null;
+document.getElementById("resetBtn").onclick=()=>{
+  const b=document.getElementById("resetBtn");
+  if(!resetArmed){
+    b.textContent="⚠ THIS WIPES ALL PROGRESS — CLICK AGAIN TO CONFIRM";
+    resetArmed=setTimeout(()=>{resetArmed=null;b.textContent="⟲ RESET STORY ARC (LEVEL RESET)";},4000);
+    return;
+  }
+  clearTimeout(resetArmed); resetArmed=null;
+  S={xp:0,sessions:{1:0,2:0,3:0},checks:{},checkDate:today(),streak:0,lastWorkout:null,
+     badges:[],fastStart:null,fastTarget:16,fastsDone:0,timeline:[],calcDone:false,ascended:false};
+  save();
+  b.textContent="⟲ RESET STORY ARC (LEVEL RESET)";
+  renderGrids(); updateCounts(); renderTimeline(); renderBadges(); refresh(); fastTick();
+  document.getElementById("calcResult").classList.remove("show");
+  toast("⟲ NEW GAME — back to Episode 1. LV 1, Origin Arc.");
+};
 
 /* ================= INIT ================= */
 renderGrids(); updateCounts(); renderTimeline(); checkBadges(); refresh(); fastTick(); save();
