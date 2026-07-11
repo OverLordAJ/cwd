@@ -318,6 +318,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     </div>
     <nav id="mainNav">
       <button data-view="home" class="active">⌂ Home</button>
+      <button data-view="sources">🗂 Build Sources</button>
       <button data-view="characters">Characters</button>
       <button data-view="builds">Build System</button>
       <button data-view="fusion">Fusion Lab</button>
@@ -338,6 +339,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <h2>THE DEFINITIVE <em>ANIME → ELDEN RING</em> PLATFORM</h2>
       <p>A complete anime gaming universe: character encyclopedia, researched build conversions, an AI fusion lab, full boss & weapon databases, progression tracking, competitive rankings and a living historical archive. Built to grow — never to be finished.</p>
       <div class="hero-btns">
+        <button class="btn" onclick="go('sources')">🗂 Build Sources Hub</button>
         <button class="btn" onclick="go('characters')">Explore Characters</button>
         <button class="btn alt" onclick="go('fusion')">Enter the Fusion Lab</button>
       </div>
@@ -359,6 +361,14 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- BUILD SOURCES -->
+  <section class="view" id="view-sources">
+    <div class="sec-title">BUILD SOURCES — MASTER HUB</div>
+    <div class="sec-sub">Every build, character, guide and database entry on the Nexus originates from one of these source categories. The structure scales from 100 builds to several thousand.</div>
+    <div class="chips" id="srcTabs"></div>
+    <div id="srcContent"></div>
   </section>
 
   <!-- CHARACTERS -->
@@ -1442,7 +1452,7 @@ const TALISMANS = [
 
 /* ============ ACHIEVEMENTS ============ */
 const ACHIEVEMENTS = [
-{id:"first_steps", icon:"🗺️", name:"Tarnished Otaku", desc:"Visit every section of the Nexus.", check:(s)=>["home","characters","builds","fusion","database","rankings","tracker","achievements","analytics","archive"].every(v=>s.visited.includes(v))},
+{id:"first_steps", icon:"🗺️", name:"Tarnished Otaku", desc:"Visit every section of the Nexus.", check:(s)=>["home","sources","characters","builds","fusion","database","rankings","tracker","achievements","analytics","archive"].every(v=>s.visited.includes(v))},
 {id:"anime_master", icon:"📖", name:"Anime Master", desc:"View 10 different character profiles.", check:(s)=>s.viewedChars.length>=10},
 {id:"scholar", icon:"🎓", name:"Lore Scholar", desc:"View 25 character profiles across the multiverse.", check:(s)=>s.viewedChars.length>=25},
 {id:"franchise_hopper", icon:"🌐", name:"Franchise Hopper", desc:"View characters from 8 different franchises.", check:(s)=>new Set(s.viewedChars.map(id=>{const c=CHARACTERS.find(x=>x.id===id);return c?c.franchise:null;}).filter(Boolean)).size>=8},
@@ -2142,6 +2152,168 @@ const ALIASES = {artoriapendragon:"saber", emiyaarcher:"archer emiya counter gua
  alicesynthesisthirty:"alice", princesshibana:"hibana", renjiyomo:"yomo", silverfang:"bang", wrath2003:"wrath",
  shirouemiya:"emiya shirou", zenonzogratis:"zenon", dantezogratis:"dante", vanicazogratis:"vanica"};
 
+/* ============ BUILD SOURCES — CONTENT EXPANSION (Inuyasha + Elden Ring + DLC casts) ============ */
+Object.assign(FRANCHISE_COLORS, {
+ "Inuyasha":["#b91c1c","#fbbf24"],
+ "Elden Ring":["#d4af37","#1c1917"],
+ "Shadow of the Erdtree":["#a16207","#292524"]
+});
+const ROSTER3 = {
+"Inuyasha":[
+["Inuyasha","Main Protagonist","greatsword","Half-Demon · Tessaiga","The half-demon son of a great dog demon — a fang blade that cuts a hundred demons per swing, and a temper that cuts everything else.","Wind Scar · Backlash Wave · Adamant Barrage","Bloodhound's Fang — Tessaiga, the transforming fang blade"],
+["Kagome","Secondary Protagonist","archer","Sacred Arrows · Shikon Sight","A modern schoolgirl down a well and five hundred years — sacred arrows that purify what they pierce.","Sacred Arrow · Purification · Jewel Sensing","Erdtree Bow (Sacred) — arrows of purification"],
+["Miroku","Secondary Protagonist","cleric","Buddhist Arts · Wind Tunnel","The cursed monk — a black hole sealed in his right palm, dignity sealed considerably less tightly.","Wind Tunnel · Sacred Sutras · Staff Arts"],
+["Sango","Secondary Protagonist","spear","Demon Slayer Arts · Hiraikotsu","The last demon slayer of her village — a giant bone boomerang and a grief she carries like armor.","Hiraikotsu Throw · Hidden Blade · Slayer Tactics","Smithscript Greathammer — Hiraikotsu, it always returns"],
+["Kirara","Secondary Protagonist","dragoon","Demon Cat Transformation","Sango's companion — a small twin-tailed cat who becomes a flying, flame-wreathed sabertooth at need.","Flame Form · Flight · Feline Loyalty"],
+["Sesshomaru","Rival","katana","Full Demon · Poison Claws","Inuyasha's full-demon half-brother — lethal elegance, a healing blade he resents, and growth he denies.","Poison Claws · Bakusaiga · Meido Zangetsuha"],
+["Naraku","Villain","venom","Miasma · Shapeshifting","The spider hanyou born from a bandit's envy — miasma, puppets and betrayal woven into one web.","Miasma Cloud · Demon Puppetry · Barrier Web"],
+["Kikyo","Anti-Hero","archer","Sacred Priestess Arts","The priestess who guarded the jewel and loved a half-demon — resurrected into clay and unfinished business.","Sacred Arrow · Soul Collectors · Sealing Shot"]],
+"Elden Ring":[
+["Vagabond","Main Protagonist","greatsword","Tarnished Origin — Knight","A knight exiled from the Lands Between — the classic quality start: sword, shield, and stubbornness.","Square Off · Knight Training · Quality Arms"],
+["Samurai","Main Protagonist","katana","Tarnished Origin — Ronin","The Land of Reeds wanderer — Uchigatana, longbow, and the best early-game kit in the class list.","Unsheathe · Ronin Archery · Land of Reeds Arts"],
+["Confessor","Main Protagonist","paladin","Tarnished Origin — Inquisitor","A church assassin with a blade and incantations — stealth sanctified.","Assassin's Approach · Sacred Blade · Confession"],
+["Hero","Main Protagonist","greatsword","Tarnished Origin — Chieftain","A badlands chieftain with a battleaxe and nothing to prove — raw strength as an origin story.","Wild Strikes · Chieftain's Roar · Badlands Might"],
+["Prisoner","Main Protagonist","spellblade","Tarnished Origin — Iron Mask","A noble imprisoned behind an iron mask — rapier and glintstone, elegance with a record.","Impaling Thrust · Magic Glintblade · Iron Mask"],
+["Astrologer","Main Protagonist","sorcerer","Tarnished Origin — Stargazer","A scholar who reads fate in the stars — the pure sorcery start from which every mage grows.","Glintstone Pebble · Starlight · Scholar's Path"],
+["Melina","Mentor","pyromancer","Kindling Maiden · Destined Death","The maiden who offers an accord — guidance, grace-turned-purpose, and a burning oath at the mountaintop.","Grace Guidance · Kindling · Destined Death Oath"],
+["Ranni","Legendary","sorcerer","Empyrean · Dark Moon","The witch who stole her own death — four arms, one doll, and an age of stars waiting at the end.","Dark Moon · Spirit Calling · Age of Stars","Dark Moon Greatsword — her final gift"],
+["Blaidd","Secondary Protagonist","greatsword","Half-Wolf Shadow","Ranni's loyal shadow — a wolf-man whose blade and howl both break long before his faith does.","Royal Greatsword Slam · Wolf's Howl · Shadow's Duty","Royal Greatsword — the half-wolf's frost blade"],
+["Rogier","Secondary Protagonist","spellblade","Glintblade Sorcery","The affable sorcerer-swordsman digging beneath Stormveil for truths that eventually dig back.","Glintblade Phalanx · Rapier Arts · Black Knife Research","Rogier's Rapier — his own elegant blade"],
+["Fia","Anti-Hero","deathmage","Deathbed Companion","The deathbed companion who hugs warmth from champions — mother, in her way, to those Death abandoned.","Baldachin's Blessing · Deathbed Embrace · Twinned Curse"],
+["Iron Fist Alexander","Secondary Protagonist","tank","Living Jar Warrior","The great warrior jar — a vessel of heroes' remains rolling cheerfully toward a worthy end.","Jar Slam · Oil Coating · Warrior's Contents"],
+["Millicent","Secondary Protagonist","twinblade","Scarlet Rot Bloodline","Malenia's scattered self — a swordswoman outdueling the rot in her veins with borrowed prosthesis and pride.","Prosthesis Flurry · Rotten Resistance · Unalloyed Purpose"],
+["Malenia","Legendary","katana","Scarlet Rot Goddess · Blade of Miquella","The undefeated blade — a life spent sealing rot inside herself, spent again in one word: Miquella.","Waterfowl Dance · Scarlet Aeonia · Remembrance Duel","Hand of Malenia — the goddess's own blade"],
+["Radahn","Legendary","gravity","Gravity Mastery · Starscourge","The Starscourge general — he learned gravity magic so he would never have to abandon his skinny horse.","Gravity Crash · Starcaller Cry · Meteor Descent","Starscourge Greatsword x2 — the general's paired blades"],
+["Morgott","Villain","bleed","Omen King · Cursed Blood","The omen king who defended a capital that despised him — cursed blades from cursed blood, duty to the last.","Cursed-Blood Slice · Spectral Arsenal · Regal Roar","Morgott's Cursed Sword — the omen king's blade"],
+["Mohg","Villain","bleed","Lord of Blood · Bloodflame","Morgott's twin who chose the other path — a bloodflame dynasty built around a sleeping consort.","Bloodboon Ritual · Nihil · Trident Sweep","Mohgwyn's Sacred Spear — the dynasty's trident"],
+["Godrick","Villain","greatsword","Grafting","The last golden lineage's least — grafting greatness onto himself one borrowed limb at a time.","Grafted Dragon · Storm Axe · Graft Slam","Axe of Godrick — the grafted lord's axe"],
+["Rykard","Villain","pyromancer","Blasphemy · Serpent Devouring","The lord who fed himself to a serpent to devour the very gods — family dinner, redefined.","Taker's Flames · Serpent Devour · Blasphemous Rite","Blasphemous Blade — his own god-devouring sword"],
+["Godfrey","Legendary","greatsword","First Elden Lord","The first Elden Lord — banished when he ran out of enemies, returned when the world made more.","Earthshaker Axe · Hoarah Loux Within · Lord's Stomp","Axe of Godfrey — the first lord's axe"],
+["Hoarah Loux","Legendary","fists","Warrior King Unchained","Godfrey with the lion removed — the warrior who set down his crown, his axe and his restraint.","Regal Roar · Earthshaker Grab · Warrior's Suplex"],
+["Maliketh","Legendary","deathmage","Black Blade · Destined Death","Marika's shadowbound beast — Destined Death sealed inside his own blade, loyalty sealed deeper.","Black Blade Arc · Destined Death · Beast Clergy","Maliketh's Black Blade — Destined Death itself"],
+["Radagon","Legendary","paladin","Golden Order · Red Hair","The second Elden Lord who is also the queen — a hammer that repairs the Ring by breaking everything else.","Rune Hammer · Golden Order Incants · Law of Regression","Marika's Hammer — the rune-mending hammer"],
+["Queen Marika","Legendary","cleric","Numen Goddess · Elden Ring Vessel","The eternal queen who shattered the thing she embodied — every war in the story is her sentence fragment.","Rune Shatter · Golden Edicts · Godhood"],
+["Placidusax","Legendary","dragoon","Dragonlord · Twin Storms","The two-headed dragonlord waiting outside time for a god who fled — lightning wears his crown now.","Twin Lightning · Time Warp · Dragonlord's Roar"]],
+"Shadow of the Erdtree":[
+["Messmer","Villain","spear","Base Serpent · Cursed Flame","Marika's hidden son — the impaler whose flame crusade scorched the Land of Shadow off the maps.","Serpent Dive · Flame Cascade · Base Serpent Release","Spear of the Impaler — Messmer's flame spear"],
+["Needle Knight Leda","Anti-Hero","paladin","Miquella's Devotion","Miquella's sworn blade — devotion so pure it starts deleting allies the moment doubt appears.","Needle Thrust · Swift Slash · Charmed Resolve","Milady (Sacred) — the Needle Knight's light greatsword"],
+["Sir Ansbach","Secondary Protagonist","archer","Blood Lord's Former Servant","Mohg's former right hand — courtly menace retired into wisdom, a bow that remembers dynasty work.","Retaliatory Volley · Blood Bond · Old Loyalties","Ansbach's Longbow — the old servant's bow"],
+["Redmane Freyja","Secondary Protagonist","greatsword","Radahn's Redmane","A Redmane veteran who followed war across the shadow — Radahn's soldier to the last ember.","Redmane Cleave · War Veteran's Stance · General's Memory"],
+["Hornsent","Anti-Hero","katana","Hornsent Vengeance","A warrior of the tower people — vengeance against Messmer carried like scripture, horns held high.","Great Katana Arts · Divine Beast Rites · Vengeance Oath"],
+["Thiollier","Anti-Hero","venom","St. Trina Devotion","The poison-sipping devotee of St. Trina — sleep as sacrament, nightshade as communion.","Concoction · Sleep Mist · Trina's Whisper","Velvet Sword of St. Trina — sleep given an edge"],
+["Dryleaf Dane","Mentor","fists","Dryleaf Arts","The monk who speaks only through his fists — challenge him properly and learn the whole vocabulary.","Palm Blast · Dryleaf Whirlwind · Monk's Silence"],
+["Bayle the Dread","Villain","dragoon","Dread Dragon","The dragon that maimed Placidusax and got worshipped for it — hatred with a wingspan.","Dread Flame · Lightning Ram · Dragon Duel"],
+["Midra","Villain","madness","Frenzied Flame Lord","The lord of frenzy who held the flame at bay for an age — until visitors insisted otherwise.","Frenzied Flame Release · Madness Sweep · Abyssal Vision","Greatsword of Damnation — the frenzy lord's blade"],
+["Rellana","Legendary","spellblade","Twin Moon Knight","Rennala's sister who followed Messmer into shadow — two blades, two moons, zero explanations offered.","Twin Moons · Glintblade Trio · Moon-and-Flame Stance","Rellana's Twin Blades — magic and flame paired"],
+["Romina","Villain","venom","Saint of the Bud","The saint who sheltered rot when the flame came — bloomed into something the flame could not burn.","Bud Summoning · Rot Pirouette · Poleblade Dance","Poleblade of the Bud — the saint's rot poleblade"],
+["Metyr","Villain","sorcerer","Mother of Fingers","The fallen star that birthed the Fingers — a god's broken telephone still transmitting static.","Finger Beam · Star Rain · Microcosm"],
+["Promised Consort Radahn","Legendary","gravity","Miquella's Promised Lord","Radahn dragged back through a vow he may never have made — the final duel of the Land of Shadow.","Lord's Cleave · Light Trails · Promised Vow","Greatsword of Radahn (Lord) — the consort's paired blades"]]
+};
+Object.entries(ROSTER3).forEach(([fr, list])=>{
+  list.forEach(e=>{
+    const [name,cat,archId,ps,bio,tech,wOver]=e;
+    const arch=ARCHETYPES[archId], h=hashN(name);
+    const techs=tech.split(" · ");
+    const mkGear=(arr)=>{ const g=arr.slice(); if(wOver) g[0]=wOver; return g; };
+    const isER = fr!=="Inuyasha";
+    const builds=[
+      {name:(isER?"Canon Lore — RL150":"Lore Accurate — RL150"), level:150, type:"Lore · "+arch.label, primary:true,
+       stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.lore), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon: archId==="summoner"?"Black Knife Tiche +10":"—",
+       notes:(isER?"Canon "+name+": built from what the Lands Between actually show us — ":"Lore-accurate "+name+": ")+arch.lore_note+" Signature focus: "+techs[0]+"."},
+      {name:"PvE Optimized — RL150", level:150, type:"PvE · "+arch.label,
+       stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.pve), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"Mimic Tear +10",
+       notes:"PvE-optimized: efficiency over cosplay. Mimic Tear support, encounter-swapped talismans, and "+techs[0]+" as the boss-killing core."},
+      {name:"PvP Optimized — RL125", level:125, type:"PvP · "+arch.label,
+       stats:spreadStats(Object.assign({},arch.w,{VIG:arch.w.VIG+3}),125), weapons:mkGear(arch.gear.pvp), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"—",
+       notes:"PvP duelist tuned for the RL125 meta: higher Vigor weighting, honest neutral game, and "+techs[0]+" as the kill condition."}
+    ];
+    CHARACTERS.push({
+      id:slug(name), name, anime:fr, franchise:fr, category:cat,
+      powerSystem:ps, archetype:arch.label, difficulty:arch.diff,
+      rating: Math.round((isER? 8.2+(h%12)/10 : 7.8+(h%12)/10)*10)/10,
+      popularity: 60+(h%35),
+      banner: FRANCHISE_COLORS[fr]||["#8b5cf6","#0f172a"],
+      bio, personality:CATEGORY_PERSONA[cat], combat:arch.combat,
+      techniques:techs, transformations:[], allies:[], enemies:[], battles:[], quote:"",
+      builds, deep:false
+    });
+  });
+});
+
+/* ============ BUILD SOURCES — HUB DATA ============ */
+const PARTIES=[
+ {name:"Inuyasha Party", members:["inuyasha","kagome","miroku","sango","kirara"], desc:"The feudal fairy tale — fang blade frontline, sacred arrows, sutras and a flaming demon cat."},
+ {name:"Team 7", members:["naruto","sasuke","sakuraharuno","kakashihatake"], desc:"The Hidden Leaf's most dysfunctional, most legendary genin cell."},
+ {name:"Straw Hat Crew", members:["luffy","zoro","sanji","nami","usopp"], desc:"The future Pirate King's vanguard — fists, blades, kicks, weather and lies about bravery."},
+ {name:"Demon Slayer Squad", members:["tanjiro","zenitsuagatsuma","inosukehashibira","nezukokamado"], desc:"The Kamado unit — water, thunder, beast and one demon on the right side."},
+ {name:"Z Fighters", members:["goku","vegeta","gohan","piccolo"], desc:"Earth's last line of defense, held together by rivalry and senzu beans."},
+ {name:"Survey Corps Elite", members:["eren","mikasaackerman","arminarlert","levi"], desc:"Humanity's wings — the shield, the blade, the mind and the storm."},
+ {name:"Jujutsu Tech First Years", members:["gojo","yujiitadori","megumifushiguro","nobarakugisaki"], desc:"Three students and the Honored One — Tokyo's cursed-energy problem solvers."},
+ {name:"Akatsuki Strike Cell", members:["itachi","kisame","deidara","pain"], desc:"Villain draft: genjutsu, chakra-eating blade, explosive art and a god complex."}];
+const FEXT_BUILDS=[
+ ["Barbarian","Strength","Greataxe + Wild Strikes, heavy armor stance-breaking","guts",4.6],
+ ["Berserker","Strength","Greatsword + Lion's Claw, the classic colossal loop","guts",4.8],
+ ["Colossal Knight","Strength","Colossal sword + Bull-Goat poise wall","asta",4.5],
+ ["Colossal Crusher","Strength","Giant-Crusher pancake build, charged R2s","saitama",4.7],
+ ["Death Knight","Strength","Death's Poker + dark aesthetic, ghostflame bursts","kakuzu",4.4],
+ ["Dark Knight","Strength","Occult greatsword, Bloodhound Step mixups","zabuza",4.3],
+ ["Tower Knight","Strength","Fingerprint shield + poke — the immovable object","allforone",4.2],
+ ["Archer","Dexterity","Black Bow + Barrage, mobile ranged kiting","usopp",4.1],
+ ["Samurai","Dexterity","Uchigatana + Unsheathe, bleed counters","kenshin",4.8],
+ ["Sword Saint","Dexterity","Nagakiba + katana arts at max Dex","kenshin",4.7],
+ ["Rime Ronin","Dexterity","Cold katana, frost procs into big punishes","brook",4.4],
+ ["Stormblade Samurai","Dexterity","Stormcaller katana, wind-art pressure","yamisukehiro",4.3],
+ ["Battlemage","Intelligence","Carian sword sorceries + melee hybrid","sasuke",4.6],
+ ["Carian Knight","Intelligence","Carian Knight's Sword + Greatblade Phalanx","rellana",4.5],
+ ["Mage","Intelligence","Pure caster leveling path, Meteorite → Lusat's","gojo",4.7],
+ ["Sorcerer","Intelligence","Comet spam + Terra Magica burst windows","gojo",4.8],
+ ["Spellblade","Intelligence","Moonveil quickdraw + Glintblade traps","sasuke",4.9],
+ ["Crusader","Faith","Sacred greatsword + Golden Vow support","escanor",4.6],
+ ["Dragon Priest","Faith","Dragon Communion breath artillery","kaido",4.5],
+ ["Pyromancer","Faith","Fire incants + Flame Art blade","rengoku".replace("rengoku","kyojurorengoku"),4.7],
+ ["Golden Champion","Faith","Erdtree incants, Discus and holy smite","escanor",4.4],
+ ["Bloodblade","Arcane","Reduvia + bloodflame, early-game terror","alucard",4.6],
+ ["Blood Dancer","Arcane","Rivers of Blood, Lord of Blood's Exultation","zoro",4.8],
+ ["Grim Reaper","Arcane","Scythe + Occult, deathflame flavor","makima",4.5],
+ ["Scarlet Spear","Arcane","Mohgwyn's Sacred Spear bleed dynasty","mohg",4.7],
+ ["Devonia's Hammer","DLC","Devonia's Vessel + Crucible aspects","gyomeihimejima",4.5],
+ ["Fire Knight Impaler","DLC","Fire Knight greatsword + Messmer flame arts","messmer",4.7],
+ ["Messmer Flame","DLC","Spear of the Impaler + serpent incants","messmer",4.8],
+ ["Shadowblade","DLC","Backhand blades + Blind Spot dodges","levi",4.9],
+ ["Swordsman of St. Trina","DLC","Sleep procs + Velvet Sword crits","thiollier",4.4]];
+const CHALLENGES=[
+ {name:"RL1 — Level One Wretch", icon:"1️⃣", rules:"Never level up. Club and rags to the Elden Throne. Every boss is a skill check with no excuses.", rec:["rimuru","saitama"], diff:5},
+ {name:"No Armor", icon:"🩲", rules:"Zero armor pieces, ever. Fashion is a shield for the weak. Bonus honor: no Erdtree's Favor.", rec:["goku","saitama"], diff:4},
+ {name:"Consumables Only", icon:"🫙", rules:"Damage only from pots, knives, boluses and crafted items. The Jar Cannon is your boss weapon.", rec:["deidara","usopp"], diff:5},
+ {name:"Bow Only", icon:"🏹", rules:"Bows and greatbows exclusively — no melee, no magic. Barrage is your entire moveset.", rec:["kagome","sinon","uryuishida"], diff:4},
+ {name:"Shield Only", icon:"🛡", rules:"Kill everything with shield bashes and Shield Crash. The wall fights back.", rec:["alphonseelric","reinerbraun"], diff:3},
+ {name:"Summon Only", icon:"🌑", rules:"You may never attack. Spirit ashes and NPC summons do all damage while you dodge and cheer.", rec:["jinwoo","megumifushiguro","kankuro"], diff:3},
+ {name:"Fists Only", icon:"👊", rules:"Dryleaf Arts / caestus only, no infusions above Standard. One-punch philosophy, several-punch reality.", rec:["saitama","goku","jotaro"], diff:3},
+ {name:"No Roll", icon:"🧍", rules:"The roll button does not exist. Block, strafe, jump or die. Poise is your religion.", rec:["gyomeihimejima","kenpachizaraki"], diff:5}];
+const FUSION_FEATURED=[
+ ["inuyasha","blaidd","Two half-beast swordsmen howling at different moons."],
+ ["naruto","radahn","The jinchūriki inherits gravity — his clones now orbit."],
+ ["ichigo","maliketh","Substitute soul reaper meets actual Destined Death."],
+ ["guts","godfrey","The Black Swordsman with the first lord's stomp."],
+ ["sasuke","messmer","Amaterasu meets the base serpent — one flame, two grudges."],
+ ["jinwoo","ranni","The Shadow Monarch weds the age of stars. Arise, moonlight."],
+ ["saitama","hoarahloux","Two men who stopped needing weapons. The arena weeps."],
+ ["rimuru","rennala".replace("rennala","ranni"),"The slime absorbs an Empyrean. Great Sage is very excited."]];
+const META_CATS=[
+ {id:"pve", label:"PvE Meta", desc:"Highest boss-clear ceilings this patch — sustain, stagger and summon synergy.",
+  pick:c=>c.rating*0.7+(5-c.difficulty)*0.55, note:"Blasphemous Blade sustain, Mimic Tear pressure and bleed colossals still rule PvE in 1.16."},
+ {id:"pvp", label:"PvP Meta", desc:"RL125 duel and invasion tier list — poise damage, roll-catches and burst windows.",
+  pick:c=>(c.builds.some(b=>b.type.includes("PvP"))?1:0.7)*(c.rating*0.75+c.difficulty*0.35), note:"Backhand Blades, Star Fists and cursed-blood katanas define the current duel meta."},
+ {id:"dlc", label:"DLC Meta", desc:"Strongest builds using Shadow of the Erdtree weapons and talismans.",
+  pick:c=>c.builds.some(b=>b.weapons.join(" ").match(/Backhand|Dryleaf|Bloodfiend|Rellana|Milady|Impaler|Smithscript|Great Katana|Damnation/))?c.rating:0, note:"Dryleaf Arts and Backhand Blades made martial-arts builds top-tier for the first time."},
+ {id:"beginner", label:"Beginner Meta", desc:"Lowest difficulty, highest forgiveness — great first characters.",
+  pick:c=>(6-c.difficulty)*1.6+c.rating*0.35, note:"High Vigor, big poise and simple gameplans: colossal strength and faith sustain."},
+ {id:"speedrun", label:"Speedrun Meta", desc:"Any% logic: movement, one-shot setups and skip-friendly kits.",
+  pick:c=>({sasuke:10,gojo:9.6,saitama:9.4,minatonamikaze:9.9,levi:9.2,jinwoo:9.0,hit:9.1,killuazoldyck:9.3}[c.id]||c.rating*0.6), note:"Terra Magica one-shots and dash-cancel movement — the run is over before the boss theme drops."}];
+
 const FRANCHISES = ["All", ...Object.keys(FRANCHISE_COLORS).filter(f=>CHARACTERS.some(c=>c.franchise===f))];
 /* Legality pass: no build may spend more points than its Rune Level allows (level+79).
    Over-budget hand-tuned specs get trimmed from their largest non-Vigor stat. */
@@ -2156,13 +2328,337 @@ CHARACTERS.forEach(c=>c.builds.forEach(b=>{
   }
 }));
 
+/* ============ BUILD SOURCES — MASTER HUB ENGINE ============ */
+const SOURCE_TABS=[["anime","⚔ Anime Builds"],["parties","👥 Anime Parties"],["erchars","🏰 ER Characters"],["dlcsrc","🌒 DLC Builds"],["fextralife","📚 Fextralife Archive"],["fusionsrc","⚗️ Fusion Builds"],["community","🌍 Community"],["random","🎲 Randomizer"],["meta","📈 Meta Builds"],["challenge","💀 Challenge Runs"],["loresrc","📜 Lore Builds"]];
+let srcTab="anime";
+function srcGo(t){
+  srcTab=t;
+  document.querySelectorAll("#srcTabs .chip").forEach(c=>c.classList.toggle("active",c.dataset.src===t));
+  document.getElementById("srcContent").innerHTML=SRC_RENDER[t]();
+}
+function renderSourceTabs(){
+  document.getElementById("srcTabs").innerHTML=SOURCE_TABS.map(([id,label])=>
+    `<div class="chip ${id===srcTab?'active':''}" data-src="${id}" onclick="srcGo('${id}')">${label}</div>`).join("");
+}
+function charBtn(id,label){
+  const c=CHARACTERS.find(x=>x.id===id);
+  return c?`<button class="btn" style="padding:5px 12px;font-size:11px;margin:3px 4px 3px 0" onclick="openChar('${id}')">${esc(label||c.name)}</button>`:"";
+}
+function goCharsFiltered(fr,cat){
+  charFranchise=fr||"All"; charFilter=cat||"All";
+  renderCharFilters(); renderChars(); go("characters");
+}
+
+/* ---- Team synergy engine ---- */
+function roleOf(c){
+  if(/Legion|Faith Caster|Communion/.test(c.archetype)||c.builds[0].summon.includes("Tiche")) return "Support";
+  const s=c.builds[0].stats;
+  if(s.INT>=30||s.FTH>=30||s.ARC>=30) return "Caster";
+  if(s.STR>=s.DEX && (s.VIG+s.END)>=70) return "Frontline";
+  if(s.DEX>s.STR) return "Skirmisher";
+  return "Flex";
+}
+function analyzeParty(ids){
+  const members=ids.map(id=>CHARACTERS.find(c=>c.id===id)).filter(Boolean);
+  if(members.length<2) return null;
+  const roles=members.map(roleOf), uniq=[...new Set(roles)];
+  const avg=members.reduce((n,c)=>n+c.rating,0)/members.length;
+  const sameFr=new Set(members.map(m=>m.franchise)).size===1;
+  const synergy=Math.min(10, Math.round((avg*0.62 + uniq.length*1.15 + (sameFr?0.9:0.3))*10)/10);
+  return {members,roles,uniq,avg,sameFr,synergy};
+}
+function partyCard(p,i){
+  const a=analyzeParty(p.members); if(!a) return "";
+  return `<div class="panel" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h3 style="margin-bottom:4px">${esc(p.name)}</h3>
+      <span class="pill gold">Synergy ${a.synergy}/10</span>
+    </div>
+    <p style="font-size:12px;color:var(--txt-dim);margin-bottom:12px">${esc(p.desc)} ${a.sameFr?'<span class="pill weak">Same-universe bond bonus</span>':''}</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+      ${a.members.map((m,j)=>`<div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:7px 12px;cursor:pointer" onclick="openChar('${m.id}')">
+        <div class="char-emblem" style="position:static;width:30px;height:30px;font-size:13px;background:linear-gradient(135deg,${m.banner[0]},${m.banner[1]})">${esc(m.name[0])}</div>
+        <div><b style="font-size:12px">${esc(m.name)}</b><div style="font-size:10px;color:var(--txt-dim)">${a.roles[j]} · ${m.rating}</div></div>
+      </div>`).join("")}
+    </div>
+    <div style="font-size:12px;color:var(--txt-dim);margin-bottom:10px">Role coverage: ${a.uniq.map(r=>`<span class="pill gold">${r}</span>`).join(" ")} (${a.uniq.length}/4 roles) · Avg rating ${a.avg.toFixed(1)}</div>
+    <button class="btn alt" style="padding:8px 16px;font-size:12px" onclick="simulateParty(${i})">▶ Simulate PvE Run</button>
+    <div id="sim_${i}" style="margin-top:10px"></div>
+  </div>`;
+}
+function simulateParty(i){
+  const p = i==="custom" ? {name:"Custom Team", members:getCustomTeam()} : PARTIES[i];
+  const a=analyzeParty(p.members);
+  if(!a){ toast("Pick at least 2 different characters."); return; }
+  const boss=BOSSES[hashN(p.name+Date.now().toString().slice(-4))%BOSSES.length];
+  const power=a.synergy+a.avg*0.25;
+  const log=[];
+  log.push(`— ${p.name} challenges <b style="color:var(--gold2)">${esc(boss.name)}</b> (${esc(boss.loc)}) —`);
+  a.members.forEach((m,j)=>{
+    const verbs={Frontline:"holds aggro and stance-breaks with",Skirmisher:"weaves through combos, punishing with",Caster:"bombards from range with",Support:"anchors the team, opening with",Flex:"adapts mid-fight using"};
+    log.push(`${esc(m.name)} ${verbs[a.roles[j]]} <i>${esc(m.techniques[0])}</i>.`);
+  });
+  const roll=(hashN(p.name)+boss.name.length)%10;
+  const win=power+roll*0.15>=8.6;
+  const close=power+roll*0.15>=7.9;
+  log.push(win?`<b style="color:var(--green)">VICTORY</b> — ${esc(boss.name)} falls. ${a.uniq.length===4?"Full role coverage trivialized the fight.":"Solid teamwork carried the gaps in coverage."}`
+    : close?`<b style="color:#fbbf24">NARROW DEFEAT</b> — phase 2 broke the formation. One more role covered (${["Frontline","Skirmisher","Caster","Support"].find(r=>!a.uniq.includes(r))||"Support"}) likely flips this.`
+    :`<b style="color:#fca5a5">WIPE</b> — ${esc(boss.name)} was unbothered. Raise the roster's average rating or diversify roles.`);
+  const el=document.getElementById("sim_"+i);
+  if(el) el.innerHTML=`<div class="build-note" style="font-size:12px;line-height:2">${log.join("<br>")}</div>`;
+}
+function getCustomTeam(){
+  return [1,2,3,4].map(n=>{ const el=document.getElementById("teamSel"+n); return el?el.value:null; }).filter(v=>v&&v!=="none");
+}
+function analyzeCustomTeam(){
+  const ids=[...new Set(getCustomTeam())];
+  const el=document.getElementById("customTeamOut");
+  const a=analyzeParty(ids);
+  if(!a){ el.innerHTML=`<div class="empty">Pick at least two different characters.</div>`; return; }
+  el.innerHTML=partyCard({name:"Your Custom Team", members:ids, desc:"Assembled in the Anime Team Builder."},"custom");
+}
+
+/* ---- Community builds ---- */
+function commAll(){ S.community=S.community||[]; return S.community; }
+function commSave(){
+  const name=document.getElementById("cbName").value.trim();
+  const base=document.getElementById("cbBase").value;
+  const gear=document.getElementById("cbGear").value.trim();
+  const notes=document.getElementById("cbNotes").value.trim();
+  if(!name||!gear){ toast("Give your build a name and its core gear."); return; }
+  commAll().push({id:Date.now(), name, base, gear, notes, stars:[], comments:[]});
+  save(); srcGo("community"); toast("🌍 Build published: "+name);
+}
+function commRate(id,n){
+  const b=commAll().find(x=>x.id===id); if(!b) return;
+  b.stars.push(n); save(); srcGo("community");
+}
+function commComment(id){
+  const el=document.getElementById("cmt_"+id); if(!el||!el.value.trim()) return;
+  const b=commAll().find(x=>x.id===id); if(!b) return;
+  b.comments.push(el.value.trim()); save(); srcGo("community");
+}
+function commDelete(id){
+  S.community=commAll().filter(x=>x.id!==id); save(); srcGo("community");
+}
+function commShare(id){
+  const b=commAll().find(x=>x.id===id); if(!b) return;
+  const txt=JSON.stringify(b,null,1);
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(()=>toast("📋 Build JSON copied — share it anywhere."),()=>toast("Copy failed — select and copy manually."));
+  else toast("Clipboard unavailable in this browser.");
+}
+function commAvg(b){ return b.stars.length? (b.stars.reduce((x,y)=>x+y,0)/b.stars.length):0; }
+
+/* ---- Randomizer ---- */
+const RANDOM_ARMORS=["Bull-Goat set","Black Knife set","Land of Reeds set","Raging Wolf set","White Mask + flowing black","Snow Witch ensemble","Fire Knight set","Night's Cavalry set","Champion bare-knuckle garb","Royal Remains set"];
+function rngPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function randomOut(html){ document.getElementById("randomOut").innerHTML=`<div class="fusion-card" style="margin-top:14px">${html}</div>`; }
+function randChar(){ const c=rngPick(CHARACTERS); randomOut(`<h3>🎲 ${esc(c.name)}</h3><div class="ftitle">${esc(c.franchise)} · ${esc(c.archetype)}</div><p style="font-size:13px;text-align:center;margin-bottom:12px">${esc(c.bio)}</p><div style="text-align:center">${charBtn(c.id,"Open Full Profile →")}</div>`); }
+function randWeapon(){ const w=rngPick(WEAPONS); randomOut(`<h3>🎲 ${esc(w.name)}</h3><div class="ftitle">${esc(w.type)} · ${esc(w.req)} · scaling ${esc(w.scaling)}</div><p style="font-size:13px;text-align:center">${esc(w.note)}</p><p style="font-size:12px;color:var(--txt-dim);text-align:center;margin-top:8px">Found: ${esc(w.loc)}</p>`); }
+function randArmor(){ randomOut(`<h3>🎲 ${esc(rngPick(RANDOM_ARMORS))}</h3><div class="ftitle">Your fashion has been decided. No appeals.</div>`); }
+function randSpell(){
+  const pool=[...new Set(Object.values(ARCHETYPES).flatMap(a=>a.spells).filter(s=>s!=="—"))];
+  randomOut(`<h3>🎲 ${esc(rngPick(pool))}</h3><div class="ftitle">Build your entire identity around this. Good luck.</div>`);
+}
+function randParty(){
+  const ids=[...CHARACTERS].sort(()=>Math.random()-.5).slice(0,4).map(c=>c.id);
+  const a=analyzeParty(ids);
+  randomOut(`<h3>🎲 RANDOM PARTY</h3><div class="ftitle">Synergy ${a.synergy}/10 — fate has spoken</div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${a.members.map((m,j)=>charBtn(m.id,m.name+" ("+a.roles[j]+")")).join("")}</div>`);
+}
+function randChallenge(){
+  const b=rngPick(BOSSES), c=rngPick(CHARACTERS), ch=rngPick(CHALLENGES);
+  randomOut(`<h3>🎲 BOSS CHALLENGE</h3><div class="ftitle">Sealed by the RNG gods</div>
+   <p style="font-size:14px;text-align:center;line-height:2">Defeat <b style="color:var(--gold2)">${esc(b.name)}</b><br>as <b>${esc(c.name)}</b> (${esc(c.archetype)})<br>under the rule: <b style="color:#fca5a5">${esc(ch.name)}</b></p>
+   <p style="font-size:12px;color:var(--txt-dim);text-align:center">${esc(ch.rules)}</p>
+   <div style="text-align:center;margin-top:8px">${charBtn(c.id,"Study the build →")}</div>`);
+}
+function randFullBuild(){
+  const c=rngPick(CHARACTERS), w=rngPick(WEAPONS), t1=rngPick(TALISMANS), t2=rngPick(TALISMANS);
+  randomOut(`<h3>🎲 FRANKENBUILD</h3><div class="ftitle">The lab takes no responsibility</div>
+   <div class="gear-grid">
+     <div class="gear-box"><h6>Identity</h6><span>${esc(c.name)} — ${esc(c.franchise)}</span></div>
+     <div class="gear-box"><h6>Weapon</h6><span>${esc(w.name)}</span></div>
+     <div class="gear-box"><h6>Talismans</h6><span>${esc(t1.name)}</span><span>${esc(t2.name)}</span></div>
+     <div class="gear-box"><h6>Armor</h6><span>${esc(rngPick(RANDOM_ARMORS))}</span></div>
+   </div>`);
+}
+
+/* ---- Tab renderers ---- */
+const SRC_RENDER={
+anime(){
+  const animeChars=CHARACTERS.filter(c=>c.franchise!=="Elden Ring"&&c.franchise!=="Shadow of the Erdtree");
+  const cats=["Main Protagonist","Rival","Villain","Secondary Protagonist","Legendary","Mentor","Anti-Hero"];
+  return `<div class="panel" style="margin-bottom:14px"><h3>⚔ ANIME BUILDS — THE CORE COLLECTION</h3>
+   <p style="font-size:13px;color:var(--txt-dim);line-height:1.7;margin-bottom:14px">Transform anime characters into playable Elden Ring builds. ${animeChars.length} characters across ${new Set(animeChars.map(c=>c.franchise)).size} franchises, each with Lore Accurate, PvE and PvP versions.</p>
+   <div class="chips">${cats.map(cat=>`<div class="chip" onclick="goCharsFiltered('All','${cat}')">${cat}s (${animeChars.filter(c=>c.category===cat).length})</div>`).join("")}</div>
+   <div style="margin-top:10px">${["inuyasha","kagome","naruto","sasuke","goku","vegeta","ichigo","ainz","rimuru"].map(id=>charBtn(id)).join("")}</div></div>
+  <div class="info-grid">
+   <div class="info-box"><h5>Anime Accuracy Rating</h5><p>Every build is scored for faithfulness — see the 🎯 Anime Accuracy board in Rankings.</p></div>
+   <div class="info-box"><h5>Transformation System</h5><p>Deep Dossier characters carry full transformation lines (Sage Mode, Bankai, Gear 5, Susanoo) mapped to buffs and physick setups.</p></div>
+   <div class="info-box"><h5>Anime Team Builder</h5><p>Assemble full parties with synergy scoring in the <a onclick="srcGo('parties')" style="cursor:pointer">Anime Parties</a> tab.</p></div>
+   <div class="info-box"><h5>Anime Matchups</h5><p>Every boss in the ER Database includes a "who wins" anime matchup with build links.</p></div>
+   <div class="info-box"><h5>Roadmap Content</h5><p>Movie Characters · Manga-Exclusive · Light Novel Characters — the roster format scales to 1,000+.</p></div>
+  </div>
+  <div style="margin-top:14px"><button class="btn" onclick="goCharsFiltered('All','All')">Browse the Full Encyclopedia →</button></div>`;
+},
+parties(){
+  const opts=`<option value="none">— empty slot —</option>`+Object.entries(CHARACTERS.reduce((g,c)=>{(g[c.franchise]=g[c.franchise]||[]).push(c);return g;},{})).sort((a,b)=>a[0].localeCompare(b[0])).map(([f,cs])=>`<optgroup label="${esc(f)}">`+cs.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")+`</optgroup>`).join("");
+  return `<div class="panel" style="margin-bottom:16px"><h3>🛠 ANIME TEAM BUILDER</h3>
+   <p style="font-size:12px;color:var(--txt-dim);margin-bottom:12px">Pick up to four characters — the engine scores role coverage, universe bonds and combined rating, then simulates a boss run.</p>
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-bottom:12px">
+     ${[1,2,3,4].map(n=>`<select id="teamSel${n}" class="searchbar" style="margin:0;cursor:pointer">${opts}</select>`).join("")}
+   </div>
+   <button class="btn alt" onclick="analyzeCustomTeam()">⚡ Analyze Team</button>
+   <div id="customTeamOut" style="margin-top:14px"></div></div>
+  <h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px;margin-bottom:12px">FEATURED ANIME PARTIES</h3>
+  ${PARTIES.map((p,i)=>partyCard(p,i)).join("")}`;
+},
+erchars(){
+  const groups=[["Tarnished Origins",["vagabond","samurai","confessor","hero","prisoner","astrologer"]],
+   ["NPC Builds",["melina","ranni","blaidd","rogier","fia","ironfistalexander","millicent"]],
+   ["Demigod Builds",["malenia","radahn","morgott","mohg","godrick","rykard"]],
+   ["Legendary Builds",["godfrey","hoarahloux","maliketh","radagon","queenmarika","placidusax"]]];
+  return `<div class="panel" style="margin-bottom:14px"><h3>🏰 ELDEN RING CHARACTER BUILDS</h3>
+   <p style="font-size:13px;color:var(--txt-dim);line-height:1.7">Recreate every major figure of the Lands Between — each with a Canon Lore build drawn from what the game actually shows, plus PvE and PvP versions. All 25 live in the encyclopedia under the Elden Ring franchise.</p></div>
+  ${groups.map(([g,ids])=>`<div class="panel" style="margin-bottom:12px"><h3 style="font-size:14px">${g}</h3><div style="margin-top:8px">${ids.map(id=>charBtn(id)).join("")}</div></div>`).join("")}
+  <div class="info-grid">
+   <div class="info-box"><h5>Lore Accuracy</h5><p>Canon builds use each figure's actual weapons — Hand of Malenia, Maliketh's Black Blade, Marika's Hammer.</p></div>
+   <div class="info-box"><h5>NPC Quest Integration</h5><p>Boss strategy entries reference questline allies; summons map to their canonical companions.</p></div>
+   <div class="info-box"><h5>Boss Simulations</h5><p>Run any of these against the boss database via the Team Builder — demigod vs demigod is legal and encouraged.</p></div>
+   <div class="info-box"><h5>Character Matchups</h5><p>Fuse ER figures with anime characters in the Fusion Lab — Naruto + Radahn is one click away.</p></div>
+  </div>
+  <div style="margin-top:14px"><button class="btn" onclick="goCharsFiltered('Elden Ring','All')">Browse the Elden Ring Roster →</button></div>`;
+},
+dlcsrc(){
+  const dlcW=WEAPONS.filter(w=>w.dlc), dlcB=BOSSES.filter(b=>b.dlc);
+  return `<div class="panel" style="margin-bottom:14px"><h3>🌒 DLC BUILDS — SHADOW OF THE ERDTREE</h3>
+   <p style="font-size:13px;color:var(--txt-dim);line-height:1.7">Dedicated Land of Shadow content: 13 DLC figures with full builds, plus DLC equipment and boss data.</p></div>
+  <div class="panel" style="margin-bottom:12px"><h3 style="font-size:14px">DLC Characters</h3><div style="margin-top:8px">${["messmer","needleknightleda","siransbach","redmanefreyja","hornsent","thiollier","dryleafdane"].map(id=>charBtn(id)).join("")}</div></div>
+  <div class="panel" style="margin-bottom:12px"><h3 style="font-size:14px">DLC Boss Builds</h3><div style="margin-top:8px">${["baylethedread","midra","rellana","romina","metyr","promisedconsortradahn"].map(id=>charBtn(id)).join("")}</div></div>
+  <div class="two-col">
+   <div class="panel"><h3 style="font-size:14px">DLC Weapons in the Database</h3>${dlcW.map(w=>`<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:12px"><b>${esc(w.name)}</b> <span style="color:var(--txt-dim)">— ${esc(w.note)}</span></div>`).join("")}</div>
+   <div class="panel"><h3 style="font-size:14px">DLC Boss Encounters</h3>${dlcB.map(b=>`<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer" onclick="go('database')"><b>${esc(b.name)}</b> <span style="color:var(--txt-dim)">— ${esc(b.loc)} · HP ${esc(b.hp)}</span></div>`).join("")}</div>
+  </div>
+  <div style="margin-top:14px"><button class="btn" onclick="goCharsFiltered('Shadow of the Erdtree','All')">Browse the DLC Roster →</button></div>`;
+},
+fextralife(){
+  const cats=[...new Set(FEXT_BUILDS.map(b=>b[1]))];
+  return `<div class="panel" style="margin-bottom:14px"><h3>📚 FEXTRALIFE BUILD ARCHIVE</h3>
+   <p style="font-size:13px;color:var(--txt-dim);line-height:1.7">Fextralife maintains one of the largest Elden Ring build collections — beginner through DLC. This archive recreates their named archetypes and maps each to its closest anime conversion. Originals live at <a href="https://eldenring.wiki.fextralife.com/Builds" target="_blank">eldenring.wiki.fextralife.com/Builds</a>.</p></div>
+  ${cats.map(cat=>`<div class="panel" style="margin-bottom:12px"><h3 style="font-size:14px">${cat} Builds</h3>
+   <div style="overflow-x:auto"><table><thead><tr><th>Build</th><th>Core Kit</th><th>Anime Conversion Match</th><th>Community ★</th></tr></thead><tbody>
+   ${FEXT_BUILDS.filter(b=>b[1]===cat).map(b=>{const c=CHARACTERS.find(x=>x.id===b[3]);return `<tr><td><b>${esc(b[0])}</b></td><td style="color:var(--txt-dim)">${esc(b[2])}</td><td>${c?`<span class="pill gold" style="cursor:pointer" onclick="openChar('${c.id}')">${esc(c.name)}</span>`:"—"}</td><td style="color:var(--gold2)">${b[4].toFixed(1)}</td></tr>`;}).join("")}
+   </tbody></table></div></div>`).join("")}
+  <div class="info-box"><h5>Build Evolution History</h5><p>Patch-by-patch version tracking for flagship builds lives in the <a onclick="go('archive')" style="cursor:pointer">Historical Archive</a>.</p></div>`;
+},
+fusionsrc(){
+  return `<div class="panel" style="margin-bottom:14px"><h3>⚗️ FUSION BUILDS</h3>
+   <p style="font-size:13px;color:var(--txt-dim);line-height:1.7">Combine any two of the ${CHARACTERS.length} characters — anime × anime, anime × Elden Ring, or demigod × demigod. ${(CHARACTERS.length*(CHARACTERS.length-1)/2).toLocaleString()} combinations with hybrid stats, merged arsenals, ratings and generated lore.</p>
+   <button class="btn alt" onclick="go('fusion')">Open the Fusion Lab →</button></div>
+  <h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px;margin-bottom:12px">FEATURED FUSIONS</h3>
+  <div class="char-grid">${FUSION_FEATURED.map(([a,b,d])=>{
+    const ca=CHARACTERS.find(c=>c.id===a), cb=CHARACTERS.find(c=>c.id===b);
+    if(!ca||!cb) return "";
+    return `<div class="char-card" onclick="loadFusion('${a}','${b}')">
+      <div class="char-banner" style="background:linear-gradient(120deg,${ca.banner[0]},${cb.banner[1]})"><div class="char-emblem">⚗</div></div>
+      <div class="char-body"><h4 style="font-size:14px">${esc(ca.name.split(" ")[0])} × ${esc(cb.name.split(" ")[0])}</h4>
+      <div class="anime">${esc(ca.franchise)} × ${esc(cb.franchise)}</div>
+      <p style="font-size:11px;color:var(--txt-dim);line-height:1.5">${esc(d)}</p></div></div>`;}).join("")}</div>`;
+},
+community(){
+  const list=commAll().slice().sort((a,b)=>commAvg(b)-commAvg(a));
+  const opts=CHARACTERS.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("");
+  return `<div class="panel" style="margin-bottom:16px"><h3>🌍 PUBLISH A COMMUNITY BUILD</h3>
+   <p style="font-size:12px;color:var(--txt-dim);margin-bottom:12px">Stored in your browser — rate, comment, and share as JSON. (Live multi-user publishing arrives with the backend phase.)</p>
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:8px">
+     <input id="cbName" class="searchbar" style="margin:0" placeholder="Build name (e.g. Moonlit Berserker)">
+     <select id="cbBase" class="searchbar" style="margin:0;cursor:pointer">${opts}</select>
+   </div>
+   <input id="cbGear" class="searchbar" style="margin:0 0 8px;max-width:100%" placeholder="Core gear — weapons, talismans, spells">
+   <textarea id="cbNotes" class="searchbar" style="margin:0 0 10px;max-width:100%;min-height:60px;resize:vertical" placeholder="Playstyle notes (optional)"></textarea>
+   <button class="btn alt" onclick="commSave()">📤 Publish Build</button></div>
+  <h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px;margin-bottom:12px">LEADERBOARD (${list.length})</h3>
+  ${list.length? list.map((b,i)=>`<div class="panel" style="margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+      <b style="font-family:var(--font-display);font-size:15px">${i<3?["🥇","🥈","🥉"][i]+" ":""}${esc(b.name)}</b>
+      <span style="font-size:12px;color:var(--gold2)">${b.stars.length?commAvg(b).toFixed(1)+" ★ ("+b.stars.length+")":"unrated"}</span></div>
+    <div style="font-size:12px;color:var(--txt-dim);margin:4px 0">Base: ${esc(b.base)} · ${esc(b.gear)}</div>
+    ${b.notes?`<div style="font-size:12px;margin:4px 0">${esc(b.notes)}</div>`:""}
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center">
+      <span style="font-size:11px;color:var(--txt-dim)">Rate:</span>
+      ${[1,2,3,4,5].map(n=>`<button class="stat-btn" style="width:auto;padding:2px 8px" onclick="commRate(${b.id},${n})">${n}★</button>`).join("")}
+      <button class="stat-btn" style="width:auto;padding:2px 10px" onclick="commShare(${b.id})">📋 Share</button>
+      <button class="stat-btn" style="width:auto;padding:2px 10px;border-color:var(--red);color:#fca5a5" onclick="commDelete(${b.id})">✕</button></div>
+    ${b.comments.map(c=>`<div style="font-size:12px;color:var(--txt-dim);border-left:2px solid var(--gold-dim);padding-left:10px;margin-top:8px">💬 ${esc(c)}</div>`).join("")}
+    <div style="display:flex;gap:6px;margin-top:8px"><input id="cmt_${b.id}" class="searchbar" style="margin:0;flex:1" placeholder="Add a comment..."><button class="stat-btn" style="width:auto;padding:2px 12px" onclick="commComment(${b.id})">Post</button></div>
+  </div>`).join("") : `<div class="empty">No community builds yet — publish the first legend.</div>`}`;
+},
+random(){
+  return `<div class="panel"><h3>🎲 RANDOMIZER LAB</h3>
+   <p style="font-size:12px;color:var(--txt-dim);margin-bottom:14px">Surrender your build decisions to chaos. Each roll pulls live from the Nexus database.</p>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+     <button class="btn" onclick="randChar()">Random Character</button>
+     <button class="btn" onclick="randWeapon()">Random Weapon</button>
+     <button class="btn" onclick="randArmor()">Random Armor</button>
+     <button class="btn" onclick="randSpell()">Random Spell</button>
+     <button class="btn alt" onclick="randParty()">Random Party</button>
+     <button class="btn alt" onclick="randChallenge()">Random Boss Challenge</button>
+     <button class="btn alt" onclick="randFullBuild()">🧪 Full Frankenbuild</button>
+   </div>
+   <div id="randomOut"></div></div>`;
+},
+meta(){
+  return `<div class="panel" style="margin-bottom:14px"><h3>📈 META BUILDS — PATCH 1.16</h3>
+   <p style="font-size:12px;color:var(--txt-dim)">Computed live from the roster, weighted per category. Meta references grounded in current community tier lists.</p></div>
+  ${META_CATS.map(m=>{
+    const top=[...CHARACTERS].map(c=>({c,s:m.pick(c)})).sort((a,b)=>b.s-a.s).slice(0,5);
+    return `<div class="panel" style="margin-bottom:12px"><h3 style="font-size:14px">${m.label}</h3>
+     <p style="font-size:11px;color:var(--txt-dim);margin-bottom:10px">${m.desc}</p>
+     ${top.map((t,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px;cursor:pointer" onclick="openChar('${t.c.id}')">
+       <span style="font-family:var(--font-display);width:20px;color:${i===0?'var(--gold2)':'var(--txt-dim)'}">${i+1}</span>
+       <span style="flex:1">${esc(t.c.name)} <small style="color:var(--txt-dim)">· ${esc(t.c.archetype)}</small></span>
+       <b style="color:var(--gold2)">${t.s.toFixed(1)}</b></div>`).join("")}
+     <p style="font-size:11px;color:#a5f3fc;margin-top:10px">📌 ${m.note}</p></div>`;}).join("")}`;
+},
+challenge(){
+  return `<div class="panel" style="margin-bottom:14px"><h3>💀 CHALLENGE BUILDS</h3>
+   <p style="font-size:12px;color:var(--txt-dim)">Special rulesets for those who found the Lands Between too gentle. Recommended characters link to fitting builds.</p></div>
+  <div class="ach-grid">${CHALLENGES.map(ch=>`<div class="ach-card unlocked" style="flex-direction:column;align-items:stretch">
+    <div style="display:flex;gap:12px;align-items:center"><div class="ach-icon">${ch.icon}</div>
+    <div><b>${esc(ch.name)}</b><div class="stars" style="font-size:11px">${"★".repeat(ch.diff)}${"☆".repeat(5-ch.diff)}</div></div></div>
+    <p style="margin-top:10px">${esc(ch.rules)}</p>
+    <div style="margin-top:10px">${ch.rec.map(id=>charBtn(id)).join("")}</div></div>`).join("")}</div>`;
+},
+loresrc(){
+  const lore=CHARACTERS.flatMap(c=>c.builds.map((b,i)=>({c,b,i}))).filter(x=>/Lore|Canon/i.test(x.b.name)||/Lore/i.test(x.b.type));
+  const canon=lore.filter(x=>x.c.franchise==="Elden Ring"||x.c.franchise==="Shadow of the Erdtree");
+  const anime=lore.filter(x=>!canon.includes(x));
+  const row=x=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px;cursor:pointer" onclick="openChar('${x.c.id}')">
+    <div class="char-emblem" style="position:static;width:26px;height:26px;font-size:12px;background:linear-gradient(135deg,${x.c.banner[0]},${x.c.banner[1]})">${esc(x.c.name[0])}</div>
+    <span style="flex:1">${esc(x.c.name)} <small style="color:var(--txt-dim)">· ${esc(x.b.name)}</small></span><span class="pill gold">RL ${x.b.level}</span></div>`;
+  return `<div class="panel" style="margin-bottom:14px"><h3>📜 LORE BUILDS</h3>
+   <p style="font-size:12px;color:var(--txt-dim)">Accuracy over optimization — ${lore.length} builds where the character comes first and the meta apologizes. House rules included in each build's notes.</p></div>
+  <div class="two-col">
+   <div class="panel"><h3 style="font-size:14px">Canon Elden Ring (${canon.length})</h3><div style="max-height:420px;overflow-y:auto">${canon.map(row).join("")}</div></div>
+   <div class="panel"><h3 style="font-size:14px">Canon Anime (${anime.length})</h3><div style="max-height:420px;overflow-y:auto">${anime.slice(0,60).map(row).join("")}${anime.length>60?`<div class="empty" style="padding:12px">…and ${anime.length-60} more — every character has one.</div>`:""}</div></div>
+  </div>`;
+}
+};
+function loadFusion(a,b){
+  go("fusion");
+  document.getElementById("fuseA").value=a;
+  document.getElementById("fuseB").value=b;
+  runFusion();
+}
+
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
   set(s){ try{ localStorage.setItem("arnexus", JSON.stringify(s)); }catch(e){} }
 };
-let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}}, store.get());
-S.alloc=S.alloc||{};
+let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[]}, store.get());
+S.alloc=S.alloc||{}; S.community=S.community||[];
 function save(){ store.set(S); checkAchievements(); }
 
 function esc(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -2208,7 +2704,7 @@ function renderHeader(){
 function renderHome(){
   const stats=[
     {n:CHARACTERS.length,l:"Characters"},{n:totalBuilds,l:"Build Versions"},{n:BOSSES.length,l:"Bosses Documented"},
-    {n:WEAPONS.length,l:"Weapons Cataloged"},{n:TALISMANS.length,l:"Talismans"},{n:Object.keys(FRANCHISE_COLORS).length+"","l":"Franchises"},{n:(CHARACTERS.length*(CHARACTERS.length-1)/2).toLocaleString(),l:"Fusion Combinations"}
+    {n:WEAPONS.length,l:"Weapons Cataloged"},{n:TALISMANS.length,l:"Talismans"},{n:11,l:"Build Sources"},{n:Object.keys(FRANCHISE_COLORS).length+"","l":"Franchises"},{n:(CHARACTERS.length*(CHARACTERS.length-1)/2).toLocaleString(),l:"Fusion Combinations"}
   ];
   document.getElementById("dashGrid").innerHTML = stats.map(s=>
     `<div class="stat-card"><div class="num">${s.n}</div><div class="lbl">${s.l}</div></div>`).join("");
@@ -2639,7 +3135,7 @@ function toggleBuild(id){
 }
 function resetProgress(){
   if(!confirm("Reset ALL local progress — bosses, builds, fusions and achievements?")) return;
-  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}};
+  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[]};
   store.set(S); renderAll(); toast("Progress reset. A new Tarnished rises.");
 }
 
@@ -2689,6 +3185,7 @@ function renderAll(){
   renderRankChips(); renderRanks(); renderTracker(); renderAchievements(); renderAnalytics(); renderArchive();
 }
 renderAll();
+renderSourceTabs(); srcGo("anime");
 document.getElementById("lvlSlider").addEventListener("input",e=>setMyLevel(e.target.value));
 document.getElementById("lvlNum").addEventListener("change",e=>setMyLevel(e.target.value));
 (function initLevelWidget(){
