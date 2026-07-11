@@ -128,9 +128,12 @@ main{max-width:1400px;margin:0 auto;padding:28px 20px 80px}
 .stat-bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 20px;margin:12px 0}
 .sbar{display:flex;align-items:center;gap:8px;font-size:12px}
 .sbar .k{width:32px;color:var(--txt-dim);font-weight:700}
-.sbar .track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
-.sbar .fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold-dim),var(--gold2))}
-.sbar .v{width:26px;text-align:right;color:var(--gold2);font-weight:700}
+.sbar .track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;position:relative}
+.sbar .fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold-dim),var(--gold2));position:relative;transition:width .25s}
+.sbar .fill.cur{background:linear-gradient(90deg,var(--cyan),var(--purple))}
+.sbar .ghost{position:absolute;top:0;left:0;bottom:0;border-radius:4px;background:rgba(212,175,55,.28)}
+.sbar .v{width:46px;text-align:right;color:var(--gold2);font-weight:700;white-space:nowrap}
+.sbar .v small{color:var(--txt-dim);font-weight:400;font-size:9px}
 .gear-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:14px}
 .gear-box{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:13px}
 .gear-box h6{color:var(--purple);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px}
@@ -1553,9 +1556,25 @@ function renderChars(){
 }
 
 /* ============ CHARACTER MODAL ============ */
-function statBars(stats){
-  return `<div class="stat-bars">`+Object.entries(stats).map(([k,v])=>
-    `<div class="sbar"><span class="k">${k}</span><div class="track"><div class="fill" style="width:${Math.min(100,v/99*100)}%"></div></div><span class="v">${v}</span></div>`).join("")+`</div>`;
+function scaledStat(target, buildLevel, ml){
+  // Attribute progression: grow from a level-1 base toward the build's target spec,
+  // then keep growing past it — reaching the 99 hard cap in all eight at RL 713.
+  if(!buildLevel || buildLevel<=1) return target;
+  if(ml>=713) return 99;
+  if(ml>=buildLevel) return Math.min(99, Math.round(target + (99-target)*(ml-buildLevel)/(713-buildLevel)));
+  const base=Math.min(10,target);
+  return Math.round(base + (target-base)*Math.max(0,ml-1)/(buildLevel-1));
+}
+function statBars(stats, buildLevel){
+  const ml=S.myLevel||1;
+  return `<div class="stat-bars">`+Object.entries(stats).map(([k,v])=>{
+    const cur=buildLevel ? scaledStat(v,buildLevel,ml) : v;
+    const growing=buildLevel && cur<v;
+    return `<div class="sbar"><span class="k">${k}</span><div class="track">`+
+      (buildLevel?`<div class="ghost" style="width:${Math.min(100,v/99*100)}%"></div>`:"")+
+      `<div class="fill ${growing?'cur':''}" style="width:${Math.min(100,cur/99*100)}%"></div></div>`+
+      `<span class="v">${cur}${buildLevel&&cur!==v?`<small>/${v}</small>`:""}</span></div>`;
+  }).join("")+`</div>`;
 }
 function levelChip(b){
   const ml=S.myLevel||1;
@@ -1570,7 +1589,13 @@ function buildBlock(b){
     <span class="pill gold">RL ${b.level} · ${esc(b.type)}</span>
   </div>
   ${levelChip(b)}
-  ${statBars(b.stats)}
+  ${statBars(b.stats,b.level)}
+  <div style="font-size:11px;color:var(--txt-dim);margin-bottom:4px">${
+    (S.myLevel||1)>=713 ? "⬆ RL 713 — every attribute at the 99 hard cap."
+    : (S.myLevel||1)>b.level ? "Target spec exceeded — surplus levels distributed toward the 99 hard cap (faint gold = original RL "+b.level+" spec)."
+    : (S.myLevel||1)===b.level ? "✔ Exact target spec for this build."
+    : "Projected attributes at your RL "+(S.myLevel||1)+" — faint gold shows the RL "+b.level+" target. Drag your level to watch them grow."
+  }</div>
   <div class="gear-grid">
     <div class="gear-box"><h6>⚔ Weapons</h6>${b.weapons.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
     <div class="gear-box"><h6>🛡 Armor</h6>${b.armor.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
