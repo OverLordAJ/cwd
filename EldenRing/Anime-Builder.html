@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime Ring Nexus — Phase Omega</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0a12; --bg2:#12101c; --bg3:#1a1728; --panel:#161326;
+  --gold:#d4af37; --gold2:#f0d77b; --gold-dim:#8a7325;
+  --purple:#8b5cf6; --cyan:#22d3ee; --red:#ef4444; --green:#34d399;
+  --txt:#e8e4d8; --txt-dim:#9a94a8; --line:#2b2740;
+  --font-display:'Cinzel',serif; --font-body:'Inter',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--font-body);min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(139,92,246,.12),transparent),
+  radial-gradient(ellipse 60% 40% at 90% 10%,rgba(212,175,55,.07),transparent);}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:5px}
+a{color:var(--gold);text-decoration:none}
+
+/* ===== HEADER ===== */
+header{position:sticky;top:0;z-index:100;background:rgba(11,10,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.hd-inner{max-width:1400px;margin:0 auto;padding:0 20px}
+.hd-top{display:flex;align-items:center;justify-content:space-between;padding:14px 0 8px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-ring{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:900;color:var(--gold2);font-size:20px;
+  box-shadow:0 0 18px rgba(212,175,55,.4),inset 0 0 12px rgba(212,175,55,.25);background:radial-gradient(circle,rgba(212,175,55,.12),transparent)}
+.logo h1{font-family:var(--font-display);font-size:20px;letter-spacing:3px;color:var(--gold2);font-weight:700}
+.logo h1 span{color:var(--purple)}
+.logo small{display:block;font-family:var(--font-body);font-size:10px;letter-spacing:4px;color:var(--txt-dim);font-weight:500}
+.hd-stats{display:flex;gap:18px;font-size:11px;color:var(--txt-dim)}
+.hd-stats b{color:var(--gold);font-size:15px;display:block;font-family:var(--font-display)}
+nav{display:flex;gap:2px;overflow-x:auto;padding-bottom:0}
+nav button{background:none;border:none;color:var(--txt-dim);font-family:var(--font-body);font-size:13px;font-weight:600;
+  padding:12px 14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.2s;letter-spacing:.3px}
+nav button:hover{color:var(--txt)}
+nav button.active{color:var(--gold2);border-bottom-color:var(--gold)}
+
+/* ===== LAYOUT ===== */
+main{max-width:1400px;margin:0 auto;padding:28px 20px 80px}
+.view{display:none;animation:fadein .35s ease}
+.view.active{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-title{font-family:var(--font-display);font-size:26px;color:var(--gold2);letter-spacing:2px;margin-bottom:4px}
+.sec-sub{color:var(--txt-dim);font-size:13px;margin-bottom:22px}
+.divider{height:1px;background:linear-gradient(90deg,var(--gold-dim),transparent);margin:16px 0 22px}
+
+/* ===== HERO ===== */
+.hero{text-align:center;padding:48px 20px 40px;border:1px solid var(--line);border-radius:16px;margin-bottom:28px;
+  background:radial-gradient(ellipse 70% 90% at 50% 0%,rgba(139,92,246,.16),transparent),linear-gradient(180deg,var(--bg3),var(--bg2))}
+.hero h2{font-family:var(--font-display);font-size:clamp(26px,4.5vw,44px);letter-spacing:4px;color:var(--txt);
+  text-shadow:0 0 30px rgba(212,175,55,.35)}
+.hero h2 em{font-style:normal;color:var(--gold2)}
+.hero p{color:var(--txt-dim);max-width:640px;margin:14px auto 24px;font-size:14px;line-height:1.7}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:11px 22px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;border:1px solid var(--gold-dim);
+  background:linear-gradient(180deg,rgba(212,175,55,.18),rgba(212,175,55,.06));color:var(--gold2);transition:.2s;font-family:var(--font-body)}
+.btn:hover{box-shadow:0 0 16px rgba(212,175,55,.35);transform:translateY(-1px)}
+.btn.alt{border-color:var(--purple);color:#c4b5fd;background:linear-gradient(180deg,rgba(139,92,246,.2),rgba(139,92,246,.06))}
+.btn.alt:hover{box-shadow:0 0 16px rgba(139,92,246,.4)}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center;transition:.2s}
+.stat-card:hover{border-color:var(--gold-dim)}
+.stat-card .num{font-family:var(--font-display);font-size:30px;color:var(--gold2)}
+.stat-card .lbl{font-size:11px;color:var(--txt-dim);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+.home-cols{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}
+@media(max-width:900px){.home-cols{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.panel h3{font-family:var(--font-display);color:var(--gold);font-size:16px;letter-spacing:1.5px;margin-bottom:14px}
+
+/* ===== CHIPS / FILTERS ===== */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chip{padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg2);color:var(--txt-dim);
+  font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
+.chip:hover{border-color:var(--gold-dim);color:var(--txt)}
+.chip.active{background:linear-gradient(180deg,rgba(212,175,55,.25),rgba(212,175,55,.08));border-color:var(--gold);color:var(--gold2)}
+.searchbar{width:100%;max-width:420px;padding:11px 16px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);
+  color:var(--txt);font-family:var(--font-body);font-size:14px;margin-bottom:16px;outline:none;transition:.2s}
+.searchbar:focus{border-color:var(--gold-dim);box-shadow:0 0 12px rgba(212,175,55,.15)}
+
+/* ===== CHARACTER CARDS ===== */
+.char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.char-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:0;overflow:hidden;cursor:pointer;transition:.25s;position:relative}
+.char-card:hover{transform:translateY(-4px);border-color:var(--gold-dim);box-shadow:0 12px 30px rgba(0,0,0,.5),0 0 20px rgba(212,175,55,.12)}
+.char-banner{height:74px;position:relative;display:flex;align-items:flex-end;padding:10px 14px}
+.char-emblem{width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:900;font-size:22px;color:#fff;background:rgba(0,0,0,.35);text-shadow:0 1px 4px rgba(0,0,0,.6);
+  position:absolute;bottom:-24px;left:14px;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.char-body{padding:32px 14px 14px}
+.char-body h4{font-family:var(--font-display);font-size:16px;color:var(--txt);letter-spacing:.5px}
+.char-body .anime{font-size:11px;color:var(--txt-dim);margin:2px 0 8px}
+.tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:5px;margin-right:5px;margin-bottom:4px}
+.char-meta{display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--txt-dim)}
+.char-meta b{color:var(--gold2)}
+.stars{color:var(--gold)}
+
+/* ===== DETAIL MODAL ===== */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(5,4,10,.85);backdrop-filter:blur(6px);z-index:200;overflow-y:auto;padding:30px 16px}
+.modal-bg.open{display:block}
+.modal{max-width:900px;margin:0 auto;background:var(--bg2);border:1px solid var(--gold-dim);border-radius:16px;overflow:hidden;animation:fadein .3s}
+.modal-hd{padding:26px 28px 20px;position:relative}
+.modal-close{position:absolute;top:14px;right:16px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.25);color:#fff;
+  width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px}
+.modal-hd h2{font-family:var(--font-display);font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.modal-hd .sub{color:rgba(255,255,255,.85);font-size:13px;margin-top:4px}
+.modal-body{padding:24px 28px 30px}
+.mtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.mtab{padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:var(--bg3);color:var(--txt-dim);font-size:12px;font-weight:600;cursor:pointer}
+.mtab.active{border-color:var(--gold);color:var(--gold2);background:rgba(212,175,55,.1)}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:16px}
+.info-box{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:14px}
+.info-box h5{color:var(--gold);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-family:var(--font-display)}
+.info-box p,.info-box li{font-size:13px;line-height:1.65;color:var(--txt)}
+.info-box ul{list-style:none}
+.info-box li{padding:3px 0 3px 16px;position:relative}
+.info-box li:before{content:"◆";position:absolute;left:0;color:var(--gold-dim);font-size:8px;top:9px}
+.quote-box{border-left:3px solid var(--gold);padding:10px 16px;font-style:italic;color:var(--gold2);background:rgba(212,175,55,.06);border-radius:0 8px 8px 0;margin-bottom:16px;font-size:14px}
+
+/* ===== BUILD DISPLAY ===== */
+.build-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.stat-bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 20px;margin:12px 0}
+.sbar{display:flex;align-items:center;gap:8px;font-size:12px}
+.sbar .k{width:32px;color:var(--txt-dim);font-weight:700}
+.sbar .track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.sbar .fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold-dim),var(--gold2))}
+.sbar .v{width:26px;text-align:right;color:var(--gold2);font-weight:700}
+.gear-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:14px}
+.gear-box{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:13px}
+.gear-box h6{color:var(--purple);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px}
+.gear-box span{display:block;font-size:13px;padding:2px 0;color:var(--txt)}
+.build-note{background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.25);border-radius:10px;padding:13px;font-size:13px;line-height:1.65;color:#a5f3fc;margin-top:14px}
+
+/* ===== FUSION LAB ===== */
+.fusion-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;max-width:760px;margin:0 auto 24px}
+@media(max-width:700px){.fusion-wrap{grid-template-columns:1fr}}
+.fusion-sel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center}
+.fusion-sel select{width:100%;padding:11px;border-radius:8px;background:var(--bg2);color:var(--txt);border:1px solid var(--line);font-family:var(--font-body);font-size:14px;outline:none;cursor:pointer}
+.fusion-x{font-family:var(--font-display);font-size:34px;color:var(--purple);text-align:center;text-shadow:0 0 16px rgba(139,92,246,.6)}
+.fusion-result{max-width:860px;margin:0 auto}
+.fusion-card{background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(212,175,55,.08));border:1px solid var(--purple);border-radius:16px;padding:26px;animation:fadein .4s}
+.fusion-card h3{font-family:var(--font-display);font-size:24px;color:#c4b5fd;letter-spacing:2px;text-align:center}
+.fusion-card .ftitle{text-align:center;color:var(--gold2);font-size:13px;margin:4px 0 18px;font-style:italic}
+
+/* ===== TABLES / DB ===== */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:var(--gold);font-family:var(--font-display);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--gold-dim)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:rgba(212,175,55,.04)}
+.boss-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.boss-hd{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer;transition:.2s}
+.boss-hd:hover{background:rgba(212,175,55,.05)}
+.boss-hd h4{font-family:var(--font-display);font-size:16px;color:var(--txt)}
+.boss-hd .loc{font-size:11px;color:var(--txt-dim);margin-top:2px}
+.boss-detail{display:none;padding:0 20px 20px;border-top:1px solid var(--line)}
+.boss-card.open .boss-detail{display:block;padding-top:16px}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;margin:2px 4px 2px 0}
+.pill.weak{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.35)}
+.pill.resist{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.pill.gold{background:rgba(212,175,55,.12);color:var(--gold2);border:1px solid var(--gold-dim)}
+
+/* ===== RANKINGS ===== */
+.rank-row{display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;transition:.2s}
+.rank-row:hover{border-color:var(--gold-dim)}
+.rank-num{font-family:var(--font-display);font-size:22px;width:40px;text-align:center;color:var(--txt-dim)}
+.rank-row:nth-child(1) .rank-num{color:var(--gold2);text-shadow:0 0 12px rgba(212,175,55,.5)}
+.rank-row:nth-child(2) .rank-num{color:#cbd5e1}
+.rank-row:nth-child(3) .rank-num{color:#d97706}
+.rank-info{flex:1}
+.rank-info b{display:block;font-size:14px}
+.rank-info small{color:var(--txt-dim);font-size:11px}
+.rank-score{font-family:var(--font-display);font-size:18px;color:var(--gold2)}
+
+/* ===== TRACKER ===== */
+.prog-wrap{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:20px}
+.prog-track{height:14px;background:var(--bg);border-radius:7px;overflow:hidden;margin:10px 0 6px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold2));border-radius:7px;transition:width .4s;box-shadow:0 0 10px rgba(212,175,55,.5)}
+.check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.check-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:13px;transition:.2s;user-select:none}
+.check-item:hover{border-color:var(--gold-dim)}
+.check-item.done{border-color:var(--green);background:rgba(52,211,153,.06)}
+.check-item .box{width:18px;height:18px;border:2px solid var(--txt-dim);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.check-item.done .box{border-color:var(--green);background:var(--green);color:#052e1e}
+.check-item.done span{color:var(--green)}
+
+/* ===== ACHIEVEMENTS ===== */
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.ach-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;gap:14px;align-items:flex-start;transition:.2s}
+.ach-card.unlocked{border-color:var(--gold);background:linear-gradient(135deg,rgba(212,175,55,.1),transparent);box-shadow:0 0 16px rgba(212,175,55,.15)}
+.ach-card.locked{opacity:.55;filter:grayscale(.6)}
+.ach-icon{font-size:28px;width:48px;height:48px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--line)}
+.ach-card.unlocked .ach-icon{border-color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.3)}
+.ach-card b{font-size:14px;display:block;font-family:var(--font-display);letter-spacing:.5px}
+.ach-card p{font-size:12px;color:var(--txt-dim);margin-top:4px;line-height:1.5}
+
+/* ===== ANALYTICS ===== */
+.bar-chart{margin-top:8px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:12px}
+.bar-row .bl{width:130px;text-align:right;color:var(--txt-dim);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-row .btrack{flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden}
+.bar-row .bfill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:700;color:#0b0a12;min-width:24px;transition:width .6s}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:850px){.two-col{grid-template-columns:1fr}}
+
+/* ===== ARCHIVE ===== */
+.ver-line{border-left:2px solid var(--gold-dim);margin-left:8px;padding-left:22px}
+.ver-item{position:relative;padding-bottom:20px}
+.ver-item:before{content:"";position:absolute;left:-28px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(212,175,55,.6)}
+.ver-item h5{font-family:var(--font-display);color:var(--gold2);font-size:14px}
+.ver-item small{color:var(--txt-dim);font-size:11px}
+.ver-item p{font-size:13px;color:var(--txt);margin-top:5px;line-height:1.6}
+
+/* ===== TOAST ===== */
+#toast{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast-msg{background:var(--bg3);border:1px solid var(--gold);color:var(--gold2);padding:13px 20px;border-radius:10px;font-size:13px;font-weight:600;
+  box-shadow:0 8px 30px rgba(0,0,0,.6),0 0 16px rgba(212,175,55,.25);animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+
+footer{border-top:1px solid var(--line);padding:28px 20px;text-align:center;color:var(--txt-dim);font-size:12px;line-height:1.8}
+footer b{color:var(--gold);font-family:var(--font-display);letter-spacing:2px}
+.empty{color:var(--txt-dim);text-align:center;padding:40px;font-size:14px}
+.lvl-progress{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--txt-dim);flex-wrap:wrap}
+.lvl-progress.reached{color:var(--green);font-weight:700}
+.lvl-bar{flex:1;max-width:220px;min-width:120px;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.lvl-bar div{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px;transition:width .3s}
+input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cursor:pointer}
+#lvlWidget{position:fixed;bottom:20px;left:20px;z-index:150;background:var(--bg3);border:1px solid var(--gold-dim);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.65),0 0 14px rgba(212,175,55,.12);min-width:220px;user-select:none}
+#lvlWidget .lw-head{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:grab;font-family:var(--font-display);color:var(--gold2);font-size:14px;letter-spacing:1px;touch-action:none}
+#lvlWidget .lw-head:active{cursor:grabbing}
+#lvlWidget #lwToggle{margin-left:auto;color:var(--txt-dim);font-size:11px}
+#lvlWidget .lw-body{padding:0 14px 12px}
+#lvlWidget .lw-body.hidden{display:none}
+#lvlWidget input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer}
+#lvlWidget .lw-row{display:flex;gap:5px;margin-top:8px}
+#lvlWidget .lw-row input{flex:1;min-width:56px;background:var(--bg2);border:1px solid var(--line);border-radius:6px;color:var(--gold2);font-weight:700;text-align:center;padding:6px;font-family:var(--font-body)}
+#lvlWidget .lw-row button{background:var(--bg2);border:1px solid var(--gold-dim);color:var(--gold2);border-radius:6px;padding:6px 9px;cursor:pointer;font-weight:700;font-size:12px}
+#lvlWidget .lw-row button:hover{background:rgba(212,175,55,.15)}
+#lvlWidget .lw-hint{font-size:10px;color:var(--txt-dim);margin-top:7px;letter-spacing:.3px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-inner">
+    <div class="hd-top">
+      <div class="logo">
+        <div class="logo-ring">Ω</div>
+        <div>
+          <h1>ANIME RING <span>NEXUS</span></h1>
+          <small>PHASE OMEGA</small>
+        </div>
+      </div>
+      <div class="hd-stats">
+        <div><b id="hdChars">0</b>Characters</div>
+        <div><b id="hdBuilds">0</b>Builds</div>
+        <div><b id="hdBosses">0</b>Bosses</div>
+        <div><b id="hdAch">0</b>Achievements</div>
+      </div>
+    </div>
+    <nav id="mainNav">
+      <button data-view="home" class="active">⌂ Home</button>
+      <button data-view="characters">Characters</button>
+      <button data-view="builds">Build System</button>
+      <button data-view="fusion">Fusion Lab</button>
+      <button data-view="database">ER Database</button>
+      <button data-view="rankings">Rankings</button>
+      <button data-view="tracker">Tracker</button>
+      <button data-view="achievements">Achievements</button>
+      <button data-view="analytics">Analytics</button>
+      <button data-view="archive">Archive</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <div class="hero">
+      <h2>THE DEFINITIVE <em>ANIME → ELDEN RING</em> PLATFORM</h2>
+      <p>A complete anime gaming universe: character encyclopedia, researched build conversions, an AI fusion lab, full boss & weapon databases, progression tracking, competitive rankings and a living historical archive. Built to grow — never to be finished.</p>
+      <div class="hero-btns">
+        <button class="btn" onclick="go('characters')">Explore Characters</button>
+        <button class="btn alt" onclick="go('fusion')">Enter the Fusion Lab</button>
+      </div>
+    </div>
+    <div class="dash-grid" id="dashGrid"></div>
+    <div class="home-cols">
+      <div class="panel">
+        <h3>⚔ FEATURED CHARACTER</h3>
+        <div id="featuredChar"></div>
+      </div>
+      <div>
+        <div class="panel" style="margin-bottom:20px">
+          <h3>🏆 TOP RATED BUILDS</h3>
+          <div id="homeTop"></div>
+        </div>
+        <div class="panel">
+          <h3>📜 ROADMAP — PHASE OMEGA</h3>
+          <div id="roadmap"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHARACTERS -->
+  <section class="view" id="view-characters">
+    <div class="sec-title">CHARACTER ENCYCLOPEDIA</div>
+    <div class="sec-sub">Every legend, properly categorized — biography, power system, combat analysis and full Elden Ring build conversion.</div>
+    <input class="searchbar" id="charSearch" placeholder="Search characters, anime, power systems...">
+    <div class="chips" id="charFilters"></div>
+    <div class="char-grid" id="charGrid"></div>
+  </section>
+
+  <!-- BUILDS -->
+  <section class="view" id="view-builds">
+    <div class="sec-title">ADVANCED BUILD SYSTEM</div>
+    <div class="sec-sub">Multiple build versions per character — beginner to max level, PvE, PvP, DLC and lore-accurate variants.</div>
+    <div class="chips" id="buildCharChips"></div>
+    <div id="buildViewer"></div>
+  </section>
+
+  <!-- FUSION LAB -->
+  <section class="view" id="view-fusion">
+    <div class="sec-title">AI FUSION LAB</div>
+    <div class="sec-sub">Combine any two characters. The Nexus engine merges their power systems, gear and lore into a single playable hybrid build.</div>
+    <div class="fusion-wrap">
+      <div class="fusion-sel"><h3 style="font-family:var(--font-display);color:var(--gold);font-size:13px;margin-bottom:10px">CHARACTER A</h3><select id="fuseA"></select></div>
+      <div class="fusion-x">✕</div>
+      <div class="fusion-sel"><h3 style="font-family:var(--font-display);color:var(--purple);font-size:13px;margin-bottom:10px">CHARACTER B</h3><select id="fuseB"></select></div>
+    </div>
+    <div style="text-align:center;margin-bottom:26px"><button class="btn alt" style="font-size:15px;padding:13px 34px" onclick="runFusion()">⚡ FUSE</button></div>
+    <div class="fusion-result" id="fusionResult"></div>
+  </section>
+
+  <!-- DATABASE -->
+  <section class="view" id="view-database">
+    <div class="sec-title">ELDEN RING KNOWLEDGE CENTER</div>
+    <div class="sec-sub">Boss database with weaknesses & anime matchups · weapon encyclopedia · talisman vault. Values are approximate NG figures from community wikis.</div>
+    <div class="chips">
+      <div class="chip active" data-db="bosses" onclick="dbTab('bosses',this)">👹 Bosses</div>
+      <div class="chip" data-db="weapons" onclick="dbTab('weapons',this)">⚔ Weapons</div>
+      <div class="chip" data-db="talismans" onclick="dbTab('talismans',this)">🧿 Talismans</div>
+    </div>
+    <div id="dbBosses"></div>
+    <div id="dbWeapons" style="display:none;overflow-x:auto"></div>
+    <div id="dbTalismans" style="display:none;overflow-x:auto"></div>
+  </section>
+
+  <!-- RANKINGS -->
+  <section class="view" id="view-rankings">
+    <div class="sec-title">COMPETITIVE RANKINGS</div>
+    <div class="sec-sub">Computed live from the Nexus database — ratings weigh damage ceiling, survivability, anime accuracy and community score.</div>
+    <div class="chips" id="rankChips"></div>
+    <div id="rankList"></div>
+  </section>
+
+  <!-- TRACKER -->
+  <section class="view" id="view-tracker">
+    <div class="sec-title">PROGRESSION TRACKER</div>
+    <div class="sec-sub">Saved locally in your browser — your journey persists between visits.</div>
+    <div class="prog-wrap">
+      <b style="font-family:var(--font-display);color:var(--gold2)">MY RUNE LEVEL</b>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap">
+        <input type="range" class="lvl-slider" id="lvlSlider" min="1" max="713" value="1">
+        <input type="number" id="lvlNum" min="1" max="713" value="1" class="searchbar" style="max-width:110px;margin:0;text-align:center;font-weight:700;color:var(--gold2)">
+        <div style="display:flex;gap:6px">
+          <button class="btn" style="padding:8px 12px;font-size:11px" onclick="setMyLevel(1)">RL 1</button>
+          <button class="btn" style="padding:8px 12px;font-size:11px" onclick="setMyLevel(150)">RL 150</button>
+          <button class="btn" style="padding:8px 12px;font-size:11px" onclick="setMyLevel(713)">MAX 713</button>
+        </div>
+      </div>
+      <small style="color:var(--txt-dim);display:block;margin-top:10px">Maximum level in Elden Ring is <b style="color:var(--gold2)">713</b>, achieved by raising all eight attributes to their hard cap of <b style="color:var(--gold2)">99</b>. Set your current level — every build across the Nexus will show how far along the upgrade path you are.</small>
+      <div id="lvlNext" style="margin-top:12px;font-size:13px;line-height:1.9"></div>
+    </div>
+    <div class="prog-wrap">
+      <b style="font-family:var(--font-display);color:var(--gold2)">TARNISHED PROGRESS</b>
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      <small id="progLabel" style="color:var(--txt-dim)"></small>
+    </div>
+    <h3 style="font-family:var(--font-display);color:var(--gold);margin-bottom:12px;letter-spacing:1px">BOSSES DEFEATED</h3>
+    <div class="check-grid" id="bossChecks"></div>
+    <h3 style="font-family:var(--font-display);color:var(--gold);margin:26px 0 12px;letter-spacing:1px">BUILDS COMPLETED</h3>
+    <div class="check-grid" id="buildChecks"></div>
+    <div style="margin-top:26px"><button class="btn" style="border-color:var(--red);color:#fca5a5" onclick="resetProgress()">Reset All Progress</button></div>
+  </section>
+
+  <!-- ACHIEVEMENTS -->
+  <section class="view" id="view-achievements">
+    <div class="sec-title">ACHIEVEMENT SYSTEM</div>
+    <div class="sec-sub">Earned through real actions across the Nexus — exploring, fusing, tracking and conquering.</div>
+    <div class="ach-grid" id="achGrid"></div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section class="view" id="view-analytics">
+    <div class="sec-title">ANALYTICS CENTER</div>
+    <div class="sec-sub">Community trend data blended with your own local activity.</div>
+    <div class="two-col">
+      <div class="panel"><h3>MOST POPULAR CHARACTERS</h3><div class="bar-chart" id="chartPop"></div></div>
+      <div class="panel"><h3>MOST USED WEAPONS</h3><div class="bar-chart" id="chartWep"></div></div>
+    </div>
+    <div class="two-col" style="margin-top:20px">
+      <div class="panel"><h3>BUILD ARCHETYPE SHARE</h3><div class="bar-chart" id="chartArch"></div></div>
+      <div class="panel"><h3>YOUR ACTIVITY</h3><div class="bar-chart" id="chartYou"></div></div>
+    </div>
+  </section>
+
+  <!-- ARCHIVE -->
+  <section class="view" id="view-archive">
+    <div class="sec-title">HISTORICAL ARCHIVE</div>
+    <div class="sec-sub">Every build version preserved — watch the meta evolve patch by patch.</div>
+    <div id="archiveList"></div>
+  </section>
+</main>
+
+<footer>
+  <b>ANIME RING NEXUS — PHASE OMEGA</b><br>
+  Fan-made project. Elden Ring © FromSoftware / Bandai Namco. All anime characters © their respective creators.<br>
+  Game data approximated from community wikis (Fextralife) · Meta references current to patch 1.16 · Built to grow, never finished.
+</footer>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBox"></div>
+</div>
+<div id="lvlWidget">
+  <div class="lw-head" id="lwHead">⬆ RL <span id="lwVal">1</span><span id="lwToggle">▼</span></div>
+  <div class="lw-body" id="lwBody">
+    <input type="range" id="lwSlider" min="1" max="713" value="1">
+    <div class="lw-row">
+      <button onclick="setMyLevel((S.myLevel||1)-10)">−10</button>
+      <button onclick="setMyLevel((S.myLevel||1)-1)">−1</button>
+      <input type="number" id="lwNum" min="1" max="713" value="1">
+      <button onclick="setMyLevel((S.myLevel||1)+1)">+1</button>
+      <button onclick="setMyLevel((S.myLevel||1)+10)">+10</button>
+    </div>
+    <div class="lw-hint">Drag the header to move · drag the bar to scrub 1–713</div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ============ ANIME RING NEXUS — CHARACTER DATABASE ============ */
+const CATEGORIES = ["All","Main Protagonist","Secondary Protagonist","Rival","Villain","Anti-Hero","Mentor","Legendary"];
+const CAT_COLORS = {
+  "Main Protagonist":"#22d3ee","Secondary Protagonist":"#60a5fa","Rival":"#f59e0b",
+  "Villain":"#ef4444","Anti-Hero":"#a78bfa","Mentor":"#34d399","Legendary":"#d4af37"
+};
+const CHARACTERS = [
+{
+id:"naruto", name:"Naruto Uzumaki", anime:"Naruto / Naruto Shippuden", category:"Main Protagonist",
+powerSystem:"Chakra · Ninjutsu · Senjutsu · Tailed Beast", archetype:"Faith Hybrid", difficulty:3, rating:9.3, popularity:98,
+banner:["#f59e0b","#ef4444"],
+bio:"The jinchūriki of the Nine-Tailed Fox, shunned as a child and determined to become Hokage so the whole village would finally acknowledge him. Through sheer persistence he mastered Sage Mode, befriended Kurama, and became the hero of the Fourth Great Ninja War.",
+personality:"Loud, stubborn, endlessly optimistic. Never abandons a friend and converts enemies through empathy as often as through fists.",
+combat:"A stamina monster who overwhelms opponents with clones, mixes mid-range Rasengan variants with melee flurries, and escalates through transformation stages when pressured.",
+techniques:["Rasengan","Shadow Clone Jutsu","Rasenshuriken","Sage Art: Massive Rasengan Barrage","Six Paths: Ultra-Big Ball Rasenshuriken"],
+transformations:["Sage Mode","Kurama Chakra Mode","Six Paths Sage Mode","Baryon Mode"],
+allies:["Sasuke Uchiha","Kakashi","Jiraiya","Kurama"], enemies:["Madara Uchiha","Pain","Obito","Kaguya"],
+battles:["vs Pain (village defense)","vs Sasuke — Final Valley","vs Madara & Kaguya (war climax)"],
+quote:"I never go back on my word! That's my nindō: my ninja way!",
+builds:[
+ {name:"Six Paths Sage — RL150", level:150, type:"PvE · Quality/Faith", primary:true,
+  stats:{VIG:55,MND:25,END:25,STR:16,DEX:40,INT:9,FTH:45,ARC:10},
+  weapons:["Dryleaf Arts (Palm Blast = Rasengan)","Erdtree Seal","Cipher Pata (chakra arms)"],
+  armor:["Champion Headband","Raging Wolf Armor (altered)","Confessor Boots"],
+  talismans:["Shard of Alexander","Erdtree's Favor +2","Two Fingers Heirloom","Millicent's Prosthesis"],
+  spells:["Flame, Grant Me Strength (Kurama cloak)","Golden Vow","Beast Claw","Wrath of Gold (Tailed Beast Bomb shockwave)"],
+  summon:"Mimic Tear +10 — the ultimate Shadow Clone",
+  notes:"Charged Palm Blast recreates the Rasengan's burst perfectly. Pop Flame Grant Me Strength + Golden Vow for Kurama Chakra Mode windows, then flurry with fists. Mimic Tear IS the Shadow Clone Jutsu — let it tank aggro while you flank."},
+ {name:"Beginner — RL60", level:60, type:"PvE · Entry",
+  stats:{VIG:35,MND:15,END:20,STR:12,DEX:25,INT:9,FTH:20,ARC:8},
+  weapons:["Uchigatana (Keen)","Finger Seal"], armor:["Land of Reeds set"],
+  talismans:["Erdtree's Favor","Green Turtle Talisman"], spells:["Flame, Grant Me Strength"],
+  summon:"Lone Wolf Ashes (ninja hounds)",
+  notes:"The academy years. Learn spacing and stamina discipline before unlocking Sage training."},
+ {name:"PvP Duelist — RL125", level:125, type:"PvP",
+  stats:{VIG:50,MND:20,END:22,STR:14,DEX:35,INT:9,FTH:35,ARC:10},
+  weapons:["Dryleaf Arts","Clinging Bone (offhand)"], armor:["Champion set (light roll)"],
+  talismans:["Rotten Winged Sword Insignia","Millicent's Prosthesis","Erdtree's Favor +2","Crucible Feather"],
+  spells:["Lightning Spear","Golden Vow"],
+  summon:"—",
+  notes:"True-combo palm strings punish panic rolls. Read opponents like Naruto reads emotions — patience, then burst."},
+ {name:"Baryon Mode — Lore Accurate", level:200, type:"Challenge · Lore",
+  stats:{VIG:60,MND:30,END:30,STR:20,DEX:50,INT:9,FTH:60,ARC:15},
+  weapons:["Dryleaf Arts (Flame Art)"], armor:["Fire Knight set (recolored)"],
+  talismans:["Red-Feathered Branchsword","Shard of Alexander","Fire Scorpion Charm","Erdtree's Favor +2"],
+  spells:["Flame of the Fell God","Giantsflame Take Thee"],
+  summon:"—",
+  notes:"Rule: stay under 50% HP the whole fight — Baryon Mode burns your life force for absurd damage via Red-Feathered Branchsword."}
+]},
+{
+id:"sasuke", name:"Sasuke Uchiha", anime:"Naruto / Naruto Shippuden", category:"Rival",
+powerSystem:"Sharingan · Rinnegan · Lightning Ninjutsu", archetype:"Dex/Int Spellblade", difficulty:4, rating:9.1, popularity:93,
+banner:["#6366f1","#0f172a"],
+bio:"Sole survivor of the Uchiha massacre, driven first by revenge against his brother Itachi, then against the ninja system itself. Ultimately redeemed at the Final Valley, he becomes the shadow that protects the village from outside.",
+personality:"Cold, analytical, proud. Speaks little, judges quickly, and carries guilt like a second blade.",
+combat:"Precision counter-fighter: intercepts with Sharingan reads, punishes with Chidori pierces and mid-range lightning, controls space with Amaterasu and Susanoo when serious.",
+techniques:["Chidori","Fire Style: Fireball Jutsu","Kirin","Amaterasu","Indra's Arrow"],
+transformations:["Curse Mark Stage 2","Mangekyō Sharingan","Complete Susanoo","Rinnegan"],
+allies:["Naruto Uzumaki","Team Taka","Kakashi"], enemies:["Itachi Uchiha","Orochimaru","Danzo","Kaguya"],
+battles:["vs Itachi — brother's requiem","vs Killer B","vs Naruto — Final Valley"],
+quote:"My name is Sasuke Uchiha. I hate a lot of things, and I don't particularly like anything.",
+builds:[
+ {name:"Rinnegan Duelist — RL150", level:150, type:"PvE/PvP · Dex/Int", primary:true,
+  stats:{VIG:50,MND:25,END:20,STR:12,DEX:50,INT:40,FTH:8,ARC:10},
+  weapons:["Moonveil (Transient Moonlight = Chidori wave)","Carian Regal Scepter (offhand)"],
+  armor:["Black Knife Hood (altered)","Raging Wolf Armor","Black Knife Greaves"],
+  talismans:["Shard of Alexander","Magic Scorpion Charm","Carian Filigreed Crest","Erdtree's Favor +2"],
+  spells:["Glintblade Phalanx (Susanoo blades)","Carian Slicer","Loretta's Greatbow (Indra's Arrow)","Terra Magica"],
+  summon:"Ancient Dragon Knight Kristoff (lightning support)",
+  notes:"Moonveil's quickdraw IS the Chidori: instant, piercing, lethal. Phalanx orbits like Susanoo ribs. Kirin = fight under Terra Magica and cast Loretta's from range."},
+ {name:"Curse Mark — RL90", level:90, type:"PvE · Mid-game",
+  stats:{VIG:40,MND:18,END:18,STR:11,DEX:40,INT:22,FTH:8,ARC:10},
+  weapons:["Nagakiba (Keen, Unsheathe)"], armor:["White Reed set"],
+  talismans:["Lord of Blood's Exultation","Millicent's Prosthesis"], spells:["Scholar's Armament"],
+  summon:"—", notes:"Orochimaru's gift: raw speed, poor defenses. Unsheathe counters everything if your reads are Sharingan-grade."},
+ {name:"Amaterasu — Black Flame PvP", level:125, type:"PvP · Hybrid",
+  stats:{VIG:50,MND:22,END:20,STR:12,DEX:40,INT:15,FTH:30,ARC:8},
+  weapons:["Nagakiba (Flame Art)","Godslayer's Seal"], armor:["Black Knife set"],
+  talismans:["Fire Scorpion Charm","Shard of Alexander","Erdtree's Favor +2","Bull-Goat's Talisman"],
+  spells:["Black Flame","Black Flame Ritual (Susanoo cage)","Bloodflame Blade"],
+  summon:"—", notes:"Black flames that never stop burning — the closest thing Elden Ring has to Amaterasu, and it shreds PvP health pools."}
+]},
+{
+id:"goku", name:"Son Goku", anime:"Dragon Ball Z / Super", category:"Main Protagonist",
+powerSystem:"Ki · Saiyan Transformations · Ultra Instinct", archetype:"Strength/Faith Brawler", difficulty:2, rating:9.5, popularity:100,
+banner:["#f97316","#facc15"],
+bio:"A Saiyan sent to destroy Earth who became its greatest defender. Every defeat makes him stronger, every rival becomes a friend, and every limit exists only to be shattered — from Kaio-ken to Ultra Instinct.",
+personality:"Pure-hearted battle maniac. Kind to a fault, tactically brilliant mid-fight, hopeless everywhere else.",
+combat:"Peerless martial artist who adapts mid-combat, baits attacks to learn patterns, then answers with overwhelming ki barrages and transformation spikes.",
+techniques:["Kamehameha","Spirit Bomb","Instant Transmission","Dragon Fist","Kaio-ken"],
+transformations:["Super Saiyan","SSJ3","Super Saiyan God","SSJ Blue","Ultra Instinct"],
+allies:["Vegeta","Gohan","Piccolo","Krillin"], enemies:["Frieza","Cell","Majin Buu","Jiren"],
+battles:["vs Frieza — Namek","vs Cell — Cell Games","vs Jiren — Tournament of Power"],
+quote:"I am the hope of the universe... Ally to good! Nightmare to you!",
+builds:[
+ {name:"Ultra Instinct — RL150", level:150, type:"PvE · Str/Fth Brawler", primary:true,
+  stats:{VIG:55,MND:20,END:30,STR:54,DEX:20,INT:9,FTH:35,ARC:7},
+  weapons:["Dryleaf Arts (Heavy)","Frenzied Flame Seal"],
+  armor:["None (torso bare) — Champion Gauntlets & Greaves"],
+  talismans:["Shard of Alexander","Roar Medallion","Erdtree's Favor +2","Blue Dancer Charm (light load = UI dodges)"],
+  spells:["Flame, Grant Me Strength (Kaio-ken)","Golden Vow","Placidusax's Ruin (Kamehameha beam)"],
+  summon:"—",
+  notes:"Fight bare-chested at light equip load — Blue Dancer boosts unarmed damage and your rolls become Ultra Instinct. Placidusax's Ruin is a literal mouth-beam Kamehameha; Kaio-ken (FGMS) before every burst window."},
+ {name:"Beginner Saiyan — RL50", level:50, type:"PvE · Entry",
+  stats:{VIG:30,MND:12,END:20,STR:30,DEX:14,INT:8,FTH:12,ARC:7},
+  weapons:["Dryleaf Arts","Spiked Caestus"], armor:["Gi-like: Traveler's clothes"],
+  talismans:["Erdtree's Favor","Axe Talisman"], spells:["Catch Flame"],
+  summon:"Lone Wolf Ashes", notes:"The Kame House years. Charged heavies teach ki discipline."},
+ {name:"SSJ Blue PvP — RL125", level:125, type:"PvP",
+  stats:{VIG:50,MND:18,END:28,STR:50,DEX:16,INT:9,FTH:25,ARC:7},
+  weapons:["Star Fist (Bleed)","Dryleaf Arts"], armor:["Light — bare fists, blue sash"],
+  talismans:["Rotten Winged Sword Insignia","Shard of Alexander","Erdtree's Favor +2","Starscourge Heirloom"],
+  spells:["Golden Vow","Bloodflame Blade"],
+  summon:"—", notes:"Star Fist true-combos into panic. God-tier ki = relentless pressure; never give them room to breathe."},
+ {name:"Spirit Bomb — Challenge", level:200, type:"Challenge · Co-op",
+  stats:{VIG:60,MND:38,END:25,STR:45,DEX:15,INT:9,FTH:50,ARC:7},
+  weapons:["Dryleaf Arts","Erdtree Seal"], armor:["Bare"],
+  talismans:["Old Lord's Talisman","Godfrey Icon","Shard of Alexander","Flock's Canvas Talisman"],
+  spells:["Wrath of Gold (fully charged only)","Triple Rings of Light"],
+  summon:"—", notes:"Rule: bosses may only be damaged by fully-charged Wrath of Gold — energy gathered from the world itself. Raise your hands, Tarnished."}
+]},
+{
+id:"vegeta", name:"Vegeta", anime:"Dragon Ball Z / Super", category:"Rival",
+powerSystem:"Ki · Saiyan Royal Bloodline · Ultra Ego", archetype:"Str/Int Destruction", difficulty:3, rating:9.0, popularity:95,
+banner:["#2563eb","#0f172a"],
+bio:"The Prince of all Saiyans, who arrived as a conqueror and stayed as a protector. His entire arc is pride transmuted — from cruelty, to rivalry, to a family man who still trains harder than anyone alive to surpass Kakarot.",
+personality:"Arrogant, disciplined, ferociously proud — but his loyalty, once earned, is absolute.",
+combat:"More technical than Goku: ruthless target prioritization, punishing beam combos, and a willingness to take damage to deal more — embodied by Ultra Ego.",
+techniques:["Galick Gun","Final Flash","Big Bang Attack","Hakai","Final Explosion"],
+transformations:["Super Saiyan","Majin Vegeta","SSJ Blue Evolved","Ultra Ego"],
+allies:["Goku","Bulma","Trunks","Piccolo"], enemies:["Frieza","Cell","Majin Buu","Goku Black"],
+battles:["vs Goku — first arrival","vs Cell (Final Flash)","Final Explosion vs Buu"],
+quote:"I do not fear this new challenge. Rather, like a true warrior I will rise to meet it.",
+builds:[
+ {name:"Ultra Ego — RL150", level:150, type:"PvE · Str/Int", primary:true,
+  stats:{VIG:58,MND:24,END:28,STR:50,DEX:14,INT:35,FTH:8,ARC:7},
+  weapons:["Star Fist (Magic)","Carian Regal Scepter"],
+  armor:["Bull-Goat gauntlets/greaves, bare chest — royal armor shattered"],
+  talismans:["Red-Feathered Branchsword (Ultra Ego: stronger as you take damage)","Shard of Alexander","Magic Scorpion Charm","Erdtree's Favor +2"],
+  spells:["Comet Azur (Final Flash)","Terra Magica","Carian Greatsword"],
+  summon:"—",
+  notes:"Ultra Ego thrives on damage taken — Red-Feathered Branchsword rewards fighting below half HP. Comet Azur under Terra Magica IS the Final Flash. Scream the name before casting; it's mandatory."},
+ {name:"Majin Vegeta — RL125", level:125, type:"PvP · Berserk",
+  stats:{VIG:48,MND:20,END:26,STR:48,DEX:14,INT:20,FTH:8,ARC:7},
+  weapons:["Star Fist (Bleed)","Clinging Bone"], armor:["Light royal set"],
+  talismans:["Lord of Blood's Exultation","Rotten Winged Sword","Shard of Alexander","Bull-Goat's Talisman"],
+  spells:["—"],
+  summon:"—", notes:"Pride unchained. Trade recklessly, win exchanges through pure aggression. Final Explosion = Lord of Blood procs at 1 HP."},
+ {name:"Galick Gun — RL100", level:100, type:"PvE · Mid-game caster",
+  stats:{VIG:40,MND:28,END:18,STR:25,DEX:12,INT:40,FTH:8,ARC:7},
+  weapons:["Meteorite Staff","Star Fist"], armor:["Preceptor's garb (purple = Galick palette)"],
+  talismans:["Graven-School Talisman","Radagon Icon"],
+  spells:["Rock Sling","Glintstone Pebble spam","Comet"],
+  summon:"—", notes:"The Saiyan invader era: bombard from range, finish with fists, monologue about your power level."}
+]},
+{
+id:"ichigo", name:"Ichigo Kurosaki", anime:"Bleach", category:"Main Protagonist",
+powerSystem:"Reiryoku · Zanpakutō · Hollowfication", archetype:"Dex Greatsword", difficulty:3, rating:9.0, popularity:92,
+banner:["#0ea5e9","#111827"],
+bio:"A substitute Soul Reaper whose power is a braid of Quincy, Hollow, and Shinigami legacies. He fights not for glory but because protecting people is the only thing his soul knows how to do.",
+personality:"Scowling exterior, gentle core. Reckless when friends are threatened; grows sharper with every impossible enemy.",
+combat:"Speed-first greatsword duels: flash steps into wide slashes, ranged Getsuga pressure, and a Hollow mask trump card when the wall must come down.",
+techniques:["Getsuga Tenshō","Flash Step (Shunpō)","Bankai: Tensa Zangetsu","Hollow Mask","Mugetsu"],
+transformations:["Shikai","Bankai","Vasto Lorde Hollow","True Bankai"],
+allies:["Rukia","Uryū","Chad","Orihime"], enemies:["Aizen","Ulquiorra","Yhwach","Grimmjow"],
+battles:["vs Byakuya — Soul Society","vs Ulquiorra — Vasto Lorde","vs Aizen — Mugetsu"],
+quote:"If fate is a millstone, then we are the grist. There is nothing we can do. So I wish for strength.",
+builds:[
+ {name:"Bankai — RL150", level:150, type:"PvE · Dex Greatsword", primary:true,
+  stats:{VIG:55,MND:17,END:30,STR:24,DEX:55,INT:9,FTH:12,ARC:8},
+  weapons:["Banished Knight's Greatsword (Keen, Sacred Blade = Getsuga Tenshō)","Nagakiba (Bloodhound's Step) for Bankai swaps"],
+  armor:["Black Knife Hood (altered)","Fia's Robe (black)","Fine leather"],
+  talismans:["Shard of Alexander","Green Turtle Talisman","Millicent's Prosthesis","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"Banished Knight Oleg (Zangetsu spirit)",
+  notes:"Sacred Blade launches a golden crescent — the Getsuga Tenshō, frame-perfect. Swap to Nagakiba + Bloodhound's Step for Bankai: speed over size, blurring flash steps between slashes."},
+ {name:"Hollow Mask — RL125", level:125, type:"PvP · Bleed burst",
+  stats:{VIG:50,MND:15,END:26,STR:20,DEX:50,INT:9,FTH:8,ARC:16},
+  weapons:["Nagakiba (Blood, Unsheathe)","White Mask"], armor:["White Mask + black flowing set"],
+  talismans:["Lord of Blood's Exultation","White Mask synergy","Shard of Alexander","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"—", notes:"The mask (literally the White Mask helm) boosts attack on blood loss — Hollowfication as a mechanic. Terrifying burst windows."},
+ {name:"Mugetsu — Challenge", level:180, type:"Challenge",
+  stats:{VIG:60,MND:20,END:32,STR:28,DEX:60,INT:9,FTH:15,ARC:8},
+  weapons:["Dark Moon Greatsword (black moonlight waves)"], armor:["Bandage-wrapped: Prisoner rags"],
+  talismans:["Shard of Alexander","Magic Scorpion Charm","Godfrey Icon","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"—", notes:"Final Getsuga: one fight, moonlight waves only, no healing. Everything ends in a single black wave."}
+]},
+{
+id:"guts", name:"Guts", anime:"Berserk", category:"Anti-Hero",
+powerSystem:"Human Will · Berserker Armor · Dragon Slayer", archetype:"Colossal Strength", difficulty:2, rating:9.7, popularity:97,
+banner:["#171717","#7f1d1d"],
+bio:"The Black Swordsman — a mercenary born from a corpse who has fought since childhood, lost everything to the Eclipse, and continues swinging a slab of iron at fate itself. FromSoftware's games are built on his shadow; Elden Ring's Greatsword is literally his.",
+personality:"Grim, profane, unbreakable. Beneath the rage is a man who keeps choosing to protect the few people left to him.",
+combat:"Overwhelming momentum with a sword too big to be called a sword — plus a repeater crossbow, throwing knives, a cannon arm, and the willingness to lose an arm to win.",
+techniques:["Dragon Slayer cleave","Cannon Arm","Repeater Crossbow","Berserker Armor rampage"],
+transformations:["Berserker Armor"],
+allies:["Casca","Puck","Schierke","Serpico"], enemies:["Griffith / Femto","Zodd","Apostles","The God Hand"],
+battles:["The Eclipse — survival","vs Zodd (multiple)","100-man slaughter at the hill of swords"],
+quote:"You should not throw away your life so easily... A person's life should never end this way.",
+builds:[
+ {name:"The Black Swordsman — RL150", level:150, type:"PvE · Colossal", primary:true,
+  stats:{VIG:60,MND:10,END:38,STR:66,DEX:16,INT:7,FTH:8,ARC:9},
+  weapons:["Greatsword (Heavy, Lion's Claw) — it IS the Dragon Slayer","Full Moon Crossbow (repeater)"],
+  armor:["Raging Wolf / Night's Cavalry mix — one-eyed black leather"],
+  talismans:["Shard of Alexander","Erdtree's Favor +2","Bull-Goat's Talisman","Greatshield Talisman"],
+  spells:["—"],
+  summon:"—",
+  notes:"The pilgrimage build. Elden Ring's Greatsword is a direct Berserk homage — Heavy affinity, 66 STR (two-hand softcap), Lion's Claw through everything. No summons; Guts walks alone."},
+ {name:"Berserker Armor — RL180", level:180, type:"Challenge · Hyper-aggro",
+  stats:{VIG:60,MND:10,END:40,STR:70,DEX:20,INT:7,FTH:8,ARC:9},
+  weapons:["Greatsword (Occult)","Beast Claws (feral moments)"], armor:["Full Bull-Goat, painted black"],
+  talismans:["Red-Feathered Branchsword","Lord of Blood's Exultation","Shard of Alexander","Crimson Amber Medallion +2"],
+  spells:["—"],
+  summon:"—", notes:"Never heal during boss fights — the armor keeps you swinging as your body breaks. Below 20% HP you deal maximum damage. The dog wants out."},
+ {name:"Golden Age Mercenary — RL80", level:80, type:"PvE · Mid-game",
+  stats:{VIG:45,MND:8,END:30,STR:50,DEX:14,INT:7,FTH:8,ARC:9},
+  weapons:["Claymore (Heavy, Lion's Claw)"], armor:["Iron/Chain set — Band of the Hawk era"],
+  talismans:["Erdtree's Favor","Axe Talisman"], spells:["—"],
+  summon:"—", notes:"Before the brand, before the Eclipse. A young mercenary and a reasonable-sized greatsword. It doesn't last."}
+]},
+{
+id:"jinwoo", name:"Sung Jin-Woo", anime:"Solo Leveling", category:"Main Protagonist",
+powerSystem:"The System · Shadow Monarch · Necromancy", archetype:"Dex Assassin + Summons", difficulty:3, rating:9.4, popularity:96,
+banner:["#7c3aed","#0f172a"],
+bio:"The world's weakest hunter, granted a second chance by the System after dying in a double dungeon. He levels alone, quest by quest, until he inherits the Shadow Monarch's throne and commands an army of the dead.",
+personality:"Quiet, calculating, devoted to family. Ruthless the instant someone threatens what's his.",
+combat:"Blinding dagger speed backed by an ever-growing shadow army — he opens fights personally, then lets Igris and Beru finish what's left.",
+techniques:["Dagger Rush","Stealth","Shadow Extraction","Shadow Exchange","Domain of the Monarch"],
+transformations:["Second Awakening","Shadow Monarch"],
+allies:["Cha Hae-In","Igris","Beru","Jin-Ho"], enemies:["Antares","Monarchs","Architect"],
+battles:["Double Dungeon — the beginning","vs Igris","vs Beru","vs Antares"],
+quote:"Arise.",
+builds:[
+ {name:"Shadow Monarch — RL150", level:150, type:"PvE · Dex/Summons", primary:true,
+  stats:{VIG:50,MND:30,END:22,STR:14,DEX:55,INT:12,FTH:18,ARC:10},
+  weapons:["Black Knife (Blade of Death)","Misericorde (Keen) — powerstanced daggers"],
+  armor:["Black Knife set — the silent assassin armor"],
+  talismans:["Shard of Alexander","Erdtree's Favor +2","Millicent's Prosthesis","Assassin's Cerulean Dagger"],
+  spells:["Golden Vow"],
+  summon:"Black Knife Tiche +10 (Igris) / Mimic Tear (Beru)",
+  notes:"The Black Knife set mutes footsteps — pure hunter stealth. Tiche IS Igris: a loyal death-knight who deletes bosses. Open with backstabs, whisper 'Arise', let the shadows work."},
+ {name:"E-Rank Hunter — RL30", level:30, type:"PvE · Origin",
+  stats:{VIG:22,MND:12,END:15,STR:12,DEX:20,INT:9,FTH:8,ARC:8},
+  weapons:["Dagger","Buckler"], armor:["Commoner's garb"],
+  talismans:["Crimson Amber Medallion"], spells:["—"],
+  summon:"—", notes:"The world's weakest. Every death is a lesson; the System is watching. Level DEX only."},
+ {name:"Monarch's Domain — RL200", level:200, type:"PvE · Army commander",
+  stats:{VIG:55,MND:45,END:25,STR:14,DEX:60,INT:15,FTH:25,ARC:12},
+  weapons:["Black Knife","Godslayer's Seal"], armor:["Fell Omen Cloak — the Monarch's mantle"],
+  talismans:["Old Lord's Talisman","Shard of Alexander","Erdtree's Favor +2","Two Fingers Heirloom"],
+  spells:["Tibia's Summons (shadow soldiers!)","Golden Vow","Ancient Death Rancor"],
+  summon:"Black Knife Tiche +10",
+  notes:"Tibia's Summons literally raises shadow warriors from the ground. This is not a metaphor. This is the Domain of the Monarch."}
+]},
+{
+id:"luffy", name:"Monkey D. Luffy", anime:"One Piece", category:"Main Protagonist",
+powerSystem:"Gomu Gomu no Mi · Haki · Gear System", archetype:"Quality Brawler", difficulty:2, rating:8.8, popularity:94,
+banner:["#dc2626","#fbbf24"],
+bio:"A rubber-bodied pirate whose dream is absolute freedom — becoming King of the Pirates. He builds a crew of broken people, breaks every cage he finds, and topples warlords and emperors laughing.",
+personality:"Simple, fearless, magnetic. Zero tactical patience, infinite instinct, and a moral compass that points at 'friends'.",
+combat:"Stretch-powered haymakers escalating through Gears: speed (2nd), size (3rd), bounce-tank (4th), and reality-bending cartoon warfare (5th).",
+techniques:["Gum-Gum Pistol","Gear 2nd: Jet Gatling","Gear 3rd: Elephant Gun","King Cobra","Bajrang Gun"],
+transformations:["Gear 2nd","Gear 3rd","Gear 4th (Boundman/Snakeman)","Gear 5th — Nika"],
+allies:["Zoro","Nami","Sanji","The Straw Hats"], enemies:["Kaido","Doflamingo","Katakuri","Blackbeard"],
+battles:["vs Crocodile","vs Katakuri","vs Kaido — Onigashima rooftop"],
+quote:"I don't want to conquer anything. I just think the guy with the most freedom in this whole ocean is the Pirate King!",
+builds:[
+ {name:"Gear 5th — RL150", level:150, type:"PvE · Quality fists", primary:true,
+  stats:{VIG:58,MND:15,END:35,STR:40,DEX:40,INT:7,FTH:14,ARC:9},
+  weapons:["Dryleaf Arts (Quality)","Highland Axe offhand (Warcry = Conqueror's Haki)"],
+  armor:["Bare chest, straw-style Traveler's Hat, red sash"],
+  talismans:["Roar Medallion","Shard of Alexander","Erdtree's Favor +2","Opaline Bubbletear physick (rubber body)"],
+  spells:["Golden Vow (Warcry of the Sun God)"],
+  summon:"—",
+  notes:"Warcry before every engagement — Conqueror's Haki staggers the weak-willed. The bubble physick negates one hit: rubber physiology. Fight with a grin; Gear 5 is joy as a combat style."},
+ {name:"East Blue — RL40", level:40, type:"PvE · Entry",
+  stats:{VIG:28,MND:10,END:20,STR:20,DEX:20,INT:7,FTH:8,ARC:8},
+  weapons:["Caestus x2"], armor:["Traveler's Hat + rags"],
+  talismans:["Erdtree's Favor"], spells:["—"],
+  summon:"—", notes:"A boy, a hat, a promise. Punch everything."},
+ {name:"Snakeman — RL125", level:125, type:"PvP · Rushdown",
+  stats:{VIG:50,MND:12,END:30,STR:30,DEX:45,INT:7,FTH:10,ARC:9},
+  weapons:["Star Fist (Keen)","Dryleaf Arts"], armor:["Light load"],
+  talismans:["Rotten Winged Sword","Millicent's Prosthesis","Erdtree's Favor +2","Blue Dancer Charm"],
+  spells:["—"],
+  summon:"—", notes:"Python-fast weave punches. Never stop moving; the punches curve — yours should feel like they do too."}
+]},
+{
+id:"zoro", name:"Roronoa Zoro", anime:"One Piece", category:"Rival",
+powerSystem:"Santōryū · Haki · Asura", archetype:"Dex Dual Katana", difficulty:3, rating:8.9, popularity:91,
+banner:["#16a34a","#0f172a"],
+bio:"A swordsman sworn to become the world's strongest, carrying his dead friend's dream in a white blade. First mate of the Straw Hats; loses his way to the bathroom, never to a duel.",
+personality:"Stoic, honor-bound, terminally direction-blind. Would rather die standing than live having yielded.",
+combat:"Three-sword style: two hands and one jaw. Overwhelming slash pressure, flying blade projectiles, and the demonic nine-sword Asura when reality gives up.",
+techniques:["Oni Giri","Tatsumaki","1080 Pound Cannon","Enma release","Asura: Nine-Sword Style"],
+transformations:["Nothing Happened (willpower)","Asura","King of Hell Three Sword Style"],
+allies:["Luffy","Sanji (rival-ally)","Kuina's memory"], enemies:["Mihawk (goal)","King","Kaido"],
+battles:["vs Mihawk — the vow","vs Pica","vs King — Onigashima"],
+quote:"Only I can call my dream stupid.",
+builds:[
+ {name:"King of Hell — RL150", level:150, type:"PvE · Powerstance katanas", primary:true,
+  stats:{VIG:52,MND:14,END:32,STR:16,DEX:60,INT:7,FTH:8,ARC:11},
+  weapons:["Uchigatana (Keen) x2 — powerstanced","(the third is clenched in your teeth, canonically)"],
+  armor:["White Reed set with green haramaki-style sash"],
+  talismans:["Rotten Winged Sword Insignia","Millicent's Prosthesis","Shard of Alexander","Green Turtle Talisman"],
+  spells:["—"],
+  summon:"—",
+  notes:"Powerstance L1 spam is Santōryū's rhythm. Phantom Slash ash of war = flying air slashes (Pound Cannon). Get lost on the way to every boss for authenticity."},
+ {name:"Enma — RL125 PvP", level:125, type:"PvP · Bleed",
+  stats:{VIG:50,MND:12,END:30,STR:15,DEX:50,INT:7,FTH:8,ARC:16},
+  weapons:["Rivers of Blood","Uchigatana (Blood)"], armor:["Light kimono set"],
+  talismans:["Lord of Blood's Exultation","Shard of Alexander","Millicent's Prosthesis","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"—", notes:"Enma drains you and rewards mastery — Rivers of Blood corpse-piler is exactly that cursed hunger."},
+ {name:"Asura — Challenge", level:180, type:"Challenge",
+  stats:{VIG:55,MND:14,END:36,STR:20,DEX:65,INT:7,FTH:10,ARC:11},
+  weapons:["Uchigatana x2 + Nagakiba backup — rotate all three"],
+  armor:["Full black, demon-faced: Land of Reeds + White Mask"],
+  talismans:["Shard of Alexander","Rotten Winged Sword","Twinblade Talisman","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"—", notes:"Nine swords across three loadouts. Swap weapons mid-boss; never repeat the same ash twice in a row."}
+]},
+{
+id:"tanjiro", name:"Tanjiro Kamado", anime:"Demon Slayer: Kimetsu no Yaiba", category:"Main Protagonist",
+powerSystem:"Breathing Styles · Sun Breathing · Demon Slayer Mark", archetype:"Dex Fire/Frost Katana", difficulty:2, rating:8.6, popularity:90,
+banner:["#0d9488","#dc2626"],
+bio:"A kind-hearted charcoal seller whose family was slaughtered by a demon — all except his sister Nezuko, who was turned. He joins the Demon Slayer Corps to cure her, wielding kindness as fiercely as his blade.",
+personality:"Empathy incarnate. Apologizes to the demons he beheads; his gentleness is precisely why he never breaks.",
+combat:"Water Breathing's flowing defense woven with the Hinokami Kagura's blazing offense — reads opponents by scent, endures beyond human limits.",
+techniques:["Water Surface Slash","Constant Flux","Hinokami Kagura: Clear Blue Sky","Sun Breathing: Thirteenth Form"],
+transformations:["Demon Slayer Mark","Transparent World","Selfless State"],
+allies:["Nezuko","Zenitsu","Inosuke","Giyu"], enemies:["Muzan Kibutsuji","Akaza","Rui"],
+battles:["vs Rui — Natagumo Mountain","vs Akaza — Infinity Train aftermath","vs Muzan — dawn"],
+quote:"No matter how many people you may lose, you have no choice but to go on living.",
+builds:[
+ {name:"Hinokami Kagura — RL150", level:150, type:"PvE · Fire Dex", primary:true,
+  stats:{VIG:52,MND:20,END:28,STR:15,DEX:50,INT:8,FTH:25,ARC:9},
+  weapons:["Uchigatana (Flame Art, Flaming Strike = Kagura arcs)","Finger Seal"],
+  armor:["Land of Reeds set + checkered-green Traveler's garb"],
+  talismans:["Fire Scorpion Charm","Shard of Alexander","Green Turtle Talisman","Erdtree's Favor +2"],
+  spells:["Flame, Grant Me Strength","Bloodflame Blade"],
+  summon:"Nepheli Loux (Nezuko fights beside you)",
+  notes:"Flaming Strike's sweeping arcs mirror the Kagura dance forms. Alternate with a Cold-infused offhand Uchigatana for Water Breathing stance-switching — fire for demons, water for defense."},
+ {name:"Water Breathing — RL70", level:70, type:"PvE · Early",
+  stats:{VIG:38,MND:14,END:22,STR:13,DEX:35,INT:8,FTH:12,ARC:9},
+  weapons:["Uchigatana (Cold, Chilling Mist)"], armor:["Land of Reeds"],
+  talismans:["Green Turtle Talisman","Erdtree's Favor"], spells:["—"],
+  summon:"—", notes:"Final Selection era. Frost mist = Tenth Form: Constant Flux, flowing and patient."},
+ {name:"Sun Breathing — Challenge", level:160, type:"Challenge · No-hit dance",
+  stats:{VIG:55,MND:22,END:30,STR:16,DEX:55,INT:8,FTH:30,ARC:9},
+  weapons:["Uchigatana (Flame Art)"], armor:["Light"],
+  talismans:["Blue Dancer Charm","Fire Scorpion Charm","Shard of Alexander","Crimson Seed Talisman"],
+  spells:["Flame, Grant Me Strength"],
+  summon:"—", notes:"The Thirteenth Form: chain all twelve Kagura arcs (12 consecutive Flaming Strikes) without being hit. Dawn is coming."}
+]},
+{
+id:"saitama", name:"Saitama", anime:"One-Punch Man", category:"Legendary",
+powerSystem:"Limiter Removal · Absolute Strength", archetype:"One-Shot Strength", difficulty:5, rating:9.9, popularity:99,
+banner:["#facc15","#f87171"],
+bio:"A hero for fun who trained until he broke his limiter — 100 push-ups, 100 sit-ups, 100 squats, 10km running, every single day — and now ends every fight in one punch. His true enemy is boredom.",
+personality:"Deadpan, frugal, quietly kind. The overwhelming power bores him; the missed supermarket sale devastates him.",
+combat:"There is no analysis. One punch. Occasionally a Serious Punch, which splits weather systems.",
+techniques:["Normal Punch","Consecutive Normal Punches","Serious Punch","Serious Table Flip"],
+transformations:["None — this is the baseline"],
+allies:["Genos","King","Mumen Rider"], enemies:["Boros","Garou","boredom"],
+battles:["vs Boros — the only warm-up","vs Garou — cosmic fear","vs subterranean dream"],
+quote:"OK.",
+builds:[
+ {name:"One Punch — RL1 to RL713", level:713, type:"Challenge · The Gag Build", primary:true,
+  stats:{VIG:99,MND:15,END:60,STR:99,DEX:40,INT:10,FTH:25,ARC:15},
+  weapons:["Dryleaf Arts (Heavy) — nothing else, ever"],
+  armor:["Bald head (no helm allowed)","White Cape (Fell Omen Cloak altered)","Red gloves: Champion bracers"],
+  talismans:["Shard of Alexander","Axe Talisman","Roar Medallion","Godfrey Icon"],
+  spells:["Golden Vow","Flame Grant Me Strength (pre-punch ritual only)"],
+  summon:"—",
+  notes:"Rules: every enemy must die to ONE fully-charged, fully-buffed Palm Blast. If it survives, you walk away and grind more push-ups (runes). Max level is canon-accurate: the training worked."},
+ {name:"Serious Series — RL150 (practical)", level:150, type:"PvE · Actually playable",
+  stats:{VIG:60,MND:12,END:34,STR:80,DEX:16,INT:8,FTH:10,ARC:8},
+  weapons:["Giant-Crusher (Heavy) — a fist by other means","Dryleaf Arts"],
+  armor:["Bare head, light robes"],
+  talismans:["Shard of Alexander","Axe Talisman","Erdtree's Favor +2","Blue Dancer Charm"],
+  spells:["Royal Knight's Resolve physick"],
+  summon:"—", notes:"Charged Giant-Crusher R2 with Royal Knight's Resolve one-shots most field bosses. The closest legitimate Elden Ring gets to a Serious Punch."},
+ {name:"C-Class Hero — RL25", level:25, type:"PvE · The grind",
+  stats:{VIG:20,MND:8,END:18,STR:20,DEX:12,INT:8,FTH:8,ARC:8},
+  weapons:["Caestus"], armor:["Commoner's clothes"],
+  talismans:["—"], spells:["—"],
+  summon:"—", notes:"100 enemies, 100 crouches, 100 jumps, 10km of Limgrave. Every day. Until your hair falls out."}
+]}
+];
+/* ============ CHARACTER DATABASE — PART 2 ============ */
+CHARACTERS.push(
+{
+id:"gojo", name:"Satoru Gojo", anime:"Jujutsu Kaisen", category:"Mentor",
+powerSystem:"Cursed Energy · Limitless · Six Eyes", archetype:"Pure Intelligence Caster", difficulty:4, rating:9.2, popularity:95,
+banner:["#38bdf8","#e0f2fe"],
+bio:"The strongest jujutsu sorcerer alive, born with both the Limitless technique and the Six Eyes. He teaches at Jujutsu High to raise strong, kind sorcerers — because he knows strength alone couldn't save his own best friend.",
+personality:"Playful, irreverent, untouchable — a showman's mask over a man who carries the loneliness of absolute power.",
+combat:"Infinity keeps everything from ever reaching him while he dismantles enemies with Blue (attraction), Red (repulsion), and the unspeakable Hollow Purple.",
+techniques:["Limitless: Blue","Reversal: Red","Hollow Purple","Infinity","Unlimited Void"],
+transformations:["Domain Expansion: Unlimited Void"],
+allies:["Yuji","Megumi","Nanami","Geto (once)"], enemies:["Sukuna","Kenjaku","Toji Fushiguro"],
+battles:["vs Toji — awakening","vs Jogo","vs Sukuna — the strongest vs the fiercest"],
+quote:"Throughout Heaven and Earth, I alone am the honored one.",
+builds:[
+ {name:"The Honored One — RL150", level:150, type:"PvE · Int 80 Caster", primary:true,
+  stats:{VIG:45,MND:45,END:15,STR:10,DEX:18,INT:80,FTH:7,ARC:9},
+  weapons:["Lusat's Glintstone Staff","Carian Regal Scepter (offhand)"],
+  armor:["Black blindfold: Fia's Hood (altered)","Snow Witch robe (black)"],
+  talismans:["Graven-Mass Talisman","Magic Scorpion Charm","Radagon Icon","Cerulean Amber Medallion +2"],
+  spells:["Comet Azur (Hollow Purple)","Carian Retaliation (Infinity — parry everything)","Comet (Blue)","Rennala's Full Moon (Unlimited Void)","Terra Magica"],
+  summon:"—",
+  notes:"Carian Retaliation IS Infinity: nothing ever touches you, and their own attacks kill them. Hollow Purple = Terra Magica + Comet Azur. Wear the blindfold. You'll still win."},
+ {name:"Unlimited Void — Domain PvP", level:125, type:"PvP · Control",
+  stats:{VIG:45,MND:38,END:14,STR:10,DEX:16,INT:68,FTH:7,ARC:9},
+  weapons:["Carian Regal Scepter","Academy Glintstone Staff"], armor:["Light robes"],
+  talismans:["Graven-School","Magic Scorpion Charm","Erdtree's Favor +2","Carian Filigreed Crest"],
+  spells:["Stars of Ruin (overwhelming information)","Ambush Shard","Carian Phalanx","Comet"],
+  summon:"—", notes:"Flood their inputs with tracking projectiles — Unlimited Void as a gameplay experience: too much information, all at once."},
+ {name:"Young Gojo — RL90", level:90, type:"PvE · Awakening",
+  stats:{VIG:35,MND:30,END:12,STR:10,DEX:16,INT:52,FTH:7,ARC:9},
+  weapons:["Meteorite Staff"], armor:["Jujutsu High black uniform: Preceptor's"],
+  talismans:["Graven-School Talisman","Radagon Icon"],
+  spells:["Rock Sling","Glintstone Cometshard","Great Glintstone Shard"],
+  summon:"—", notes:"Pre-Toji. Strong but mortal — the fight that changes that is coming."}
+]},
+{
+id:"itachi", name:"Itachi Uchiha", anime:"Naruto / Naruto Shippuden", category:"Anti-Hero",
+powerSystem:"Sharingan · Genjutsu · Amaterasu", archetype:"Faith/Dex Black Flame", difficulty:4, rating:8.9, popularity:92,
+banner:["#111827","#b91c1c"],
+bio:"The Uchiha prodigy who slaughtered his own clan to prevent a coup and a war — then bore the world's hatred, and his brother's, so the village would never know. History's kindest villain.",
+personality:"Gentle, brilliant, self-erasing. Every cruelty he performed was a kindness in disguise, paid for with everything he had.",
+combat:"Wins before the fight begins: layered genjutsu, clone feints, and crow swarms — with Amaterasu's unquenchable black fire and the Susanoo as absolute trump cards.",
+techniques:["Tsukuyomi","Amaterasu","Crow Clone Jutsu","Totsuka Blade","Yata Mirror"],
+transformations:["Mangekyō Sharingan","Complete Susanoo"],
+allies:["Sasuke (everything was for him)","Shisui","Kisame"], enemies:["Danzo","Orochimaru","the coup"],
+battles:["The Uchiha massacre","vs Sasuke — the planned death","vs Kabuto — Izanami"],
+quote:"People live their lives bound by what they accept as correct and true... that is how they define reality.",
+builds:[
+ {name:"Amaterasu — RL150", level:150, type:"PvE · Faith/Dex", primary:true,
+  stats:{VIG:48,MND:30,END:20,STR:12,DEX:40,INT:10,FTH:48,ARC:8},
+  weapons:["Nagakiba (Flame Art, Bloodhound's Step)","Godslayer's Seal"],
+  armor:["Black Knife Hood (Akatsuki silhouette)","Fia's Robe","black gloves"],
+  talismans:["Fire Scorpion Charm","Shard of Alexander","Flock's Canvas Talisman","Erdtree's Favor +2"],
+  spells:["Black Flame (Amaterasu)","Black Flame Ritual (Susanoo)","Black Flame Blade","Unseen Form (genjutsu)"],
+  summon:"—",
+  notes:"Godskin black flame burns a % of max HP and cannot be extinguished — it is Amaterasu, mechanically. Unseen Form + Bloodhound's Step for crow-clone misdirection. Poke, vanish, let the fire finish it."},
+ {name:"Tsukuyomi Control — PvP", level:125, type:"PvP · Debuffer",
+  stats:{VIG:48,MND:28,END:18,STR:12,DEX:35,INT:14,FTH:38,ARC:8},
+  weapons:["Nagakiba (Cold)","Godslayer's Seal"], armor:["Black flowing set"],
+  talismans:["Fire Scorpion Charm","Shard of Alexander","Erdtree's Favor +2","Bull-Goat's Talisman"],
+  spells:["Black Flame","Frenzied Burst (Mangekyō stare)","Unseen Form"],
+  summon:"—", notes:"72 hours of torment compressed into frost + black flame stacking. They break before they die."},
+ {name:"Crow Genjutsu — RL100", level:100, type:"PvE · Trickster",
+  stats:{VIG:40,MND:25,END:16,STR:12,DEX:35,INT:10,FTH:30,ARC:8},
+  weapons:["Nagakiba (Occult)","Finger Seal"], armor:["Light black"],
+  talismans:["Concealing Veil? — Assassin's approach","Shard of Alexander"],
+  spells:["Bestial Sling","Black Flame","Darkness"],
+  summon:"Spirit Jellyfish (decoy clone)", notes:"Darkness incantation = genjutsu escape. Fight like every exchange is already three moves deep."}
+]},
+{
+id:"ainz", name:"Ainz Ooal Gown", anime:"Overlord", category:"Villain",
+powerSystem:"Tier Magic · Undead Overlord · YGGDRASIL", archetype:"Int/Faith Death Mage", difficulty:4, rating:9.1, popularity:88,
+banner:["#4c1d95","#111827"],
+bio:"A salaryman trapped in his lich avatar when his beloved MMO shut down — now the undead Sorcerer King of Nazarick, conquering a new world with 700 spells, min-maxed game knowledge, and guardians who worship his every improvised bluff.",
+personality:"A genre-savvy gamer's mind inside a Death-suppressed emotional core; equal parts terrifying overlord and anxious middle manager.",
+combat:"Total magical supremacy: pre-cast buffs, instant-death spells, time stops, and contingency items for every scenario. He wins in preparation, not in the moment.",
+techniques:["The Goal of All Life is Death","Grasp Heart","Time Stop","Fallen Down","Create Fortress"],
+transformations:["True Form: Overlord","Wish Upon a Star"],
+allies:["Albedo","Demiurge","Shalltear","Nazarick"], enemies:["The Theocracy","Clementine","anyone underestimating him"],
+battles:["vs Shalltear — the World Item war","vs Clementine","the Katze Plains massacre"],
+quote:"A ruler must be resolute. If I falter, Nazarick falters.",
+builds:[
+ {name:"Sorcerer King — RL150", level:150, type:"PvE · Int/Fth Death", primary:true,
+  stats:{VIG:44,MND:40,END:14,STR:8,DEX:12,INT:55,FTH:45,ARC:12},
+  weapons:["Prince of Death's Staff (scales Int AND Faith — the lich's catalyst)","Golden Order Seal"],
+  armor:["Fell Omen Cloak","Lusat's Robe (black) — the skeletal overlord silhouette"],
+  talismans:["Graven-Mass Talisman","Flock's Canvas Talisman","Radagon Icon","Cerulean Amber Medallion +2"],
+  spells:["Ancient Death Rancor (Grasp Heart)","Explosive Ghostflame (Fallen Down)","Rancorcall","Tibia's Summons (Nazarick's legions)","Order's Blade"],
+  summon:"Skeletal Militiaman Ashes (they revive — proper undead)",
+  notes:"Prince of Death's Staff is THE Ainz catalyst: death sorceries scale off both mental stats. Pre-buff everything before engaging — Ainz never fights fair, and neither should you. Sasuga, Tarnished-sama."},
+ {name:"The Goal of All Life is Death — Challenge", level:180, type:"Challenge · Deathblight",
+  stats:{VIG:50,MND:45,END:14,STR:10,DEX:14,INT:60,FTH:50,ARC:15},
+  weapons:["Prince of Death's Staff","Eclipse Shotel (Deathblight)"], armor:["Full black robes"],
+  talismans:["Graven-Mass","Flock's Canvas","Old Lord's Talisman","Radagon Icon"],
+  spells:["Fia's Mist (Deathblight fog)","Ancient Death Rancor","Explosive Ghostflame"],
+  summon:"—", notes:"Win PvP duels only via Deathblight buildup — instant death magic, five-second cast. Wide-area annihilation."},
+ {name:"Momon the Adventurer — RL120", level:120, type:"PvE · Disguise Str",
+  stats:{VIG:50,MND:15,END:30,STR:50,DEX:20,INT:20,FTH:15,ARC:10},
+  weapons:["Greatsword x2 — powerstanced colossal (Momon's dual blades)"],
+  armor:["Full black plate: Night's Cavalry set"],
+  talismans:["Shard of Alexander","Erdtree's Favor +2","Bull-Goat's","Green Turtle"],
+  spells:["—"],
+  summon:"—", notes:"The undercover hero persona: a lich pretending to be a warrior, powerstancing two colossal swords because subtlety is a spell he never learned."}
+]},
+{
+id:"rimuru", name:"Rimuru Tempest", anime:"That Time I Got Reincarnated as a Slime", category:"Main Protagonist",
+powerSystem:"Predator · Great Sage · Ultimate Skills", archetype:"Adaptive Omni-Build", difficulty:3, rating:8.7, popularity:87,
+banner:["#38bdf8","#a5f3fc"],
+bio:"A Tokyo salaryman reborn as a slime with the ability to devour and mimic anything. He builds a monster nation founded on coexistence, evolving from puddle to Demon Lord to something beyond.",
+personality:"Easygoing pragmatist with a builder's heart — wants everyone fed, housed and safe, and will annihilate armies if that peace is threatened.",
+combat:"Absorbs enemy abilities and answers every threat with the perfect counter — blades, magic, poison, predation. Versatility as an absolute.",
+techniques:["Predator","Great Sage analysis","Water Blade","Gluttony","Megiddo"],
+transformations:["Human form","Demon Lord Awakening","True Dragon vessel"],
+allies:["Benimaru","Shion","Veldora","Milim"], enemies:["Clayman","Hinata (once)","Yuuki"],
+battles:["vs Ifrit (absorbed)","vs Charybdis","Demon Lord awakening — Falmuth"],
+quote:"I'm a slime. Got a problem with that?",
+builds:[
+ {name:"Predator — RL150", level:150, type:"PvE · True Omni", primary:true,
+  stats:{VIG:50,MND:28,END:20,STR:22,DEX:22,INT:40,FTH:25,ARC:10},
+  weapons:["Sword of Night and Flame — one blade, every answer (Predator absorbed them all)"],
+  armor:["Snow Witch Hat","Sorcerer travel robes — androgynous blue"],
+  talismans:["Shard of Alexander","Magic Scorpion Charm","Fire Scorpion Charm","Erdtree's Favor +2"],
+  spells:["Comet","Black Flame","Swift Glintstone Shard"],
+  summon:"Mimic Tear (a literal slime that copies you!)",
+  notes:"Sword of Night and Flame IS the Predator skill: a sword that casts Comet Azur AND a fire wave, absorbing two schools into one blade. The Mimic Tear — a shapeshifting slime — is the most lore-accurate summon in the game."},
+ {name:"Demon Lord Awakening — RL180", level:180, type:"PvE · Late",
+  stats:{VIG:55,MND:35,END:22,STR:25,DEX:25,INT:50,FTH:35,ARC:12},
+  weapons:["Sword of Night and Flame","Prince of Death's Staff"], armor:["Fell Omen Cloak"],
+  talismans:["Graven-Mass","Shard of Alexander","Flock's Canvas","Erdtree's Favor +2"],
+  spells:["Rennala's Full Moon","Explosive Ghostflame","Flame of the Fell God (Ifrit, absorbed)"],
+  summon:"Mimic Tear +10", notes:"Post-Falmuth. The gentle slime is gone for the moment; Megiddo falls from the sky."},
+ {name:"Just a Slime — RL1", level:1, type:"Challenge · Wretch",
+  stats:{VIG:10,MND:10,END:10,STR:10,DEX:10,INT:10,FTH:10,ARC:10},
+  weapons:["Club (found things)"], armor:["None"],
+  talismans:["—"], spells:["—"],
+  summon:"—", notes:"Wretch start. Absorb (loot) everything you defeat and USE it — your build becomes whatever the Lands Between feeds you. The truest Rimuru run."}
+]},
+{
+id:"alucard", name:"Alucard", anime:"Hellsing Ultimate", category:"Anti-Hero",
+powerSystem:"Vampirism · Restriction Release · Familiars", archetype:"Arcane Bleed Gunslinger", difficulty:4, rating:9.0, popularity:85,
+banner:["#7f1d1d","#171717"],
+bio:"The original vampire — Dracula himself — bound in service to the Hellsing Organization, hunting his own kind with a pair of impossible handguns and several million souls in reserve. He despairs of ever finding a human brave enough to destroy him.",
+personality:"Theatrical, mocking, monstrous — yet reserves his deepest respect for defiant human will.",
+combat:"Absorbs obscene punishment while returning fire with Casull and Jackal, then releases restriction levels until the battlefield becomes a sea of familiars and shadow.",
+techniques:["Casull & Jackal","Regeneration","Shadow manipulation","Level 0 Release","Familiar legion"],
+transformations:["Restriction Levels 3→0","The Count's true form"],
+allies:["Integra","Seras","(Walter, once)"], enemies:["Anderson","The Major","Millennium"],
+battles:["vs Luke Valentine","vs Alexander Anderson","vs The Major's war"],
+quote:"The Bird of Hermes is my name, eating my wings to make me tame.",
+builds:[
+ {name:"Level 0 Release — RL150", level:150, type:"PvE · Arcane Bleed", primary:true,
+  stats:{VIG:55,MND:20,END:25,STR:16,DEX:40,INT:9,FTH:14,ARC:45},
+  weapons:["Full Moon Crossbow + Pulley Crossbow — powerstanced guns (Casull & Jackal)","Reduvia backup"],
+  armor:["Red: Fire Monk cape (crimson)","wide-brim: Black Dumpling? — Traveler's Hat","round glasses imagined"],
+  talismans:["Lord of Blood's Exultation","Shard of Alexander","Erdtree's Favor +2","Crimson Seed Talisman (regeneration)"],
+  spells:["Swarm of Flies (familiar swarm)","Bloodflame Talons"],
+  summon:"Mohg's bloodflame aesthetic — Omenkiller Rollo (brutal familiar)",
+  notes:"Dual crossbows fired from the hips are the Casull/Jackal experience. Swarm of Flies is the familiar ocean. Take hits on purpose — Crimson Seed regen mocks their effort, exactly as he would."},
+ {name:"The Count — RL180 Lore", level:180, type:"Challenge · Unkillable",
+  stats:{VIG:60,MND:25,END:30,STR:20,DEX:40,INT:9,FTH:20,ARC:50},
+  weapons:["Mohgwyn's Sacred Spear (blood aristocrat's weapon)"], armor:["Full black-red regalia"],
+  talismans:["Lord of Blood's Exultation","Crimson Seed +","Godskin Swaddling Cloth (lifesteal)","Erdtree's Favor +2"],
+  spells:["Bloodboon (Mohg's rite)","Swarm of Flies"],
+  summon:"—", notes:"Never flask — heal only through blood (Swaddling Cloth lifesteal + Bloodboon). Death is a door he's already walked through."},
+ {name:"Police Girl Duo — Co-op", level:125, type:"Co-op",
+  stats:{VIG:50,MND:18,END:24,STR:14,DEX:45,INT:9,FTH:10,ARC:35},
+  weapons:["Black Bow (Seras' Harkonnen at range)","Reduvia"], armor:["Red uniform-style"],
+  talismans:["Arrow's Reach","Lord of Blood's Exultation","Shard of Alexander","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"—", notes:"Built for co-op: you take the front theatrically, your partner snipes. Bickering optional but encouraged."}
+]},
+{
+id:"eren", name:"Eren Yeager", anime:"Attack on Titan", category:"Anti-Hero",
+powerSystem:"Titan Shifting · Founding Titan · War Hammer", archetype:"Colossal Quality", difficulty:3, rating:8.8, popularity:93,
+banner:["#365314","#78350f"],
+bio:"A boy who swore to destroy every titan after watching his mother be devoured — only to learn he was one, and that the true enemy was the world across the sea. He chose the Rumbling. History will argue forever whether he was right.",
+personality:"From burning idealist to hollow-eyed fatalist: a man who saw the future and marched into it anyway, hating himself every step.",
+combat:"As a human: suicidal ODM aggression. As a titan: berserker grappling, hardening, and — with the War Hammer — weapons pulled from crystallized flesh.",
+techniques:["ODM gear","Titan hardening","War Hammer constructs","Founding Titan coordinate","The Rumbling"],
+transformations:["Attack Titan","Founding Titan","War Hammer absorption"],
+allies:["Mikasa","Armin","Survey Corps (once)"], enemies:["Reiner","Zeke (used)","Marley","the world"],
+battles:["Trost — first shifting","vs Reiner & Bertholdt","Liberio raid","The Rumbling"],
+quote:"I keep moving forward, until all my enemies are destroyed.",
+builds:[
+ {name:"Attack Titan — RL150", level:150, type:"PvE · Colossal Quality", primary:true,
+  stats:{VIG:58,MND:12,END:34,STR:45,DEX:35,INT:8,FTH:10,ARC:8},
+  weapons:["Greatsword (Quality, Giant Hunt — poetry)","Misericorde (ODM blades, offhand)"],
+  armor:["Bare-chested with long hair: Wandering Knight trousers only"],
+  talismans:["Shard of Alexander","Erdtree's Favor +2","Great-Jar's Arsenal","Green Turtle Talisman"],
+  spells:["—"],
+  summon:"—",
+  notes:"Giant Hunt — an ash of war literally named for killing giants — launched from a colossal blade is the entire AoT thesis in one input. Fight shirtless, scream first, ask nothing after."},
+ {name:"Scout Regiment — RL80", level:80, type:"PvE · Human Eren",
+  stats:{VIG:40,MND:10,END:30,STR:18,DEX:40,INT:8,FTH:8,ARC:8},
+  weapons:["Scavenger's Curved Sword x2 (ODM blades)","Bloodhound Step"],
+  armor:["Scout: leather + green Cape (Bloodsoaked Cape)"],
+  talismans:["Millicent's Prosthesis","Rotten Winged Sword","Erdtree's Favor","Green Turtle"],
+  spells:["—"],
+  summon:"—", notes:"Dual curved blades, constant dashes, hit the nape (backstabs only on humanoid enemies where possible)."},
+ {name:"The Rumbling — Endgame", level:200, type:"Challenge · Walking apocalypse",
+  stats:{VIG:60,MND:15,END:40,STR:66,DEX:30,INT:8,FTH:15,ARC:8},
+  weapons:["Giant-Crusher x2 powerstanced"],
+  armor:["Full Bull-Goat — an unstoppable colossus"],
+  talismans:["Great-Jar's Arsenal","Erdtree's Favor +2","Bull-Goat's Talisman","Shard of Alexander"],
+  spells:["—"],
+  summon:"—", notes:"Walk. Only walk. Never sprint, never dodge — nothing that lives ahead of you survives, and nothing behind you is forgiven."}
+]},
+{
+id:"levi", name:"Levi Ackerman", anime:"Attack on Titan", category:"Secondary Protagonist",
+powerSystem:"Ackerman Awakening · ODM Mastery", archetype:"Dex Backhand Blades", difficulty:4, rating:9.2, popularity:94,
+banner:["#334155","#0f172a"],
+bio:"Humanity's strongest soldier — a clean-freak from the underground city whose blade-work borders on physics violation. He carries every dead comrade with him and makes their deaths mean something, one titan nape at a time.",
+personality:"Blunt, cold-eyed, secretly the most compassionate man in the Corps. Grief is his fuel; discipline is his shape.",
+combat:"Spinning ODM assaults that convert momentum into slashes too fast to track — the fight with the Beast Titan remains the single greatest action sequence in the genre.",
+techniques:["ODM spinning slash","Blade rotation grip","Squad tactics","Ackerman burst"],
+transformations:["Ackerman awakening (permanent)"],
+allies:["Erwin","Hange","Mikasa","his squad's memory"], enemies:["Zeke Yeager (sworn)","Kenny","titans"],
+battles:["vs the Female Titan","vs the Beast Titan — the charge","vs Zeke, final"],
+quote:"The only thing we're allowed to do is believe that we won't regret the choice we made.",
+builds:[
+ {name:"Humanity's Strongest — RL150", level:150, type:"PvE/PvP · Dex DLC", primary:true,
+  stats:{VIG:50,MND:16,END:30,STR:12,DEX:70,INT:9,FTH:8,ARC:10},
+  weapons:["Backhand Blade (Keen, Blind Spot) — reverse-grip is HIS grip","Smithscript Dagger (thrown = ODM anchors)"],
+  armor:["White cravat imagined: Nox Swordstress + white sash","Scout cape"],
+  talismans:["Rotten Winged Sword Insignia","Millicent's Prosthesis","Shard of Alexander","Blue Dancer Charm"],
+  spells:["—"],
+  summon:"—",
+  notes:"The DLC's Backhand Blades use Levi's actual reverse grip, and Blind Spot's darting sidestep is pure ODM redirection. Highest skill ceiling in the Nexus — and the highest reward. Keep your blades clean."},
+ {name:"Beast Titan Killer — Burst", level:168, type:"Challenge · One window",
+  stats:{VIG:50,MND:20,END:34,STR:12,DEX:80,INT:9,FTH:8,ARC:10},
+  weapons:["Backhand Blade (Keen)","Bloodhound's Fang (gap closer)"],
+  armor:["Light — full mobility"],
+  talismans:["Rotten Winged Sword","Millicent's Prosthesis","Thorny Cracked Tear physick","Dagger Talisman"],
+  spells:["—"],
+  summon:"—", notes:"Recreation of THE scene: engage large bosses only, never stop attacking once you start, chain-crit staggers. Blind them, fell them, finish it."},
+ {name:"Underground Thug — RL60", level:60, type:"PvE · Origins",
+  stats:{VIG:32,MND:10,END:24,STR:12,DEX:45,INT:9,FTH:8,ARC:10},
+  weapons:["Scavenger's Curved Sword x2"], armor:["Dark rags"],
+  talismans:["Millicent's Prosthesis","Green Turtle"], spells:["—"],
+  summon:"—", notes:"Before Erwin. Knife-work learned the hard way, in the dark, for survival."}
+]},
+{
+id:"escanor", name:"Escanor", anime:"The Seven Deadly Sins", category:"Legendary",
+powerSystem:"Sunshine (Grace) · Divine Axe Rhitta", archetype:"Str/Faith Sun Paladin", difficulty:3, rating:8.8, popularity:84,
+banner:["#f59e0b","#fef3c7"],
+bio:"The Lion's Sin of Pride — a timid, apologetic poet by night who becomes the strongest man alive as the sun climbs, peaking for one invincible minute at high noon as 'The One'.",
+personality:"Two men in one body: the humble night Escanor who loves quietly, and the magnificently arrogant day Escanor who pities everyone above him.",
+combat:"Raw solar output through the divine axe Rhitta — cleaves, heat auras that melt terrain, and Cruel Sun orbs. At noon, all of it becomes effortless.",
+techniques:["Cruel Sun","Divine Sword Escanor","Sunshine aura","THE ONE","Pride Flare"],
+transformations:["Day form","Noon peak: The One","The One: Ultimate"],
+allies:["Meliodas","Merlin (beloved)","the Sins"], enemies:["Estarossa","Zeldris","the Demon Clan"],
+battles:["vs Estarossa — 'Who decided that?'","vs Meliodas Assault Mode","vs the Demon King"],
+quote:"Who decided that? ...The one who decides how people should be is me.",
+builds:[
+ {name:"The One — RL150", level:150, type:"PvE · Str/Fth Sacred", primary:true,
+  stats:{VIG:55,MND:16,END:30,STR:60,DEX:12,INT:8,FTH:40,ARC:7},
+  weapons:["Greataxe (Sacred, Golden Land) — Rhitta blessed by the sun","Erdtree Seal"],
+  armor:["Bare chest + Iron Greaves — day-form physique mandatory"],
+  talismans:["Sacred Scorpion Charm","Shard of Alexander","Erdtree's Favor +2","Roar Medallion"],
+  spells:["Golden Vow","Blessing of the Erdtree","Discus of Light (Cruel Sun)","Elden Stars at noon"],
+  summon:"—",
+  notes:"House rule that makes it art: your damage buffs (Golden Vow + FGMS) may only be active during in-game daytime — check the sky. At noon, use everything at once. For one minute, you are invincible."},
+ {name:"Night Escanor — RL60", level:60, type:"PvE · The poet",
+  stats:{VIG:30,MND:14,END:16,STR:16,DEX:14,INT:10,FTH:20,ARC:7},
+  weapons:["Hand Axe (it's so heavy...)","Finger Seal"], armor:["Tavern keeper: common garb + spectacles"],
+  talismans:["Crimson Amber Medallion","Boltdrake"], spells:["Heal","Urgent Heal"],
+  summon:"—", notes:"Apologize to every enemy. Run from most fights. Write poetry about Merlin at graces. Dawn is coming."},
+ {name:"Divine Sword — Boss killer", level:170, type:"Challenge",
+  stats:{VIG:58,MND:20,END:32,STR:66,DEX:12,INT:8,FTH:45,ARC:7},
+  weapons:["Greataxe (Sacred)","Winged Greathorn"],
+  armor:["Bare"], talismans:["Sacred Scorpion","Shard of Alexander","Axe Talisman","Godfrey Icon"],
+  spells:["Golden Vow","Flame Grant Me Strength"],
+  summon:"—", notes:"Single fully-charged R2s only — each swing is Divine Sword Escanor, a blade of pure heat that ends arguments."}
+]},
+{
+id:"madara", name:"Madara Uchiha", anime:"Naruto Shippuden", category:"Villain",
+powerSystem:"Sharingan · Rinnegan · Six Paths · Wood Style", archetype:"Int Gravity Warlord", difficulty:4, rating:9.3, popularity:91,
+banner:["#7f1d1d","#1e1b4b"],
+bio:"Co-founder of the Hidden Leaf who lost faith in humanity and declared war on reality itself — planning to trap the world in an infinite dream. Revived at the war's peak, he solo'd the entire Shinobi Alliance and enjoyed it.",
+personality:"Majestic, disdainful, nostalgic for a worthy opponent. The only man who ever made an army feel like a formality.",
+combat:"Every tool in the franchise: taijutsu that embarrasses kage, fire storms, gravity gods, meteor drops, and the Perfect Susanoo — mountains die when he's serious.",
+techniques:["Fire Style: Majestic Destroyer Flame","Tengai Shinsei (meteors)","Limbo","Perfect Susanoo","Wood Style: Deep Forest Emergence"],
+transformations:["Mangekyō","Rinnegan revival","Six Paths Ten-Tails Jinchūriki"],
+allies:["(Hashirama, once)","Obito (pawn)","Zetsu (betrayer)"], enemies:["Hashirama","the Shinobi Alliance","Night Guy's shin"],
+battles:["vs Hashirama — Valley of the End","vs the Fourth Division (solo)","vs Might Guy — Eight Gates"],
+quote:"Wake up to reality! Nothing ever goes as planned in this accursed world.",
+builds:[
+ {name:"Ghost of the Uchiha — RL150", level:150, type:"PvE · Int Gravity", primary:true,
+  stats:{VIG:50,MND:38,END:22,STR:30,DEX:18,INT:60,FTH:10,ARC:8},
+  weapons:["Fallingstar Beast Jaw (gunbai-shaped, gravity slams)","Meteorite Staff"],
+  armor:["Crimson: Fire Monk armor + war fan silhouette"],
+  talismans:["Graven-Mass Talisman","Magic Scorpion Charm","Shard of Alexander","Erdtree's Favor +2"],
+  spells:["Meteorite of Astel (TENGAI SHINSEI — the meteor drop)","Rock Sling","Gravity Well","Collapsing Stars"],
+  summon:"—",
+  notes:"Meteorite of Astel rains actual meteors — cast it from a cliff onto a camp and you have recreated his war entrance exactly. Fallingstar Beast Jaw doubles as the gunbai. Dance? ...It's time to dance."},
+ {name:"Perfect Susanoo — RL200", level:200, type:"Challenge · Warlord",
+  stats:{VIG:60,MND:40,END:30,STR:40,DEX:20,INT:65,FTH:12,ARC:8},
+  weapons:["Ruins Greatsword (gravity colossal — Susanoo blade)","Fallingstar Beast Jaw"],
+  armor:["Full crimson plate"],
+  talismans:["Graven-Mass","Shard of Alexander","Great-Jar's Arsenal","Magic Scorpion"],
+  spells:["Meteorite of Astel","Founding Rain of Stars"],
+  summon:"—", notes:"The Ruins Greatsword's beam slash is the Susanoo blade arc. Fight entire dungeon rooms at once. Feel disappointed by all of them."},
+ {name:"Valley of the End — Duelist", level:125, type:"PvP",
+  stats:{VIG:52,MND:24,END:26,STR:35,DEX:18,INT:40,FTH:10,ARC:8},
+  weapons:["Fallingstar Beast Jaw"], armor:["Crimson medium"],
+  talismans:["Shard of Alexander","Magic Scorpion","Erdtree's Favor +2","Bull-Goat's"],
+  spells:["Rock Sling","Gravity Well (pull them in)"],
+  summon:"—", notes:"Gravity Well drags runners to you like the battlefield owes you their presence. It does."}
+]},
+{
+id:"kenshin", name:"Himura Kenshin", anime:"Rurouni Kenshin", category:"Mentor",
+powerSystem:"Hiten Mitsurugi-ryū · Sakabatō", archetype:"Pure Dex Iaijutsu", difficulty:3, rating:8.5, popularity:78,
+banner:["#dc2626","#fda4af"],
+bio:"Once the Hitokiri Battōsai, the Revolution's deadliest assassin — now a wandering swordsman carrying a reverse-bladed sakabatō and a vow never to kill again. He protects the new era from the ghosts of the old one, himself included.",
+personality:"Soft-spoken, self-deprecating ('oro?'), carrying oceans of guilt with a smile — until someone threatens the innocent, and the Battōsai's eyes return.",
+combat:"Hiten Mitsurugi-ryū: godspeed battōjutsu that ends fights in a single draw. The reverse blade turns lethal art into judgment without death.",
+techniques:["Battōjutsu","Ryū Tsui Sen","Kuzu Ryū Sen (nine-headed dragon)","Amakakeru Ryū no Hirameki"],
+transformations:["Battōsai state (amber eyes)"],
+allies:["Kaoru","Sanosuke","Yahiko"], enemies:["Shishio Makoto","Enishi","his own past"],
+battles:["vs Saitō — old wolves","vs Shishio — Mount Hiei","vs Enishi — Jinchū"],
+quote:"A sword is a weapon. The art of swordsmanship is learning how to kill. But this one prefers a sword that protects.",
+builds:[
+ {name:"Amakakeru Ryū — RL150", level:150, type:"PvE/PvP · Iaijutsu", primary:true,
+  stats:{VIG:50,MND:16,END:28,STR:12,DEX:66,INT:9,FTH:10,ARC:8},
+  weapons:["Uchigatana (Keen, Unsheathe — the entire character in one ash of war)"],
+  armor:["Red: Fire Monk garb (light) + White Reed greaves"],
+  talismans:["Shard of Alexander","Green Turtle Talisman","Millicent's Prosthesis","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"—",
+  notes:"Unsheathe is Battōjutsu, mechanically and spiritually: sheathe, wait, and answer everything with a single instant draw. House rule for the vow: no critical hits on downed enemies — the sakabatō does not execute."},
+ {name:"Hitokiri Battōsai — Dark past", level:125, type:"PvP · Lethal",
+  stats:{VIG:48,MND:14,END:26,STR:12,DEX:60,INT:9,FTH:8,ARC:12},
+  weapons:["Uchigatana (Blood, Unsheathe)","Misericorde"],
+  armor:["Dark blue, night work"],
+  talismans:["Lord of Blood's Exultation","Shard of Alexander","Assassin's Cerulean Dagger","Millicent's Prosthesis"],
+  spells:["—"],
+  summon:"—", notes:"The Kyoto years. Every draw kills. This build exists so you understand why he swore the vow."},
+ {name:"Kuzu Ryū Sen — Challenge", level:160, type:"Challenge",
+  stats:{VIG:52,MND:18,END:32,STR:14,DEX:70,INT:9,FTH:10,ARC:8},
+  weapons:["Uchigatana (Keen)","Nagakiba (Keen)"],
+  armor:["Light"], talismans:["Rotten Winged Sword","Millicent's Prosthesis","Shard of Alexander","Green Turtle"],
+  spells:["—"],
+  summon:"—", notes:"Nine strikes, nine directions, no gaps: full combo strings only, never single pokes. The succession technique demands totality."}
+]},
+{
+id:"jotaro", name:"Jotaro Kujo", anime:"JoJo's Bizarre Adventure: Stardust Crusaders", category:"Main Protagonist",
+powerSystem:"Stand: Star Platinum · Time Stop", archetype:"Str Stand Brawler", difficulty:3, rating:8.7, popularity:89,
+banner:["#4338ca","#a5b4fc"],
+bio:"A delinquent marine biologist(-to-be) whose Stand, Star Platinum, possesses precision and power beyond any other. He crossed a continent to save his mother and ended a hundred-year curse with a barrage of fists and four words: ORA ORA ORA ORA.",
+personality:"'Yare yare daze.' Unflappable, laconic, deceptively brilliant — his coldest moments hide the deepest loyalty.",
+combat:"Star Platinum: The World — machine-gun punch barrages, inhuman precision catches, and stolen seconds of frozen time.",
+techniques:["ORA Barrage","Star Finger","Time Stop (2 seconds)","Precision catch"],
+transformations:["Star Platinum: The World"],
+allies:["Joseph","Kakyoin","Polnareff","Avdol","Iggy"], enemies:["DIO","Yoshikage Kira (Part 4)","Pucci"],
+battles:["vs DIO — Cairo, time itself","vs D'Arby (poker)","vs Kira with Josuke"],
+quote:"Yare yare daze.",
+builds:[
+ {name:"Star Platinum — RL150", level:150, type:"PvE · Stand fists", primary:true,
+  stats:{VIG:54,MND:20,END:32,STR:50,DEX:30,INT:9,FTH:12,ARC:8},
+  weapons:["Dryleaf Arts (Heavy) — the Stand's fists are yours","Cipher Pata (Stand projection, offhand)"],
+  armor:["Black trench: Fell Omen Cloak + flat cap silhouette (Black Knife Hood altered)"],
+  talismans:["Shard of Alexander","Rotten Winged Sword","Erdtree's Favor +2","Roar Medallion"],
+  spells:["Golden Vow"],
+  summon:"Mimic Tear — the Stand made visible",
+  notes:"Palm Blast flurries at point blank are the ORA barrage. The Mimic Tear fighting beside you in your exact shape IS the Stand — let it punch what you punch. Time stop = stagger windows; use them all."},
+ {name:"Star Platinum: The World — Challenge", level:170, type:"Challenge",
+  stats:{VIG:56,MND:25,END:34,STR:55,DEX:32,INT:9,FTH:15,ARC:8},
+  weapons:["Dryleaf Arts"], armor:["Same silhouette, gold chain: gold accents"],
+  talismans:["Shard of Alexander","Godfrey Icon","Rotten Winged Sword","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"—", notes:"Bosses only. You may attack ONLY during stagger/stance-break windows — frozen time — and must fully unload each one. Damage anywhere else disqualifies the run."},
+ {name:"Part 4 Jotaro — RL125", level:125, type:"PvP · Veteran",
+  stats:{VIG:52,MND:16,END:30,STR:45,DEX:28,INT:9,FTH:10,ARC:8},
+  weapons:["Dryleaf Arts","Star Fist"], armor:["White coat: light armor, white cape"],
+  talismans:["Rotten Winged Sword","Shard of Alexander","Bull-Goat's","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"—", notes:"Older, more efficient, slightly less HP than his prime — but the reads are sharper than ever."}
+]},
+{
+id:"asta", name:"Asta", anime:"Black Clover", category:"Main Protagonist",
+powerSystem:"Anti-Magic · Devil Union · Ki", archetype:"Str Colossal Anti-Mage", difficulty:2, rating:8.4, popularity:82,
+banner:["#171717","#84cc16"],
+bio:"Born without a drop of mana in a world where magic is everything, Asta trained his body into a weapon and swings Anti-Magic swords that cut spells themselves — screaming his way from peasant orphan to Magic Knight legend.",
+personality:"Volume incarnate. Never gives up, never doubts, never quiets down — and slowly, the world stops laughing.",
+combat:"Anti-Magic blades nullify sorcery on contact; Ki-honed reflexes and raw muscle handle everything else. Devil Union grants flight and black-winged annihilation.",
+techniques:["Demon-Slayer Sword","Demon-Destroyer Sword","Bull Thrust","Black Meteorite","Devil Union: Mode Black"],
+transformations:["Black form","Devil Union 50%","Full Devil Union"],
+allies:["Yuno","Noelle","Yami","Black Bulls"], enemies:["Dante","Lucifero","the Devils"],
+battles:["vs Ladros","vs Dante — with Yami","vs Lucifero"],
+quote:"Not giving up is my magic!",
+builds:[
+ {name:"Devil Union — RL150", level:150, type:"PvE · Anti-Magic Colossal", primary:true,
+  stats:{VIG:55,MND:10,END:36,STR:60,DEX:25,INT:7,FTH:7,ARC:8},
+  weapons:["Greatsword (Heavy) — the Demon-Slayer's absurd slab","Golem's Halberd (Demon-Destroyer)"],
+  armor:["Black Bulls: black cloak (Bloodsoaked Cape) + headband"],
+  talismans:["Shard of Alexander","Erdtree's Favor +2","Pearldrake Talisman +2 (ANTI-MAGIC: max non-physical negation)","Bull-Goat's Talisman"],
+  spells:["NONE — permanently. You have no mana. This is the whole point."],
+  summon:"—",
+  notes:"The gimmick is total: zero spells, zero buffs, zero incantations, and Pearldrake+2 to shrug off enemy magic like the swords are eating it. Every caster boss becomes a screaming contest you win."},
+ {name:"Magic Knight Entrance — RL40", level:40, type:"PvE · Entry",
+  stats:{VIG:28,MND:8,END:22,STR:28,DEX:14,INT:7,FTH:7,ARC:8},
+  weapons:["Claymore (Heavy)"], armor:["Peasant garb + headband"],
+  talismans:["Erdtree's Favor"], spells:["—"],
+  summon:"—", notes:"The exam arc: outwork everyone with a hand-me-down blade and unreasonable volume."},
+ {name:"Black Meteorite — PvP", level:125, type:"PvP · Anti-caster",
+  stats:{VIG:52,MND:8,END:34,STR:55,DEX:20,INT:7,FTH:7,ARC:8},
+  weapons:["Greatsword (Heavy, Lion's Claw)","Misericorde"],
+  armor:["Medium black"],
+  talismans:["Pearldrake +2","Spelldrake +2","Shard of Alexander","Erdtree's Favor +2"],
+  spells:["—"],
+  summon:"—", notes:"Built to hunt mages: double drake talismans make sorcery tickle while you close distance like a thrown anvil."}
+]}
+);
+/* ============ ELDEN RING KNOWLEDGE CENTER ============ */
+/* HP values are approximate NG (New Game) figures from community wikis. */
+const BOSSES = [
+{id:"margit", name:"Margit, the Fell Omen", loc:"Stormveil Castle approach", hp:"~4,174", dlc:false,
+ weak:["Slash","Bleed","Jump attacks"], resist:["Holy"],
+ strategy:"The great filter. Punish his slow staff swings, respect the delayed dagger, and use the stakes of Marika. Spirit ashes split his aggression well.",
+ matchup:{best:["guts","jinwoo"], text:"Guts treats Margit's delayed swings like Zodd's warm-up — Lion's Claw staggers him repeatedly. Jin-Woo's Tiche makes the 'put these foolish ambitions to rest' speech age instantly."}},
+{id:"godrick", name:"Godrick the Grafted", loc:"Stormveil Castle", hp:"~6,080", dlc:false,
+ weak:["Bleed","Frost","Stance damage"], resist:["Fire (phase 2 arm)"],
+ strategy:"Stay behind him phase 1; phase 2's dragon-arm flames leave huge punish windows after breath attacks. Highly stagger-able with heavy weapons.",
+ matchup:{best:["eren","asta"], text:"A lord who grafts limbs for power meets Eren, who's been stealing titans for three seasons — thematic mirror match. Asta simply cannot be bothered by the fire."}},
+{id:"rennala", name:"Rennala, Queen of the Full Moon", loc:"Raya Lucaria Academy", hp:"~3,493", dlc:false,
+ weak:["Physical (phase 2)","Stagger in phase 1"], resist:["Magic (high)"],
+ strategy:"Phase 1 is a puzzle — break the singing scholars. Phase 2: never trade with the full moon; rush her between summons.",
+ matchup:{best:["asta","gojo"], text:"Asta's anti-magic build turns her entire kit off — this is his boss. Gojo vs Rennala is a sorcery seminar where only one participant has Six Eyes."}},
+{id:"radahn", name:"Starscourge Radahn", loc:"Caelid — Radahn Festival", hp:"~9,572", dlc:false,
+ weak:["Bleed","Scarlet Rot","Summon swarm"], resist:["Magic","Holy"],
+ strategy:"The festival gives you infinite summon signs — use them as waves. Torrent is legal: hit-and-run cavalry warfare. Beware the meteor re-entry in phase 2.",
+ matchup:{best:["madara","goku"], text:"Radahn holds back the stars; Madara throws them. Tengai Shinsei vs gravity magic is the anime fight the festival deserves. Goku just wants the strongest — he found him."}},
+{id:"rykard", name:"Rykard, Lord of Blasphemy", loc:"Volcano Manor — Mt. Gelmir", hp:"~13,372", dlc:false,
+ weak:["Serpent-Hunter spear (provided)","Fire resist helps you"], resist:["Fire (total)"],
+ strategy:"Take the Serpent-Hunter from the arena entrance — the fight is built around it. Watch for the skull rain in phase 2 and keep mid-range spacing.",
+ matchup:{best:["ainz","rimuru"], text:"A god-devouring serpent meets Ainz, who read the strategy guide for gods. Rimuru vs Rykard is two devourers comparing menus — but only one has Great Sage."}},
+{id:"morgott", name:"Morgott, the Omen King", loc:"Leyndell, Royal Capital", hp:"~10,399", dlc:false,
+ weak:["Bleed","Frost","Physical"], resist:["Holy (high)"],
+ strategy:"Margit's true form — faster, angrier, with cursed blood-blades. His combos end with punishable slams; Margit's Shackle no longer works. Stay patient mid-range.",
+ matchup:{best:["kenshin","levi"], text:"The cursed king who defends a throne that hates him vs Kenshin, who knows exactly what it costs to serve an era that's ending. Levi's Blind Spot makes the blade rain irrelevant."}},
+{id:"firegiant", name:"Fire Giant", loc:"Mountaintops of the Giants", hp:"~43,263", dlc:false,
+ weak:["Bleed (huge HP pool)","Torrent mobility","Leg targeting"], resist:["Fire (obviously)"],
+ strategy:"A war of attrition against ankles. Stay on Torrent, stick to the left leg phase 1; phase 2, bait the rolling and punish the downed torso.",
+ matchup:{best:["eren","saitama"], text:"Eren vs a giant that must be brought down by targeting the nape— sorry, ankle — is literally his home game. Saitama ends it in one punch and feels nothing."}},
+{id:"mohg", name:"Mohg, Lord of Blood", loc:"Mohgwyn Palace", hp:"~18,389", dlc:false,
+ weak:["Bleed","Frost","Black Flame","Purifying Crystal Tear"], resist:["Physical","all status (high)"],
+ strategy:"Carry the Purifying Crystal Tear to nullify the Nihil ritual or the fight becomes a countdown. Aggressive melee shreds him — he has poor poise recovery.",
+ matchup:{best:["alucard","ichigo"], text:"The blood lord meets the actual king of blood — Alucard finds Mohg's dynasty adorable. Hollow-mask Ichigo trades bleed for bleed and wins the exchange."}},
+{id:"malenia", name:"Malenia, Blade of Miquella", loc:"Elphael, Brace of the Haligtree", hp:"~33,251 (two phases)", dlc:false,
+ weak:["Bleed","Frost","Stance pressure"], resist:["She heals on EVERY hit, even blocked"],
+ strategy:"The hardest boss in the base game. Never let Waterfowl Dance start point-blank — run out of the first flurry, dodge into the rest. Phase 2 opens with Scarlet Aeonia: sprint away, then punish.",
+ matchup:{best:["levi","kenshin","saitama"], text:"Waterfowl Dance vs the Beast Titan slalom — Levi is the only one fast enough to duel her honestly. Kenshin's counter-draw answers her rhythm. Saitama is Saitama; she deserves better than that."}},
+{id:"godfrey", name:"Godfrey, First Elden Lord", loc:"Leyndell, Ashen Capital", hp:"~21,903", dlc:false,
+ weak:["Slash","Bleed"], resist:["Holy","Physical (phase 1)"],
+ strategy:"Phase 1 is honest axe work. Phase 2 — Hoarah Loux — is a grappling nightmare: his command grabs track rolls, so sprint out of them instead.",
+ matchup:{best:["goku","jotaro"], text:"A warrior who set aside his weapon to fight bare-handed? Goku has been waiting the whole database for this one. Jotaro answers suplexes with ORA."}},
+{id:"maliketh", name:"Maliketh, the Black Blade", loc:"Crumbling Farum Azula", hp:"~10,620", dlc:false,
+ weak:["Poise damage","Blasphemous Claw parries"], resist:["Everything moderately — he's just fast"],
+ strategy:"Beast Clergyman phase: punish the dagger throws. Maliketh phase: his Destined Death arcs reduce max HP — use Blasphemous Claw counters or stay glued under him.",
+ matchup:{best:["ichigo","jinwoo"], text:"A death god with a black blade vs a substitute death god with a black blade — Ichigo's mirror match. Jin-Woo would try to Arise him afterward, and honestly, imagine that shadow."}},
+{id:"radagon", name:"Radagon / Elden Beast", loc:"Elden Throne", hp:"~10,399 + ~24,455", dlc:false,
+ weak:["Radagon: Physical, Fire, Bleed","Elden Beast: Frost, Bleed (mounted phase)"], resist:["Radagon: Holy (near-immune)","Elden Beast: Holy (immune)"],
+ strategy:"Two full bosses back to back. Never bring holy damage. Post-patch you can ride Torrent against the Elden Beast — chase it down and stay on the tail-side.",
+ matchup:{best:["naruto","rimuru"], text:"A god who is two people sharing one body — Naruto has literal lived experience with that conversation. Rimuru just absorbs the Elden Beast and apologizes."}},
+{id:"rellana", name:"Rellana, Twin Moon Knight", loc:"Castle Ensis (DLC)", hp:"~18,000 (approx.)", dlc:true,
+ weak:["Poise pressure","Parries"], resist:["Magic","Fire"],
+ strategy:"A Pontiff-style duelist with twin blades and twin moons. Her long combo strings have exactly one gap — learn it. The Twin Moons slam has three waves: jump each.",
+ matchup:{best:["sasuke","zoro"], text:"Twin-blade duelist vs Zoro is a swordsmanship debate settled at 1080 Pounds. Sasuke vs the twin moons is Uchiha aesthetics against Carian — pick your eye technique."}},
+{id:"messmer", name:"Messmer the Impaler", loc:"Shadow Keep (DLC)", hp:"~23,000 (approx.)", dlc:true,
+ weak:["Physical pressure","His own fire barely hurts fire-resist builds"], resist:["Fire (very high)"],
+ strategy:"The DLC's centerpiece duel: serpentine spear arts and fire cascades with generous punish windows for aggressive melee. Phase 2's snake dives demand sprints, not rolls.",
+ matchup:{best:["tanjiro","escanor"], text:"A serpent wreathed in cursed flame vs Tanjiro, whose entire style was made for beheading serpents in fire. Escanor simply out-burns him — 'Who decided your flame ranks above mine?'"}},
+{id:"midra", name:"Midra, Lord of Frenzied Flame", loc:"Abyssal Woods (DLC)", hp:"~19,000 (approx.)", dlc:true,
+ weak:["Physical","Bleed"], resist:["Fire","Madness (immune)"],
+ strategy:"Reach him through the horror-stealth of the Abyssal Woods. In the fight, his frenzy beams punish greed — take two hits, never three. One of the DLC's most cinematic arenas.",
+ matchup:{best:["itachi","alucard"], text:"The lord of madness vs Itachi, who weaponized despair itself — Tsukuyomi against the Three Fingers is a genjutsu duel for the ages. Alucard finds the whole descent into madness nostalgic."}},
+{id:"pcr", name:"Promised Consort Radahn", loc:"Enir-Ilim (DLC final)", hp:"~46,000 (approx.)", dlc:true,
+ weak:["Stance-breaks","Deflecting Hardtear","Bleed"], resist:["Holy (phase 2 adds light rain)"],
+ strategy:"The hardest fight FromSoftware has shipped. Phase 2's light-trail cross slashes demand memorization. Post-nerf it's fair — barely. Bring your absolute best build.",
+ matchup:{best:["madara","goku","saitama"], text:"A revived legend dragged back as a vessel to break the world — Madara respects the career path deeply. This is the fight Goku came for. Saitama... would finally feel something? No. No, he wouldn't."}}
+];
+
+const WEAPONS = [
+{name:"Greatsword", type:"Colossal Sword", req:"31 Str / 12 Dex", scaling:"Str C→B (Heavy)", loc:"Caravan chest, Caelid", dlc:false,
+ note:"The Berserk homage. Slab of iron, best colossal moveset in the game.", chars:["guts","asta","eren"]},
+{name:"Uchigatana", type:"Katana", req:"11 Str / 15 Dex", scaling:"Dex D→S (Keen)", loc:"Samurai starter / Deathtouched Catacombs", dlc:false,
+ note:"The most versatile katana — every anime swordsman's default body.", chars:["zoro","tanjiro","kenshin","sasuke"]},
+{name:"Nagakiba", type:"Katana", req:"18 Str / 22 Dex", scaling:"Dex → B (Keen)", loc:"Yura's questline", dlc:false,
+ note:"Longest katana in the game; Bloodhound's Step compatible.", chars:["ichigo","itachi","sasuke"]},
+{name:"Moonveil", type:"Katana", req:"12 Str / 18 Dex / 23 Int", scaling:"Dex C / Int B", loc:"Gael Tunnel boss", dlc:false,
+ note:"Transient Moonlight — instant magic wave quickdraw. The Chidori of the Lands Between.", chars:["sasuke"]},
+{name:"Rivers of Blood", type:"Katana", req:"12 Str / 18 Dex / 20 Arc", scaling:"Arc D→B", loc:"Bloody Finger Okina, Mountaintops", dlc:false,
+ note:"Corpse Piler — the infamous bleed flurry. Nerfed, still fearsome.", chars:["zoro","alucard"]},
+{name:"Giant-Crusher", type:"Colossal Weapon", req:"60 Str", scaling:"Str C→A (Heavy)", loc:"Outer Wall Phantom Tree chest", dlc:false,
+ note:"Largest hammer in the game. Charged R2s delete health bars.", chars:["saitama","eren"]},
+{name:"Blasphemous Blade", type:"Greatsword", req:"22 Str / 15 Dex / 21 Fth", scaling:"Str D / Dex D / Fth B", loc:"Rykard remembrance", dlc:false,
+ note:"Taker's Flames heals on hit — the community's #1 comfort pick and a top-3 PvE weapon since launch.", chars:["escanor"]},
+{name:"Sword of Night and Flame", type:"Straight Sword", req:"12 Str / 12 Dex / 24 Int / 24 Fth", scaling:"Int B / Fth B", loc:"Caria Manor chest", dlc:false,
+ note:"Casts a Comet Azur beam AND a fire sweep. One sword, two schools.", chars:["rimuru"]},
+{name:"Dark Moon Greatsword", type:"Greatsword", req:"16 Str / 11 Dex / 38 Int", scaling:"Int A", loc:"Ranni's questline finale", dlc:false,
+ note:"The Moonlight Greatsword legacy — frost-charged R2 moonlight waves.", chars:["ichigo","gojo"]},
+{name:"Black Knife", type:"Dagger", req:"8 Str / 12 Dex / 18 Fth", scaling:"Dex B / Fth C", loc:"Black Knife Catacombs", dlc:false,
+ note:"Blade of Death — HP-draining shadow projectile. The assassin's assassin.", chars:["jinwoo"]},
+{name:"Reduvia", type:"Dagger", req:"5 Str / 13 Dex / 13 Arc", scaling:"Arc B", loc:"Bloody Finger Nerijus, Limgrave", dlc:false,
+ note:"Bloodflame blade-flick projectiles. Early-game bleed royalty.", chars:["alucard","jinwoo"]},
+{name:"Backhand Blade", type:"Backhand Blade (DLC)", req:"9 Str / 20 Dex", scaling:"Dex → S-capable (Keen)", loc:"DLC: Fort of Reprimand area", dlc:true,
+ note:"Reverse-grip blades with Blind Spot — a dodging attack sidestep. Levi Ackerman: the weapon.", chars:["levi"]},
+{name:"Dryleaf Arts", type:"Hand-to-Hand (DLC)", req:"8 Str / 8 Dex", scaling:"Str/Dex → strong on any infusion", loc:"DLC: Dryleaf Dane, Scadu Altus / Moorth Ruins", dlc:true,
+ note:"Actual martial arts. Palm Blast is a chargeable ki explosion. The entire shonen genre unlocked in one weapon.", chars:["goku","naruto","luffy","jotaro","saitama","vegeta"]},
+{name:"Dragon-Hunter's Great Katana", type:"Great Katana (DLC)", req:"18 Str / 18 Dex", scaling:"Str/Dex quality", loc:"DLC: Ancient Dragon-Man, Dragon's Pit", dlc:true,
+ note:"Dragonwound Slash fires a charged projectile slash — a Getsuga in weapon form.", chars:["ichigo","tanjiro"]},
+{name:"Rellana's Twin Blades", type:"Light Greatsword (DLC)", req:"14 Str / 18 Dex / 22 Int / 22 Fth", scaling:"Int/Fth hybrid", loc:"DLC: Rellana remembrance", dlc:true,
+ note:"Twin Moons ash — two blades, magic + fire. Spiritual heir to SoNaF.", chars:["sasuke","rimuru"]},
+{name:"Bloodfiend's Arm", type:"Colossal Weapon (DLC)", req:"32 Str / 10 Dex / 20 Arc", scaling:"Str/Arc", loc:"DLC: Bloodfiend drop, Prospect Town", dlc:true,
+ note:"Best-in-slot bleed colossal at launch; nerfed since but still a boss-melter.", chars:["guts","eren"]},
+{name:"Star Fist", type:"Fist", req:"8 Str / 8 Dex", scaling:"Str/Dex", loc:"Leyndell, near Avenue Balcony", dlc:false,
+ note:"Spiked knuckles with inherent bleed — the brawler's true-combo machine.", chars:["goku","vegeta","luffy","jotaro"]},
+{name:"Fallingstar Beast Jaw", type:"Colossal Weapon", req:"34 Str / 12 Dex / 20 Int", scaling:"Str/Int", loc:"Full-Grown Fallingstar Beast, Mt. Gelmir", dlc:false,
+ note:"Gravity slam ash with a magic burst — a war-fan-shaped meteor hammer.", chars:["madara"]},
+{name:"Prince of Death's Staff", type:"Glintstone Staff", req:"6 Str / 18 Int / 18 Fth", scaling:"Int + Fth (unique dual scaling)", loc:"Deeproot Depths tower", dlc:false,
+ note:"THE death-sorcery catalyst — boosts Death spells 10%, scales off both mental stats.", chars:["ainz"]},
+{name:"Lusat's Glintstone Staff", type:"Glintstone Staff", req:"10 Str / 52 Int", scaling:"Int S", loc:"Sellia, Town of Sorcery chest", dlc:false,
+ note:"Highest sorcery scaling in the game at a 50% FP surcharge. Glass-cannon royalty.", chars:["gojo"]},
+{name:"Erdtree Seal", type:"Sacred Seal", req:"40 Fth", scaling:"Fth S", loc:"Volcano Manor prison cell", dlc:false,
+ note:"The pure-faith seal — best incantation scaling for high-Fth builds.", chars:["naruto","escanor"]},
+{name:"Full Moon Crossbow", type:"Crossbow", req:"16 Str / 16 Dex", scaling:"—", loc:"Castle Sol chest", dlc:false,
+ note:"Fires magic bolts; powerstance two crossbows for the full John Woo — or Alucard — experience.", chars:["alucard","guts"]}
+];
+
+const TALISMANS = [
+{name:"Shard of Alexander", effect:"+15% skill (Ash of War) damage", loc:"Complete Alexander's questline", meta:"The universal damage talisman — nearly every build in the Nexus runs it."},
+{name:"Erdtree's Favor +2", effect:"+4% HP, +9.6% Stamina, +8% Equip Load", loc:"Leyndell, Ashen Capital — Forbidden Lands branch", meta:"The stat-stick everyone wears. No reason to ever remove it."},
+{name:"Lord of Blood's Exultation", effect:"+20% attack for 20s when blood loss occurs nearby", loc:"Leyndell Catacombs — Esgar", meta:"The bleed-build engine. Pairs with White Mask for +30% total."},
+{name:"Rotten Winged Sword Insignia", effect:"Successive attacks raise damage up to +13%", loc:"Millicent's questline (final choice)", meta:"The aggression reward — flurry builds live here."},
+{name:"Millicent's Prosthesis", effect:"+5 Dex, successive-attack damage up", loc:"Millicent's questline (invade her)", meta:"Stacks with Rotten Winged Sword for maximum combo scaling."},
+{name:"Graven-Mass Talisman", effect:"+8% sorcery damage", loc:"Albinauric Rise puzzle", meta:"Every pure caster's core slot."},
+{name:"Flock's Canvas Talisman", effect:"+8% incantation damage", loc:"Kill or complete Gowry", meta:"The faith mirror of Graven-Mass."},
+{name:"Magic / Fire / Sacred Scorpion Charms", effect:"+12% of that damage type, +10% phys dmg taken", loc:"Various questlines", meta:"Elemental specialists' glass-cannon slot."},
+{name:"Bull-Goat's Talisman", effect:"+33% poise", loc:"Dragonbarrow Cave, Caelid", meta:"Trade-armor for hyperarmor. PvP staple."},
+{name:"Red-Feathered Branchsword", effect:"+20% attack below 20% HP", loc:"Deathtouched Catacombs", meta:"The Berserker Armor / Ultra Ego / Baryon Mode talisman — risk as a stat."},
+{name:"Blue Dancer Charm", effect:"Attack up at low equip load", loc:"Highroad Cave", meta:"The bare-fisted monk's blessing — Saitama and Ultra Instinct approved."},
+{name:"Godfrey Icon", effect:"+15% charged spells & skills", loc:"Golden Godfrey shade, Leyndell", meta:"For everyone who fully charges the Serious Punch."},
+{name:"Roar Medallion", effect:"+15% roars & breath attacks (boosts some fist skills)", loc:"Limgrave — Stillwater Cave area (see wiki route)", meta:"Warcry-Conqueror's-Haki enabler."},
+{name:"Two Fingers Heirloom / Radagon Icon", effect:"+5 Faith / faster casting", loc:"Purified Ruins / Raya Lucaria chest", meta:"Caster quality-of-life pair."},
+{name:"Pearldrake Talisman +2", effect:"Non-physical damage negation up", loc:"DLC / Crumbling Farum Azula", meta:"The Anti-Magic talisman. Asta's entire character sheet."},
+{name:"Crimson Seed Talisman", effect:"Flask heals +20% (and nearby allies variant in DLC)", loc:"Leyndell — Hermit's shack", meta:"Regeneration roleplay for vampires and jinchūriki."}
+];
+
+/* ============ ACHIEVEMENTS ============ */
+const ACHIEVEMENTS = [
+{id:"first_steps", icon:"🗺️", name:"Tarnished Otaku", desc:"Visit every section of the Nexus.", check:(s)=>["home","characters","builds","fusion","database","rankings","tracker","achievements","analytics","archive"].every(v=>s.visited.includes(v))},
+{id:"anime_master", icon:"📖", name:"Anime Master", desc:"View 10 different character profiles.", check:(s)=>s.viewedChars.length>=10},
+{id:"scholar", icon:"🎓", name:"Lore Scholar", desc:"View every character profile in the encyclopedia.", check:(s)=>s.viewedChars.length>=CHARACTERS.length},
+{id:"build_master", icon:"⚒️", name:"Build Master", desc:"Mark 5 builds as completed in the Tracker.", check:(s)=>s.builds.length>=5},
+{id:"boss_slayer", icon:"👹", name:"Boss Slayer", desc:"Mark 8 bosses defeated.", check:(s)=>s.bosses.length>=8},
+{id:"legendary", icon:"👑", name:"Legendary Tarnished", desc:"Defeat every boss in the database.", check:(s)=>s.bosses.length>=BOSSES.length},
+{id:"fusion_creator", icon:"⚗️", name:"Fusion Creator", desc:"Create your first fusion in the AI Fusion Lab.", check:(s)=>s.fusions>=1},
+{id:"mad_scientist", icon:"🧬", name:"Mad Scientist", desc:"Create 10 fusions. The lab is concerned.", check:(s)=>s.fusions>=10},
+{id:"summoner", icon:"🌑", name:"Summoner King", desc:"View Sung Jin-Woo's full profile. Arise.", check:(s)=>s.viewedChars.includes("jinwoo")},
+{id:"one_punch", icon:"👊", name:"OK.", desc:"View Saitama's profile. That's it. That's the achievement.", check:(s)=>s.viewedChars.includes("saitama")},
+{id:"transformation", icon:"⚡", name:"Transformation Expert", desc:"View all three Dragon Ball & Naruto powerhouses (Goku, Vegeta, Naruto).", check:(s)=>["goku","vegeta","naruto"].every(c=>s.viewedChars.includes(c))},
+{id:"hard_cap", icon:"⬆️", name:"Hard Cap", desc:"Reach level 713 — all eight attributes raised to their hard cap of 99.", check:(s)=>(s.myLevel||1)>=713},
+{id:"completionist", icon:"💯", name:"Completionist", desc:"Unlock every other achievement.", check:(s,unlocked)=>unlocked.filter(a=>a!=="completionist").length>=ACHIEVEMENTS.length-1}
+];
+
+/* ============ HISTORICAL ARCHIVE ============ */
+const ARCHIVE = [
+{build:"Guts — The Black Swordsman", entries:[
+ {v:"v1.0", date:"Launch era (patch 1.02)", note:"Original spec used Heavy Zweihander before the community confirmed the Greatsword's Berserk homage. Stats parked at 50 STR."},
+ {v:"v2.0", date:"patch 1.07", note:"PvP poise rework — added Bull-Goat's Talisman, dropped Green Turtle. Lion's Claw becomes the core stagger loop."},
+ {v:"v3.0", date:"Shadow of the Erdtree (1.12)", note:"Tested Bloodfiend's Arm as the new Dragon Slayer. Reverted — the silhouette is wrong, and Guts doesn't chase meta."},
+ {v:"v4.0 — current", date:"patch 1.16", note:"Final form: 66 STR two-hand breakpoint, Full Moon Crossbow sidearm officially canonized. Rating raised to 9.7."}]},
+{build:"Sung Jin-Woo — Shadow Monarch", entries:[
+ {v:"v1.0", date:"pre-DLC", note:"Ran Mimic Tear as Igris. Community feedback: Black Knife Tiche's death-drain is more lore-faithful to shadow extraction."},
+ {v:"v2.0", date:"patch 1.10", note:"Swapped to powerstanced daggers full-time; Misericorde crit ceiling fits the assassin fantasy."},
+ {v:"v3.0 — current", date:"patch 1.16", note:"Added Tibia's Summons to the RL200 Domain variant — the shadow army finally exists in-engine."}]},
+{build:"Gojo — The Honored One", entries:[
+ {v:"v1.0", date:"launch meta", note:"Standard Azur comet-spam. Functional, but Infinity wasn't represented."},
+ {v:"v2.0", date:"patch 1.09", note:"Breakthrough: Carian Retaliation reworked — parrying spells with Infinity became the build's soul."},
+ {v:"v3.0 — current", date:"patch 1.16", note:"Rennala's Full Moon added as Unlimited Void (defense shred = information overload). Blindfold rule made mandatory."}]}
+];
+
+/* ============ ANALYTICS SEED ============ */
+const ANALYTICS_WEAPONS = [
+ {name:"Uchigatana", uses:412},{name:"Dryleaf Arts", uses:388},{name:"Greatsword", uses:341},
+ {name:"Nagakiba", uses:265},{name:"Backhand Blade", uses:244},{name:"Moonveil", uses:214},
+ {name:"Black Knife", uses:187},{name:"Star Fist", uses:166},{name:"SoNaF", uses:140},{name:"Giant-Crusher", uses:129}];
+const ANALYTICS_ARCH = [
+ {name:"Dex Katana", uses:31},{name:"Str Colossal", uses:24},{name:"Faith Hybrid", uses:15},
+ {name:"Int Caster", uses:12},{name:"Arcane Bleed", uses:10},{name:"Quality Fists", uses:8}];
+
+/* ============ FUSION LAB ENGINE ============ */
+const FUSION_TITLES = ["the Transcendent","the Worldbreaker","the Twin-Souled","the Impossible","the Meta-Shatterer","the Forbidden","the Paradox","of the Final Patch"];
+const FUSION_LORE = [
+ "When {A} and {B} crossed the fog wall together, the Erdtree itself flinched. Their power systems — {psA} and {psB} — were never meant to share one body.",
+ "The Nexus engine warns: fusing {A} with {B} produces a being the Lands Between has no boss designed to stop. The {arch} archetype gains both souls' instincts.",
+ "Scholars at Raya Lucaria classified this fusion as a Remembrance-tier threat. {A}'s techniques flow through {B}'s discipline like lightning through a drawn blade.",
+ "Two legends, one Tarnished. The fusion inherits {A}'s heart and {B}'s edge — and the combined enemies list of both, which is a genuine logistical problem."];
+function fuseName(a,b){
+  const n1=a.name.split(" ")[0], n2=b.name.split(" ")[0];
+  return n1.slice(0,Math.ceil(n1.length/2))+n2.slice(Math.floor(n2.length/2)).toLowerCase();
+}
+/* ============ APP STATE ============ */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
+  set(s){ try{ localStorage.setItem("arnexus", JSON.stringify(s)); }catch(e){} }
+};
+let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1}, store.get());
+function save(){ store.set(S); checkAchievements(); }
+
+function esc(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function toast(msg){
+  const t=document.createElement("div"); t.className="toast-msg"; t.textContent=msg;
+  document.getElementById("toast").appendChild(t);
+  setTimeout(()=>t.remove(), 3400);
+}
+
+/* ============ NAVIGATION ============ */
+function go(view){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+view).classList.add("active");
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active", b.dataset.view===view));
+  if(!S.visited.includes(view)){ S.visited.push(view); save(); }
+  window.scrollTo({top:0});
+}
+document.getElementById("mainNav").addEventListener("click", e=>{
+  if(e.target.dataset.view) go(e.target.dataset.view);
+});
+
+/* ============ ACHIEVEMENTS ENGINE ============ */
+function checkAchievements(){
+  let newly=[];
+  ACHIEVEMENTS.forEach(a=>{
+    if(!S.unlocked.includes(a.id) && a.check(S, S.unlocked)){ S.unlocked.push(a.id); newly.push(a); }
+  });
+  if(newly.length){
+    store.set(S);
+    newly.forEach(a=>toast("🏆 Achievement unlocked: "+a.name));
+    renderAchievements(); renderHeader();
+  }
+}
+
+/* ============ HEADER / HOME ============ */
+const totalBuilds = CHARACTERS.reduce((n,c)=>n+c.builds.length,0);
+function renderHeader(){
+  document.getElementById("hdChars").textContent=CHARACTERS.length;
+  document.getElementById("hdBuilds").textContent=totalBuilds;
+  document.getElementById("hdBosses").textContent=BOSSES.length;
+  document.getElementById("hdAch").textContent=S.unlocked.length+"/"+ACHIEVEMENTS.length;
+}
+function renderHome(){
+  const stats=[
+    {n:CHARACTERS.length,l:"Characters"},{n:totalBuilds,l:"Build Versions"},{n:BOSSES.length,l:"Bosses Documented"},
+    {n:WEAPONS.length,l:"Weapons Cataloged"},{n:TALISMANS.length,l:"Talismans"},{n:190,l:"Fusion Combinations"}
+  ];
+  document.getElementById("dashGrid").innerHTML = stats.map(s=>
+    `<div class="stat-card"><div class="num">${s.n}</div><div class="lbl">${s.l}</div></div>`).join("");
+  // featured = highest rating
+  const f=[...CHARACTERS].sort((a,b)=>b.rating-a.rating)[0];
+  document.getElementById("featuredChar").innerHTML=`
+    <div style="display:flex;gap:16px;align-items:center;margin-bottom:12px">
+      <div class="char-emblem" style="position:static;background:linear-gradient(135deg,${f.banner[0]},${f.banner[1]})">${esc(f.name[0])}</div>
+      <div><b style="font-family:var(--font-display);font-size:18px">${esc(f.name)}</b>
+      <div style="font-size:12px;color:var(--txt-dim)">${esc(f.anime)} · ${esc(f.archetype)}</div></div>
+      <div style="margin-left:auto;font-family:var(--font-display);font-size:24px;color:var(--gold2)">${f.rating}</div>
+    </div>
+    <p style="font-size:13px;line-height:1.7;color:var(--txt)">${esc(f.bio)}</p>
+    <div style="margin-top:14px"><button class="btn" onclick="openChar('${f.id}')">Full Profile & Builds →</button></div>`;
+  document.getElementById("homeTop").innerHTML=[...CHARACTERS].sort((a,b)=>b.rating-a.rating).slice(0,5).map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px;cursor:pointer" onclick="openChar('${c.id}')">
+      <span style="font-family:var(--font-display);color:${i===0?'var(--gold2)':'var(--txt-dim)'};width:20px">${i+1}</span>
+      <span style="flex:1">${esc(c.name)} <small style="color:var(--txt-dim)">· ${esc(c.builds[0].name)}</small></span>
+      <b style="color:var(--gold2)">${c.rating}</b></div>`).join("");
+  const road=[["Phase 1 — Foundation","20 flagship characters · full build system · databases · fusion lab","done"],
+    ["Phase 2 — Year 1","100 characters · community builds · interactive map","next"],
+    ["Phase 3 — Year 2","250 characters · guilds · tournaments · seasonal events",""],
+    ["Phase Omega","1,000+ characters · complete anime gaming universe",""]];
+  document.getElementById("roadmap").innerHTML=road.map(r=>`
+    <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px">
+      <span style="color:${r[2]==='done'?'var(--green)':r[2]==='next'?'var(--gold)':'var(--txt-dim)'}">${r[2]==='done'?'✔':r[2]==='next'?'▶':'◇'}</span>
+      <div><b>${r[0]}</b><div style="color:var(--txt-dim)">${r[1]}</div></div></div>`).join("");
+}
+
+/* ============ CHARACTERS ============ */
+let charFilter="All", charQuery="";
+function renderCharFilters(){
+  document.getElementById("charFilters").innerHTML=CATEGORIES.map(c=>
+    `<div class="chip ${c===charFilter?'active':''}" onclick="setCharFilter('${c}')">${c}${c!=='All'?` (${CHARACTERS.filter(x=>x.category===c).length})`:''}</div>`).join("");
+}
+function setCharFilter(c){ charFilter=c; renderCharFilters(); renderChars(); }
+document.getElementById("charSearch").addEventListener("input", e=>{ charQuery=e.target.value.toLowerCase(); renderChars(); });
+function renderChars(){
+  const list=CHARACTERS.filter(c=>
+    (charFilter==="All"||c.category===charFilter) &&
+    (!charQuery || (c.name+" "+c.anime+" "+c.powerSystem+" "+c.archetype).toLowerCase().includes(charQuery)));
+  document.getElementById("charGrid").innerHTML = list.length? list.map(c=>`
+    <div class="char-card" onclick="openChar('${c.id}')">
+      <div class="char-banner" style="background:linear-gradient(120deg,${c.banner[0]},${c.banner[1]})">
+        <div class="char-emblem">${esc(c.name[0])}</div>
+      </div>
+      <div class="char-body">
+        <h4>${esc(c.name)}</h4>
+        <div class="anime">${esc(c.anime)}</div>
+        <span class="tag" style="background:${CAT_COLORS[c.category]}22;color:${CAT_COLORS[c.category]};border:1px solid ${CAT_COLORS[c.category]}55">${esc(c.category)}</span>
+        <span class="tag" style="background:rgba(212,175,55,.12);color:var(--gold2);border:1px solid var(--gold-dim)">${esc(c.archetype)}</span>
+        <div class="char-meta">
+          <span>Rating <b>${c.rating}</b></span>
+          <span class="stars">${"★".repeat(c.difficulty)}${"☆".repeat(5-c.difficulty)}</span>
+          <span><b>${c.builds.length}</b> builds</span>
+        </div>
+      </div>
+    </div>`).join("") : `<div class="empty">No characters match. The Roundtable Hold is empty tonight.</div>`;
+}
+
+/* ============ CHARACTER MODAL ============ */
+function statBars(stats){
+  return `<div class="stat-bars">`+Object.entries(stats).map(([k,v])=>
+    `<div class="sbar"><span class="k">${k}</span><div class="track"><div class="fill" style="width:${Math.min(100,v/99*100)}%"></div></div><span class="v">${v}</span></div>`).join("")+`</div>`;
+}
+function levelChip(b){
+  const ml=S.myLevel||1;
+  if(ml>=b.level) return `<div class="lvl-progress reached">✔ LEVEL REACHED — you are RL ${ml}, this build needs RL ${b.level}${ml>b.level?` (+${ml-b.level} to spare)`:''}</div>`;
+  const pct=Math.round(ml/b.level*100);
+  return `<div class="lvl-progress"><div class="lvl-bar"><div style="width:${Math.max(2,pct)}%"></div></div><span><b style="color:var(--cyan)">RL ${ml} / ${b.level}</b> — ${b.level-ml} levels to go (${pct}%)</span></div>`;
+}
+function buildBlock(b){
+  return `
+  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+    <b style="font-family:var(--font-display);font-size:16px;color:var(--gold2)">${esc(b.name)}</b>
+    <span class="pill gold">RL ${b.level} · ${esc(b.type)}</span>
+  </div>
+  ${levelChip(b)}
+  ${statBars(b.stats)}
+  <div class="gear-grid">
+    <div class="gear-box"><h6>⚔ Weapons</h6>${b.weapons.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+    <div class="gear-box"><h6>🛡 Armor</h6>${b.armor.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+    <div class="gear-box"><h6>🧿 Talismans</h6>${b.talismans.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+    <div class="gear-box"><h6>✨ Spells & Summon</h6>${b.spells.map(w=>`<span>${esc(w)}</span>`).join("")}<span style="color:var(--purple);margin-top:4px">☾ ${esc(b.summon)}</span></div>
+  </div>
+  <div class="build-note">📜 ${esc(b.notes)}</div>`;
+}
+function openChar(id){
+  const c=CHARACTERS.find(x=>x.id===id); if(!c) return;
+  if(!S.viewedChars.includes(id)){ S.viewedChars.push(id); save(); } else { checkAchievements(); }
+  const box=document.getElementById("modalBox");
+  box.innerHTML=`
+    <div class="modal-hd" style="background:linear-gradient(120deg,${c.banner[0]},${c.banner[1]})">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2>${esc(c.name)}</h2>
+      <div class="sub">${esc(c.anime)} · ${esc(c.category)} · ${esc(c.powerSystem)}</div>
+    </div>
+    <div class="modal-body">
+      <div class="mtabs">
+        <div class="mtab active" onclick="charTab(this,'profile')">Profile</div>
+        <div class="mtab" onclick="charTab(this,'combat')">Combat Analysis</div>
+        <div class="mtab" onclick="charTab(this,'builds')">Builds (${c.builds.length})</div>
+      </div>
+      <div id="ctab-profile">
+        <div class="quote-box">“${esc(c.quote)}”</div>
+        <div class="info-grid">
+          <div class="info-box" style="grid-column:1/-1"><h5>Biography</h5><p>${esc(c.bio)}</p></div>
+          <div class="info-box"><h5>Personality</h5><p>${esc(c.personality)}</p></div>
+          <div class="info-box"><h5>Anime History — Major Battles</h5><ul>${c.battles.map(b=>`<li>${esc(b)}</li>`).join("")}</ul></div>
+          <div class="info-box"><h5>Allies</h5><p>${c.allies.map(esc).join(" · ")}</p></div>
+          <div class="info-box"><h5>Enemies</h5><p>${c.enemies.map(esc).join(" · ")}</p></div>
+        </div>
+      </div>
+      <div id="ctab-combat" style="display:none">
+        <div class="info-grid">
+          <div class="info-box" style="grid-column:1/-1"><h5>Combat Analysis</h5><p>${esc(c.combat)}</p></div>
+          <div class="info-box"><h5>Signature Techniques</h5><ul>${c.techniques.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>
+          <div class="info-box"><h5>Transformations</h5><ul>${c.transformations.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>
+          <div class="info-box"><h5>Nexus Metrics</h5>
+            <p>Build Rating: <b style="color:var(--gold2)">${c.rating}/10</b><br>
+            Difficulty: <span class="stars">${"★".repeat(c.difficulty)}${"☆".repeat(5-c.difficulty)}</span><br>
+            Popularity: ${c.popularity}/100 · Archetype: ${esc(c.archetype)}</p></div>
+        </div>
+      </div>
+      <div id="ctab-builds" style="display:none">
+        <div class="build-tabs">${c.builds.map((b,i)=>`<div class="mtab ${i===0?'active':''}" onclick="charBuildTab(this,'${c.id}',${i})">${esc(b.name.split("—")[0].trim())}</div>`).join("")}</div>
+        <div id="charBuildBody">${buildBlock(c.builds[0])}</div>
+      </div>
+    </div>`;
+  window._openCharId=id; window._openBuildIdx=0;
+  document.getElementById("modalBg").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function charTab(el,name){
+  el.parentElement.querySelectorAll(".mtab").forEach(t=>t.classList.remove("active")); el.classList.add("active");
+  ["profile","combat","builds"].forEach(t=>document.getElementById("ctab-"+t).style.display = t===name?"block":"none");
+}
+function charBuildTab(el,id,i){
+  el.parentElement.querySelectorAll(".mtab").forEach(t=>t.classList.remove("active")); el.classList.add("active");
+  window._openBuildIdx=i;
+  document.getElementById("charBuildBody").innerHTML=buildBlock(CHARACTERS.find(c=>c.id===id).builds[i]);
+}
+function closeModal(){ document.getElementById("modalBg").classList.remove("open"); document.body.style.overflow=""; }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
+
+/* ============ BUILD SYSTEM VIEW ============ */
+let buildChar=CHARACTERS[0].id;
+function renderBuildChips(){
+  document.getElementById("buildCharChips").innerHTML=CHARACTERS.map(c=>
+    `<div class="chip ${c.id===buildChar?'active':''}" onclick="setBuildChar('${c.id}')">${esc(c.name.split(" ")[0])}</div>`).join("");
+}
+function setBuildChar(id){ buildChar=id; renderBuildChips(); renderBuildViewer(); }
+function renderBuildViewer(){
+  const c=CHARACTERS.find(x=>x.id===buildChar);
+  document.getElementById("buildViewer").innerHTML=`
+    <div class="panel" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div class="char-emblem" style="position:static;background:linear-gradient(135deg,${c.banner[0]},${c.banner[1]})">${esc(c.name[0])}</div>
+        <div style="flex:1"><b style="font-family:var(--font-display);font-size:18px">${esc(c.name)}</b>
+        <div style="font-size:12px;color:var(--txt-dim)">${esc(c.archetype)} · ${c.builds.length} build versions · rating ${c.rating}</div></div>
+        <button class="btn" onclick="openChar('${c.id}')">Full Profile</button>
+      </div>
+    </div>
+    ${c.builds.map(b=>`<div class="panel" style="margin-bottom:14px">${buildBlock(b)}</div>`).join("")}`;
+}
+
+/* ============ FUSION LAB ============ */
+function fillFusionSelects(){
+  const opts=CHARACTERS.map(c=>`<option value="${c.id}">${esc(c.name)} — ${esc(c.anime)}</option>`).join("");
+  document.getElementById("fuseA").innerHTML=opts;
+  document.getElementById("fuseB").innerHTML=opts;
+  document.getElementById("fuseB").selectedIndex=1;
+}
+function seededPick(arr, seed){ return arr[seed % arr.length]; }
+function runFusion(){
+  const a=CHARACTERS.find(c=>c.id===document.getElementById("fuseA").value);
+  const b=CHARACTERS.find(c=>c.id===document.getElementById("fuseB").value);
+  if(a.id===b.id){ toast("⚠ A character cannot fuse with themselves. Even Naruto needed Kurama."); return; }
+  const seed=(a.id+b.id).split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
+  const bA=a.builds[0], bB=b.builds[0];
+  const stats={};
+  Object.keys(bA.stats).forEach(k=>{ stats[k]=Math.min(99, Math.round(Math.max(bA.stats[k],bB.stats[k])*0.85 + Math.min(bA.stats[k],bB.stats[k])*0.25)); });
+  const level=Object.values(stats).reduce((x,y)=>x+y,0)-79;
+  const name=fuseName(a,b);
+  const title=seededPick(FUSION_TITLES, seed);
+  const lore=seededPick(FUSION_LORE, seed)
+    .replace(/{A}/g,a.name).replace(/{B}/g,b.name)
+    .replace("{psA}",a.powerSystem.split("·")[0].trim()).replace("{psB}",b.powerSystem.split("·")[0].trim())
+    .replace("{arch}",a.archetype);
+  const rating=Math.min(10,((a.rating+b.rating)/2 + 0.4)).toFixed(1);
+  const diff=Math.min(5, Math.max(a.difficulty,b.difficulty)+ (seed%2));
+  const weapons=[bA.weapons[0], bB.weapons[0]];
+  const talis=[...new Set([...bA.talismans,...bB.talismans])].slice(0,4);
+  const spells=[...new Set([...bA.spells,...bB.spells])].filter(s=>s!=="—").slice(0,4);
+  S.fusions=(S.fusions||0)+1; save();
+  document.getElementById("fusionResult").innerHTML=`
+    <div class="fusion-card">
+      <h3>${esc(name.toUpperCase())}</h3>
+      <div class="ftitle">${esc(title)} — ${esc(a.name.split(" ")[0])} × ${esc(b.name.split(" ")[0])} fusion</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px">
+        <span class="pill gold">Recommended RL ${level}</span>
+        <span class="pill weak">Rating ${rating}/10</span>
+        <span class="pill resist">Difficulty ${"★".repeat(diff)}${"☆".repeat(5-diff)}</span>
+      </div>
+      ${statBars(stats)}
+      <div class="gear-grid">
+        <div class="gear-box"><h6>⚔ Fused Arsenal</h6>${weapons.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+        <div class="gear-box"><h6>🧿 Talismans</h6>${talis.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+        <div class="gear-box"><h6>✨ Combined Techniques</h6>${(spells.length?spells:["Pure martial fusion — no spells required"]).map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+        <div class="gear-box"><h6>🔮 Power Systems</h6><span>${esc(a.powerSystem)}</span><span style="color:var(--purple)">＋</span><span>${esc(b.powerSystem)}</span></div>
+      </div>
+      <div class="build-note" style="border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.07);color:#ddd6fe">🧬 ${esc(lore)}</div>
+    </div>`;
+  toast("⚗️ Fusion #"+S.fusions+" created: "+name);
+}
+
+/* ============ DATABASE ============ */
+function dbTab(which, el){
+  document.querySelectorAll('#view-database .chip').forEach(c=>c.classList.remove("active")); el.classList.add("active");
+  ["bosses","weapons","talismans"].forEach(t=>document.getElementById("db"+t[0].toUpperCase()+t.slice(1)).style.display = t===which?"block":"none");
+}
+function renderBosses(){
+  document.getElementById("dbBosses").innerHTML=BOSSES.map(b=>`
+    <div class="boss-card" id="boss-${b.id}">
+      <div class="boss-hd" onclick="this.parentElement.classList.toggle('open')">
+        <div><h4>${esc(b.name)} ${b.dlc?'<span class="pill gold">DLC</span>':''}</h4><div class="loc">${esc(b.loc)} · HP ${esc(b.hp)}</div></div>
+        <span style="color:var(--gold)">⌄</span>
+      </div>
+      <div class="boss-detail">
+        <div style="margin-bottom:10px"><b style="font-size:12px;color:var(--green)">WEAK TO </b>${b.weak.map(w=>`<span class="pill weak">${esc(w)}</span>`).join("")}</div>
+        <div style="margin-bottom:12px"><b style="font-size:12px;color:#fca5a5">RESISTS </b>${b.resist.map(w=>`<span class="pill resist">${esc(w)}</span>`).join("")}</div>
+        <div class="info-box" style="margin-bottom:10px"><h5>Strategy</h5><p>${esc(b.strategy)}</p></div>
+        <div class="info-box" style="border-color:rgba(139,92,246,.3)"><h5 style="color:var(--purple)">Anime Matchup</h5>
+          <p>${esc(b.matchup.text)}</p>
+          <div style="margin-top:8px">${b.matchup.best.map(id=>{const c=CHARACTERS.find(x=>x.id===id);return c?`<button class="btn" style="padding:5px 12px;font-size:11px;margin-right:6px" onclick="openChar('${id}')">${esc(c.name)} build →</button>`:"";}).join("")}</div>
+        </div>
+      </div>
+    </div>`).join("");
+}
+function renderWeapons(){
+  document.getElementById("dbWeapons").innerHTML=`<table><thead><tr><th>Weapon</th><th>Type</th><th>Requirements</th><th>Scaling</th><th>Location</th><th>Nexus Note & Anime Compatibility</th></tr></thead><tbody>`+
+  WEAPONS.map(w=>`<tr>
+    <td><b>${esc(w.name)}</b>${w.dlc?' <span class="pill gold">DLC</span>':''}</td>
+    <td style="color:var(--txt-dim)">${esc(w.type)}</td><td>${esc(w.req)}</td><td>${esc(w.scaling)}</td>
+    <td style="color:var(--txt-dim)">${esc(w.loc)}</td>
+    <td>${esc(w.note)}<div style="margin-top:5px">${w.chars.map(id=>{const c=CHARACTERS.find(x=>x.id===id);return c?`<span class="pill gold" style="cursor:pointer" onclick="openChar('${id}')">${esc(c.name.split(" ")[0])}</span>`:"";}).join("")}</div></td>
+  </tr>`).join("")+`</tbody></table>`;
+}
+function renderTalismans(){
+  document.getElementById("dbTalismans").innerHTML=`<table><thead><tr><th>Talisman</th><th>Effect</th><th>Location</th><th>Meta Note</th></tr></thead><tbody>`+
+  TALISMANS.map(t=>`<tr><td><b>${esc(t.name)}</b></td><td>${esc(t.effect)}</td><td style="color:var(--txt-dim)">${esc(t.loc)}</td><td>${esc(t.meta)}</td></tr>`).join("")+`</tbody></table>`;
+}
+
+/* ============ RANKINGS ============ */
+const RANK_MODES=[
+ {id:"overall", label:"🏆 Overall Rating", score:c=>c.rating, fmt:v=>v.toFixed(1)},
+ {id:"popularity", label:"🔥 Popularity", score:c=>c.popularity, fmt:v=>v+""},
+ {id:"pve", label:"⚔ Best PvE", score:c=>c.rating*0.7+(5-c.difficulty)*0.6, fmt:v=>v.toFixed(1)},
+ {id:"pvp", label:"🗡 Best PvP", score:c=>c.builds.some(b=>b.type.includes("PvP"))?c.rating*0.8+c.difficulty*0.4:c.rating*0.5, fmt:v=>v.toFixed(1)},
+ {id:"accuracy", label:"🎯 Anime Accuracy", score:c=>({guts:10,levi:9.8,rimuru:9.5,jinwoo:9.4,kenshin:9.3,saitama:9.2,itachi:9.0,gojo:9.0,madara:8.9,alucard:8.8}[c.id]||c.rating*0.9), fmt:v=>v.toFixed(1)},
+ {id:"difficulty", label:"💀 Hardest to Master", score:c=>c.difficulty*2+c.rating*0.1, fmt:(v,c)=>"★".repeat(c.difficulty)}
+];
+let rankMode="overall";
+function renderRankChips(){
+  document.getElementById("rankChips").innerHTML=RANK_MODES.map(m=>
+    `<div class="chip ${m.id===rankMode?'active':''}" onclick="setRank('${m.id}')">${m.label}</div>`).join("");
+}
+function setRank(id){ rankMode=id; renderRankChips(); renderRanks(); }
+function renderRanks(){
+  const m=RANK_MODES.find(x=>x.id===rankMode);
+  const list=[...CHARACTERS].sort((a,b)=>m.score(b)-m.score(a)).slice(0,10);
+  document.getElementById("rankList").innerHTML=list.map((c,i)=>`
+    <div class="rank-row" style="cursor:pointer" onclick="openChar('${c.id}')">
+      <div class="rank-num">${i+1}</div>
+      <div class="char-emblem" style="position:static;width:38px;height:38px;font-size:16px;background:linear-gradient(135deg,${c.banner[0]},${c.banner[1]})">${esc(c.name[0])}</div>
+      <div class="rank-info"><b>${esc(c.name)}</b><small>${esc(c.anime)} · ${esc(c.archetype)} · ${esc(c.builds[0].name)}</small></div>
+      <div class="rank-score">${m.fmt(m.score(c),c)}</div>
+    </div>`).join("");
+}
+
+/* ============ TRACKER ============ */
+function renderTracker(){
+  document.getElementById("bossChecks").innerHTML=BOSSES.map(b=>`
+    <div class="check-item ${S.bosses.includes(b.id)?'done':''}" onclick="toggleBoss('${b.id}')">
+      <div class="box">${S.bosses.includes(b.id)?'✔':''}</div><span>${esc(b.name)}</span>
+    </div>`).join("");
+  document.getElementById("buildChecks").innerHTML=CHARACTERS.map(c=>`
+    <div class="check-item ${S.builds.includes(c.id)?'done':''}" onclick="toggleBuild('${c.id}')">
+      <div class="box">${S.builds.includes(c.id)?'✔':''}</div><span>${esc(c.name)} — ${esc(c.builds[0].name.split("—")[0].trim())}</span>
+    </div>`).join("");
+  const total=BOSSES.length+CHARACTERS.length, done=S.bosses.length+S.builds.length;
+  const pct=Math.round(done/total*100);
+  document.getElementById("progFill").style.width=pct+"%";
+  document.getElementById("progLabel").textContent=`${done} / ${total} objectives complete (${pct}%) — ${S.bosses.length} bosses felled, ${S.builds.length} builds completed, ${S.fusions||0} fusions created`;
+  const ml=S.myLevel||1;
+  document.getElementById("lvlSlider").value=ml;
+  document.getElementById("lvlNum").value=ml;
+  const allBuilds=CHARACTERS.flatMap(c=>c.builds.map(b=>({c,b})));
+  const reached=allBuilds.filter(x=>x.b.level<=ml).length;
+  const upcoming=allBuilds.filter(x=>x.b.level>ml).sort((a,b)=>a.b.level-b.b.level)[0];
+  document.getElementById("lvlNext").innerHTML=
+    `<span class="pill gold">${reached} / ${allBuilds.length} build versions within your level</span> `+
+    (ml>=713 ? `<span class="pill weak">HARD CAP — every attribute at 99. The Lands Between kneel.</span>`
+     : upcoming ? `<br>Next milestone: <b style="color:var(--gold2)">${esc(upcoming.c.name)} — ${esc(upcoming.b.name)}</b> at RL ${upcoming.b.level} <span class="pill gold">${upcoming.b.level-ml} levels away</span>` : "");
+}
+function setMyLevel(v){
+  const prev=S.myLevel||1;
+  v=Math.max(1,Math.min(713,parseInt(v,10)||1));
+  S.myLevel=v; save();
+  renderTracker(); renderBuildViewer(); renderAnalytics(); syncLevelUI();
+  if(document.getElementById("modalBg").classList.contains("open") && window._openCharId){
+    const c=CHARACTERS.find(x=>x.id===window._openCharId);
+    const body=document.getElementById("charBuildBody");
+    if(c && body) body.innerHTML=buildBlock(c.builds[window._openBuildIdx||0]);
+  }
+  if(v===713 && prev!==713) toast("⬆️ RL 713 — all eight attributes at 99. Hard cap reached.");
+}
+function syncLevelUI(){
+  const ml=S.myLevel||1;
+  const v=document.getElementById("lwVal"); if(v) v.textContent=ml;
+  const sl=document.getElementById("lwSlider"); if(sl) sl.value=ml;
+  const n=document.getElementById("lwNum"); if(n) n.value=ml;
+}
+function toggleBoss(id){
+  S.bosses.includes(id) ? S.bosses=S.bosses.filter(x=>x!==id) : S.bosses.push(id);
+  save(); renderTracker();
+}
+function toggleBuild(id){
+  S.builds.includes(id) ? S.builds=S.builds.filter(x=>x!==id) : S.builds.push(id);
+  save(); renderTracker();
+}
+function resetProgress(){
+  if(!confirm("Reset ALL local progress — bosses, builds, fusions and achievements?")) return;
+  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1};
+  store.set(S); renderAll(); toast("Progress reset. A new Tarnished rises.");
+}
+
+/* ============ ACHIEVEMENTS ============ */
+function renderAchievements(){
+  document.getElementById("achGrid").innerHTML=ACHIEVEMENTS.map(a=>{
+    const un=S.unlocked.includes(a.id);
+    return `<div class="ach-card ${un?'unlocked':'locked'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div><b>${esc(a.name)}</b><p>${esc(a.desc)}</p>
+      <p style="color:${un?'var(--gold2)':'var(--txt-dim)'};font-weight:700;margin-top:6px">${un?'UNLOCKED':'LOCKED'}</p></div>
+    </div>`;}).join("");
+}
+
+/* ============ ANALYTICS ============ */
+function barChart(el, rows, color){
+  const max=Math.max(...rows.map(r=>r.v),1);
+  document.getElementById(el).innerHTML=rows.map(r=>`
+    <div class="bar-row"><div class="bl">${esc(r.l)}</div>
+    <div class="btrack"><div class="bfill" style="width:${Math.max(6,r.v/max*100)}%;background:linear-gradient(90deg,${color}88,${color})">${r.v}</div></div></div>`).join("");
+}
+function renderAnalytics(){
+  barChart("chartPop",[...CHARACTERS].sort((a,b)=>b.popularity-a.popularity).slice(0,8).map(c=>({l:c.name,v:c.popularity})),"#d4af37");
+  barChart("chartWep",ANALYTICS_WEAPONS.slice(0,8).map(w=>({l:w.name,v:w.uses})),"#8b5cf6");
+  barChart("chartArch",ANALYTICS_ARCH.map(a=>({l:a.name,v:a.uses})),"#22d3ee");
+  barChart("chartYou",[
+    {l:"Profiles viewed",v:S.viewedChars.length},{l:"Bosses defeated",v:S.bosses.length},
+    {l:"Builds completed",v:S.builds.length},{l:"Fusions created",v:S.fusions||0},
+    {l:"Achievements",v:S.unlocked.length},{l:"Rune Level",v:S.myLevel||1}],"#34d399");
+}
+
+/* ============ ARCHIVE ============ */
+function renderArchive(){
+  document.getElementById("archiveList").innerHTML=ARCHIVE.map(a=>`
+    <div class="panel" style="margin-bottom:18px">
+      <h3>${esc(a.build)}</h3>
+      <div class="ver-line">${a.entries.map(e=>`
+        <div class="ver-item"><h5>${esc(e.v)}</h5><small>${esc(e.date)}</small><p>${esc(e.note)}</p></div>`).join("")}</div>
+    </div>`).join("");
+}
+
+/* ============ BOOT ============ */
+function renderAll(){
+  renderHeader(); renderHome(); renderCharFilters(); renderChars();
+  renderBuildChips(); renderBuildViewer(); fillFusionSelects();
+  renderBosses(); renderWeapons(); renderTalismans();
+  renderRankChips(); renderRanks(); renderTracker(); renderAchievements(); renderAnalytics(); renderArchive();
+}
+renderAll();
+document.getElementById("lvlSlider").addEventListener("input",e=>setMyLevel(e.target.value));
+document.getElementById("lvlNum").addEventListener("change",e=>setMyLevel(e.target.value));
+(function initLevelWidget(){
+  const widget=document.getElementById("lvlWidget"), head=document.getElementById("lwHead"), body=document.getElementById("lwBody");
+  if(!widget||!head) return;
+  document.getElementById("lwSlider").addEventListener("input",e=>setMyLevel(e.target.value));
+  document.getElementById("lwNum").addEventListener("change",e=>setMyLevel(e.target.value));
+  let drag=null, moved=false;
+  head.addEventListener("pointerdown",e=>{
+    drag={x:e.clientX,y:e.clientY,left:widget.offsetLeft,top:widget.offsetTop}; moved=false;
+    try{ head.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  head.addEventListener("pointermove",e=>{
+    if(!drag) return;
+    const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+    if(Math.abs(dx)+Math.abs(dy)>6) moved=true;
+    if(moved){
+      widget.style.left=Math.max(4,Math.min(window.innerWidth-widget.offsetWidth-4,drag.left+dx))+"px";
+      widget.style.top=Math.max(4,Math.min(window.innerHeight-44,drag.top+dy))+"px";
+      widget.style.right="auto"; widget.style.bottom="auto";
+    }
+  });
+  head.addEventListener("pointerup",()=>{
+    if(!moved){
+      body.classList.toggle("hidden");
+      document.getElementById("lwToggle").textContent=body.classList.contains("hidden")?"▲":"▼";
+    }
+    drag=null;
+  });
+  syncLevelUI();
+})();
+checkAchievements();
+</script></body></html>
