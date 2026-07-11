@@ -225,6 +225,56 @@ tr:hover td{background:rgba(212,175,55,.04)}
   box-shadow:0 8px 30px rgba(0,0,0,.6),0 0 16px rgba(212,175,55,.25);animation:toastIn .3s ease}
 @keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
 
+.stat-btn{width:22px;height:22px;border-radius:6px;background:var(--bg2);border:1px solid var(--gold-dim);color:var(--gold2);cursor:pointer;font-weight:700;line-height:1;flex-shrink:0;font-size:13px}
+.stat-btn:hover{background:rgba(212,175,55,.18)}
+.stat-btn:active{transform:scale(.92)}
+
+/* ===== RESPONSIVE — TABLET ===== */
+@media(max-width:900px){
+  .hd-stats{gap:12px}
+  .char-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .gear-grid{grid-template-columns:1fr 1fr}
+}
+/* ===== RESPONSIVE — PHONE ===== */
+@media(max-width:640px){
+  .hd-stats{display:none}
+  .logo h1{font-size:16px;letter-spacing:2px}
+  .logo-ring{width:36px;height:36px;font-size:16px}
+  nav button{padding:10px 10px;font-size:12px}
+  main{padding:18px 12px 90px}
+  .hero{padding:30px 14px 26px}
+  .sec-title{font-size:21px}
+  .char-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .char-body{padding:30px 10px 12px}
+  .modal-bg{padding:12px 6px}
+  .modal-hd{padding:18px 16px 14px}
+  .modal-hd h2{font-size:20px}
+  .modal-body{padding:16px 14px 22px}
+  .gear-grid{grid-template-columns:1fr}
+  .stat-bars{grid-template-columns:1fr 1fr;gap:6px 12px}
+  .sbar .k{width:28px;font-size:11px}
+  .sbar .v{width:38px;font-size:11px}
+  .two-col{grid-template-columns:1fr}
+  .bar-row .bl{width:88px;font-size:10px}
+  .check-grid{grid-template-columns:1fr 1fr}
+  .rank-num{width:26px;font-size:17px}
+  .rank-score{font-size:14px}
+  #lvlWidget{min-width:170px;left:10px;bottom:10px}
+  #lvlWidget .lw-row button{padding:6px 7px;font-size:11px}
+  .fusion-x{font-size:22px}
+  table{font-size:11px}
+  th,td{padding:7px 8px}
+  .chips{gap:5px}
+  .chip{padding:5px 10px;font-size:11px}
+  .searchbar{max-width:100%}
+}
+/* ===== RESPONSIVE — SMALL PHONE ===== */
+@media(max-width:400px){
+  .char-grid{grid-template-columns:1fr 1fr}
+  .stat-bars{grid-template-columns:1fr}
+  .check-grid{grid-template-columns:1fr}
+  .ach-grid{grid-template-columns:1fr}
+}
 footer{border-top:1px solid var(--line);padding:28px 20px;text-align:center;color:var(--txt-dim);font-size:12px;line-height:1.8}
 footer b{color:var(--gold);font-family:var(--font-display);letter-spacing:2px}
 .empty{color:var(--txt-dim);text-align:center;padding:40px;font-size:14px}
@@ -1896,6 +1946,202 @@ Object.entries(ROSTER).forEach(([fr, list])=>{
     });
   });
 });
+/* ============ WAVE 2 — EVERY FRANCHISE GETS A FULL ROSTER ============ */
+const ROSTER2 = {
+"Berserk":[
+["Griffith","Villain","paladin","Charisma · Femto Rebirth","The White Hawk — beauty, ambition and one unforgivable sacrifice; the dream that ate its dreamers.","Fifth God Hand · Sacrifice · Hawk of Light"],
+["Casca","Secondary Protagonist","katana","Mercenary Swordsmanship","The Hawks' commander after Griffith — a peasant girl who out-fenced nobles and survived the Eclipse.","Precision Fencing · Command · Survivor's Will"],
+["Nosferatu Zodd","Legendary","dragoon","Apostle Transformation","The immortal god of the battlefield — three hundred years seeking a worthy death, wings optional.","Apostle Form · Battle Worship · Colossal Cleave"],
+["Skull Knight","Legendary","deathmage","Sword of Actuation · Astral Travel","The enemy of the inhumans — a dead king riding against fate, his blade cutting through causality itself.","Sword of Thorns · Behelit Blade · Astral Slash"],
+["Serpico","Secondary Protagonist","assassin","Sylph Sword and Cloak","Farnese's quiet shadow — wind-blessed rapier work delivered with an apologetic smile.","Sylph Sword · Wind Cloak · Duelist's Patience"],
+["Schierke","Secondary Protagonist","sorcerer","Elemental Witchcraft","The young witch of the mansion — elemental kings answer her circle, and Guts answers her voice.","Elemental Summoning · Astral Projection · Thunder Lord"]],
+"One-Punch Man":[
+["Genos","Secondary Protagonist","pyromancer","Cyborg Incineration","The Demon Cyborg — Saitama's disciple, rebuilt after every loss, incinerators always one fight behind.","Incineration Cannons · Machine Gun Blows · Arms Mode"],
+["Garou","Rival","fists","Martial Arts Mastery · Monster Evolution","The Hero Hunter — a human monster whose fists learned every style and chose to fight heroes anyway.","Water Stream Rock Smashing Fist · Monster Calamity · Mimicry"],
+["Tatsumaki","Legendary","gravity","Psychokinesis","The Tornado of Terror — S-Class rank 2, city-lifting psychic power in the world's angriest small package.","Psychic Whirlwind · Boulder Rain · Psychic Bind"],
+["King","Legendary","tank","The King Engine","The strongest man on Earth (allegedly) — an unbeaten aura powered entirely by coincidence and terror.","King Engine · Ominous Silence · Undefeated Record"],
+["Silver Fang","Mentor","fists","Water Stream Rock Smashing Fist","Bang — the old master whose flowing style redirects calamity, still hunting his fallen student.","Flowing Water · Rock Smashing · Dojo Discipline"],
+["Boros","Villain","sorcerer","Latent Energy Liberation","The alien conqueror who crossed the universe for a real fight — and got exactly one serious punch.","Collapsing Star Roaring Cannon · Meteoric Burst · Regeneration"],
+["Fubuki","Secondary Protagonist","gravity","Psychokinesis","The Blizzard of Hell — B-Class empress building her own path out of her sister's shadow.","Hell Storm · Psychic Barrier · Blizzard Group"]],
+"Hellsing":[
+["Seras Victoria","Secondary Protagonist","archer","Draculina · Harkonnen","The police girl — Alucard's fledgling, a gentle heart behind a cannon that deletes city blocks.","Harkonnen Cannon · Third Eye · Shadow Arm"],
+["Alexander Anderson","Rival","paladin","Regenerator · Blessed Bayonets","The Paladin of Iscariot — a regenerating priest with infinite bayonets and one worthy enemy.","Blessed Bayonets · Regeneration · Helena's Nail","Twin blessed bayonets — powerstanced sacred blades"],
+["Integra Hellsing","Mentor","paladin","Command · Hellsing Legacy","The Iron Maiden of Hellsing — the will that leashes Alucard, unbowed before monsters and men alike.","Absolute Command · Saber Duel · Unyielding Order"],
+["Walter C. Dornez","Anti-Hero","assassin","Monofilament Wires","The Angel of Death — a butler whose wires dice tanks, and whose loyalty had a price after all.","Monofilament Wires · Dead Man Blues · Butler's Grace"],
+["The Major","Villain","summoner","Millennium War Machine","The Major — a little man who loves war so purely he made himself its conductor. Gentlemen, he likes war.","Millennium Army · Zeppelin Assault · The Speech"]],
+"Overlord":[
+["Albedo","Secondary Protagonist","tank","Guardian Overseer · World Champion Armor","Nazarick's Overseer — absolute defense, absolute devotion, and absolutely unhinged about one skeleton.","Ginnungagap · Hermes Trismegistus · Overseer Command"],
+["Shalltear Bloodfallen","Villain","bleed","True Vampire · Spuit Lance","The Floor Guardian vampire — a blood-drinking lance that heals her with every soul it empties.","Spuit Lance · Blood Frenzy · Einherjar","Mohgwyn's Sacred Spear — the blood-drinking Spuit Lance"],
+["Demiurge","Secondary Protagonist","deathmage","Archdevil Intellect","Nazarick's strategist — a demon whose kindest interpretation of orders still ends civilizations.","Hellfire Mantle · Command Mantra · Grand Strategy"],
+["Cocytus","Secondary Protagonist","twinblade","Insect Warrior · Four Arms","The Guardian of the Fifth Floor — four arms, twenty-one weapons, and a warrior's honor colder than his breath.","God Slaying Emperor Blade · Quad Wield · Frost Aura"],
+["Sebas Tian","Secondary Protagonist","fists","Dragonoid Butler","The head butler — Touch Me's creation, a dragon's strength folded into perfect manners and iron justice.","Palm Strike · Dragon Force · Butler's Judgment"]],
+"Slime (Tensura)":[
+["Benimaru","Secondary Protagonist","pyromancer","Ogre Flame Arts","Rimuru's samurai general — black flames and a commander's grin, loyal since the ogre village fell.","Hell Flare · Black Flame Slash · Commander's Aura"],
+["Milim Nava","Legendary","fists","Dragonoid · Demon Lord","The Destroyer — an ancient Demon Lord with a child's joy and a dragon's annihilation output. Best friend acquired.","Drago Nova · Dragon Knuckle · Stampede"],
+["Diablo","Secondary Protagonist","deathmage","Primordial Demon (Noir)","The Primordial who answered a casual summon — infinite demonic power, employed as a very polite secretary.","End of the World · Temptation · Demon Lord's Ambition"],
+["Veldora","Legendary","dragoon","True Dragon of Storms","The Storm Dragon — sealed three hundred years, freed by a slime, now a manga-obsessed force of nature.","Storm Breath · Dragon Aura · Verudora Style"],
+["Shion","Secondary Protagonist","greatsword","Ogre Strength · Cooking (Lethal)","Rimuru's secretary-bodyguard — a greatsword swung with terrifying love and cooking that violates treaties.","Herculean Strike · Chef's Resolve · Battle Secretary"],
+["Shuna","Secondary Protagonist","cleric","Holy Ogre Arts","The ogre princess — analysis, holy magic and the quiet authority that keeps Tempest's chaos domestic.","Holy Cannon · Analysis · Princess's Grace"]],
+"Seven Deadly Sins":[
+["Meliodas","Main Protagonist","katana","Demon Mark · Full Counter","The Dragon's Sin of Wrath — a demon prince cursed with immortality, returning every blast with interest.","Full Counter · Revenge Counter · Assault Mode"],
+["Ban","Anti-Hero","assassin","Snatch · Immortality","The Fox's Sin of Greed — an immortal thief who stole life itself and spent it all on one fairy.","Snatch · Physical Hunt · Fox Hunt"],
+["King (Fairy King Harlequin)","Secondary Protagonist","spear","Spirit Spear Chastiefol","The Grizzly's Sin of Sloth — fairy king whose pillow is a spear, whose spear is a forest of forms.","Chastiefol: Form Three · Guardian · True Spirit Spear","Treespear (Sacred) — Chastiefol, the Spirit Spear"],
+["Merlin","Mentor","sorcerer","Infinity · Boar's Sin","The Boar's Sin of Gluttony — Britannia's greatest mage, whose spells never end because Infinity said so.","Infinity · Perfect Cube · Exterminate Ray"],
+["Diane","Secondary Protagonist","greatsword","Giant Clan · Creation","The Serpent's Sin of Envy — a giant's warhammer and a heart that just wants everyone at one table.","Gideon Hammer · Ground Gladius · Creation","Giant-Crusher — Gideon, the sacred warhammer"],
+["Estarossa","Villain","fists","Commandment of Love","The commandment who feels no hate — walking through Full Counter because he simply loves too much.","Blackout · Full Size · Love Commandment"],
+["Zeldris","Villain","lightning","Ominous Nebula · Demon King Vessel","The Demon King's executioner — a short sword, absolute magic resistance, and a brother-shaped grudge.","Ominous Nebula · God · Executioner's Blade"]],
+"Rurouni Kenshin":[
+["Shishio Makoto","Villain","pyromancer","Mugenjin · Burned Body","The successor betrayed and burned alive — fifteen minutes of combat before his own fire claims him.","Homura Dama · Guren Kaina · Kaguzuchi"],
+["Saito Hajime","Rival","spear","Gatotsu","The last wolf of Mibu — one horizontal thrust perfected past argument. Aku Soku Zan.","Gatotsu Ishiki · Zeroshiki · Wolf's Justice","Rogier's Rapier (Keen) — the Gatotsu's piercing line"],
+["Sanosuke Sagara","Secondary Protagonist","fists","Futae no Kiwami","The fighter-for-hire with a two-layer strike that pulverizes stone and zero ability to dodge.","Futae no Kiwami · Zanbato Memory · Street Grit"],
+["Aoshi Shinomori","Rival","twinblade","Kodachi Nito-Ryu","The Oniwabanshu's ice-cold leader — twin short swords flowing through kempo forms toward one title.","Kaiten Kenbu Rokuren · Onmyo Hasshi · Okashira's Duty"],
+["Enishi Yukishiro","Villain","katana","Watojutsu · Frenzy Nerves","The man in white — Tomoe's brother, whose grief trained itself into a smiling, sword-breaking Jinchu.","Kofuku Zettosei · Frenzy State · Jinchu"]],
+"Naruto":[
+["Temari","Secondary Protagonist","archer","Wind Style · Giant Fan","The Sand's tactician princess — one fan sweep flattens forests and lazy fiancés alike.","Wind Scythe Jutsu · Summoning: Kamatari · Cyclone Scythe"],
+["Kankuro","Secondary Protagonist","summoner","Puppet Master Jutsu","The Sand's puppeteer — Crow, Black Ant and Salamander dancing on chakra threads.","Puppet Theater · Black Ant Trap · Iron Maiden"],
+["Ino Yamanaka","Secondary Protagonist","assassin","Mind Transfer Jutsu","The Yamanaka heir — florist by trade, psychic infiltrator by profession.","Mind Transfer · Mind Destruction · Sensory Link"],
+["Choji Akimichi","Secondary Protagonist","tank","Expansion Jutsu · Calorie Control","The Akimichi's gentle giant — butterfly wings from burned calories, courage from a bag of chips.","Human Boulder · Butterfly Mode · Partial Expansion"],
+["Kiba Inuzuka","Secondary Protagonist","twinblade","Beast Mimicry · Fang Over Fang","The Inuzuka wild card — half of a two-man drill with Akamaru, all feral loyalty.","Fang Over Fang · Man-Beast Clone · Dynamic Marking"],
+["Shino Aburame","Secondary Protagonist","venom","Insect Host","The Aburame heir — a quiet hive in a coat; the bugs remember being forgotten even if you do not.","Insect Swarm · Parasitic Beetles · Insect Clone"],
+["Sai","Secondary Protagonist","summoner","Super Beast Scroll","Root's blank page learning to feel — ink lions leap off his scrolls mid-brushstroke.","Super Beast Imitating Drawing · Ink Clone · Sealing Jutsu"],
+["Yamato (Tenzo)","Secondary Protagonist","cleric","Wood Style (Cell-Grafted)","Hashirama's living experiment — wood style on a government salary, babysitting jinchūriki.","Wood Style: Domed Wall · Wood Clone · Chakra Suppression"],
+["Asuma Sarutobi","Mentor","fists","Chakra Blades · Wind Nature","The Third's son — wind-edged trench knives, a lit cigarette, and lessons about what matters most.","Flying Swallow · Wind Blade · King's Sacrifice"],
+["Hiruzen Sarutobi","Mentor","summoner","The Professor · All Jutsu","The Third Hokage — master of every Leaf jutsu, whose final seal cost exactly everything.","Enma Staff · Reaper Death Seal · Master of All"],
+["Kaguya Otsutsuki","Villain","deathmage","Rinne Sharingan · All-Killing Ash Bones","The rabbit goddess — the origin of chakra, whose ash bones end anything they touch.","All-Killing Ash Bones · Dimension Shift · Infinite Tsukuyomi"],
+["Konohamaru Sarutobi","Secondary Protagonist","fists","Rasengan Lineage","The Third's grandson — boss-obsessed kid grown into the Leaf's next great teacher.","Rasengan · Shadow Clone · Sarutobi Will"]],
+"Dragon Ball":[
+["Krillin","Secondary Protagonist","fists","Ki Mastery · Destructo Disc","Earth's strongest human — the punchline who invented the series' most lethal technique.","Destructo Disc · Solar Flare · Scattering Bullet"],
+["Tien Shinhan","Secondary Protagonist","fists","Crane School · Third Eye","The three-eyed ascetic — Tri-Beam bought with life force, discipline bought with everything else.","Tri-Beam · Four Witches · Solar Flare"],
+["Yamcha","Secondary Protagonist","fists","Wolf Fang Fist","The desert bandit turned baseball star — braver than his memes, deadlier than his crater.","Wolf Fang Fist · Spirit Ball · Sōkidan Curve"],
+["Android 16","Secondary Protagonist","tank","Infinite Energy Cell","The gentle giant built to kill Goku who chose the birds instead — his last words made a Super Saiyan 2.","Hell Flash · Rocket Punch · Nature's Guardian"],
+["Zamasu","Villain","cleric","Immortality · God Ki","The apprentice Kai who graded mortals and chose extinction — immortal, fused, and absolutely certain.","Holy Wrath · God Split Cut · Fused Immortality"],
+["Goku Black","Villain","spellblade","Stolen Saiyan Body · Rosé","Zamasu in Goku's skin — divine contempt swinging a blade of rose-colored ki.","Ki Scythe · Rosé Blade · Divine Retribution"]],
+"One Piece":[
+["Buggy","Villain","assassin","Bara Bara no Mi","The Genius Jester — immune to slashes, allergic to effort, promoted to Emperor by pure misunderstanding.","Chop-Chop Cannon · Muggy Ball · Accidental Leadership"],
+["Crocodile","Villain","venom","Suna Suna no Mi","The desert king of Alabasta — sand that drinks moisture from rivers, deals and men alike.","Desert Spada · Ground Death · Sables"],
+["Doflamingo","Villain","assassin","Ito Ito no Mi","The Heavenly Demon — strings from the sky, a country as a puppet show, a grin that outlasted his fall.","Parasite Strings · Birdcage · Awakened Threads"],
+["Katakuri","Rival","spear","Mochi Mochi no Mi · Future Sight","Big Mom's perfect son — future sight, a trident, and the first honest duel of his life against Luffy.","Future Sight · Mogura Trident · Zan Giri Mochi"],
+["Marco","Secondary Protagonist","cleric","Phoenix Fruit","Whitebeard's first mate — blue flames that heal, a phoenix that keeps returning to old promises.","Phoenix Regeneration · Blue Flame Kick · Fleet Doctor"],
+["Monkey D. Garp","Legendary","fists","Haki Mastery · Fist of Love","The hero of the Marines — trained his fists on Roger, wasted his retirement on grandsons.","Galaxy Impact · Fist of Love · Marine Legend"],
+["Akainu","Villain","pyromancer","Magu Magu no Mi","Absolute Justice in magma form — the man who burned Marineford's mercy out of the story.","Great Eruption · Meteor Volcano · Absolute Justice"],
+["Aokiji","Anti-Hero","frost","Hie Hie no Mi","Lazy Justice — an iceberg of a man who froze the sea, then walked away from the whole institution.","Ice Age · Ice Saber · Partisan"],
+["Kizaru","Villain","lightning","Pika Pika no Mi","Unclear Justice at lightspeed — kicks that arrive before the apology, aim as vague as his loyalties.","Yasakani Sacred Jewel · Light Kick · Ama no Murakumo"],
+["Enel","Villain","lightning","Goro Goro no Mi · Mantra","The self-declared god of Skypiea — two hundred million volts of divine ego, undone by rubber.","El Thor · Raigo · Mantra Foresight"],
+["Rob Lucci","Villain","assassin","Neko Neko no Mi: Leopard","CP9's killing machine — dark justice on government payroll, Rokushiki honed into religion.","Rokuogan · Shigan · Leopard Awakening"]],
+"Bleach":[
+["Gin Ichimaru","Villain","spear","Zanpakutō: Shinsō","The fox-faced captain — a wakizashi that extends five hundred blades' worth of betrayal.","Kamishini no Yari · Butō Renjin · The Long Con","Rogier's Rapier — Shinsō's impossible extension"],
+["Shunsui Kyoraku","Legendary","twinblade","Zanpakutō: Katen Kyōkotsu","The lazy captain whose blades make children's games lethal — the rules bind both players.","Bushōgoma · Kageoni · Irooni"],
+["Jushiro Ukitake","Legendary","twinblade","Zanpakutō: Sōgyo no Kotowari","The gentle captain — twin blades that return your attacks with borrowed lightning and borrowed time.","Wave Return · Lightning Redirect · Mimihagi's Debt"],
+["Soi Fon","Secondary Protagonist","assassin","Zanpakutō: Suzumebachi","Commander of the Stealth Force — two stings in the same spot and you were never here.","Nigeki Kessatsu · Shunkō · Jakuhō Raikōben"],
+["Nelliel","Secondary Protagonist","spear","Hollow: Gamuza","The former Tercera Espada — a child's giggle hiding a centaur knight's lance and a pacifist's resolve.","Cero Doble · Gamuza Lance · Praying Mantis"],
+["Kaname Tosen","Villain","assassin","Zanpakutō: Suzumushi","The blind captain who followed the path of least bloodshed straight into treason.","Suzumushi Cricket · Bankai: Enma Kōrogi · Justice's Price"]],
+"Demon Slayer":[
+["Akaza","Villain","fists","Destructive Death Style","Upper Moon Three — a martial artist who forgot the person he trained to protect, fists remembering anyway.","Compass Needle · Destructive Death: Annihilation Type · Regeneration"],
+["Doma","Villain","frost","Cryokinesis Blood Art","Upper Moon Two — a cult leader's smile over fans of freezing mist, feeling nothing all the way down.","Freezing Lotus · Crystalline Divine Child · Scattering Lotuses"],
+["Gyutaro","Villain","venom","Blood Sickle Art","Upper Moon Six's darker half — poison sickles and a resentment old enough to predate his sister's name.","Flying Blood Sickles · Rampant Arc · Sibling Bond"],
+["Daki","Villain","twinblade","Obi Sash Blood Art","The entertainment district's demon — sashes that slice, store and strut; vanity weaponized.","Eight-Layered Obi Slash · Sash Storage · Splitting Form","Hoslow's Petal Whip (Blood) — the slicing obi sash"],
+["Kanao Tsuyuri","Secondary Protagonist","katana","Flower Breathing","The girl who flipped a coin to feel — Flower Breathing's final form costs her eyes and saves her heart.","Equinoctial Vermilion Eye · Peonies of Futility · The Coin"],
+["Genya Shinazugawa","Secondary Protagonist","bleed","Demon Consumption","The slayer who cannot use breathing — so he eats demons and borrows their nightmare instead.","Demon Flesh Consumption · Repeating Rifle · Brother's Shadow"]],
+"Jujutsu Kaisen":[
+["Kento Nanami","Mentor","katana","Ratio Technique","The salaryman sorcerer — 7:3 weak points marked with a blunt blade and zero overtime tolerance.","Ratio Slash · Overtime · Collapse"],
+["Aoi Todo","Secondary Protagonist","fists","Boogie Woogie","The best friend you never asked for — one clap swaps everything, including the fight's momentum.","Boogie Woogie · Black Flash · Takada-chan Doctrine"],
+["Toge Inumaki","Secondary Protagonist","madness","Cursed Speech","Salmon. Bonito flakes. — a voice that commands reality, rationed in rice-ball vocabulary for your safety.","Cursed Speech: Sleep · Crush · Get Twisted"],
+["Panda","Secondary Protagonist","tank","Cursed Corpse · Three Cores","Not a panda — Principal Yaga's masterpiece with three hearts and a gorilla mode for special occasions.","Gorilla Mode · Drumming Beat · Triple Core"],
+["Hiromi Higuruma","Anti-Hero","deathmage","Judgeman Domain","The exhausted lawyer whose domain subpoenas your soul — confiscation is the verdict, execution the appeal.","Deadly Sentencing · Executioner's Sword · Court of Judgment"]],
+"My Hero Academia":[
+["Mirio Togata","Secondary Protagonist","fists","Permeation","Lemillion — phases through matter and despair alike; lost his quirk and smiled through the war anyway.","Phantom Menace · Permeation Loop · United Front"],
+["Nejire Hado","Secondary Protagonist","sorcerer","Wave Motion","The Big 3's spiral of curiosity — vitality converted into golden shockwave spirals.","Gring Wave · Nejire Flood · Wave Spiral"],
+["Tamaki Amajiki","Secondary Protagonist","dragoon","Manifest","Suneater — social anxiety and a quirk that manifests everything he ate; the buffet is a war chest.","Chimera Kraken · Vast Hybrid · Manifest Armor"],
+["All For One","Villain","deathmage","Quirk Theft","The Symbol of Evil — a hand-faced archive of stolen power playing generational chess from the dark.","Quirk Vault · Air Cannon Barrage · Search"],
+["Muscular","Villain","fists","Muscle Augmentation","The villain with no philosophy at all — twelve thousand muscle fibers and the honesty of a landslide.","Muscle Armor · Pounding Assault · Blood-Fueled Rage"]],
+"Hunter x Hunter":[
+["Biscuit Krueger","Mentor","fists","Nen: Transmutation · Magical Esthetician","The double-star treasure hunter in a child's body — her true form does the push-ups.","Piano Massacre · True Form · Cookie-chan"],
+["Uvogin","Villain","tank","Nen: Enhancement","The Troupe's pure muscle — a Big Bang Impact with a code of honor and a battle roar.","Big Bang Impact · Bloodlust Roar · Iron Body"],
+["Nobunaga Hazama","Villain","katana","Nen: Enhancement · Iai","The Troupe's samurai — a four-meter circle of instant death drawn around a patient blade.","Iai Draw · En Circle · First Strike"],
+["Knuckle Bine","Secondary Protagonist","fists","Nen: Emission · A.P.R.","The soft-hearted brawler whose interest rates are lethal — Hakoware forecloses your aura.","Hakoware · Potclean · Interest Barrage"]],
+"Attack on Titan":[
+["Kenny Ackerman","Villain","archer","Ackerman Lineage · Anti-Personnel Gear","Kenny the Ripper — Levi's uncle, the Interior Squad's gunslinger, chasing power to feel like a king.","Gun-ODM Assault · Ripper's Blades · Last Cigarette"],
+["Sasha Blouse","Secondary Protagonist","archer","Hunter's Instinct","Potato Girl — a hunter's eye, a thief's appetite, and the shot that echoed through the whole finale.","Longbow Precision · Hunter's Step · The Potato"],
+["Lara Tybur","Villain","sorcerer","War Hammer Titan","The Tybur heir — the War Hammer's crystal cable lets her wage siege warfare from a wine glass away.","Hammer Construct · Spike Field · Remote Body"]],
+"Black Clover":[
+["Charlotte Roselei","Secondary Protagonist","venom","Briar Magic","The Blue Rose's captain — a curse of thorns, a fortress of composure, and one inconvenient crush.","Blue Rose Thorns · Briar Domination · Curse Bloom"],
+["Jack the Ripper","Secondary Protagonist","twinblade","Severing Magic","The Green Mantis captain — blades that learn what they cut and giggle about it.","Death Scythe · Severing Evolution · Mantis Duel"],
+["William Vangeance","Anti-Hero","cleric","World Tree Magic","The Golden Dawn's masked captain — a world tree that drinks mana, sharing his body with an elf's grief.","Mistilteinn · Great Tree · Dual Soul"]],
+"Fullmetal Alchemist":[
+["Izumi Curtis","Mentor","fists","Alchemy (Gateless)","A HOUSEWIFE — the Elrics' master, who saw the Truth, lost the most, and still suplexes philosophy.","Clap Alchemy · Suplex Doctrine · Housewife's Fury"],
+["Sloth","Villain","tank","Homunculus Speed","The fastest homunculus, tragically employed as a digger — laziness at three hundred kilometers an hour.","Chain Rampage · Speed Burst · Tunnel of Apathy"],
+["Father","Villain","deathmage","Dwarf in the Flask","The homunculus who swallowed God and budgeted a country's souls to keep it down.","God Containment · Philosopher Legion · Absolute Alchemy"]],
+"Chainsaw Man":[
+["Himeno","Secondary Protagonist","summoner","Ghost Devil Contract","Aki's senpai — an invisible right hand traded piece by piece, and one cigarette that says easy revenge.","Ghost Hand · Full Ghost · Easy Revenge"],
+["Angel Devil","Secondary Protagonist","cleric","Lifespan Absorption","The angel who hates hurting humans — his touch spends your years, his halo cuts like guilt.","Lifespan Blade · Halo Slash · Reluctant Hunter"],
+["Beam","Secondary Protagonist","dragoon","Shark Fiend","CHAINSAW-SAMA! — the shark fiend who swims through walls and devotion with equal ease.","Wall Swim · Shark Frenzy · True Believer"]],
+"Solo Leveling":[
+["Baek Yoonho","Secondary Protagonist","fists","Beast Transformation","The White Tiger Guild's master — a silver beast whose instincts recognized the Monarch first.","White Tiger Form · Beast Claws · Guild Master's Duty"],
+["Choi Jong-In","Secondary Protagonist","pyromancer","S-Rank Mage","The Hunters Guild's ace — Korea's finest flame mage, professionally annoyed by miracles.","Kamish's Wrath Support · Inferno Field · Mage Corps"],
+["Hwang Dongsoo","Villain","fists","S-Rank Brute","The American-based S-Rank with a grudge — proof that rank measures power, not character.","Berserk Assault · Grudge Fist · Brother's Debt"]],
+"Fate Series":[
+["Heracles","Legendary","greatsword","God Hand · Twelve Labors","Berserker of the Fifth War — twelve lives, one axe-sword, and Illya's proudest guardian.","God Hand · Nine Lives · Berserk Rampage"],
+["Medea","Villain","sorcerer","Rule Breaker · Divine Words","Caster of the Fifth War — the betrayed witch of Colchis, whose dagger annuls every contract.","Rule Breaker · Rain of Light · Territory Creation"],
+["Sasaki Kojiro","Anti-Hero","katana","Tsubame Gaeshi","Assassin of the gate — a nameless swordsman whose triple-arc slash bends multiplicity itself.","Tsubame Gaeshi · Vitrification · Gatekeeper's Duel"],
+["Astolfo","Secondary Protagonist","paladin","Twelve Paladins Relics","Rider of Black — Charlemagne's most cheerful paladin, reason traded for joy and a hippogriff.","La Black Luna · Hippogriff Ride · Casseur de Logistille"]],
+"Sword Art Online":[
+["Oberon","Villain","madness","GM Authority Abuse","The fairy king of ALO — a coward wearing administrator privileges as divinity. Logout pending.","Gravity Authority · Pain Amplifier · Stolen Crown"],
+["Death Gun","Villain","archer","Phantom Bullet","The GGO killer bridging virtual and real — a silenced rifle and SAO's ugliest survivors' club.","Death Pistol · Stealth Cloak · Real Kill Link"],
+["Quinella","Villain","sorcerer","Administrator · Sacred Arts","The Underworld's self-made goddess — three hundred years of stolen souls and perfect sacred arts.","Synthesis Ritual · Sword Golem · System Control"],
+["Lisbeth","Secondary Protagonist","tank","Master Smithing","The blacksmith of Aincrad — mace in hand, forge at heart, every top player swings her work.","Smith's Mace · Shield Line · Master Craft"]],
+"Fire Force":[
+["Tamaki Kotatsu","Secondary Protagonist","pyromancer","Nekomata Ignition","Company 1's cat-flame rookie — lucky lecher curse, unlucky positioning, genuinely fierce when it counts.","Nekomata Claws · Flame Tails · Purgatory Loyalty"],
+["Vulcan Joseph","Secondary Protagonist","tank","Engineering Genius","Company 8's mechanic — the God of Fire and Smithing, building tomorrow with anti-corporate spite.","Power Armor Rigs · Gadget Barrage · Workshop Fortress"]],
+"Tokyo Ghoul":[
+["Koutarou Amon","Rival","greatsword","Quinque: Doujima","The CCG's true believer — Kaneki's mirror across the fence, wielding conviction like a club.","Doujima Cleave · Kura Thrust · Investigator's Oath"],
+["Akira Mado","Secondary Protagonist","archer","Quinque Marksmanship","Mado's daughter — cold analytics and her father's quinques, thawing one truth at a time.","Amatsu Bolt · Analysis · Fueguchi Whip"],
+["Shuu Tsukiyama","Anti-Hero","spear","Koukaku Kagune","The Gourmet — a connoisseur's spiral blade and an obsession that ripened into loyalty. Très bien.","Koukaku Spiral · Gourmet's Pursuit · Calamari Drill"]],
+"JoJo's Bizarre Adventure":[
+["Noriaki Kakyoin","Secondary Protagonist","sorcerer","Stand: Hierophant Green","The crusader in green — Emerald Splash barrages and a twenty-meter web of tripwires. Rero.","Emerald Splash · Hierophant Web · Twenty Meters"],
+["Jean Pierre Polnareff","Secondary Protagonist","assassin","Stand: Silver Chariot","The French swordsman — Silver Chariot's rapier faster than sight, honor heavier than armor.","Chariot Rush · Armor Off · Shooting Star","Rogier's Rapier (Keen) — Silver Chariot's blade"],
+["Yoshikage Kira","Villain","assassin","Stand: Killer Queen","The man who just wants a quiet life — three bombs, one cat, and Morioh's longest manhunt.","Killer Queen · Sheer Heart Attack · Bites the Dust"],
+["Diavolo","Villain","deathmage","Stand: King Crimson","Passione's hidden boss — ten seconds of erased time and an epithet he never escapes: eternal defeat.","King Crimson · Epitaph · Time Erasure"]]
+};
+Object.entries(ROSTER2).forEach(([fr, list])=>{
+  list.forEach(e=>{
+    const [name,cat,archId,ps,bio,tech,wOver]=e;
+    const arch=ARCHETYPES[archId], h=hashN(name), must=MUST_HAVE.includes(name);
+    const techs=tech.split(" · ");
+    const mkGear=(arr)=>{ const g=arr.slice(); if(wOver) g[0]=wOver; return g; };
+    const builds=[
+      {name:"Lore Accurate — RL150", level:150, type:"Lore · "+arch.label, primary:true,
+       stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.lore), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon: archId==="summoner"?"Black Knife Tiche +10 — their signature companion, made shadow":"—",
+       notes:"Lore-accurate "+name+": "+arch.lore_note+" Signature focus: "+techs[0]+"."},
+      {name:"PvE Optimized — RL150", level:150, type:"PvE · "+arch.label,
+       stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.pve), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"Mimic Tear +10",
+       notes:"PvE-optimized: efficiency over cosplay. Mimic Tear support, encounter-swapped talismans, and "+techs[0]+" as the boss-killing core."},
+      {name:"PvP Optimized — RL125", level:125, type:"PvP · "+arch.label,
+       stats:spreadStats(Object.assign({},arch.w,{VIG:arch.w.VIG+3}),125), weapons:mkGear(arch.gear.pvp), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"—",
+       notes:"PvP duelist tuned for the RL125 meta: higher Vigor weighting, honest neutral game, and "+techs[0]+" as the kill condition."}
+    ];
+    CHARACTERS.push({
+      id:slug(name), name, anime:fr, franchise:fr, category:cat,
+      powerSystem:ps, archetype:arch.label, difficulty:arch.diff,
+      rating: Math.round((must? 8.6+(h%8)/10 : 7.4+(h%15)/10)*10)/10,
+      popularity: must? 86+(h%12) : 55+(h%30),
+      banner: FRANCHISE_COLORS[fr]||["#8b5cf6","#0f172a"],
+      bio, personality:CATEGORY_PERSONA[cat], combat:arch.combat,
+      techniques:techs, transformations:[], allies:[], enemies:[], battles:[], quote:"",
+      builds, deep:false
+    });
+  });
+});
+/* Search aliases for renamed entries */
+const ALIASES = {artoriapendragon:"saber", emiyaarcher:"archer emiya counter guardian", cuchulainn:"lancer",
+ medusa:"rider", masterroshi:"roshi", sosukeaizen:"aizen", kyojurorengoku:"rengoku", isaacnetero:"netero",
+ mereoleonavermillion:"mereoleona", nachtfaust:"nacht", finralroulacase:"finral", suguru:"geto",
+ kinjihakari:"hakari", hajimekashimo:"kashimo", fumikagetokoyami:"tokoyami", shotaaizawa:"aizawa eraser head",
+ alicesynthesisthirty:"alice", princesshibana:"hibana", renjiyomo:"yomo", silverfang:"bang", wrath2003:"wrath",
+ shirouemiya:"emiya shirou", zenonzogratis:"zenon", dantezogratis:"dante", vanicazogratis:"vanica"};
+
 const FRANCHISES = ["All", ...Object.keys(FRANCHISE_COLORS).filter(f=>CHARACTERS.some(c=>c.franchise===f))];
 /* Legality pass: no build may spend more points than its Rune Level allows (level+79).
    Over-budget hand-tuned specs get trimmed from their largest non-Vigor stat. */
@@ -1915,7 +2161,8 @@ const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
   set(s){ try{ localStorage.setItem("arnexus", JSON.stringify(s)); }catch(e){} }
 };
-let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1}, store.get());
+let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}}, store.get());
+S.alloc=S.alloc||{};
 function save(){ store.set(S); checkAchievements(); }
 
 function esc(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -2007,7 +2254,7 @@ function renderChars(){
   const list=CHARACTERS.filter(c=>
     (charFilter==="All"||c.category===charFilter) &&
     (charFranchise==="All"||c.franchise===charFranchise) &&
-    (!charQuery || (c.name+" "+c.anime+" "+c.franchise+" "+c.powerSystem+" "+c.archetype).toLowerCase().includes(charQuery)));
+    (!charQuery || (c.name+" "+c.anime+" "+c.franchise+" "+c.powerSystem+" "+c.archetype+" "+(ALIASES[c.id]||"")).toLowerCase().includes(charQuery)));
   document.getElementById("charGrid").innerHTML = list.length? list.map(c=>`
     <div class="char-card" onclick="openChar('${c.id}')">
       <div class="char-banner" style="background:linear-gradient(120deg,${c.banner[0]},${c.banner[1]})">
@@ -2037,8 +2284,36 @@ function scaledStat(target, buildLevel, ml){
   const base=Math.min(10,target);
   return Math.round(base + (target-base)*Math.max(0,ml-1)/(buildLevel-1));
 }
-function statBars(stats, buildLevel){
+function allocKey(cid,idx){ return cid+"_"+idx; }
+function getBudget(){ return Math.min(S.myLevel||1,713)+79; }
+function trimToBudget(a){
+  let sum=Object.values(a).reduce((x,y)=>x+y,0), budget=getBudget();
+  while(sum>budget){
+    let key=null,max=-1;
+    for(const k in a) if(a[k]>max&&a[k]>7){ max=a[k]; key=k; }
+    if(!key) break;
+    a[key]--; sum--;
+  }
+  return a;
+}
+function statBars(stats, buildLevel, cid, idx){
   const ml=S.myLevel||1;
+  const manual = cid!==undefined && S.alloc[allocKey(cid,idx)];
+  if(manual){
+    const a=trimToBudget(S.alloc[allocKey(cid,idx)]);
+    const spent=Object.values(a).reduce((x,y)=>x+y,0), budget=getBudget(), avail=budget-spent;
+    return `<div style="display:flex;align-items:center;gap:8px;margin:10px 0 4px;flex-wrap:wrap">
+      <span class="pill gold">🎮 2K BUILDER · POINTS AVAILABLE: <b style="font-size:14px">${avail}</b></span>
+      <span style="font-size:11px;color:var(--txt-dim)">${spent} / ${budget} spent at RL ${Math.min(ml,713)} — raise your level for a bigger pool</span></div>
+    <div class="stat-bars">`+Object.entries(a).map(([k,v])=>{
+      const t=stats[k];
+      return `<div class="sbar"><span class="k">${k}</span>
+        <button class="stat-btn" onclick="bumpStat('${cid}',${idx},'${k}',-1)">−</button>
+        <div class="track"><div class="ghost" style="width:${Math.min(100,t/99*100)}%"></div><div class="fill ${v<t?'cur':''}" style="width:${Math.min(100,v/99*100)}%"></div></div>
+        <button class="stat-btn" onclick="bumpStat('${cid}',${idx},'${k}',1)">+</button>
+        <span class="v">${v}${v!==t?`<small>/${t}</small>`:""}</span></div>`;
+    }).join("")+`</div>`;
+  }
   return `<div class="stat-bars">`+Object.entries(stats).map(([k,v])=>{
     const cur=buildLevel ? scaledStat(v,buildLevel,ml) : v;
     const growing=buildLevel && cur<v;
@@ -2048,22 +2323,56 @@ function statBars(stats, buildLevel){
       `<span class="v">${cur}${buildLevel&&cur!==v?`<small>/${v}</small>`:""}</span></div>`;
   }).join("")+`</div>`;
 }
+function bumpStat(cid,idx,k,d){
+  const a=S.alloc[allocKey(cid,idx)]; if(!a) return;
+  const spent=Object.values(a).reduce((x,y)=>x+y,0), budget=getBudget();
+  if(d>0){
+    if(a[k]>=99){ toast(k+" is at the 99 hard cap."); return; }
+    if(spent>=budget){ toast("No points left — drag your Rune Level up for a bigger pool."); return; }
+    a[k]++;
+  } else {
+    if(a[k]<=7) return;
+    a[k]--;
+  }
+  save(); rerenderBuild(cid,idx);
+}
+function toggleBuilderMode(cid,idx){
+  const key=allocKey(cid,idx);
+  if(S.alloc[key]){ delete S.alloc[key]; }
+  else {
+    const c=CHARACTERS.find(x=>x.id===cid), b=c.builds[idx], ml=S.myLevel||1, snap={};
+    for(const k in b.stats) snap[k]=Math.min(99, scaledStat(b.stats[k], b.level, ml));
+    S.alloc[key]=trimToBudget(snap);
+  }
+  save(); rerenderBuild(cid,idx);
+}
+function rerenderBuild(cid,idx){
+  const c=CHARACTERS.find(x=>x.id===cid); if(!c) return;
+  const el=document.getElementById("bb_"+cid+"_"+idx);
+  if(el) el.innerHTML=buildBlock(c.builds[idx],cid,idx);
+  if(window._openCharId===cid && (window._openBuildIdx||0)===idx){
+    const body=document.getElementById("charBuildBody");
+    if(body && document.getElementById("modalBg").classList.contains("open")) body.innerHTML=buildBlock(c.builds[idx],cid,idx);
+  }
+}
 function levelChip(b){
   const ml=S.myLevel||1;
   if(ml>=b.level) return `<div class="lvl-progress reached">✔ LEVEL REACHED — you are RL ${ml}, this build needs RL ${b.level}${ml>b.level?` (+${ml-b.level} to spare)`:''}</div>`;
   const pct=Math.round(ml/b.level*100);
   return `<div class="lvl-progress"><div class="lvl-bar"><div style="width:${Math.max(2,pct)}%"></div></div><span><b style="color:var(--cyan)">RL ${ml} / ${b.level}</b> — ${b.level-ml} levels to go (${pct}%)</span></div>`;
 }
-function buildBlock(b){
+function buildBlock(b, cid, idx){
+  const manual = cid!==undefined && S.alloc[allocKey(cid,idx)];
   return `
   <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
     <b style="font-family:var(--font-display);font-size:16px;color:var(--gold2)">${esc(b.name)}</b>
-    <span class="pill gold">RL ${b.level} · ${esc(b.type)}</span>
+    <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="pill gold">RL ${b.level} · ${esc(b.type)}</span>${cid!==undefined?`<button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px" onclick="toggleBuilderMode('${cid}',${idx})">${manual?"↺ Auto Projection":"🎮 2K Builder"}</button>`:""}</span>
   </div>
   ${levelChip(b)}
-  ${statBars(b.stats,b.level)}
+  ${statBars(b.stats,b.level,cid,idx)}
   <div style="font-size:11px;color:var(--txt-dim);margin-bottom:4px">${
-    (S.myLevel||1)>=713 ? "⬆ RL 713 — every attribute at the 99 hard cap."
+    manual ? "🎮 2K Builder mode: spend your RL "+Math.min(S.myLevel||1,713)+" point pool with the + / − buttons — faint gold marks the recommended spec. Drag your level up to earn more points."
+    : (S.myLevel||1)>=713 ? "⬆ RL 713 — every attribute at the 99 hard cap."
     : (S.myLevel||1)>b.level ? "Target spec exceeded — surplus levels distributed toward the 99 hard cap (faint gold = original RL "+b.level+" spec)."
     : (S.myLevel||1)===b.level ? "✔ Exact target spec for this build."
     : "Projected attributes at your RL "+(S.myLevel||1)+" — faint gold shows the RL "+b.level+" target. Drag your level to watch them grow."
@@ -2116,7 +2425,7 @@ function openChar(id){
       </div>
       <div id="ctab-builds" style="display:none">
         <div class="build-tabs">${c.builds.map((b,i)=>`<div class="mtab ${i===0?'active':''}" onclick="charBuildTab(this,'${c.id}',${i})">${esc(b.name.split("—")[0].trim())}</div>`).join("")}</div>
-        <div id="charBuildBody">${buildBlock(c.builds[0])}</div>
+        <div id="charBuildBody">${buildBlock(c.builds[0],c.id,0)}</div>
       </div>
     </div>`;
   window._openCharId=id; window._openBuildIdx=0;
@@ -2130,7 +2439,7 @@ function charTab(el,name){
 function charBuildTab(el,id,i){
   el.parentElement.querySelectorAll(".mtab").forEach(t=>t.classList.remove("active")); el.classList.add("active");
   window._openBuildIdx=i;
-  document.getElementById("charBuildBody").innerHTML=buildBlock(CHARACTERS.find(c=>c.id===id).builds[i]);
+  document.getElementById("charBuildBody").innerHTML=buildBlock(CHARACTERS.find(c=>c.id===id).builds[i],id,i);
 }
 function closeModal(){ document.getElementById("modalBg").classList.remove("open"); document.body.style.overflow=""; }
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
@@ -2157,7 +2466,7 @@ function renderBuildViewer(){
         <button class="btn" onclick="openChar('${c.id}')">Full Profile</button>
       </div>
     </div>
-    ${c.builds.map(b=>`<div class="panel" style="margin-bottom:14px">${buildBlock(b)}</div>`).join("")}`;
+    ${c.builds.map((b,i)=>`<div class="panel" style="margin-bottom:14px"><div id="bb_${c.id}_${i}">${buildBlock(b,c.id,i)}</div></div>`).join("")}`;
 }
 
 /* ============ FUSION LAB ============ */
@@ -2310,7 +2619,7 @@ function setMyLevel(v){
   if(document.getElementById("modalBg").classList.contains("open") && window._openCharId){
     const c=CHARACTERS.find(x=>x.id===window._openCharId);
     const body=document.getElementById("charBuildBody");
-    if(c && body) body.innerHTML=buildBlock(c.builds[window._openBuildIdx||0]);
+    if(c && body) body.innerHTML=buildBlock(c.builds[window._openBuildIdx||0],c.id,window._openBuildIdx||0);
   }
   if(v===713 && prev!==713) toast("⬆️ RL 713 — all eight attributes at 99. Hard cap reached.");
 }
@@ -2330,7 +2639,7 @@ function toggleBuild(id){
 }
 function resetProgress(){
   if(!confirm("Reset ALL local progress — bosses, builds, fusions and achievements?")) return;
-  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1};
+  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}};
   store.set(S); renderAll(); toast("Progress reset. A new Tarnished rises.");
 }
 
