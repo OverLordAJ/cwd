@@ -2356,6 +2356,7 @@ CHARACTERS.forEach(c=>c.builds.forEach(b=>{
   }
 }));
 
+
 /* ============ BUILD SOURCES — MASTER HUB ENGINE ============ */
 const SOURCE_TABS=[["anime","⚔ Anime Builds"],["parties","👥 Anime Parties"],["erchars","🏰 ER Characters"],["dlcsrc","🌒 DLC Builds"],["fextralife","📚 Fextralife Archive"],["fusionsrc","⚗️ Fusion Builds"],["community","🌍 Community"],["random","🎲 Randomizer"],["meta","📈 Meta Builds"],["challenge","💀 Challenge Runs"],["loresrc","📜 Lore Builds"]];
 let srcTab="anime";
@@ -2810,6 +2811,83 @@ function renderTalismanDb(){
   }).join("")||`<div class="empty">No talismans match.</div>`;
 }
 
+/* ---- SotE Equipment Refresh: builds updated against the full item databases ---- */
+const ARMOR_RENAME={
+ "Heavy plate mix — poise above fashion":"Veteran's Set — poise above fashion",
+ "Light garb — bare-knuckle mobility":"Champion Set (bare-chested) — bare-knuckle mobility",
+ "Light — full mobility":"White Reed Set — light-roll mobility",
+ "Sorcerer robes":"Raya Lucarian Sorcerer Set",
+ "Blessed vestments":"Cleanrot Set — consecrated plate",
+ "Battle-mage medium":"Spellblade Set",
+ "Fire-touched garb":"Fire Monk Set",
+ "White Mask + flowing black":"War Surgeon Set — the White Mask boosts attack on blood loss",
+ "Black Knife set — silent steps":"Black Knife Set — muffles footsteps",
+ "Knightly plate with gold trim":"Leyndell Knight Set",
+ "Warlord plate":"General Radahn Set",
+ "Storm-touched medium":"Drake Knight Set",
+ "Winter garb":"Snow Witch Set",
+ "Elegant, deceptively light":"Nox Swordstress Set",
+ "Ranger leathers":"Bandit Set",
+ "Skirmisher medium":"Kaiden Set",
+ "Full Bull-Goat — the wall":"Bull-Goat Set — the wall",
+ "Commander's regalia":"Ruler's Set",
+ "Scaled hide":"Scaled Set",
+ "Grave robes":"Sage Set — grave robes",
+ "Tattered, eye-scorched":"Ascetic's Set — eye-scorched rags",
+ "Land of Reeds set — light roll":"Land of Reeds Set — light roll"
+};
+function pvpDlcTal(b){
+  const w=b.weapons.join(" ");
+  if(/[Bb]ow/.test(w)) return "Arrow's Soaring Sting Talisman";
+  if(/Staff|Seal|Scepter/.test(w)) return "Talisman of Lord's Bestowal";
+  if(/Giant-Crusher|Greatsword|Colossal|Greataxe|Great Club|Golem|Bloodfiend's Arm|Great Stars|Halberd|Greathammer/.test(w)) return "Two-Handed Sword Talisman";
+  return "Retaliatory Crossed-Tree";
+}
+CHARACTERS.forEach(c=>c.builds.forEach(b=>{
+  b.armor=b.armor.map(a=>ARMOR_RENAME[a]||a);
+  // strict upgrade: DLC turtle outclasses Green Turtle at high RL
+  if(b.level>=125) b.talismans=b.talismans.map(t=>t==="Green Turtle Talisman"?"Two-Headed Turtle Talisman":t);
+  // PvP variants get a matched SotE talisman in the flex slot
+  if(/PvP/.test(b.type)&&b.talismans.length>=4&&b.talismans[0]!=="—"){
+    const add=pvpDlcTal(b);
+    if(!b.talismans.includes(add)) b.talismans[b.talismans.length-1]=add;
+  }
+}));
+/* ---- Database wiring for gear annotations ---- */
+const TALIS_EFFECT={};
+TALISMAN_DB.forEach(g=>g.items.forEach(([n,e])=>{ TALIS_EFFECT[n.replace(" [DLC]","")]={e,dlc:n.includes("[DLC]")}; }));
+const WEAPON_LIST=[];
+WEAPON_INDEX.forEach(r=>widxItems(r).forEach(i=>WEAPON_LIST.push(i)));
+WEAPON_LIST.sort((a,b)=>b.name.length-a.name.length);
+const ARMOR_LOOKUP=[];
+ARMOR_DLC.forEach(([n,pc])=>ARMOR_LOOKUP.push({n,pc,dlc:true}));
+ARMOR_BASE.forEach(([n,pc])=>ARMOR_LOOKUP.push({n,pc,dlc:false}));
+ARMOR_LOOKUP.sort((a,b)=>b.n.length-a.n.length);
+function miniPill(txt){ return ' <span class="pill gold" style="font-size:9px;padding:1px 6px;vertical-align:middle">'+txt+'</span>'; }
+function annotateWep(w){
+  const hit=WEAPON_LIST.find(x=>w.includes(x.name));
+  let out=esc(w);
+  if(hit&&LEGENDARY_WEAPONS.has(hit.name)) out='<span style="color:var(--gold2)">★</span> '+out;
+  if(hit&&hit.dlc) out+=miniPill("DLC");
+  return out;
+}
+function annotateArmor(a){
+  const low=a.toLowerCase();
+  let hit=ARMOR_LOOKUP.find(x=>low.includes(x.n.toLowerCase()));
+  if(!hit) hit=ARMOR_LOOKUP.find(x=>{ const short=x.n.replace(/ Set$/,""); return short.length>=8 && low.includes(short.toLowerCase()); });
+  let out=esc(a);
+  if(hit) out+=' <small style="color:var(--txt-dim)">· '+hit.pc+'pc set</small>'+(hit.dlc?miniPill("DLC"):"");
+  return out;
+}
+function annotateTal(t){
+  const base=t.replace(" [DLC]","").split(" — ")[0];
+  const info=TALIS_EFFECT[base]||TALIS_EFFECT[base+" Talisman"];
+  if(!info) return esc(t);
+  let out=(LEGENDARY_TALIS.has(base)||LEGENDARY_TALIS.has(base+" Talisman")?'<span style="color:var(--gold2)">★</span> ':"")+esc(base);
+  out+=' <small style="color:var(--txt-dim)">· '+esc(info.e)+'</small>';
+  if(info.dlc) out+=miniPill("DLC");
+  return out;
+}
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
@@ -3032,9 +3110,9 @@ function buildBlock(b, cid, idx){
     : "Projected attributes at your RL "+(S.myLevel||1)+" — faint gold shows the RL "+b.level+" target. Drag your level to watch them grow."
   }</div>
   <div class="gear-grid">
-    <div class="gear-box"><h6>⚔ Weapons</h6>${b.weapons.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
-    <div class="gear-box"><h6>🛡 Armor</h6>${b.armor.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
-    <div class="gear-box"><h6>🧿 Talismans</h6>${b.talismans.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+    <div class="gear-box"><h6>⚔ Weapons</h6>${b.weapons.map(w=>`<span>${annotateWep(w)}</span>`).join("")}</div>
+    <div class="gear-box"><h6>🛡 Armor</h6>${b.armor.map(w=>`<span>${annotateArmor(w)}</span>`).join("")}</div>
+    <div class="gear-box"><h6>🧿 Talismans</h6>${b.talismans.map(w=>`<span>${annotateTal(w)}</span>`).join("")}</div>
     <div class="gear-box"><h6>✨ Spells & Summon</h6>${b.spells.map(w=>`<span>${esc(w)}</span>`).join("")}<span style="color:var(--purple);margin-top:4px">☾ ${esc(b.summon)}</span></div>
   </div>
   <div class="build-note">📜 ${esc(b.notes)}</div>`;
