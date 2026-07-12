@@ -410,10 +410,38 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <div class="chip active" data-db="bosses" onclick="dbTab('bosses',this)">👹 Bosses</div>
       <div class="chip" data-db="weapons" onclick="dbTab('weapons',this)">⚔ Weapons</div>
       <div class="chip" data-db="talismans" onclick="dbTab('talismans',this)">🧿 Talismans</div>
+      <div class="chip" data-db="armor" onclick="dbTab('armor',this)">🛡 Armor Sets</div>
     </div>
     <div id="dbBosses"></div>
-    <div id="dbWeapons" style="display:none;overflow-x:auto"></div>
-    <div id="dbTalismans" style="display:none;overflow-x:auto"></div>
+    <div id="dbWeapons" style="display:none">
+      <div id="wepFeatured" style="overflow-x:auto"></div>
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:22px 0 10px">
+        <h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px">COMPLETE WEAPON INDEX</h3>
+        <span id="wepCount" style="font-size:12px;color:var(--txt-dim)"></span>
+      </div>
+      <input class="searchbar" placeholder="Search all weapons..." oninput="wepQuery=this.value;renderWeaponIndex()">
+      <div style="font-size:11px;color:var(--txt-dim);margin-bottom:12px">★ = Legendary Armament (9 needed for the trophy) · gold pills = Shadow of the Erdtree</div>
+      <div id="wepIndex"></div>
+    </div>
+    <div id="dbTalismans" style="display:none">
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+        <h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px">COMPLETE TALISMAN DATABASE</h3>
+        <span id="talisCount" style="font-size:12px;color:var(--txt-dim)"></span>
+      </div>
+      <input class="searchbar" placeholder="Search talismans and effects..." oninput="talisQuery=this.value;renderTalismanDb()">
+      <div style="font-size:11px;color:var(--txt-dim);margin-bottom:12px">★ = Legendary Talisman (8 needed for the trophy) · effects per Fextralife, current to SotE</div>
+      <div id="talisList"></div>
+      <div style="margin-top:16px"><h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px;margin-bottom:10px">META PICKS — LOCATIONS & NOTES</h3><div id="talisMeta" style="overflow-x:auto"></div></div>
+    </div>
+    <div id="dbArmor" style="display:none">
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+        <h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px">ALL NAMED ARMOR SETS</h3>
+        <span id="armorCount" style="font-size:12px;color:var(--txt-dim)"></span>
+      </div>
+      <input class="searchbar" placeholder="Search armor sets..." oninput="armorQuery=this.value;renderArmorDb()">
+      <div class="build-note" style="margin-bottom:12px;font-size:12px">No set bonuses exist in Elden Ring — sets are the game's own named groupings, and mixing pieces is fully supported (and standard in min-maxed builds). Piece counts noted; most are 4-piece, NPC-drop sets often 2–3. Unobtainable/cut sets excluded from counts: <i id="armorCut"></i>.</div>
+      <div id="armorList"></div>
+    </div>
   </section>
 
   <!-- RANKINGS -->
@@ -486,7 +514,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
 <footer>
   <b>ANIME RING NEXUS — PHASE OMEGA</b><br>
   Fan-made project. Elden Ring © FromSoftware / Bandai Namco. All anime characters © their respective creators.<br>
-  Game data approximated from community wikis (Fextralife) · Meta references current to patch 1.16 · Built to grow, never finished.
+  Game data from community wikis (Fextralife / Fandom) — full weapon, talisman & armor indexes current to Shadow of the Erdtree · Meta references patch 1.16 · Built to grow, never finished.
 </footer>
 
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
@@ -2652,6 +2680,136 @@ function loadFusion(a,b){
   runFusion();
 }
 
+/* ============ COMPLETE EQUIPMENT DATABASES (Fextralife-sourced, current to SotE) ============ */
+/* ---- ARMOR SETS: 153 named sets (~704 pieces: 559 base + 145 DLC). No set bonuses in ER — mixing is fully supported. ---- */
+const ARMOR_DLC=[["Ansbach's Set",4],["Ascetic's Set",4],["Black Knight Set",4],["Common Soldier Set",4],["Dancer's Set",4],["Dane's Set",4],["Death Knight Set",4],["Divine Beast Set",2],["Divine Bird Set",4],["Fire Knight Set",4],["Freyja's Set",4],["Gaius's Set",4],["Gravebird Set",4],["High Priest Set",4],["Highland Warrior Set",4],["Horned Warrior Set",4],["Hornsent Set",3],["Igon's Set",4],["Iron Rivet Set",4],["Messmer Soldier Set",4],["Messmer's Set",4],["Night Set",4],["Oathseeker Knight Set",4],["Rakshasa Set",4],["Rellana's Set",4],["Shadow Militiaman Set",4],["Solitude Set",4],["Thiollier's Set",4],["Verdigris Set",4],["Young Lion's Set",4]];
+const ARMOR_BASE=[["Alberich's Set",4],["Albinauric Set",2],["All-Knowing Set",4],["Aristocrat Set",3],["Astrologer Set",4],["Azur's Glintstone Set",4],["Bandit Set",4],["Banished Knight Set",4],["Battlemage Set",4],["Beast Champion Set",4],["Black Knife Set",4],["Blackflame Monk Set",4],["Blaidd's Set",4],["Bloodhound Knight Set",4],["Bloodsoaked Set",2],["Blue Cloth Set",4],["Blue Festive Set",2],["Blue Silver Set",4],["Briar Set",4],["Bull-Goat Set",4],["Carian Knight Set",4],["Chain Set",4],["Champion Set",4],["Cleanrot Set",4],["Commoner's Set",3],["Confessor Set",4],["Consort's Set",3],["Crucible Axe Set",4],["Crucible Tree Set",4],["Cuckoo Knight Set",4],["Depraved Perfumer Set",4],["Drake Knight Set",4],["Duelist Set",3],["Eccentric Set",4],["Elden Lord Set",4],["Errant Sorcerer Set",4],["Exile Set",4],["Festive Set",2],["Fia's Set",2],["Finger Maiden Set",3],["Fingerprint Set",4],["Fire Monk Set",4],["Fire Prelate Set",4],["Fur Set",3],["Gelmir Knight Set",4],["General Radahn Set",4],["Godrick Foot Soldier Set",4],["Godrick Knight Set",4],["Godrick Soldier Set",4],["Godskin Apostle Set",4],["Godskin Noble Set",4],["Goldmask's Set",4],["Guardian Set",4],["Guilty Set",3],["Haligtree Foot Soldier Set",4],["Haligtree Knight Set",4],["Haligtree Soldier Set",4],["High Page Set",3],["Highwayman Set",4],["Hoslow's Set",4],["Iron Set",4],["Juvenile Scholar Set",2],["Kaiden Set",4],["Knight Set",4],["Land of Reeds Set",4],["Lazuli Sorcerer Set",4],["Leyndell Foot Soldier Set",4],["Leyndell Knight Set",4],["Leyndell Soldier Set",4],["Lionel's Set",4],["Lusat's Set",4],["Malenia's Set",4],["Malformed Dragon Set",4],["Maliketh's Set",4],["Marionette Soldier Set",2],["Mausoleum Foot Soldier Set",4],["Mausoleum Knight Set",3],["Mausoleum Soldier Set",3],["Mushroom Set",4],["Night Maiden Set",4],["Night's Cavalry Set",4],["Noble's Set",4],["Nomadic Merchant's Set",3],["Nox Monk Set",4],["Nox Swordstress Set",4],["Old Aristocrat Set",3],["Omen Set",4],["Omenkiller Set",4],["Page Set",3],["Perfumer Set",4],["Preceptor's Set",4],["Prisoner Set",3],["Prophet Set",3],["Queen of the Full Moon Set",4],["Radahn Foot Soldier Set",4],["Radahn Soldier Set",4],["Raging Wolf Set",4],["Raptor's Set",4],["Raya Lucarian Foot Soldier Set",4],["Raya Lucarian Soldier Set",4],["Raya Lucarian Sorcerer Set",4],["Redmane Knight Set",4],["Ronin's Set",4],["Rotten Duelist Set",3],["Royal Knight Set",4],["Royal Remains Set",4],["Ruler's Set",4],["Sage Set",3],["Sanguine Noble Set",3],["Scaled Set",4],["Shaman Set",3],["Snow Witch Set",3],["Spellblade Set",4],["Traveler's Set",3],["Traveling Maiden Set",4],["Tree Sentinel Set",4],["Twinned Set",4],["Vagabond Knight Set",4],["Veteran's Set",4],["Vulgar Militia Set",4],["War Surgeon Set",4],["White Reed Set",4],["Zamor Set",4]];
+const ARMOR_UNOBTAINABLE=["Tarnished Wrap","Ragged Set","Brave's Set","Grass Hair Ornament","Deathbed Smalls","Millicent's Set","Twinned Greaves (altered)"];
+
+/* ---- TALISMANS: 154 (115 base + 39 DLC). Legendary 8 marked. ---- */
+const LEGENDARY_TALIS=new Set(["Erdtree's Favor +2","Radagon's Soreseal","Marika's Soreseal","Dragoncrest Greatshield Talisman","Moon of Nokstella","Old Lord's Talisman","Radagon Icon","Godfrey Icon"]);
+const TALISMAN_DB=[
+{g:"HP",items:[["Crimson Amber Medallion","Max HP +6%"],["Crimson Amber Medallion +1","Max HP +7%"],["Crimson Amber Medallion +2","Max HP +8%"],["Crimson Amber Medallion +3 [DLC]","Max HP +10%"],["Crimson Seed Talisman","Crimson flask restore +20%"],["Crimson Seed Talisman +1 [DLC]","Crimson flask restore +30%"],["Blessed Dew Talisman","Restores 2 HP/sec"]]},
+{g:"FP",items:[["Cerulean Amber Medallion","Max FP +7%"],["Cerulean Amber Medallion +1","Max FP +9%"],["Cerulean Amber Medallion +2","Max FP +11%"],["Cerulean Amber Medallion +3 [DLC]","Max FP +12.5%"],["Cerulean Seed Talisman","Cerulean flask restore +20%"],["Cerulean Seed Talisman +1 [DLC]","Cerulean flask restore +30%"],["Blessed Blue Dew Talisman [DLC]","Restores 0.5 FP/sec"],["Talisman of Lord's Bestowal [DLC]","Poise +54% after using a flask"]]},
+{g:"Stamina",items:[["Viridian Amber Medallion","Max Stamina +11%"],["Viridian Amber Medallion +1","Max Stamina +13%"],["Viridian Amber Medallion +2","Max Stamina +15%"],["Viridian Amber Medallion +3 [DLC]","Max Stamina +17%"],["Green Turtle Talisman","Stamina recovery +17.7%"],["Two-Headed Turtle Talisman [DLC]","Stamina recovery +22.2%"]]},
+{g:"Equip Load",items:[["Arsenal Charm","Max Equip Load +15%"],["Arsenal Charm +1","Max Equip Load +17%"],["Great-Jar's Arsenal","Max Equip Load +19%"]]},
+{g:"Erdtree's Favor",items:[["Erdtree's Favor","HP +3% / Stam +7% / Load +5%"],["Erdtree's Favor +1","HP +3.5% / Stam +8.5% / Load +6.5%"],["Erdtree's Favor +2","HP +4% / Stam +10% / Load +8%"]]},
+{g:"Soreseal / Scarseal",items:[["Radagon's Scarseal","Vig/End/Str/Dex +3, dmg taken +10%"],["Radagon's Soreseal","Vig/End/Str/Dex +5, dmg taken +15%"],["Marika's Scarseal","Mnd/Int/Fth/Arc +3, dmg taken +10%"],["Marika's Soreseal","Mnd/Int/Fth/Arc +5, dmg taken +15%"]]},
+{g:"Stat Heirlooms",items:[["Starscourge Heirloom","Strength +5"],["Prosthesis-Wearer Heirloom","Dexterity +5"],["Stargazer Heirloom","Intelligence +5"],["Two Fingers Heirloom","Faith +5"],["Outer God Heirloom [DLC]","Arcane +5"]]},
+{g:"Physical Negation",items:[["Dragoncrest Shield Talisman","Phys negation +10%"],["Dragoncrest Shield Talisman +1","+13%"],["Dragoncrest Shield Talisman +2","+17%"],["Dragoncrest Greatshield Talisman","+20%"]]},
+{g:"Magic Negation",items:[["Spelldrake Talisman","+13%"],["Spelldrake Talisman +1","+17%"],["Spelldrake Talisman +2","+20%"],["Spelldrake Talisman +3 [DLC]","+22%"]]},
+{g:"Fire Negation",items:[["Flamedrake Talisman","+13%"],["Flamedrake Talisman +1","+17%"],["Flamedrake Talisman +2","+20%"],["Flamedrake Talisman +3 [DLC]","+22%"]]},
+{g:"Lightning Negation",items:[["Boltdrake Talisman","+13%"],["Boltdrake Talisman +1","+17%"],["Boltdrake Talisman +2","+20%"],["Boltdrake Talisman +3 [DLC]","+22%"]]},
+{g:"Holy Negation",items:[["Haligdrake Talisman","+13%"],["Haligdrake Talisman +1","+17%"],["Haligdrake Talisman +2","+20%"],["Golden Braid [DLC]","+22%"]]},
+{g:"All-Elemental Negation",items:[["Pearldrake Talisman","+5%"],["Pearldrake Talisman +1","+7%"],["Pearldrake Talisman +2","+9%"],["Pearldrake Talisman +3 [DLC]","+11%"]]},
+{g:"Immunity / Robustness / Focus",items:[["Immunizing Horn Charm","Immunity +90"],["Immunizing Horn Charm +1","Immunity +140"],["Immunizing Horn Charm +2 [DLC]","Immunity +180"],["Stalwart Horn Charm","Robustness +90"],["Stalwart Horn Charm +1","Robustness +140"],["Stalwart Horn Charm +2 [DLC]","Robustness +180"],["Clarifying Horn Charm","Focus +140"],["Clarifying Horn Charm +1","Focus +190"],["Clarifying Horn Charm +2 [DLC]","Focus +230"],["Mottled Necklace","Imm/Rob/Foc +40"],["Mottled Necklace +1","+60"],["Mottled Necklace +2 [DLC]","+100"]]},
+{g:"Vitality",items:[["Prince of Death's Pustule","Vitality +90"],["Prince of Death's Cyst","Vitality +140"]]},
+{g:"Status Resistance",items:[["Ailment Talisman [DLC]","Resistances +~350 briefly after a status procs on you"]]},
+{g:"Weapon-Type Boosts",items:[["Dagger Talisman","Critical damage +17%"],["Curved Sword Talisman","Guard counters +20%"],["Twinblade Talisman","Final chain hit +45%"],["Axe Talisman","Charged attacks +10%"],["Hammer Talisman","More stamina damage to blockers"],["Spear Talisman","Piercing counterattacks +15%"],["Lance Talisman","Mounted attacks +15%"],["Claw Talisman","Jump attacks +15%"],["Two-Handed Sword Talisman [DLC]","Two-handed attacks +15%"]]},
+{g:"Shield / Guard",items:[["Greatshield Talisman","Boosts guarding ability"],["Pearl Shield Talisman [DLC]","Non-phys negation while guarding +20%"]]},
+{g:"Roll / Dash Attacks",items:[["Retaliatory Crossed-Tree [DLC]","Attacks after roll/backstep +17%"],["Lacerating Crossed-Tree [DLC]","Dash attacks +15% PvE / +7.5% PvP"]]},
+{g:"Ranged",items:[["Arrow's Sting Talisman","Arrow/bolt power +10%"],["Arrow's Reach Talisman","Bow range +65%"],["Arrow's Soaring Sting Talisman [DLC]","Range +50%, power +8%"],["Sharpshot Talisman [DLC]","Precision-aimed shots +12%"]]},
+{g:"Spell Potency",items:[["Graven-School Talisman","Sorcery +4%"],["Graven-Mass Talisman","Sorcery +8%"],["Faithful's Canvas Talisman","Incantations +4%"],["Flock's Canvas Talisman","Incantations +8%"]]},
+{g:"Casting / Memory",items:[["Primal Glintstone Blade","Spell FP −25%, Max HP −15%"],["Moon of Nokstella","Memory slots +2"],["Old Lord's Talisman","Spell duration +30%"],["Radagon Icon","Shortens casting time"],["Beloved Stardust [DLC]","Max cast speed, dmg taken +30%"]]},
+{g:"Item Boosts",items:[["Roar Medallion","Roars/breaths +15%"],["Companion Jar","Throwing pots +20%"],["Perfumer's Talisman","Perfumes +20%"]]},
+{g:"Skill Boosts",items:[["Carian Filigreed Crest","Skill FP cost −25%"],["Warrior Jar Shard","Skill attack +10%"],["Shard of Alexander","Skill attack +15%"],["Godfrey Icon","Charged spells & skills +15%"],["Rellana's Cameo [DLC]","+45% after holding stance 1 sec"],["Shattered Stone Talisman [DLC]","Kick/stomp skills +10%"],["Smithing Talisman [DLC]","Weapon-throwing +10%"],["Enraged Divine Beast [DLC]","Storm damage +10%"],["Talisman of the Dread [DLC]","Magma potency +15%"]]},
+{g:"Poise / Load Scaling",items:[["Bull-Goat's Talisman","Poise +33%"],["Blue Dancer Charm","Attack up at low equip load"],["Verdigris Discus [DLC]","−10% dmg heavy load, −20% overloaded"]]},
+{g:"Scorpion Charms",items:[["Magic Scorpion Charm","Magic +12%, phys taken +10%"],["Fire Scorpion Charm","Fire +12%, phys taken +10%"],["Lightning Scorpion Charm","Lightning +12%, phys taken +10%"],["Sacred Scorpion Charm","Holy +12%, phys taken +10%"]]},
+{g:"Crucible",items:[["Crucible Scale Talisman","Crit damage taken −30%"],["Crucible Feather Talisman","+6 roll i-frames, dmg taken +30%"],["Crucible Knot Talisman","Headshot damage taken −33%"],["Fine Crucible Feather Talisman [DLC]","Better backsteps, dmg taken +15%"],["Talisman of All Crucibles [DLC]","All crucible effects, dmg taken +45%"]]},
+{g:"HP-Threshold",items:[["Red-Feathered Branchsword","Attack +20% under 20% HP"],["Blue-Feathered Branchsword","Dmg taken −50% under 20% HP"],["Ritual Sword Talisman","Attack +10% at full HP"],["Ritual Shield Talisman","Dmg taken −30% at full HP"]]},
+{g:"Crit Restoration",items:[["Assassin's Crimson Dagger","Crits restore 10% +85 HP"],["Assassin's Cerulean Dagger","Crits restore 15 FP"]]},
+{g:"Combo Scaling",items:[["Winged Sword Insignia","Combo attack up (3→5→10%)"],["Rotten Winged Sword Insignia","Combo attack up (6→8→13%)"],["Millicent's Prosthesis","Dex +5, combos (4→6→11%)"],["Godskin Swaddling Cloth","Successive hits restore 3% +30 HP"]]},
+{g:"Vicinity Buffs",items:[["Kindred of Rot's Exultation","Poison/rot nearby: attack +20%"],["Lord of Blood's Exultation","Blood loss nearby: attack +20%"],["Aged One's Exultation [DLC]","Madness nearby: attack +20%"],["St. Trina's Smile [DLC]","Sleep nearby: attack +20%"],["Blade of Mercy [DLC]","Attack +20% for 20s after crit"]]},
+{g:"On-Kill Effects",items:[["Taker's Cameo","Kill restores 3% +30 HP"],["Ancestral Spirit's Horn","Kill restores 3 FP"],["Crusade Insignia [DLC]","Attack +15% for 20s after kill"],["Dried Bouquet [DLC]","Attack +15% when spirit summon dies"]]},
+{g:"Runes / Discovery",items:[["Gold Scarab","Runes +20%"],["Silver Scarab","Item Discovery +75"]]},
+{g:"Stealth",items:[["Crepus's Vial","Silent movement"],["Concealing Veil","Invisible while crouch-walking"]]},
+{g:"Utility",items:[["Longtail Cat Talisman","No survivable fall damage"],["Furled Finger's Trick-Mirror","Appear as a host"],["Host's Trick-Mirror","Appear as a cooperator"],["Shabriri's Woe","Attracts enemy aggression"],["Daedicar's Woe","Damage taken +100%"],["Sacrificial Twig","Prevents rune loss on death"]]}
+];
+
+/* ---- WEAPON INDEX: ~408 weapons across 40 categories. Legendary 9 marked. ---- */
+const LEGENDARY_WEAPONS=new Set(["Devourer's Scepter","Grafted Blade Greatsword","Sword of Night and Flame","Ruins Greatsword","Marais Executioner's Sword","Dark Moon Greatsword","Bolt of Gransax","Eclipse Shotel","Golden Order Greatsword"]);
+const WEAPON_INDEX=[
+["Daggers","Dagger, Parrying Dagger, Miséricorde, Great Knife, Bloodstained Dagger, Erdsteel Dagger, Wakizashi, Celebrant's Sickle, Ivory Sickle, Crystal Knife, Scorpion's Stinger, Cinquedea, Glintstone Kris, Reduvia, Blade of Calling, Black Knife, Main-gauche [DLC], Fire Knight's Shortsword [DLC]"],
+["Straight Swords","Short Sword, Longsword, Broadsword, Weathered Straight Sword, Lordsworn's Straight Sword, Noble's Slender Sword, Cane Sword, Warhawk's Talon, Lazuli Glintstone Sword, Carian Knight's Sword, Crystal Sword, Rotten Crystal Sword, Miquellan Knight's Sword, Ornamental Straight Sword, Golden Epitaph, Sword of St. Trina, Regalia of Eochaid, Coded Sword, Sword of Night and Flame, Velvet Sword of St. Trina [DLC], Stone-Sheathed Sword [DLC], Sword of Light [DLC], Sword of Darkness [DLC]"],
+["Greatswords","Bastard Sword, Claymore, Iron Greatsword, Lordsworn's Greatsword, Knight's Greatsword, Banished Knight's Greatsword, Forked Greatsword, Flamberge, Gargoyle's Greatsword, Gargoyle's Blackblade, Inseparable Sword, Sword of Milos, Marais Executioner's Sword, Ordovis's Greatsword, Alabaster Lord's Sword, Death's Poker, Helphen's Steeple, Blasphemous Blade, Golden Order Greatsword, Dark Moon Greatsword, Sacred Relic Sword, Lizard Greatsword [DLC], Greatsword of Damnation [DLC], Greatsword of Solitude [DLC]"],
+["Colossal Swords","Zweihander, Greatsword, Watchdog's Greatsword, Troll's Golden Sword, Troll Knight's Sword, Royal Greatsword, Grafted Blade Greatsword, Ruins Greatsword, Starscourge Greatsword, Godslayer's Greatsword, Maliketh's Black Blade, Ancient Meteoric Ore Greatsword [DLC], Fire Knight's Greatsword [DLC], Greatsword of Radahn (Light) [DLC], Greatsword of Radahn (Lord) [DLC], Moonrithyll's Knight Sword [DLC]"],
+["Thrusting Swords","Rapier, Estoc, Noble's Estoc, Cleanrot Knight's Sword, Rogier's Rapier, Antspur Rapier, Frozen Needle, Carian Sorcery Sword [DLC]"],
+["Heavy Thrusting Swords","Great Épée, Godskin Stitcher, Bloody Helice, Dragon King's Cragblade, Queelign's Greatsword [DLC], Sword Lance [DLC]"],
+["Curved Swords","Scimitar, Falchion, Shamshir, Grossmesser, Bandit's Curved Sword, Shotel, Scavenger's Curved Sword, Mantis Blade, Beastman's Curved Sword, Flowing Curved Sword, Serpent-God's Curved Sword, Magma Blade, Nox Flowing Sword, Wing of Astel, Eclipse Shotel, Spirit Sword [DLC], Falx [DLC], Dancing Blade of Ranah [DLC], Horned Warrior's Sword [DLC]"],
+["Curved Greatswords","Dismounter, Omen Cleaver, Monk's Flameblade, Beastman's Cleaver, Bloodhound's Fang, Onyx Lord's Greatsword, Zamor Curved Sword, Magma Wyrm's Scalesword, Morgott's Cursed Sword, Horned Warrior's Greatsword [DLC], Freyja's Greatsword [DLC]"],
+["Katanas","Uchigatana, Nagakiba, Serpentbone Blade, Meteoric Ore Blade, Moonveil, Rivers of Blood, Dragonscale Blade, Hand of Malenia, Star-Lined Sword [DLC], Sword of Night [DLC]"],
+["Twinblades","Twinblade, Twinned Knight Swords, Godskin Peeler, Gargoyle's Twinblade, Gargoyle's Black Blades, Eleonora's Poleblade, Black Steel Twinblade [DLC], Euporia [DLC]"],
+["Axes","Hand Axe, Forked Hatchet, Battle Axe, Warped Axe, Jawbone Axe, Iron Cleaver, Highland Axe, Celebrant's Cleaver, Sacrificial Axe, Icerind Hatchet, Ripple Blade, Stormhawk Axe, Rosus' Axe, Forked-Tongue Hatchet [DLC], Smithscript Axe [DLC], Messmer Soldier's Axe [DLC], Death Knight's Twin Axes [DLC]"],
+["Greataxes","Greataxe, Crescent Moon Axe, Longhaft Axe, Executioner's Greataxe, Great Omenkiller Cleaver, Rusted Anchor, Butchering Knife, Gargoyle's Great Axe, Gargoyle's Black Axe, Winged Greathorn, Axe of Godrick, Putrescence Cleaver [DLC], Death Knight's Longhaft Axe [DLC], Bonny Butchering Knife [DLC]"],
+["Hammers","Club, Curved Club, Spiked Club, Stone Club, Mace, Morning Star, Warpick, Hammer, Monk's Flamemace, Varre's Bouquet, Envoy's Horn, Nox Flowing Hammer, Ringed Finger, Scepter of the All-Knowing, Marika's Hammer, Flowerstone Gavel [DLC]"],
+["Flails","Flail, Chainlink Flail, Nightrider Flail, Family Heads, Bastard's Stars, Serpent Flail [DLC]"],
+["Great Hammers","Battle Hammer, Beastclaw Greathammer, Brick Hammer, Celebrant's Skull, Cranial Vessel Candlestand, Curved Great Club, Devourer's Scepter, Envoy's Long Horn, Great Mace, Great Stars, Greathorn Hammer, Large Club, Pickaxe, Rotten Battle Hammer, Black Steel Greathammer [DLC], Smithscript Greathammer [DLC]"],
+["Colossal Weapons","Duelist Greataxe, Rotten Greataxe, Golem's Halberd, Giant-Crusher, Prelate's Inferno Crozier, Great Club, Troll's Hammer, Dragon Greatclaw, Watchdog's Staff, Staff of the Avatar, Rotten Staff, Envoy's Greathorn, Ghiza's Wheel, Fallingstar Beast Jaw, Axe of Godfrey, Anvil Hammer [DLC], Bloodfiend's Arm [DLC], Devonia's Hammer [DLC], Shadow Sunflower Blossom [DLC], Gazing Finger [DLC]"],
+["Spears","Short Spear, Iron Spear, Spear, Partisan, Pike, Spiked Spear, Cross-Naginata, Clayman's Harpoon, Celebrant's Rib-Rake, Torchpole, Inquisitor's Girandole, Crystal Spear, Rotten Crystal Spear, Cleanrot Spear, Death Ritual Spear, Bolt of Gransax, Swift Spear [DLC], Bloodfiend's Fork [DLC], Smithscript Spear [DLC]"],
+["Great Spears","Lance, Mohgwyn's Sacred Spear, Serpent-Hunter, Siluria's Tree, Treespear, Vyke's War Spear, Barbed Staff-Spear [DLC], Bloodfiend's Sacred Spear [DLC], Messmer Soldier's Spear [DLC], Spear of the Impaler [DLC]"],
+["Halberds","Halberd, Banished Knight's Halberd, Commander's Standard, Dragon Halberd, Gargoyle's Halberd, Gargoyle's Black Halberd, Glaive, Golden Halberd, Guardian's Swordspear, Loretta's War Sickle, Lucerne, Nightrider Glaive, Pest's Glaive, Ripple Crescent Halberd, Vulgar Militia Saw, Vulgar Militia Shotel, Poleblade of the Bud [DLC], Spirit Glaive [DLC]"],
+["Reapers","Scythe, Grave Scythe, Halo Scythe, Winged Scythe, Obsidian Lamina [DLC]"],
+["Whips","Whip, Giant's Red Braid, Hoslow's Petal Whip, Magma Whip Candlestick, Thorned Whip, Urumi, Tooth Whip [DLC]"],
+["Fists","Caestus, Spiked Caestus, Katar, Iron Ball, Star Fist, Clinging Bone, Veteran's Prosthesis, Cipher Pata, Poisoned Hand, Madding Hand, Thiollier's Hidden Needle, Grafted Dragon, Pata [DLC], Golem Fist [DLC]"],
+["Claws","Hookclaws, Bloodhound Claws, Venomous Fang, Raptor Talons, Claws of Night [DLC]"],
+["Light Bows","Shortbow, Composite Bow, Red Branch Shortbow, Misbegotten Shortbow, Harp Bow, Bone Bow [DLC]"],
+["Bows","Longbow, Albinauric Bow, Black Bow, Pulley Bow, Horn Bow, Serpent Bow, Erdtree Bow [DLC], Ansbach's Longbow [DLC]"],
+["Greatbows","Greatbow, Golem Greatbow, Lion Greatbow, Erdtree Greatbow [DLC], Igon's Greatbow [DLC]"],
+["Crossbows","Soldier's Crossbow, Light Crossbow, Heavy Crossbow, Arbalest, Crepus's Black-Key Crossbow, Pulley Crossbow, Full Moon Crossbow, Repeating Crossbow [DLC], Spread Crossbow [DLC]"],
+["Ballistas","Hand Ballista, Jar Cannon, Rabbath's Cannon [DLC]"],
+["Glintstone Staffs","Glintstone Staff, Academy Glintstone Staff, Albinauric Staff, Astrologer's Staff, Azur's Glintstone Staff, Carian Glintblade Staff, Carian Glintstone Staff, Carian Regal Scepter, Crystal Staff, Demi-Human Queen's Staff, Digger's Staff, Gelmir Glintstone Staff, Lusat's Glintstone Staff, Meteorite Staff, Prince of Death's Staff, Rotten Crystal Staff, Staff of Loss, Staff of the Guilty, Maternal Staff [DLC], Staff of the Great Beyond [DLC]"],
+["Sacred Seals","Finger Seal, Clawmark Seal, Dragon Communion Seal, Erdtree Seal, Frenzied Flame Seal, Giant's Seal, Godslayer's Seal, Golden Order Seal, Gravel Stone Seal, Dryleaf Seal [DLC], Fire Knight's Seal [DLC], Spiraltree Seal [DLC]"],
+["Torches","Torch, Beast-Repellent Torch, Ghostflame Torch, Sentry's Torch, St. Trina's Torch, Steel-Wire Torch, Lamenting Visage [DLC], Nanaya's Torch [DLC]"],
+["Thrusting Shields [DLC]","Dueling Shield [DLC], Carian Thrusting Shield [DLC]"],
+["Hand-to-Hand Arts [DLC]","Dryleaf Arts [DLC], Dane's Footwork [DLC]"],
+["Throwing Blades [DLC]","Smithscript Dagger [DLC]"],
+["Backhand Blades [DLC]","Backhand Blade [DLC], Smithscript Cirque [DLC], Curseblade's Cirque [DLC]"],
+["Perfume Bottles [DLC]","Firespark Perfume Bottle [DLC], Chilling Perfume Bottle [DLC], Frenzyflame Perfume Bottle [DLC], Lightning Perfume Bottle [DLC], Deadly Poison Perfume Bottle [DLC]"],
+["Beast Claws [DLC]","Red Bear's Claw [DLC], Beast Claw [DLC]"],
+["Light Greatswords [DLC]","Milady [DLC], Leda's Sword [DLC], Rellana's Twin Blades [DLC]"],
+["Great Katanas [DLC]","Great Katana [DLC], Dragon-Hunter's Great Katana [DLC], Rakshasa's Great Katana [DLC]"]
+];
+function widxItems(row){ return row[1].split(", ").map(n=>({name:n.replace(" [DLC]",""), dlc:n.includes("[DLC]")})); }
+const WEAPON_TOTAL=WEAPON_INDEX.reduce((n,r)=>n+widxItems(r).length,0);
+const TALIS_TOTAL=TALISMAN_DB.reduce((n,g)=>n+g.items.length,0);
+const ARMOR_TOTAL=ARMOR_DLC.length+ARMOR_BASE.length;
+
+/* ---- Renderers ---- */
+let wepQuery="", armorQuery="", talisQuery="";
+function renderWeaponIndex(){
+  const q=wepQuery.toLowerCase();
+  document.getElementById("wepIndex").innerHTML=WEAPON_INDEX.map(row=>{
+    const catHit=q && row[0].toLowerCase().includes(q);
+    const items=widxItems(row).filter(it=>!q||catHit||it.name.toLowerCase().includes(q));
+    if(!items.length) return "";
+    return `<div class="panel" style="margin-bottom:10px"><h3 style="font-size:13px">${esc(row[0])} <span style="color:var(--txt-dim);font-weight:400">(${widxItems(row).length})</span></h3>
+    <div style="margin-top:6px;line-height:2.1">${items.map(it=>`<span class="pill ${it.dlc?'gold':''}" style="${it.dlc?'':'background:var(--bg3);color:var(--txt);border:1px solid var(--line)'};margin:2px 3px 2px 0">${LEGENDARY_WEAPONS.has(it.name)?"★ ":""}${esc(it.name)}${it.dlc?" · DLC":""}</span>`).join("")}</div></div>`;
+  }).join("")||`<div class="empty">No weapons match.</div>`;
+}
+function renderArmorDb(){
+  const q=armorQuery.toLowerCase();
+  const block=(title,arr,dlc)=>{
+    const items=arr.filter(([n])=>!q||n.toLowerCase().includes(q));
+    if(!items.length) return "";
+    return `<div class="panel" style="margin-bottom:10px"><h3 style="font-size:13px">${title} <span style="color:var(--txt-dim);font-weight:400">(${arr.length} sets)</span></h3>
+    <div style="margin-top:6px;line-height:2.1">${items.map(([n,p])=>`<span class="pill ${dlc?'gold':''}" style="${dlc?'':'background:var(--bg3);color:var(--txt);border:1px solid var(--line)'};margin:2px 3px 2px 0">${esc(n)} · ${p}pc</span>`).join("")}</div></div>`;
+  };
+  document.getElementById("armorList").innerHTML=
+    block("Shadow of the Erdtree Sets",ARMOR_DLC,true)+block("Base Game Sets",ARMOR_BASE,false)||`<div class="empty">No sets match.</div>`;
+}
+function renderTalismanDb(){
+  const q=talisQuery.toLowerCase();
+  document.getElementById("talisList").innerHTML=TALISMAN_DB.map(grp=>{
+    const items=grp.items.filter(([n,e])=>!q||(n+" "+e).toLowerCase().includes(q));
+    if(!items.length) return "";
+    return `<div class="panel" style="margin-bottom:10px"><h3 style="font-size:13px">${esc(grp.g)} <span style="color:var(--txt-dim);font-weight:400">(${grp.items.length})</span></h3>
+    <div style="overflow-x:auto"><table><tbody>${items.map(([n,e])=>{
+      const dlc=n.includes("[DLC]"), name=n.replace(" [DLC]","");
+      return `<tr><td style="width:44%"><b>${LEGENDARY_TALIS.has(name)?'<span style="color:var(--gold2)">★</span> ':""}${esc(name)}</b>${dlc?' <span class="pill gold">DLC</span>':""}</td><td style="color:var(--txt-dim)">${esc(e)}</td></tr>`;
+    }).join("")}</tbody></table></div></div>`;
+  }).join("")||`<div class="empty">No talismans match.</div>`;
+}
+
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
@@ -2704,7 +2862,7 @@ function renderHeader(){
 function renderHome(){
   const stats=[
     {n:CHARACTERS.length,l:"Characters"},{n:totalBuilds,l:"Build Versions"},{n:BOSSES.length,l:"Bosses Documented"},
-    {n:WEAPONS.length,l:"Weapons Cataloged"},{n:TALISMANS.length,l:"Talismans"},{n:11,l:"Build Sources"},{n:Object.keys(FRANCHISE_COLORS).length+"","l":"Franchises"},{n:(CHARACTERS.length*(CHARACTERS.length-1)/2).toLocaleString(),l:"Fusion Combinations"}
+    {n:WEAPON_TOTAL,l:"Weapons Indexed"},{n:TALIS_TOTAL,l:"Talismans"},{n:ARMOR_TOTAL,l:"Armor Sets"},{n:11,l:"Build Sources"},{n:Object.keys(FRANCHISE_COLORS).length+"","l":"Franchises"},{n:(CHARACTERS.length*(CHARACTERS.length-1)/2).toLocaleString(),l:"Fusion Combinations"}
   ];
   document.getElementById("dashGrid").innerHTML = stats.map(s=>
     `<div class="stat-card"><div class="num">${s.n}</div><div class="lbl">${s.l}</div></div>`).join("");
@@ -3021,7 +3179,7 @@ function runFusion(){
 /* ============ DATABASE ============ */
 function dbTab(which, el){
   document.querySelectorAll('#view-database .chip').forEach(c=>c.classList.remove("active")); el.classList.add("active");
-  ["bosses","weapons","talismans"].forEach(t=>document.getElementById("db"+t[0].toUpperCase()+t.slice(1)).style.display = t===which?"block":"none");
+  ["bosses","weapons","talismans","armor"].forEach(t=>document.getElementById("db"+t[0].toUpperCase()+t.slice(1)).style.display = t===which?"block":"none");
 }
 function renderBosses(){
   document.getElementById("dbBosses").innerHTML=BOSSES.map(b=>`
@@ -3042,7 +3200,9 @@ function renderBosses(){
     </div>`).join("");
 }
 function renderWeapons(){
-  document.getElementById("dbWeapons").innerHTML=`<table><thead><tr><th>Weapon</th><th>Type</th><th>Requirements</th><th>Scaling</th><th>Location</th><th>Nexus Note & Anime Compatibility</th></tr></thead><tbody>`+
+  document.getElementById("wepCount").textContent=WEAPON_TOTAL+" weapons · "+WEAPON_INDEX.length+" categories · "+WEAPON_INDEX.reduce((n,r)=>n+widxItems(r).filter(i=>i.dlc).length,0)+" from the DLC";
+  renderWeaponIndex();
+  document.getElementById("wepFeatured").innerHTML=`<h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px;margin-bottom:10px">FEATURED WEAPONS — ANIME COMPATIBILITY</h3>`+`<table><thead><tr><th>Weapon</th><th>Type</th><th>Requirements</th><th>Scaling</th><th>Location</th><th>Nexus Note & Anime Compatibility</th></tr></thead><tbody>`+
   WEAPONS.map(w=>`<tr>
     <td><b>${esc(w.name)}</b>${w.dlc?' <span class="pill gold">DLC</span>':''}</td>
     <td style="color:var(--txt-dim)">${esc(w.type)}</td><td>${esc(w.req)}</td><td>${esc(w.scaling)}</td>
@@ -3051,7 +3211,11 @@ function renderWeapons(){
   </tr>`).join("")+`</tbody></table>`;
 }
 function renderTalismans(){
-  document.getElementById("dbTalismans").innerHTML=`<table><thead><tr><th>Talisman</th><th>Effect</th><th>Location</th><th>Meta Note</th></tr></thead><tbody>`+
+  document.getElementById("talisCount").textContent=TALIS_TOTAL+" talismans · "+TALISMAN_DB.reduce((n,g)=>n+g.items.filter(i=>i[0].includes("[DLC]")).length,0)+" from the DLC · 8 Legendary";
+  document.getElementById("armorCount").textContent=ARMOR_TOTAL+" sets · ~704 pieces (559 base + 145 DLC)";
+  document.getElementById("armorCut").textContent=ARMOR_UNOBTAINABLE.join(", ");
+  renderTalismanDb(); renderArmorDb();
+  document.getElementById("talisMeta").innerHTML=`<table><thead><tr><th>Talisman</th><th>Effect</th><th>Location</th><th>Meta Note</th></tr></thead><tbody>`+
   TALISMANS.map(t=>`<tr><td><b>${esc(t.name)}</b></td><td>${esc(t.effect)}</td><td style="color:var(--txt-dim)">${esc(t.loc)}</td><td>${esc(t.meta)}</td></tr>`).join("")+`</tbody></table>`;
 }
 
