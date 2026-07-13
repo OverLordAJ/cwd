@@ -398,7 +398,15 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <div class="fusion-x">✕</div>
       <div class="fusion-sel"><h3 style="font-family:var(--font-display);color:var(--purple);font-size:13px;margin-bottom:10px">CHARACTER B</h3><select id="fuseB"></select></div>
     </div>
-    <div style="text-align:center;margin-bottom:26px"><button class="btn alt" style="font-size:15px;padding:13px 34px" onclick="runFusion()">⚡ FUSE</button></div>
+    <div class="fusion-sel" style="max-width:760px;margin:0 auto 18px">
+      <h3 style="font-family:var(--font-display);color:var(--gold);font-size:13px;margin-bottom:10px">TARGET RUNE LEVEL — <span id="fuseRLLabel" style="color:var(--gold2)">RL 150</span></h3>
+      <input type="range" id="fuseRLSlider" min="0" max="14" value="6" step="1" style="width:100%;accent-color:var(--purple);cursor:pointer"
+        oninput="fuseRLidx=+this.value;updateFuseRLLabel();if(window._lastFuse)generateFusion(false)">
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt-dim);margin-top:4px"><span>RL1</span><span>RL100</span><span>RL150</span><span>RL200</span><span>RL300</span><span>RL713</span></div>
+      <small style="color:var(--txt-dim);display:block;margin-top:6px">Live Rebuild: drag the slider after fusing — stats, gear tiers, spells and damage estimates recalculate instantly.</small>
+    </div>
+    <div style="text-align:center;margin-bottom:20px"><button class="btn alt" style="font-size:15px;padding:13px 34px" onclick="runFusion()">⚡ FUSE</button></div>
+    <div style="max-width:860px;margin:0 auto 22px" id="fusionPresets"></div>
     <div class="fusion-result" id="fusionResult"></div>
   </section>
 
@@ -3262,48 +3270,131 @@ function fillFusionSelects(){
   document.getElementById("fuseB").selectedIndex=1;
 }
 function seededPick(arr, seed){ return arr[seed % arr.length]; }
+/* ============ FUSION LAB — LEVEL SCALING ENGINE ============ */
+const FUSE_LEVELS=[1,25,50,75,100,125,150,175,200,250,300,400,500,600,713];
+let fuseRLidx=6;
+function fuseRL(){ return FUSE_LEVELS[fuseRLidx]; }
+function updateFuseRLLabel(){ const el=document.getElementById("fuseRLLabel"); if(el) el.textContent="RL "+fuseRL(); }
+const FUSE_PRIORITY={
+ STR:{label:"Strength Fusion", order:["STR","VIG","END","DEX"]},
+ DEX:{label:"Dexterity Fusion", order:["DEX","VIG","END","MND"]},
+ INT:{label:"Intelligence Fusion", order:["INT","MND","VIG","DEX"]},
+ FTH:{label:"Faith Fusion", order:["FTH","MND","VIG","END"]},
+ ARC:{label:"Arcane Fusion", order:["ARC","VIG","MND","DEX"]}};
+const FUSE_CLASS={STR:["Vagabond","Hero"],DEX:["Samurai","Warrior"],INT:["Astrologer","Prisoner"],FTH:["Confessor","Prophet"],ARC:["Bandit","Vagabond"]};
+const FUSE_CONSUMABLES={
+ STR:["Exalted Flesh (physical attack up)","Bloodboil Aromatic (massive attack, defense down)","Baldachin's Blessing (poise)"],
+ DEX:["Bloodboil Aromatic","Dexterity-Knot Crystal Tear (physick)","Sharpening grease of choice"],
+ INT:["Magic-Shrouding Cracked Tear (physick)","Starlight Shards (FP over time)","Intelligence-Knot Crystal Tear"],
+ FTH:["Flame-Shrouding Cracked Tear (physick)","Faith-Knot Crystal Tear","Holy Water Pots"],
+ ARC:["Blood Grease","Roped Fetid Pots","Thorny Cracked Tear (combo physick)"]};
+const FUSE_TIERS=[
+ {max:74,  name:"Basic Gear",     focus:"Survivability, weapon requirements and core build identity — limited equipment setup.", weap:1, tal:2, spell:1},
+ {max:149, name:"Core Gear",      focus:"Full build online — strong PvE/PvP viability, primary equipment unlocked.", weap:2, tal:3, spell:2},
+ {max:199, name:"Optimized Gear", focus:"Endgame optimization — the complete build.", weap:2, tal:4, spell:4},
+ {max:399, name:"Full Arsenal",   focus:"Hybrid expansion — surplus points unlock secondary weapons, additional spells and more utility.", weap:3, tal:4, spell:5},
+ {max:713, name:"Full Arsenal — Apex", focus:"Maximum power fantasy — every relevant stat soft-capped or maxed, all equipment options available.", weap:4, tal:4, spell:6}];
+function fuseTier(rl){ return FUSE_TIERS.find(t=>rl<=t.max); }
+function fuseDominant(a,b){
+  const sA=a.builds[0].stats, sB=b.builds[0].stats;
+  let best="STR",v=-1;
+  // ties break toward the rarer, more identity-defining stat (ARC > FTH > INT > DEX > STR)
+  ["STR","DEX","INT","FTH","ARC"].forEach(k=>{ const m=Math.max(sA[k],sB[k]); if(m>=v){v=m;best=k;} });
+  return best;
+}
+function compatScore(a,b,seed){
+  const domA=fuseDominant(a,a), domB=fuseDominant(b,b);
+  const catA=WEAPON_CAT[(WEAPON_LIST.find(x=>a.builds[0].weapons[0].includes(x.name))||{}).name];
+  const catB=WEAPON_CAT[(WEAPON_LIST.find(x=>b.builds[0].weapons[0].includes(x.name))||{}).name];
+  const lore = a.franchise===b.franchise? 88+seed%10 : 68+seed%26;
+  const build = a.archetype===b.archetype? 92+seed%7 : domA===domB? 84+seed%12 : 64+seed%20;
+  const weap = catA&&catA===catB? 90+seed%9 : 66+seed%24;
+  const visual = 68+(seed*7)%30;
+  const gameplay = Math.round((build+weap)/2 + (seed%9)-4);
+  const clamp=v=>Math.max(50,Math.min(99,v));
+  const L=clamp(lore),B=clamp(build),W=clamp(weap),V=clamp(visual),G=clamp(gameplay);
+  return {L,B,W,V,G, overall:Math.round(L*.2+B*.3+W*.2+V*.1+G*.2)};
+}
+function compatBar(label,v){
+  return `<div class="bar-row"><div class="bl">${label}</div><div class="btrack"><div class="bfill" style="width:${v}%;background:linear-gradient(90deg,${v>=85?'var(--green)':v>=70?'var(--gold)':'#f87171'}88,${v>=85?'var(--green)':v>=70?'var(--gold)':'#f87171'})">${v}%</div></div></div>`;
+}
 function runFusion(){
-  const a=CHARACTERS.find(c=>c.id===document.getElementById("fuseA").value);
-  const b=CHARACTERS.find(c=>c.id===document.getElementById("fuseB").value);
-  if(a.id===b.id){ toast("⚠ A character cannot fuse with themselves. Even Naruto needed Kurama."); return; }
-  const seed=(a.id+b.id).split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
-  const bA=a.builds[0], bB=b.builds[0];
-  const stats={};
-  Object.keys(bA.stats).forEach(k=>{ stats[k]=Math.min(99, Math.round(Math.max(bA.stats[k],bB.stats[k])*0.85 + Math.min(bA.stats[k],bB.stats[k])*0.25)); });
-  const level=Object.values(stats).reduce((x,y)=>x+y,0)-79;
-  const name=fuseName(a,b);
-  const title=seededPick(FUSION_TITLES, seed);
-  const lore=seededPick(FUSION_LORE, seed)
-    .replace(/{A}/g,a.name).replace(/{B}/g,b.name)
-    .replace("{psA}",a.powerSystem.split("·")[0].trim()).replace("{psB}",b.powerSystem.split("·")[0].trim())
-    .replace("{arch}",a.archetype);
-  const rating=Math.min(10,((a.rating+b.rating)/2 + 0.4)).toFixed(1);
-  const diff=Math.min(5, Math.max(a.difficulty,b.difficulty)+ (seed%2));
-  const weapons=[bA.weapons[0], bB.weapons[0]];
-  const talis=[...new Set([...bA.talismans,...bB.talismans])].slice(0,4);
-  const spells=[...new Set([...bA.spells,...bB.spells])].filter(s=>s!=="—").slice(0,4);
+  const a=document.getElementById("fuseA").value, b=document.getElementById("fuseB").value;
+  if(a===b){ toast("⚠ A character cannot fuse with themselves. Even Naruto needed Kurama."); return; }
+  window._lastFuse=[a,b];
   S.fusions=(S.fusions||0)+1; save();
+  generateFusion(true);
+}
+function generateFusion(announce){
+  const [aid,bid]=window._lastFuse;
+  const a=CHARACTERS.find(c=>c.id===aid), b=CHARACTERS.find(c=>c.id===bid);
+  if(!a||!b) return;
+  const rl=fuseRL(), tier=fuseTier(rl), seed=(a.id+b.id).split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
+  const bA=a.builds[0], bB=b.builds[0];
+  const dom=fuseDominant(a,b), prio=FUSE_PRIORITY[dom];
+  // priority-weighted stat allocation from the combined identity
+  const weights={};
+  ["VIG","MND","END","STR","DEX","INT","FTH","ARC"].forEach(k=>weights[k]=Math.max(bA.stats[k],bB.stats[k]));
+  prio.order.forEach((k,i)=>{ weights[k]*= [1.6,1.35,1.2,1.1][i]; });
+  const stats=spreadStats(weights, rl);
+  const cls= rl===1? "Wretch" : seededPick(FUSE_CLASS[dom],seed);
+  // gear tiers
+  const weapAll=[...new Set([bA.weapons[0],bB.weapons[0],bA.weapons[1],bB.weapons[1]].filter(Boolean))];
+  const weapons=weapAll.slice(0,tier.weap);
+  const talAll=[...new Set([...bA.talismans,...bB.talismans])].filter(t=>t!=="—");
+  const talis=talAll.slice(0,tier.tal), talAlt=talAll.slice(tier.tal,tier.tal+2);
+  const spellAll=[...new Set([...bA.spells,...bB.spells])].filter(x=>x!=="—");
+  const spells=spellAll.slice(0,tier.spell);
+  const armor=[...new Set([bA.armor[0],bB.armor[0]])];
+  const summon= rl<50? "None yet — spirit ashes join once the build matures (RL50+)"
+    : (bA.summon!=="—"?bA.summon : bB.summon!=="—"?bB.summon : "Mimic Tear +10") + (tier.weap>=3? "  ·  Alt: Black Knife Tiche +10":"");
+  const aows=weapons.map(w=>{ const hit=WEAPON_LIST.find(x=>w.includes(x.name)); const aow=weaponAow(w,hit); return aow&&aow.skill!=="—"? aow.skill.replace("Ash of War: ","") : null; }).filter(Boolean);
+  const cons=FUSE_CONSUMABLES[dom];
+  const comp=compatScore(a,b,seed);
+  const est=Math.round(120 + stats[dom]*7.5 + rl*1.35 + (seed%40));
+  const name=fuseName(a,b), title=seededPick(FUSION_TITLES,seed);
+  const lore=seededPick(FUSION_LORE,seed).replace(/{A}/g,a.name).replace(/{B}/g,b.name)
+    .replace("{psA}",a.powerSystem.split("·")[0].trim()).replace("{psB}",b.powerSystem.split("·")[0].trim()).replace("{arch}",a.archetype);
   document.getElementById("fusionResult").innerHTML=`
     <div class="fusion-card">
       <h3>${esc(name.toUpperCase())}</h3>
-      <div class="ftitle">${esc(title)} — ${esc(a.name.split(" ")[0])} × ${esc(b.name.split(" ")[0])} fusion</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px">
-        <span class="pill gold">Recommended RL ${level}</span>
-        <span class="pill weak">Rating ${rating}/10</span>
-        <span class="pill resist">Difficulty ${"★".repeat(diff)}${"☆".repeat(5-diff)}</span>
+      <div class="ftitle">${esc(title)} — ${esc(a.name.split(" ")[0])} × ${esc(b.name.split(" ")[0])} · ${esc(prio.label)}</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
+        <span class="pill gold">RL ${rl} · ${esc(tier.name)}</span>
+        <span class="pill weak">Class: ${esc(cls)}</span>
+        <span class="pill weak">Overall Compatibility ${comp.overall}%</span>
+        <span class="pill resist">~${est} AR est.</span>
       </div>
+      <div style="font-size:12px;color:#ddd6fe;text-align:center;margin-bottom:14px">📋 ${esc(tier.focus)}</div>
       ${statBars(stats)}
+      <div style="font-size:11px;color:var(--txt-dim);margin-bottom:12px">Stat priority: ${prio.order.map((k,i)=>`<b style="color:${i===0?'var(--gold2)':'var(--txt)'}">${i+1}. ${k}</b>`).join(" · ")} — drag the RL slider to rebuild live.</div>
       <div class="gear-grid">
-        <div class="gear-box"><h6>⚔ Fused Arsenal</h6>${weapons.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
-        <div class="gear-box"><h6>🧿 Talismans</h6>${talis.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
-        <div class="gear-box"><h6>✨ Combined Techniques</h6>${(spells.length?spells:["Pure martial fusion — no spells required"]).map(w=>`<span>${esc(w)}</span>`).join("")}</div>
-        <div class="gear-box"><h6>🔮 Power Systems</h6><span>${esc(a.powerSystem)}</span><span style="color:var(--purple)">＋</span><span>${esc(b.powerSystem)}</span></div>
+        <div class="gear-box"><h6>⚔ Weapons (${esc(tier.name)})</h6>${weapons.map(w=>`<span>${annotateWep(w)}</span>`).join("")}${tier.weap>weapons.length?"":""}${weapAll.length>weapons.length&&rl>=200?`<span style="color:var(--purple)">Alt: ${esc(weapAll[weapons.length]||"")}</span>`:""}</div>
+        <div class="gear-box"><h6>🛡 Armor — mixed silhouette</h6>${armor.map(w=>`<span>${annotateArmor(w)}</span>`).join("")}</div>
+        <div class="gear-box"><h6>🧿 Talismans (${talis.length} slots)</h6>${talis.map(w=>`<span>${annotateTal(w)}</span>`).join("")}${talAlt.length&&rl>=200?`<span style="color:var(--purple);margin-top:4px">Alternatives: ${talAlt.map(esc).join(" · ")}</span>`:""}</div>
+        <div class="gear-box"><h6>◈ Ashes of War</h6>${aows.length?aows.map(x=>`<span>${esc(x)}</span>`).join(""):`<span style="color:var(--txt-dim)">Fixed unique skills — see weapons</span>`}</div>
+        <div class="gear-box"><h6>☾ Spirit Ashes</h6><span>${esc(summon)}</span></div>
+        <div class="gear-box"><h6>✨ Spells (${spells.length})</h6>${spells.length?spells.map(w=>`<span>${esc(w)}</span>`).join(""):`<span style="color:var(--txt-dim)">Pure martial fusion — no spells required</span>`}</div>
+        <div class="gear-box"><h6>🧪 Consumables</h6>${cons.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+        <div class="gear-box"><h6>📊 Compatibility Score</h6>
+          ${compatBar("Lore",comp.L)}${compatBar("Build",comp.B)}${compatBar("Weapon",comp.W)}${compatBar("Visual",comp.V)}${compatBar("Gameplay",comp.G)}
+        </div>
       </div>
-      <div class="build-note" style="border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.07);color:#ddd6fe">🧬 ${esc(lore)}</div>
+      <div class="build-note" style="border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.07);color:#ddd6fe">🧬 BUILD SUMMARY — ${esc(lore)} At RL ${rl}, this ${esc(prio.label.toLowerCase())} runs ${esc(String(weapons.length))} weapon${weapons.length>1?"s":""}, ${talis.length} talismans and ${spells.length||"no"} spells${rl>=400?" — every relevant stat pushed to its cap":rl>=200?" — with surplus utility unlocked":""}.</div>
     </div>`;
-  toast("⚗️ Fusion #"+S.fusions+" created: "+name);
+  if(announce) toast("⚗️ Fusion #"+S.fusions+" created: "+name+" (RL "+rl+")");
 }
-
+const FUSE_PRESETS=[
+ {g:"Anime + Anime", pairs:[["naruto","sasuke","Naruto + Sasuke"],["goku","vegeta","Goku + Vegeta"],["inuyasha","kagome","Inuyasha + Kagome"]]},
+ {g:"Anime + Elden Ring", pairs:[["inuyasha","blaidd","Inuyasha + Blaidd"],["kagome","ranni","Kagome + Ranni"],["alucard","maliketh","Alucard + Maliketh"],["guts","malenia","Guts + Malenia"]]},
+ {g:"Elden Ring + Elden Ring", pairs:[["radahn","malenia","Radahn + Malenia"],["maliketh","godfrey","Maliketh + Godfrey"],["ranni","queenmarika","Ranni + Marika"]]},
+ {g:"Anime + Fextralife", pairs:[["inuyasha","asta","Inuyasha + Colossal Knight"],["kagome","usopp","Kagome + Archer"],["miroku","gojo","Miroku + Sorcerer"],["alucard","makima","Alucard + Grim Reaper"]]}];
+function renderFusionPresets(){
+  const el=document.getElementById("fusionPresets"); if(!el) return;
+  el.innerHTML=`<h3 style="font-family:var(--font-display);color:var(--gold);font-size:13px;letter-spacing:1px;margin-bottom:8px;text-align:center">FUSION PRESETS</h3>`+
+   FUSE_PRESETS.map(grp=>`<div style="text-align:center;margin-bottom:6px"><span style="font-size:10px;color:var(--txt-dim);letter-spacing:1px;text-transform:uppercase;margin-right:8px">${esc(grp.g)}</span>${
+    grp.pairs.map(([x,y,l])=>`<button class="stat-btn" style="width:auto;padding:3px 11px;margin:2px 3px;font-size:11px" onclick="loadFusion('${x}','${y}')">${esc(l)}</button>`).join("")}</div>`).join("");
+}
 /* ============ DATABASE ============ */
 function dbTab(which, el){
   document.querySelectorAll('#view-database .chip').forEach(c=>c.classList.remove("active")); el.classList.add("active");
@@ -3478,6 +3569,7 @@ function renderAll(){
 }
 renderAll();
 renderSourceTabs(); srcGo("anime");
+renderFusionPresets(); updateFuseRLLabel();
 document.getElementById("lvlSlider").addEventListener("input",e=>setMyLevel(e.target.value));
 document.getElementById("lvlNum").addEventListener("change",e=>setMyLevel(e.target.value));
 (function initLevelWidget(){
