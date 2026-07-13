@@ -2857,8 +2857,53 @@ CHARACTERS.forEach(c=>c.builds.forEach(b=>{
 const TALIS_EFFECT={};
 TALISMAN_DB.forEach(g=>g.items.forEach(([n,e])=>{ TALIS_EFFECT[n.replace(" [DLC]","")]={e,dlc:n.includes("[DLC]")}; }));
 const WEAPON_LIST=[];
-WEAPON_INDEX.forEach(r=>widxItems(r).forEach(i=>WEAPON_LIST.push(i)));
+const WEAPON_CAT={};
+WEAPON_INDEX.forEach(r=>widxItems(r).forEach(i=>{ WEAPON_LIST.push(i); WEAPON_CAT[i.name]=r[0].replace(" [DLC]",""); }));
 WEAPON_LIST.sort((a,b)=>b.name.length-a.name.length);
+/* ---- Ash of War & Affinity data ---- */
+const AOW_UNIQUE={ // somber / unique weapons: fixed skill, cannot be infused
+ "Moonveil":"Transient Moonlight","Rivers of Blood":"Corpse Piler","Bloodhound's Fang":"Bloodhound's Finesse",
+ "Hand of Malenia":"Waterfowl Dance","Dark Moon Greatsword":"Moonlight Greatsword","Sword of Night and Flame":"Night-and-Flame Stance",
+ "Black Knife":"Blade of Death","Reduvia":"Reduvia Blood Blade","Blasphemous Blade":"Taker's Flames",
+ "Maliketh's Black Blade":"Destined Death","Axe of Godrick":"I Command Thee, Kneel!","Axe of Godfrey":"Regal Roar",
+ "Starscourge Greatsword":"Starcaller Cry","Ruins Greatsword":"Wave of Destruction","Royal Greatsword":"Wolf's Assault",
+ "Marika's Hammer":"Gold Breaker","Morgott's Cursed Sword":"Cursed-Blood Slice","Mohgwyn's Sacred Spear":"Bloodboon Ritual",
+ "Bolt of Gransax":"Ancient Lightning Spear","Fallingstar Beast Jaw":"Gravity Bolt","Regalia of Eochaid":"Eochaid's Dancing Blade",
+ "Eclipse Shotel":"Death Flare","Bloody Helice":"Dynast's Finesse","Vyke's War Spear":"Frenzyflame Thrust",
+ "Magma Wyrm's Scalesword":"Magma Guillotine","Cipher Pata":"Unblockable Blade","Clinging Bone":"Lifesteal Fist",
+ "Spear of the Impaler":"Messmer's Assault","Rellana's Twin Blades":"Twin Moons","Milady":"Wing Stance",
+ "Dragon-Hunter's Great Katana":"Dragonwound Slash","Bloodfiend's Arm":"Savage Lion's Claw",
+ "Velvet Sword of St. Trina":"Mists of Slumber","Erdtree Bow":"Mighty Shot","Wing of Astel":"Nebula",
+ "Devourer's Scepter":"Devourer of Worlds","Grafted Blade Greatsword":"Oath of Vengeance","Golden Order Greatsword":"Establish Order",
+ "Marais Executioner's Sword":"Eochaid's Dancing Blade","Sacred Relic Sword":"Wave of Gold",
+ "Poleblade of the Bud":"Unique weapon skill","Greatsword of Damnation":"Unique weapon skill",
+ "Greatsword of Radahn (Lord)":"Unique weapon skill","Ansbach's Longbow":"Unique weapon skill","Nanaya's Torch":"Unique torch skill"};
+const AOW_DEFAULT={ // infusible weapons: stock skill if the build doesn't name one
+ "Uchigatana":"Unsheathe","Nagakiba":"Piercing Fang","Greatsword":"Stamp (Upward Cut)","Claymore":"Lion's Claw",
+ "Giant-Crusher":"Endure","Backhand Blade":"Blind Spot","Dryleaf Arts":"Palm Blast","Great Katana":"Overhead Stance",
+ "Black Bow":"Barrage","Scavenger's Curved Sword":"Spinning Slash","Cross-Naginata":"Repeating Thrust",
+ "Antspur Rapier":"Repeating Thrust","Misericorde":"Quickstep","Star Fist":"Endure","Banished Knight's Greatsword":"Stamp (Upward Cut)",
+ "Smithscript Dagger":"Piercing Throw","Smithscript Greathammer":"Crushing Throw","Rogier's Rapier":"Glintblade Phalanx","Highland Axe":"War Cry"};
+const AFFINITIES=["Heavy","Keen","Quality","Fire","Flame Art","Lightning","Sacred","Magic","Cold","Poison","Blood","Occult","Standard"];
+const ASH_KNOWN=["Unsheathe","Lion's Claw","Bloodhound's Step","Blind Spot","Palm Blast","Flaming Strike","Chilling Mist","Giant Hunt","Sacred Blade","Golden Land","Double Slash","Phantom Slash","Repeating Thrust","Poison Moth Flight","Impaling Thrust","Quickstep","Barrage","Rain of Arrows","Endure","Royal Knight's Resolve","Wild Strikes","Square Off","Stormcaller","Spinning Slash","Piercing Fang","War Cry","Warcry","Lightning Slash","Overhead Stance","Dragonwound Slash"];
+function weaponAow(wstr, hit){
+  if(!hit) return null;
+  const cat=WEAPON_CAT[hit.name]||"";
+  if(/Glintstone Staffs|Sacred Seals/.test(cat)) return {skill:"—", aff:"Catalyst — casts spells, no Ash of War"};
+  if(/Crossbows|Ballistas/.test(cat)) return {skill:"—", aff:"No skill — kneel-and-reload ranged"};
+  // parse the build's parenthetical for affinity + ash
+  let aff=null, ash=null;
+  const m=wstr.match(/\(([^)]+)\)/);
+  if(m){ m[1].split(",").map(t=>t.trim()).forEach(t=>{
+    if(AFFINITIES.includes(t)) aff=t;
+    else if(t==="Bleed") aff="Blood";
+    else if(ASH_KNOWN.find(a=>t.includes(a))) ash=ASH_KNOWN.find(a=>t.includes(a));
+  }); }
+  if(!ash){ const inline=ASH_KNOWN.find(a=>wstr.includes(a)); if(inline) ash=inline; }
+  if(AOW_UNIQUE[hit.name]) return {skill:AOW_UNIQUE[hit.name]+" (fixed)", aff:"Somber — cannot be infused"};
+  return {skill: ash?"Ash of War: "+ash : (AOW_DEFAULT[hit.name]?"Ash of War: "+AOW_DEFAULT[hit.name]+" (stock)":"Ash of War: player's choice"),
+          aff: "Affinity: "+(aff||"Standard (infusible — any affinity)")};
+}
 const ARMOR_LOOKUP=[];
 ARMOR_DLC.forEach(([n,pc])=>ARMOR_LOOKUP.push({n,pc,dlc:true}));
 ARMOR_BASE.forEach(([n,pc])=>ARMOR_LOOKUP.push({n,pc,dlc:false}));
@@ -2869,6 +2914,11 @@ function annotateWep(w){
   let out=esc(w);
   if(hit&&LEGENDARY_WEAPONS.has(hit.name)) out='<span style="color:var(--gold2)">★</span> '+out;
   if(hit&&hit.dlc) out+=miniPill("DLC");
+  const aow=weaponAow(w,hit);
+  if(aow){
+    out+='<small style="display:block;color:var(--txt-dim);font-size:10.5px;padding:1px 0 4px 10px;line-height:1.5">'+
+      (aow.skill!=="—"?'◈ <span style="color:var(--cyan)">'+esc(aow.skill)+'</span> · ':'◈ ')+esc(aow.aff)+'</small>';
+  }
   return out;
 }
 function annotateArmor(a){
