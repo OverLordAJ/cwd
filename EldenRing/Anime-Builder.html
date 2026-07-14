@@ -2350,6 +2350,139 @@ const META_CATS=[
  {id:"speedrun", label:"Speedrun Meta", desc:"Any% logic: movement, one-shot setups and skip-friendly kits.",
   pick:c=>({sasuke:10,gojo:9.6,saitama:9.4,minatonamikaze:9.9,levi:9.2,jinwoo:9.0,hit:9.1,killuazoldyck:9.3}[c.id]||c.rating*0.6), note:"Terra Magica one-shots and dash-cancel movement — the run is over before the boss theme drops."}];
 
+/* ============ PHASE 2.5 — DARK FANTASY EXPANSION PACK ============ */
+Object.assign(FRANCHISE_COLORS,{
+ "Vinland Saga":["#57534e","#0c4a6e"],"Frieren":["#e2e8f0","#5eead4"],"Claymore":["#94a3b8","#374151"],
+ "Dorohedoro":["#65a30d","#292524"],"Made in Abyss":["#0891b2","#78350f"],"Goblin Slayer":["#4b5563","#991b1b"],
+ "Drifters":["#b91c1c","#1c1917"],"Record of Ragnarok":["#7c3aed","#b91c1c"],"Castlevania":["#7f1d1d","#312e81"],
+ "Shield Hero":["#16a34a","#334155"],"DanMachi":["#f8fafc","#0ea5e9"],"Mushoku Tensei":["#d1d5db","#7c3aed"],
+ "Re:Zero":["#a5b4fc","#0f172a"],"Vampire Hunter D":["#18181b","#9f1239"],"Basilisk":["#3f6212","#1c1917"],"Kingdom":["#b45309","#7f1d1d"]});
+const ROSTER4={
+"Vinland Saga":[
+["Thorfinn","Main Protagonist","assassin","Twin Daggers · Warrior's Instinct","Thors' son raised on a war deck chasing revenge — then rebuilt from an empty field into a man with no enemies.","Twin Dagger Rush · Disarm Throw · A True Warrior Needs No Sword"],
+["Thorkell","Legendary","greatsword","Berserker Joy · Superhuman Might","The happiest man on any battlefield — a giant who switches sides for whichever one promises a better fight.","Log Throw · Twin Axe Cleave · Battlefield Laughter"],
+["Askeladd","Anti-Hero","katana","Tactical Genius · Sword Mastery","Lucius Artorius Castus — a mercenary captain hiding a king's blood and a strategist's contempt behind an easy grin.","Feint Duel · Command · The Long Game"],
+["Canute","Secondary Protagonist","cleric","Royal Resolve · Faith Transformed","The timid prince who buried God's love and picked up a king's burden — building paradise by any means.","King's Decree · Divine Renunciation · Crown's Weight"],
+["Bjorn","Secondary Protagonist","bleed","Berserker Mushroom Rage","Askeladd's loyal bear — a berserker who chews the mushroom and asks only, at the end, to have been his friend.","Berserk Trance · Bear's Charge · Last Loyalty"]],
+"Frieren":[
+["Frieren","Main Protagonist","sorcerer","Ancient Elven Magic · Mana Suppression","An elf mage learning, one human lifetime too late, what ten years with a hero's party actually meant.","Zoltraak · Mana Suppression · Millennium Spellcraft"],
+["Fern","Secondary Protagonist","sorcerer","Precision Sorcery","Frieren's apprentice — casting speed like a metronome and disapproval like a hammer.","Rapid-Fire Zoltraak · Precision Snipe · Mana Detection"],
+["Stark","Secondary Protagonist","greatsword","Eisen's Axe Line","The coward who splits dragons — Eisen's apprentice whose fear never once stopped his swing.","Lightning Strike Cleave · Dragon-Fell Stance · Trembling Courage"],
+["Sein","Secondary Protagonist","cleric","Goddess Priest Magic","The chain-smoking priest who wanted a big adventure — support magic, sharp counsel, older-brother energy.","Goddess Healing · Status Purge · Adult Guidance"],
+["Himmel","Legendary","paladin","The Hero's Blade","The hero of the party — vain, kind and unforgettable; the reason a thousand statues smile.","Hero's Slash · Flawless Form · Remembered Kindness"]],
+"Claymore":[
+["Clare","Main Protagonist","katana","Yoma Hybrid · Quicksword","Number 47 — the weakest Claymore, carrying Teresa's flesh and a promise sharper than her blade.","Quicksword · Awakened Arm · Windcutter"],
+["Teresa","Legendary","katana","Faint Smile · Perfect Sensing","Teresa of the Faint Smile — the strongest Claymore of any generation, undone only by love.","Effortless Parry · Yoma Sense · Faint Smile"],
+["Miria","Secondary Protagonist","twinblade","Phantom Speed","Phantom Miria — afterimages, rebellion and the only commander who brought her squad home.","Phantom Mirage · Squad Doctrine · Rebellion"],
+["Raki","Secondary Protagonist","cleric","Human Resolve","The boy who followed a monster hunter and learned to cook, to fight, and to wait.","Shield Guard · Field Cooking · Loyal Watch"],
+["Priscilla","Villain","dragoon","Awakened Being — Apex","The strongest Awakened Being — a broken child's mind inside an extinction-grade body.","Awakened Flight · Tentacle Barrage · Apex Hunger"]],
+"Dorohedoro":[
+["Caiman","Main Protagonist","greatsword","Magic Immunity · Reptile Head","A lizard-headed amnesiac hunting the sorcerer who cursed him — knives first, questions via bite.","Head Chomp Check · Knife Cleave · Magic Immunity"],
+["Nikaido","Secondary Protagonist","fists","Time Magic (Sealed)","The Hole's best gyoza chef and Caiman's partner — hiding devil-tier time magic under a cook's apron.","Martial Rush · Time Rewind · Gyoza Devotion"],
+["En","Villain","venom","Mushroom Smoke","The family boss whose smoke turns anything into mushrooms — capitalism with a fungal afterlife.","Mushroom Conversion · Smoke Domain · Family Orders"],
+["Shin","Anti-Hero","bleed","Curse Smoke · Hammer","En's cleaner — a human-born sorcerer with a claw hammer and a very tidy definition of mercy.","Hammer Dismantle · Curse Smoke · Partner Sync"],
+["Noi","Anti-Hero","fists","Healing Smoke · Brute Force","Shin's partner — healing smoke in one hand, structural demolition in the other, cheerful throughout.","Full Heal Smoke · Suplex Doctrine · Devil Trial"]],
+"Made in Abyss":[
+["Riko","Main Protagonist","archer","Relic Craft · Cave Raider Training","The red-whistle who dove after her mother's white — mapping the Abyss one irreversible layer down.","Relic Tools · Star Compass · Curse-Ward Route"],
+["Reg","Main Protagonist","fists","Relic Automaton · Incinerator","A robot boy from the deep — extending arms, an arm-cannon that costs two hours of consciousness.","Incinerator · Extend Arm · Relic Frame"],
+["Nanachi","Secondary Protagonist","cleric","Abyss Curse Mastery","The hollow who understands the curse better than anyone alive — fluffy, haunted, indispensable.","Curse Reading · Field Medicine · Nnaa"],
+["Bondrewd","Villain","deathmage","Relic Science · Cartridges","The Lord of Dawn — a paragon of discovery wearing other people's lives as equipment. Splendid, truly.","Sparagmos · Cartridge System · Idofront Authority"],
+["Faputa","Anti-Hero","twinblade","Princess of the Hollows","The immutable princess of the sixth layer — vengeance with fur, claws and a child's grief.","Claw Frenzy · Hollow Command · Immutable Body","Beast Claw — the princess's talons"]],
+"Goblin Slayer":[
+["Goblin Slayer","Main Protagonist","tank","Tactical Preparation","He does not save the world. He kills goblins — with fire, water, tactics and zero glamour.","Torch and Shield · Trap Doctrine · Goblin Extermination"],
+["Priestess","Secondary Protagonist","cleric","Earth Mother Miracles","The party's conscience — Protection and Minor Heal cast with hands that have stopped shaking.","Protection · Minor Heal · Holy Light"],
+["High Elf Archer","Secondary Protagonist","archer","Elven Archery","Two thousand years old, allergic to boredom — arrows that curve like her complaints.","Triple Nock · Bud Arrow · Elven Sight"],
+["Dwarf Shaman","Secondary Protagonist","gravity","Earth Spirit Magic","The dwarf who bribes spirits with wine and drops battlefields on people's heads.","Stone Blast · Spirit Bargain · Catalog of Vintages"],
+["Lizard Priest","Secondary Protagonist","dragoon","Ancestral Dragon Rites","The lizardman cleric summoning ancestors and coveting cheese — nectar! — between prayers.","Dragontooth Warrior · Sweeping Tail · Nectar Devotion"]],
+"Drifters":[
+["Shimazu Toyohisa","Main Protagonist","katana","Satsuma Swordsmanship","The Shimazu rearguard who died at Sekigahara and woke in a fantasy war — still charging.","Chest-Borrow Cleave · Deathmatch Doctrine · Satsuma Charge"],
+["Oda Nobunaga","Anti-Hero","pyromancer","Gunpowder · Ruthless Strategy","The Demon King of the Sixth Heaven, given a second world to conquer — this time with better logistics.","Arquebus Volley · Fire Doctrine · Demon King's Grin"],
+["Nasu no Yoichi","Secondary Protagonist","archer","Genpei Archery","The archer of legend — a fan on a mast at eighty yards was a warm-up.","Fan-Splitting Shot · Rapid Volley · Genpei Grace"],
+["Hijikata Toshizo","Rival","katana","Shinsengumi Command","The Demon Vice-Commander — ghost soldiers of the Shinsengumi answer his drawn blade.","Shinsengumi Phantoms · Iai Execution · Demon's Discipline"],
+["Scipio Africanus","Mentor","summoner","Roman Strategy","The victor of Zama — no sword arm to speak of, and armies move like his fingers anyway.","Legion Command · Encirclement · Rival Respect"]],
+"Record of Ragnarok":[
+["Lu Bu","Legendary","spear","Flying General's Might","The Flying General — the strongest man of the Three Kingdoms, granted one god to test it on.","Sky Piercer · Halberd Storm · God Slayer's Grin","Golem's Halberd — Sky Piercer"],
+["Adam","Legendary","fists","Divine Reflection","The father of humanity — copying the gods' own techniques with a father's reason to win.","Divine Reflection · God-Mimicry Counter · For My Children"],
+["Kojiro Sasaki","Legendary","katana","Posthumous Mastery","History's greatest loser — a swordsman who parried every defeat into the perfect final draw.","Tsubame Gaeshi (Twin) · Vision Duels · The Ganryu Style"],
+["Jack the Ripper (London)","Villain","assassin","Emotion Sight · Murder Craft","London's nightmare — gloves, gadgets and the ability to see hearts as colors worth cutting out.","Heart Sight · Blade Glove · Foggy Deception"],
+["Buddha","Legendary","paladin","Enlightened Foresight","The awakened one who fights for humanity against heaven — foresight, a shield-staff, total serenity.","Eighty-Four Thousand Gates · Foresight Parry · Nirvana Stance"]],
+"Castlevania":[
+["Trevor Belmont","Main Protagonist","twinblade","Belmont Vampire Killing","The last Belmont — whip-work, spite and a family legacy heavier than the Morning Star.","Vampire Killer Whip · Consecrated Snap · Belmont Grit","Hoslow's Petal Whip (Sacred) — the Vampire Killer"],
+["Alucard (Castlevania)","Anti-Hero","spellblade","Dhampir Sword Magic","Dracula's son, twice orphaned by both halves of himself — a floating sword and colder grief.","Telekinetic Blade · Mist Shift · Dhampir Arts"],
+["Sypha Belnades","Secondary Protagonist","frost","Speaker Elemental Magic","The Speaker magician — ice lances, fire wheels and zero patience for either Belmont brooding.","Ice Lance Barrage · Flame Wheel · Speaker's Verse"],
+["Dracula","Villain","deathmage","Blood Sorcery · Castle Lord","Vlad Dracula Tepes — grief made architectural; a castle of science and hellfire mourning one woman.","Hellfire Volley · Castle Shift · Blood Dominion"],
+["Isaac","Anti-Hero","summoner","Forgemaster's Craft","Dracula's forgemaster — carving night creatures from corpses and philosophy from suffering.","Night Creature Forge · Whip of Flesh · Pilgrim's Resolve"]],
+"Shield Hero":[
+["Naofumi","Main Protagonist","tank","Legendary Shield · Wrath","The betrayed hero whose only weapon is refusal — shields within shields, rage kept barely below.","Shield Prison · Wrath Shield · Air Strike Shield"],
+["Raphtalia","Secondary Protagonist","katana","Vassal Katana · Illusion","The slave girl who became the sword her shield could never hold — and his conscience besides.","Illusion Blade · Vine Bind · Hero's Sword"],
+["Filo","Secondary Protagonist","fists","Filolial Queen Form","A bird bought from an egg lottery — now a monster queen with a kick that dents dragons.","Spiral Strike Kick · Queen Form · Haikuikku"],
+["Glass","Rival","bleed","Soul Power Fans","The hero of another world — war fans, soul-fire and a duel postponed, never abandoned.","Reverse Four Seasons · Soul Blaze · Fan Dance"]],
+"DanMachi":[
+["Bell Cranel","Main Protagonist","assassin","Liaris Freese · Argonaut","The white rabbit of Orario — growth that breaks the leveling system and a heroism that breaks hearts.","Firebolt · Argonaut Charge · Hestia Knife"],
+["Ais Wallenstein","Rival","katana","Wind Spirit — Ariel","The Sword Princess — wind wrapped around a blade, and a gentleness nobody warned him about.","Ariel Wind · Lil Rafaga · Sword Princess Form"],
+["Ryuu Lion","Secondary Protagonist","katana","Elf Justice · Luminous Wind","The Gale — a former adventurer serving tea and, when required, judgment.","Luminous Wind · Gale Step · Astraea's Justice"],
+["Finn Deimne","Mentor","spear","Pallum Bravery","The Braver — the pallum captain whose spear and composure hold the Loki Familia together.","Hell Finegas · Spear Command · Captain's Calm"]],
+"Mushoku Tensei":[
+["Rudeus","Main Protagonist","sorcerer","Voiceless Casting · Water King","A reborn man spending his second life earning the first one — voiceless spells, hard-won decency.","Voiceless Stone Cannon · Cumulonimbus · Quagmire"],
+["Eris","Rival","greatsword","Sword God Style","The wild noble girl turned Sword King — solving most of life's problems at draw speed.","Sword God Draw · Beast Slash · Dead End's Blade"],
+["Sylphie","Secondary Protagonist","cleric","Silent Healing · Wind","Rudeus' first friend — silent-cast wind and healing, patience made into a person.","Silent Wind Blade · Healing Touch · Fitz Mask"],
+["Ruijerd","Mentor","spear","Superd Warrior Honor","The Superd warrior atoning for his tribe's name — a trident, an emerald spearhead, unbending honor.","Trident Mastery · Third Eye Sense · Superd Oath"]],
+"Re:Zero":[
+["Subaru","Main Protagonist","summoner","Return by Death","The most ordinary boy in the loop — dying, learning, and buying miracles with what it costs him.","Return by Death · Invisible Providence · Cor Leonis"],
+["Emilia","Secondary Protagonist","frost","Spirit Arts · Puck","The half-elf candidate with frost at her fingers and a name the world keeps punishing.","Icicle Line · Spirit Pact · Frozen Ground"],
+["Rem","Secondary Protagonist","greatsword","Oni Blood · Flail","The blue-haired maid whose morning star answers threats to her hero — devotion at terminal velocity.","Oni Horn Release · Flail Crush · Demon Maid","Nightrider Flail (Heavy) — the maid's morning star"],
+["Reinhard","Legendary","paladin","Sword Saint · Divine Protections","The Sword Saint — blessed by so many protections that fairness left the conversation entirely.","Reid's Blade · Divine Protections · Master Swordsman"],
+["Beatrice","Secondary Protagonist","sorcerer","Yin Magic · Forbidden Library","The library's keeper, I suppose — four hundred years of waiting shaped like a small girl's pout.","Shamak · Al Shamak · Door Crossing"]],
+"Vampire Hunter D":[
+["D","Main Protagonist","katana","Dhampir Hunter Arts","The dhampir hunter of the far future — a curved blade, a parasitic left hand, and eternal distance.","Longsword Arts · Left Hand Devour · Dhampir Endurance"],
+["Count Magnus Lee","Villain","bleed","Ancient Nobility","Ten thousand years of vampire nobility — boredom, entitlement and a castle that obeys.","Aristocrat's Grip · Blood Dominion · Nobility's Contempt"]],
+"Basilisk":[
+["Gennosuke","Main Protagonist","katana","Kouga Dojutsu","Heir of the Kouga — eyes that turn killing intent back on its owner, and a peace that never got its chance.","Dojutsu Reversal · Kouga Command · Iai"],
+["Oboro","Secondary Protagonist","sorcerer","Piercing Eyes","Heir of the Iga — eyes that unravel any technique, in love with the enemy her clan chose for her.","Technique Nullify · Piercing Gaze · Iga's Grief"],
+["Tenzen","Villain","tank","Symbiotic Immortality","Iga's poisoned mind — a monk-thing that reknits every wound and deserves none of its resurrections.","Regeneration · Immortal Guard · Serpent's Counsel"]],
+"Kingdom":[
+["Li Shin","Main Protagonist","greatsword","Battlefield Instinct","The orphan slave swinging toward Great General — a podao, a promise, and the Hi Shin Unit at his back.","Glaive Cleave · Instinct Rush · Hi Shin Charge"],
+["Ouki","Legendary","spear","Monstrous General","One of Qin's Six Great Generals — a mountain with a glaive and a laugh that decides battles early.","Ouki Glaive · General's Presence · Cocoon","Golem's Halberd — the monstrous general's glaive"],
+["Kyoukai","Secondary Protagonist","katana","Priestess Dance — Shiyuu","The Shiyuu dancer — a breathing trance that trades her lifespan for a blade nothing human follows.","Priestess Dance · Trance Rhythm · Vessel's Grief"],
+["Ei Sei","Mentor","paladin","King's Ambition","The young king of Qin — unification as mercy, delivered in a voice that has already seen the wars.","Royal Decree · Unification Will · King's Presence"]]
+};
+Object.entries(ROSTER4).forEach(([fr, list])=>{
+  list.forEach(e=>{
+    const [name,cat,archId,ps,bio,tech,wOver]=e;
+    const arch=ARCHETYPES[archId], h=hashN(name);
+    const techs=tech.split(" · ");
+    const mkGear=(arr)=>{ const g=arr.slice(); if(wOver) g[0]=wOver; return g; };
+    const builds=[
+      {name:"Lore Accurate — RL150", level:150, type:"Lore · "+arch.label, primary:true,
+       stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.lore), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon: archId==="summoner"?"Black Knife Tiche +10 — their signature companion, made shadow":"—",
+       notes:"Lore-accurate "+name+": "+arch.lore_note+" Signature focus: "+techs[0]+"."},
+      {name:"PvE Optimized — RL150", level:150, type:"PvE · "+arch.label,
+       stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.pve), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"Mimic Tear +10",
+       notes:"PvE-optimized: efficiency over cosplay. Mimic Tear support, encounter-swapped talismans, and "+techs[0]+" as the boss-killing core."},
+      {name:"PvP Optimized — RL125", level:125, type:"PvP · "+arch.label,
+       stats:spreadStats(Object.assign({},arch.w,{VIG:arch.w.VIG+3}),125), weapons:mkGear(arch.gear.pvp), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"—",
+       notes:"PvP duelist tuned for the RL125 meta: higher Vigor weighting, honest neutral game, and "+techs[0]+" as the kill condition."}
+    ];
+    CHARACTERS.push({
+      id:slug(name), name, anime:fr, franchise:fr, category:cat,
+      powerSystem:ps, archetype:arch.label, difficulty:arch.diff,
+      rating: Math.round((7.7+(h%14)/10)*10)/10,
+      popularity: 58+(h%32),
+      banner: FRANCHISE_COLORS[fr]||["#8b5cf6","#0f172a"],
+      bio, personality:CATEGORY_PERSONA[cat], combat:arch.combat,
+      techniques:techs, transformations:[], allies:[], enemies:[], battles:[], quote:"",
+      builds, deep:false, darkFantasy:true
+    });
+  });
+});
+const DARK_TIERS=[
+ ["S",["Berserk","Vinland Saga","Frieren","Claymore","Castlevania","Goblin Slayer"]],
+ ["A",["Dorohedoro","Drifters","Re:Zero","Mushoku Tensei","Made in Abyss"]],
+ ["B",["DanMachi","Shield Hero","Kingdom","Basilisk","Vampire Hunter D"]]];
+
 const FRANCHISES = ["All", ...Object.keys(FRANCHISE_COLORS).filter(f=>CHARACTERS.some(c=>c.franchise===f))];
 /* Legality pass: no build may spend more points than its Rune Level allows (level+79).
    Over-budget hand-tuned specs get trimmed from their largest non-Vigor stat. */
@@ -2536,6 +2669,12 @@ anime(){
    <div class="info-box"><h5>Anime Team Builder</h5><p>Assemble full parties with synergy scoring in the <a onclick="srcGo('parties')" style="cursor:pointer">Anime Parties</a> tab.</p></div>
    <div class="info-box"><h5>Anime Matchups</h5><p>Every boss in the ER Database includes a "who wins" anime matchup with build links.</p></div>
    <div class="info-box"><h5>Roadmap Content</h5><p>Movie Characters · Manga-Exclusive · Light Novel Characters — the roster format scales to 1,000+.</p></div>
+  </div>
+  <div class="panel" style="margin-top:16px;border-color:rgba(127,29,29,.5)"><h3 style="color:#fca5a5">🌑 PHASE 2.5 — DARK FANTASY EXPANSION PACK</h3>
+   <p style="font-size:12px;color:var(--txt-dim);margin-bottom:12px">The catalog closest to Elden Ring's own themes — medieval warfare, gothic horror, monster hunting, curses and melancholy fantasy. ${CHARACTERS.filter(c=>c.darkFantasy).length} characters across ${DARK_TIERS.reduce((n,t)=>n+t[1].length,0)+1} dark fantasy franchises.</p>
+   ${DARK_TIERS.map(([tier,frs])=>`<div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+     <span class="pill ${tier==="S"?"gold":tier==="A"?"weak":"resist"}" style="min-width:52px;text-align:center;font-family:var(--font-display)">Tier ${tier}</span>
+     ${frs.map(f=>`<span class="chip" style="cursor:pointer" onclick="goCharsFiltered('${f.replace(/'/g,"\\'")}','All')">${esc(f)} (${CHARACTERS.filter(c=>c.franchise===f).length})</span>`).join("")}</div>`).join("")}
   </div>
   <div style="margin-top:14px"><button class="btn" onclick="goCharsFiltered('All','All')">Browse the Full Encyclopedia →</button></div>`;
 },
@@ -3018,9 +3157,10 @@ function renderHome(){
       <span style="font-family:var(--font-display);color:${i===0?'var(--gold2)':'var(--txt-dim)'};width:20px">${i+1}</span>
       <span style="flex:1">${esc(c.name)} <small style="color:var(--txt-dim)">· ${esc(c.builds[0].name)}</small></span>
       <b style="color:var(--gold2)">${c.rating}</b></div>`).join("");
-  const road=[["Phase 1 — Foundation","20 flagship characters · full build system · databases · fusion lab","done"],
-    ["Phase 2 — Year 1","100 characters · community builds · interactive map","next"],
-    ["Phase 3 — Year 2","250 characters · guilds · tournaments · seasonal events",""],
+  const road=[["Phase 1 — Foundation","23 deep-dossier characters · full build system · databases · fusion lab","done"],
+    ["Phase 2 — Franchise Expansion","Original 100-character goal passed — franchise rosters, ER & DLC casts, Build Sources hub","done"],
+    ["Phase 2.5 — Dark Fantasy Pack","16 dark fantasy franchises (Vinland Saga, Frieren, Claymore, Castlevania...) · expanded goal 150–200 characters exceeded","done"],
+    ["Phase 3 — Year 2","Guilds · tournaments · seasonal events · interactive map","next"],
     ["Phase Omega","1,000+ characters · complete anime gaming universe",""]];
   document.getElementById("roadmap").innerHTML=road.map(r=>`
     <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px">
