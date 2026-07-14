@@ -403,10 +403,21 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     </div>
     <div class="fusion-sel" style="max-width:760px;margin:0 auto 18px">
       <h3 style="font-family:var(--font-display);color:var(--gold);font-size:13px;margin-bottom:10px">TARGET RUNE LEVEL — <span id="fuseRLLabel" style="color:var(--gold2)">RL 150</span></h3>
-      <input type="range" id="fuseRLSlider" min="0" max="14" value="6" step="1" style="width:100%;accent-color:var(--purple);cursor:pointer"
-        oninput="fuseRLidx=+this.value;updateFuseRLLabel();if(window._lastFuse)generateFusion(false)">
-      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt-dim);margin-top:4px"><span>RL1</span><span>RL100</span><span>RL150</span><span>RL200</span><span>RL300</span><span>RL713</span></div>
-      <small style="color:var(--txt-dim);display:block;margin-top:6px">Live Rebuild: drag the slider after fusing — stats, gear tiers, spells and damage estimates recalculate instantly.</small>
+      <input type="range" id="fuseRLSlider" min="1" max="713" value="150" step="1" list="fuseTicks" style="width:100%;accent-color:var(--purple);cursor:pointer"
+        oninput="setFuseRL(this.value)">
+      <datalist id="fuseTicks"><option value="1"></option><option value="25"></option><option value="50"></option><option value="75"></option><option value="100"></option><option value="125"></option><option value="150"></option><option value="175"></option><option value="200"></option><option value="250"></option><option value="300"></option><option value="400"></option><option value="500"></option><option value="600"></option><option value="713"></option></datalist>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--txt-dim);margin-top:4px"><span>RL 1</span><span>RL 357</span><span>RL 713 (max)</span></div>
+      <div style="display:flex;gap:5px;margin-top:10px;flex-wrap:wrap;justify-content:center;align-items:center">
+        <button class="stat-btn" style="width:auto;padding:4px 10px" onclick="setFuseRL(fuseRL()-10)">−10</button>
+        <button class="stat-btn" style="width:auto;padding:4px 10px" onclick="setFuseRL(fuseRL()-1)">−1</button>
+        <input type="number" id="fuseRLNum" min="1" max="713" value="150" class="searchbar" style="max-width:96px;margin:0;text-align:center;font-weight:700;color:var(--gold2)" onchange="setFuseRL(this.value)">
+        <button class="stat-btn" style="width:auto;padding:4px 10px" onclick="setFuseRL(fuseRL()+1)">+1</button>
+        <button class="stat-btn" style="width:auto;padding:4px 10px" onclick="setFuseRL(fuseRL()+10)">+10</button>
+        <button class="stat-btn" style="width:auto;padding:4px 11px" onclick="setFuseRL(150)">RL 150</button>
+        <button class="stat-btn" style="width:auto;padding:4px 11px" onclick="setFuseRL(713)">MAX 713</button>
+        <button class="stat-btn" style="width:auto;padding:4px 11px;border-color:var(--cyan);color:#a5f3fc" onclick="setFuseRL(S.myLevel||1)">⬆ Match My RL</button>
+      </div>
+      <small style="color:var(--txt-dim);display:block;margin-top:8px">Precise 1–713 control — every single level recalculates stats, gear tiers, spells and damage estimates live, exactly like the main level dragger. Tick marks show the classic bracket levels.</small>
     </div>
     <div style="text-align:center;margin-bottom:20px"><button class="btn alt" style="font-size:15px;padding:13px 34px" onclick="runFusion()">⚡ FUSE</button></div>
     <div style="max-width:860px;margin:0 auto 22px" id="fusionPresets"></div>
@@ -1984,6 +1995,15 @@ function spreadStats(w,level){
     st[k]=Math.max(7,Math.min(99,Math.round(w[k]/tot*budget))); sum+=st[k];
   }
   st.VIG=Math.max(7,Math.min(99,st.VIG+(budget-sum)));
+  // waterfill unspent points across all stats up to the 99 cap
+  // (matters at very high budgets — RL713 = 792 points = all eight stats at 99)
+  let left=budget-Object.values(st).reduce((a,b)=>a+b,0), guard=0;
+  const order=Object.keys(st).sort((a,b)=>w[b]-w[a]);
+  while(left>0 && guard++<800){
+    let moved=false;
+    for(const k of order){ if(left<=0) break; if(st[k]<99){ st[k]++; left--; moved=true; } }
+    if(!moved) break;
+  }
   return st;
 }
 const CATEGORY_PERSONA = {
@@ -3635,10 +3655,19 @@ function fillFusionSelects(){
 }
 function seededPick(arr, seed){ return arr[seed % arr.length]; }
 /* ============ FUSION LAB — LEVEL SCALING ENGINE ============ */
-const FUSE_LEVELS=[1,25,50,75,100,125,150,175,200,250,300,400,500,600,713];
-let fuseRLidx=6;
-function fuseRL(){ return FUSE_LEVELS[fuseRLidx]; }
-function updateFuseRLLabel(){ const el=document.getElementById("fuseRLLabel"); if(el) el.textContent="RL "+fuseRL(); }
+const FUSE_LEVELS=[1,25,50,75,100,125,150,175,200,250,300,400,500,600,713]; // classic bracket levels — shown as slider tick marks
+let fuseRLval=150;
+function fuseRL(){ return Math.max(1,Math.min(713,Math.round(fuseRLval)||1)); }
+function setFuseRL(v){
+  fuseRLval=Math.max(1,Math.min(713,parseInt(v,10)||1));
+  updateFuseRLLabel();
+  if(window._lastFuse) generateFusion(false);
+}
+function updateFuseRLLabel(){
+  const l=document.getElementById("fuseRLLabel"); if(l) l.textContent="RL "+fuseRL();
+  const sl=document.getElementById("fuseRLSlider"); if(sl) sl.value=fuseRL();
+  const n=document.getElementById("fuseRLNum"); if(n) n.value=fuseRL();
+}
 const FUSE_PRIORITY={
  STR:{label:"Strength Fusion", order:["STR","VIG","END","DEX"]},
  DEX:{label:"Dexterity Fusion", order:["DEX","VIG","END","MND"]},
