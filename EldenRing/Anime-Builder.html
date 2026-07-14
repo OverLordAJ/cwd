@@ -314,6 +314,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
         <div><b id="hdBuilds">0</b>Builds</div>
         <div><b id="hdBosses">0</b>Bosses</div>
         <div><b id="hdAch">0</b>Achievements</div>
+        <div><b id="hdRank" style="color:var(--gold2)">—</b>Career Rank</div>
       </div>
     </div>
     <nav id="mainNav">
@@ -324,6 +325,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <button data-view="fusion">Fusion Lab</button>
       <button data-view="guilds">🛡 Guilds</button>
       <button data-view="arena">🏟 Arena</button>
+      <button data-view="career">⚜ Career</button>
       <button data-view="database">ER Database</button>
       <button data-view="rankings">Rankings</button>
       <button data-view="tracker">Tracker</button>
@@ -400,6 +402,8 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <div class="fusion-sel"><h3 style="font-family:var(--font-display);color:var(--gold);font-size:13px;margin-bottom:10px">CHARACTER A</h3><select id="fuseA"></select></div>
       <div class="fusion-x">✕</div>
       <div class="fusion-sel"><h3 style="font-family:var(--font-display);color:var(--purple);font-size:13px;margin-bottom:10px">CHARACTER B</h3><select id="fuseB"></select></div>
+      <div class="fusion-x" style="font-size:22px">＋</div>
+      <div class="fusion-sel"><h3 style="font-family:var(--font-display);color:var(--cyan);font-size:13px;margin-bottom:10px">CHARACTER C — TRIPLE FUSION (optional)</h3><select id="fuseC"></select></div>
     </div>
     <div class="fusion-sel" style="max-width:760px;margin:0 auto 18px">
       <h3 style="font-family:var(--font-display);color:var(--gold);font-size:13px;margin-bottom:10px">TARGET RUNE LEVEL — <span id="fuseRLLabel" style="color:var(--gold2)">RL 150</span></h3>
@@ -428,6 +432,16 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
   <section class="view" id="view-guilds">
     <div class="sec-title">GUILD SYSTEM</div>
     <div class="sec-sub">Curated cross-franchise factions organized by playstyle, computed live from the roster. "Joining" favorites a guild locally — same pattern as the Tracker.</div>
+    <div class="panel" style="margin-bottom:16px"><h3>🏗 FOUND YOUR OWN GUILD</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:10px 0">
+        <input id="cgName" class="searchbar" style="margin:0" placeholder="Guild name">
+        <input id="cgIcon" class="searchbar" style="margin:0" placeholder="Emblem (emoji)" maxlength="4">
+        <input id="cgMotto" class="searchbar" style="margin:0" placeholder="Motto">
+        <select id="cgFr" class="searchbar" style="margin:0;cursor:pointer"></select>
+      </div>
+      <button class="btn alt" onclick="createGuild()">⚒ Found Guild (+50 ⚜)</button>
+      <small style="display:block;margin-top:8px;color:var(--txt-dim)">Custom guilds recruit an entire franchise as members and level up alongside your favorites.</small>
+    </div>
     <div class="char-grid" id="guildGrid"></div>
     <div id="guildDetail"></div>
     <div class="panel" style="margin-top:18px"><h3>⚖ GUILD VS GUILD</h3>
@@ -449,6 +463,13 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     </div>
     <div id="arenaT"></div>
     <div id="arenaE" style="display:none"></div>
+  </section>
+
+  <!-- CAREER -->
+  <section class="view" id="view-career">
+    <div class="sec-title">ANIME BUILD CAREER MODE</div>
+    <div class="sec-sub">Start as a Tarnished. Collect characters, complete daily challenges, earn runes, found guilds, crown champions — and climb to Elden Lord. Everything you do across the Nexus feeds your career.</div>
+    <div id="careerRoot"></div>
   </section>
 
   <!-- DATABASE -->
@@ -524,6 +545,8 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
       <small id="progLabel" style="color:var(--txt-dim)"></small>
     </div>
+    <h3 style="font-family:var(--font-display);color:var(--gold);margin-bottom:12px;letter-spacing:1px">BUILD PROGRESSION — PINNED BUILDS</h3>
+    <div id="trackedBuilds" style="margin-bottom:26px"></div>
     <h3 style="font-family:var(--font-display);color:var(--gold);margin-bottom:12px;letter-spacing:1px">BOSSES DEFEATED</h3>
     <div class="check-grid" id="bossChecks"></div>
     <h3 style="font-family:var(--font-display);color:var(--gold);margin:26px 0 12px;letter-spacing:1px">BUILDS COMPLETED</h3>
@@ -1546,6 +1569,11 @@ const ACHIEVEMENTS = [
 {id:"guild_founder", icon:"🛡", name:"Guild Founder", desc:"Join (favorite) your first guild.", check:(s)=>(s.guildFavs||[]).length>=1},
 {id:"covenant_collector", icon:"🏛", name:"Covenant Collector", desc:"Hold membership in 5 guilds at once.", check:(s)=>(s.guildFavs||[]).length>=5},
 {id:"kingmaker", icon:"👑", name:"Kingmaker", desc:"Crown a Season 1 champion by voting through the full bracket.", check:(s)=>!!s.champion_s1},
+{id:"collector50", icon:"📦", name:"Collector", desc:"Collect 50 characters in the Dex.", check:(s)=>(s.viewedChars||[]).length>=50},
+{id:"veteran100", icon:"🗃", name:"Veteran", desc:"Collect 100 characters in the Dex.", check:(s)=>(s.viewedChars||[]).length>=100},
+{id:"lord_of_cinder", icon:"🌑", name:"Lord of Cinder", desc:"Complete the entire Dark Fantasy collection.", check:(s)=>CHARACTERS.filter(c=>c.darkFantasy).every(c=>(s.viewedChars||[]).includes(c.id))},
+{id:"elden_lord_col", icon:"🏰", name:"Elden Lord", desc:"Complete the Elden Ring + DLC collection.", check:(s)=>CHARACTERS.filter(c=>c.franchise==="Elden Ring"||c.franchise==="Shadow of the Erdtree").every(c=>(s.viewedChars||[]).includes(c.id))},
+{id:"fusion_master", icon:"⚗️", name:"Fusion Master", desc:"Create 100 fusions.", check:(s)=>(s.fusions||0)>=100},
 {id:"hard_cap", icon:"⬆️", name:"Hard Cap", desc:"Reach level 713 — all eight attributes raised to their hard cap of 99.", check:(s)=>(s.myLevel||1)>=713},
 {id:"completionist", icon:"💯", name:"Completionist", desc:"Unlock every other achievement.", check:(s,unlocked)=>unlocked.filter(a=>a!=="completionist").length>=ACHIEVEMENTS.length-1}
 ];
@@ -2656,7 +2684,7 @@ function commSave(){
 }
 function commRate(id,n){
   const b=commAll().find(x=>x.id===id); if(!b) return;
-  b.stars.push(n); save(); srcGo("community");
+  b.stars.push(n); careerAction("rates"); awardRunes(5,null); save(); srcGo("community");
 }
 function commComment(id){
   const el=document.getElementById("cmt_"+id); if(!el||!el.value.trim()) return;
@@ -3155,7 +3183,9 @@ const GUILDS=[
  {id:"draconic-communion",icon:"🐉",name:"Draconic Communion",theme:"Those who ate the heart and took the roar.",match:c=>/Dragon/.test(c.archetype)},
  {id:"dark-compact",icon:"🌒",name:"The Dark Fantasy Compact",theme:"The Phase 2.5 pact — every soul from the grimdark catalog.",match:c=>!!c.darkFantasy},
  {id:"shadow-vanguard",icon:"🌫",name:"Land of Shadow Vanguard",theme:"Natives of the DLC realm — Messmer's war, Miquella's promise.",match:c=>c.franchise==="Shadow of the Erdtree"},
- {id:"the-immovable",icon:"🛡",name:"The Immovable",theme:"Tanks, guardians and toxin specialists — outlast everything.",match:c=>/Guardian|Toxin/.test(c.archetype)}];
+ {id:"the-immovable",icon:"🛡",name:"The Immovable",theme:"Tanks, guardians and toxin specialists — outlast everything.",match:c=>/Guardian|Toxin/.test(c.archetype)},
+ {id:"frenzied-flame",icon:"👁",name:"Cult of the Frenzied Flame",theme:"Madness devotees — the Three Fingers accept all applicants, permanently.",match:c=>/Frenzied/.test(c.archetype)},
+ {id:"nights-cavalry",icon:"🌙",name:"Night's Cavalry",theme:"Riders of the dark hours — polearm duelists and storm blades.",match:c=>/Polearm|Storm Blade/.test(c.archetype)}];
 function guildMembers(g){ return CHARACTERS.filter(g.match); }
 function guildStats(g){
   const m=guildMembers(g);
@@ -3166,13 +3196,13 @@ function guildStats(g){
 let openGuild=null;
 function renderGuilds(){
   const favs=S.guildFavs||[];
-  document.getElementById("guildGrid").innerHTML=GUILDS.map(g=>{
+  document.getElementById("guildGrid").innerHTML=allGuilds().map(g=>{
     const st=guildStats(g), fav=favs.includes(g.id);
     return `<div class="char-card" onclick="showGuild('${g.id}')">
       <div class="char-banner" style="background:linear-gradient(120deg,var(--bg3),${fav?'rgba(212,175,55,.45)':'rgba(139,92,246,.35)'})">
         <div class="char-emblem">${g.icon}</div>
       </div>
-      <div class="char-body"><h4>${esc(g.name)} ${fav?'<span style="color:var(--gold2)">★</span>':''}</h4>
+      <div class="char-body"><h4>${esc(g.name)} ${fav?'<span style="color:var(--gold2)">★</span>':''} <span class="pill gold" style="font-size:9px;padding:1px 7px">Lv ${guildLevel(g.id)}</span>${g.custom?'<span class="tag" style="background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.4)">Custom</span>':''}</h4>
       <p style="font-size:11px;color:var(--txt-dim);line-height:1.5;margin:4px 0 8px">${esc(g.theme)}</p>
       <div class="char-meta"><span><b>${st.count}</b> members</span><span>Avg <b>${st.avg}</b></span><span>Top: <b>${st.top?esc(st.top.name.split(" ")[0]):"—"}</b></span></div>
       </div></div>`;
@@ -3188,21 +3218,23 @@ function toggleGuildFav(id){
 function renderGuildDetail(){
   const el=document.getElementById("guildDetail"); if(!el) return;
   if(!openGuild){ el.innerHTML=""; return; }
-  const g=GUILDS.find(x=>x.id===openGuild), st=guildStats(g), m=guildMembers(g);
+  const g=allGuilds().find(x=>x.id===openGuild); if(!g){ el.innerHTML=""; return; }
+  const st=guildStats(g), m=guildMembers(g);
   const fav=(S.guildFavs||[]).includes(g.id);
   el.innerHTML=`<div class="panel" style="border-color:var(--gold-dim);margin-top:18px">
     <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
       <h3>${g.icon} ${esc(g.name)}</h3>
       <button class="btn ${fav?'':'alt'}" style="padding:7px 16px;font-size:12px" onclick="toggleGuildFav('${g.id}')">${fav?'★ Favorited — leave guild':'☆ Join (favorite locally)'}</button>
     </div>
-    <p style="font-size:12px;color:var(--txt-dim);margin:6px 0 12px">${esc(g.theme)} · ${st.count} members · avg rating ${st.avg} · strongest: ${st.top?esc(st.top.name):"—"} (${st.top?st.top.rating:"—"})</p>
+    <p style="font-size:12px;color:var(--txt-dim);margin:6px 0 12px">${esc(g.theme)} · ${st.count} members · avg rating ${st.avg} · strongest: ${st.top?esc(st.top.name):"—"} (${st.top?st.top.rating:"—"}) · Guild Level ${guildLevel(g.id)} (${(S.guildXP||{})[g.id]||0} XP — favorited guilds earn XP from everything you do)</p>
+    ${g.custom?`<button class="stat-btn" style="width:auto;padding:3px 12px;border-color:var(--red);color:#fca5a5;margin-bottom:10px" onclick="deleteGuild('${g.id}')">Disband Guild</button>`:""}
     <div style="line-height:2.2">${m.sort((a,b)=>b.rating-a.rating).map(c=>`<span class="pill gold" style="cursor:pointer;margin:2px 3px" onclick="openChar('${c.id}')">${esc(c.name)} · ${c.rating}</span>`).join("")}</div>
   </div>`;
 }
 function renderGuildCompare(){
   const el=document.getElementById("guildCompareOut"); if(!el) return;
-  const a=GUILDS.find(g=>g.id===document.getElementById("gcA").value);
-  const b=GUILDS.find(g=>g.id===document.getElementById("gcB").value);
+  const a=allGuilds().find(g=>g.id===document.getElementById("gcA").value);
+  const b=allGuilds().find(g=>g.id===document.getElementById("gcB").value);
   if(!a||!b) return;
   const sa=guildStats(a), sb=guildStats(b);
   const row=(l,va,vb,hi)=>`<tr><td style="color:var(--txt-dim)">${l}</td><td style="${+va>+vb?'color:var(--gold2);font-weight:700':''}">${va}</td><td style="${+vb>+va?'color:var(--gold2);font-weight:700':''}">${vb}</td></tr>`;
@@ -3246,36 +3278,14 @@ function fighterBtn(key,cid){
   if(!cid) return `<div style="padding:7px 10px;border:1px dashed var(--line);border-radius:8px;color:var(--txt-dim);font-size:11px;text-align:center">TBD</div>`;
   const c=CHARACTERS.find(x=>x.id===cid);
   const picked=(S.votes||{})[key]===cid;
-  return `<div onclick="s1Vote('${key}','${cid}')" style="display:flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid ${picked?'var(--gold)':'var(--line)'};border-radius:8px;cursor:pointer;background:${picked?'rgba(212,175,55,.12)':'var(--bg3)'};transition:.15s">
+  return `<div onclick="tVote('${key}','${cid}')" style="display:flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid ${picked?'var(--gold)':'var(--line)'};border-radius:8px;cursor:pointer;background:${picked?'rgba(212,175,55,.12)':'var(--bg3)'};transition:.15s">
     <div class="char-emblem" style="position:static;width:24px;height:24px;font-size:11px;background:linear-gradient(135deg,${c.banner[0]},${c.banner[1]})">${esc(c.name[0])}</div>
     <span style="font-size:11px;font-weight:600;${picked?'color:var(--gold2)':''}">${esc(c.name.split(" ")[0])}</span>
     <span style="margin-left:auto;font-size:10px;color:var(--txt-dim)">${c.rating}</span></div>`;
 }
-function renderTournament(){
-  const rounds=s1Bracket();
-  const names=["Round of 16","Quarterfinals","Semifinals","Grand Final"];
-  const champ=S.champion_s1? CHARACTERS.find(c=>c.id===S.champion_s1):null;
-  document.getElementById("arenaT").innerHTML=`
-   <div class="panel" style="margin-bottom:14px">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-      <h3>🏟 SEASON 1 — ${esc(SEASON1.name).toUpperCase()}</h3>
-      <button class="btn" style="padding:6px 14px;font-size:11px;border-color:var(--red);color:#fca5a5" onclick="if(confirm('Reset your Season 1 bracket?')){S.votes={};S.champion_s1=null;save();renderArena();}">Reset Bracket</button>
-    </div>
-    <p style="font-size:12px;color:var(--txt-dim);margin-top:4px">${esc(SEASON1.format)} · Top 16 by Nexus rating. <b style="color:#a5f3fc">Community-vote bracket:</b> click a fighter to advance them — this is an opinion mechanic, your picks, saved locally. No simulated outcomes are presented as fact.</p>
-   </div>
-   ${champ?`<div class="fusion-card" style="margin-bottom:14px;text-align:center"><h3>👑 YOUR SEASON 1 CHAMPION</h3>
-     <div class="ftitle">${esc(champ.name)} — ${esc(champ.franchise)} · rating ${champ.rating}</div>
-     <button class="btn" onclick="openChar('${champ.id}')">Champion's Dossier →</button></div>`:""}
-   <div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:10px">
-    ${rounds.map((matches,r)=>`<div style="min-width:190px;flex-shrink:0">
-      <h3 style="font-family:var(--font-display);font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:10px;text-align:center">${names[r]}</h3>
-      <div style="display:flex;flex-direction:column;gap:${8*Math.pow(2,r)}px;justify-content:space-around;height:100%">
-      ${matches.map(m=>`<div style="display:flex;flex-direction:column;gap:4px">${fighterBtn(m.key,m.a)}${fighterBtn(m.key,m.b)}</div>`).join("")}
-      </div></div>`).join("")}
-   </div>`;
-}
+/* legacy single-bracket renderer replaced by Tournaments 2.0 */
 
-/* ---- 3.3 SEASONAL EVENTS ---- */
+/* ---- 3.3 SEASONAL EVENTS ---- *//* ---- 3.3 SEASONAL EVENTS ---- */
 const EVENTS=[
  {id:"launch-festival", title:"Nexus Launch Festival", start:"2026-06-01", end:"2026-06-30", type:"character-drop",
   badge:"🎉 Founding Tarnished", desc:"The founding celebration — the first 400+ characters, the Build Sources hub and the complete equipment databases went live."},
@@ -3284,7 +3294,17 @@ const EVENTS=[
  {id:"clash-s1", title:"Clash of Titans — Season 1", start:"2026-08-01", end:"2026-08-31", type:"tournament",
   badge:"🏟 Season 1 Kingmaker", desc:"The first community-vote bracket: 16 champions, single elimination, RL150 cap. Voting opens with the season — the bracket is live now for early picks."},
  {id:"fusion-contest", title:"Grand Fusion Contest", start:"2026-09-01", end:"2026-09-30", type:"fusion-contest",
-  badge:"⚗️ Fusion Laureate", desc:"Community fusion showcase — the most-loved combos get promoted into the Fusion Lab's permanent preset list."}];
+  badge:"⚗️ Fusion Laureate", desc:"Community fusion showcase — the most-loved combos get promoted into the Fusion Lab's permanent preset list."},
+ {id:"dark-month", title:"Dark Fantasy Month", start:"2026-10-01", end:"2026-10-23", type:"character-drop",
+  badge:"🦇 Grimdark Devotee", desc:"Fall rotation: the Dark Fantasy Compact takes over Rankings, and the Tier S franchises get spotlight dossier upgrades."},
+ {id:"eclipse", title:"The Eclipse — Berserk Event", start:"2026-10-24", end:"2026-10-31", type:"boss-challenge",
+  badge:"🌘 Eclipse Survivor", desc:"Halloween: Berserk-themed challenge week. Beat any 3 bosses with Guts-lineage builds (Greatsword, no summons). The Brand is watching."},
+ {id:"frost-festival", title:"Frost Festival", start:"2026-12-15", end:"2027-01-05", type:"character-drop",
+  badge:"❄️ Frostbitten", desc:"Winter rotation: frost builds ranked, Rime and Cold infusion showcase, and the year's Hall of Fame ceremony."},
+ {id:"er-anniversary", title:"Elden Ring Anniversary", start:"2027-02-25", end:"2027-03-10", type:"boss-challenge",
+  badge:"🏆 Anniversary Tarnished", desc:"Special builds, community polls and boss challenge gauntlets celebrating the game's launch anniversary."},
+ {id:"hero-festival", title:"Hero Festival", start:"2027-04-01", end:"2027-04-30", type:"character-drop",
+  badge:"🌸 Festival Hero", desc:"Spring rotation: Main Protagonist celebration — hero builds, mentor duos and a community vote for the Nexus's defining hero."}];
 function eventStatus(e){
   const now=new Date(), s=new Date(e.start+"T00:00:00"), en=new Date(e.end+"T23:59:59");
   if(now<s) return {st:"upcoming", days:Math.ceil((s-now)/86400000)};
@@ -3329,13 +3349,314 @@ function renderArena(){ renderTournament(); renderEvents(); renderEventBanner();
 
 
 
+/* ============ PHASE 3 FLAGSHIP — CAREER MODE · COLLECTION · DAILIES · TOURNAMENTS 2.0 ============ */
+
+/* ---- 3.4 Character Collection: rarity + dex ---- */
+function rarityOf(c){
+  if(c.deep) return "Legendary";
+  if(c.darkFantasy && c.rating>=8.6) return "Mythic";
+  if(c.popularity>=86 || c.rating>=9.0) return "Epic";
+  if(c.rating>=8.2) return "Rare";
+  return "Common";
+}
+const RARITY_META={
+ Common:{col:"#9a94a8",runes:10}, Rare:{col:"#38bdf8",runes:25}, Epic:{col:"#a78bfa",runes:50},
+ Legendary:{col:"#d4af37",runes:100}, Mythic:{col:"#f87171",runes:200}};
+function rarityTag(c){
+  const r=rarityOf(c), m=RARITY_META[r];
+  return `<span class="tag" style="background:${m.col}22;color:${m.col};border:1px solid ${m.col}55">${r}</span>`;
+}
+
+/* ---- Career core: runes + ranks ---- */
+const RANKS=[["Tarnished",0],["Warrior",300],["Knight",800],["Vagabond Champion",1600],["Rune Bearer",3000],["Demigod Felled",5000],["Great Rune Lord",8000],["Elden Lord",12000]];
+function careerRank(){
+  const r=S.runes||0;
+  let cur=RANKS[0], next=null;
+  for(let i=0;i<RANKS.length;i++){ if(r>=RANKS[i][1]) cur=RANKS[i]; else { next=RANKS[i]; break; } }
+  return {name:cur[0], at:cur[1], next, runes:r};
+}
+function awardRunes(n, reason){
+  const before=careerRank().name;
+  S.runes=(S.runes||0)+n;
+  const after=careerRank().name;
+  if(reason) toast("⚜ +"+n+" runes — "+reason);
+  if(before!==after) toast("👑 RANK UP: "+after+"!");
+  // guild XP flows to favorited guilds
+  (S.guildFavs||[]).forEach(g=>{ S.guildXP=S.guildXP||{}; S.guildXP[g]=(S.guildXP[g]||0)+Math.ceil(n/3); });
+  store.set(S);
+  renderHeader(); renderCareer();
+}
+/* ---- 3.9 Daily challenges ---- */
+const DAILY_POOL=[
+ {id:"fuse",label:"Create a fusion in the Fusion Lab",need:1,k:"fusions"},
+ {id:"collect3",label:"Collect 3 new characters (open their profiles)",need:3,k:"collects"},
+ {id:"vote",label:"Vote in any tournament bracket",need:1,k:"votes"},
+ {id:"rate",label:"Rate a community build",need:1,k:"rates"},
+ {id:"boss",label:"Mark a boss defeated in the Tracker",need:1,k:"bosses"},
+ {id:"strchar",label:"Study a Strength-archetype character",need:1,k:"strview"},
+ {id:"guildhall",label:"Visit the Guild Hall",need:1,k:"guildvisit"},
+ {id:"track",label:"Pin a build to your Progression Tracker",need:1,k:"tracks"}];
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function ensureDaily(){
+  if(!S.daily || S.daily.date!==todayStr()) S.daily={date:todayStr(), counters:{}, done:[]};
+}
+function todaysChallenges(){
+  ensureDaily();
+  const h=hashN(S.daily.date);
+  const pool=[...DAILY_POOL];
+  const picks=[];
+  for(let i=0;i<3;i++) picks.push(pool.splice((h+i*7)%pool.length,1)[0]);
+  return picks;
+}
+function careerAction(k,n){
+  ensureDaily();
+  S.daily.counters[k]=(S.daily.counters[k]||0)+(n||1);
+  todaysChallenges().forEach(ch=>{
+    if(!S.daily.done.includes(ch.id) && (S.daily.counters[ch.k]||0)>=ch.need){
+      S.daily.done.push(ch.id);
+      awardRunes(100,"Daily challenge complete: "+ch.label);
+    }
+  });
+  store.set(S);
+}
+
+/* ---- 3.2 Tournaments 2.0: multi-bracket + Hall of Fame ---- */
+const TOURNEYS=[
+ {id:"s1",name:"Clash of Titans (All-Comers)",desc:"Top 16 by rating across the entire Nexus. RL150 cap.",pick:()=>[...CHARACTERS].sort((a,b)=>b.rating-a.rating||b.popularity-a.popularity).slice(0,16)},
+ {id:"anime",name:"Anime Build Tournament",desc:"Anime champions only — no Lands Between natives.",pick:()=>CHARACTERS.filter(c=>c.franchise!=="Elden Ring"&&c.franchise!=="Shadow of the Erdtree").sort((a,b)=>b.rating-a.rating).slice(0,16)},
+ {id:"dark",name:"Dark Fantasy Tournament",desc:"The Phase 2.5 grimdark catalog settles its hierarchy.",pick:()=>CHARACTERS.filter(c=>c.darkFantasy||c.franchise==="Berserk").sort((a,b)=>b.rating-a.rating).slice(0,16)},
+ {id:"er",name:"Elden Ring Tournament",desc:"Demigods, legends and DLC lords — the home team bracket.",pick:()=>CHARACTERS.filter(c=>c.franchise==="Elden Ring"||c.franchise==="Shadow of the Erdtree").sort((a,b)=>b.rating-a.rating).slice(0,16)},
+ {id:"cup",name:"Franchise Champions Cup",desc:"One representative per franchise — the 16 strongest flag-bearers.",pick:()=>{
+   const best={}; CHARACTERS.forEach(c=>{ if(!best[c.franchise]||c.rating>best[c.franchise].rating) best[c.franchise]=c; });
+   return Object.values(best).sort((a,b)=>b.rating-a.rating).slice(0,16); }}];
+let activeTourney="s1";
+function tParticipants(t){ return TOURNEYS.find(x=>x.id===t).pick(); }
+function tBracket(tid){
+  const P=tParticipants(tid), rounds=[];
+  rounds.push(S1_PAIRS.map((pr,i)=>({key:tid+"_r0_m"+i, a:P[pr[0]].id, b:P[pr[1]].id})));
+  for(let r=1;r<4;r++){
+    const prev=rounds[r-1], cur=[];
+    for(let i=0;i<prev.length;i+=2) cur.push({key:tid+"_r"+r+"_m"+(i/2), a:(S.votes||{})[prev[i].key]||null, b:(S.votes||{})[prev[i+1].key]||null});
+    rounds.push(cur);
+  }
+  return rounds;
+}
+function tVote(key,cid){
+  if(!cid) return;
+  S.votes=S.votes||{}; S.champions=S.champions||{};
+  const tid=key.split("_")[0], r=+key.split("_")[1].slice(1);
+  Object.keys(S.votes).forEach(k=>{ if(k.startsWith(tid+"_") && +k.split("_")[1].slice(1)>r) delete S.votes[k]; });
+  if(S.votes[key]===cid){ delete S.votes[key]; }
+  else { S.votes[key]=cid; careerAction("votes"); awardRunes(5,null); }
+  const fin=tBracket(tid)[3][0];
+  const champ=(S.votes||{})[fin.key]||null;
+  const had=S.champions[tid];
+  S.champions[tid]=champ;
+  if(tid==="s1") S.champion_s1=champ;
+  if(champ && champ!==had){
+    S.hallOfFame=S.hallOfFame||[];
+    S.hallOfFame=S.hallOfFame.filter(h=>h.tid!==tid);
+    S.hallOfFame.push({tid, cid:champ, date:todayStr()});
+    awardRunes(150,"Champion crowned — "+TOURNEYS.find(x=>x.id===tid).name);
+  }
+  save(); renderArena(); renderCareer();
+}
+/* Featured quick-vote duels */
+const FEATURED_DUELS=[["guts","thorfinn"],["alucard","ainz"],["frieren","gojo"],["madara","ryomensukuna"]];
+function duelVote(i,cid){
+  S.duelVotes=S.duelVotes||{};
+  if(S.duelVotes[i]!==cid){ S.duelVotes[i]=cid; careerAction("votes"); awardRunes(5,null); }
+  save(); renderArena();
+}
+function renderTournament(){
+  const T=TOURNEYS.find(x=>x.id===activeTourney);
+  const rounds=tBracket(activeTourney);
+  const names=["Round of 16","Quarterfinals","Semifinals","Grand Final"];
+  const champId=(S.champions||{})[activeTourney];
+  const champ=champId? CHARACTERS.find(c=>c.id===champId):null;
+  document.getElementById("arenaT").innerHTML=`
+   <div class="chips">${TOURNEYS.map(t=>`<div class="chip ${t.id===activeTourney?'active':''}" onclick="activeTourney='${t.id}';renderTournament()">${esc(t.name)}</div>`).join("")}</div>
+   <div class="panel" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h3>🏟 ${esc(T.name).toUpperCase()}</h3>
+      <button class="btn" style="padding:6px 14px;font-size:11px;border-color:var(--red);color:#fca5a5" onclick="if(confirm('Reset this bracket?')){Object.keys(S.votes||{}).forEach(k=>{if(k.startsWith('${T.id}_'))delete S.votes[k];});if(S.champions)delete S.champions['${T.id}'];save();renderArena();}">Reset Bracket</button>
+    </div>
+    <p style="font-size:12px;color:var(--txt-dim);margin-top:4px">${esc(T.desc)} <b style="color:#a5f3fc">Community-vote bracket:</b> click a fighter to advance them — an opinion mechanic, your picks, saved locally.</p>
+   </div>
+   ${champ?`<div class="fusion-card" style="margin-bottom:14px;text-align:center"><h3>👑 YOUR CHAMPION — ${esc(T.name).toUpperCase()}</h3>
+     <div class="ftitle">${esc(champ.name)} — ${esc(champ.franchise)} · rating ${champ.rating} · inducted into the Hall of Fame</div>
+     <button class="btn" onclick="openChar('${champ.id}')">Champion's Dossier →</button></div>`:""}
+   <div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:10px">
+    ${rounds.map((matches,r)=>`<div style="min-width:190px;flex-shrink:0">
+      <h3 style="font-family:var(--font-display);font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:10px;text-align:center">${names[r]}</h3>
+      <div style="display:flex;flex-direction:column;gap:${8*Math.pow(2,r)}px;justify-content:space-around;height:100%">
+      ${matches.map(m=>`<div style="display:flex;flex-direction:column;gap:4px">${fighterBtn(m.key,m.a)}${fighterBtn(m.key,m.b)}</div>`).join("")}
+      </div></div>`).join("")}
+   </div>
+   <div class="panel" style="margin-top:14px"><h3>⚡ FEATURED MATCHUPS — QUICK VOTES</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:10px">
+    ${FEATURED_DUELS.map(([x,y],i)=>{
+      const a=CHARACTERS.find(c=>c.id===x), b=CHARACTERS.find(c=>c.id===y);
+      if(!a||!b) return "";
+      const v=(S.duelVotes||{})[i];
+      const side=(c,me)=>`<div onclick="duelVote(${i},'${c.id}')" style="flex:1;text-align:center;padding:8px 6px;border-radius:8px;cursor:pointer;border:1px solid ${v===c.id?'var(--gold)':'var(--line)'};background:${v===c.id?'rgba(212,175,55,.12)':'var(--bg3)'}">
+        <div class="char-emblem" style="position:static;width:30px;height:30px;font-size:13px;margin:0 auto 4px;background:linear-gradient(135deg,${c.banner[0]},${c.banner[1]})">${esc(c.name[0])}</div>
+        <div style="font-size:11px;font-weight:600;${v===c.id?'color:var(--gold2)':''}">${esc(c.name.split(" ")[0])}</div></div>`;
+      return `<div style="display:flex;align-items:center;gap:8px">${side(a)}<span style="color:var(--purple);font-family:var(--font-display)">VS</span>${side(b)}</div>`;
+    }).join("")}</div></div>`;
+}
+
+/* ---- 3.5 Build Progression Tracker ---- */
+function trackKey(cid,idx){ return cid+"__"+idx; }
+function toggleTrackBuild(cid,idx){
+  S.tracked=S.tracked||{};
+  const k=trackKey(cid,idx);
+  if(S.tracked[k]) delete S.tracked[k];
+  else { S.tracked[k]={got:{}}; careerAction("tracks"); toast("📌 Build pinned to your Progression Tracker."); }
+  save(); rerenderBuild(cid,idx); renderTrackedBuilds();
+}
+function trackItemToggle(k,item){
+  const t=(S.tracked||{})[k]; if(!t) return;
+  t.got[item]=!t.got[item];
+  save(); renderTrackedBuilds();
+}
+function trackedItems(b){
+  return [...b.weapons.filter(w=>w!=="—"), ...b.talismans.filter(t=>t!=="—")];
+}
+function renderTrackedBuilds(){
+  const el=document.getElementById("trackedBuilds"); if(!el) return;
+  const entries=Object.keys(S.tracked||{});
+  if(!entries.length){ el.innerHTML=`<div class="empty">No builds pinned yet — open any build and press 📌 Track. Level, weapons and talismans become an in-game shopping list.</div>`; return; }
+  el.innerHTML=entries.map(k=>{
+    const [cid,idx]=k.split("__"); const c=CHARACTERS.find(x=>x.id===cid); if(!c) return "";
+    const b=c.builds[+idx]; if(!b) return "";
+    const items=trackedItems(b), got=S.tracked[k].got;
+    const gotN=items.filter(i=>got[i]).length;
+    const ml=Math.min(S.myLevel||1,b.level);
+    const pct=Math.round((ml/b.level*50)+(items.length?gotN/items.length*50:50));
+    const missing=items.filter(i=>!got[i]);
+    return `<div class="panel" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
+        <b style="font-family:var(--font-display)">${esc(c.name)} — ${esc(b.name)}</b>
+        <span><span class="pill gold">${pct}% ready</span>
+        <button class="stat-btn" style="width:auto;padding:2px 10px;border-color:var(--red);color:#fca5a5" onclick="toggleTrackBuild('${cid}',${+idx})">✕ Untrack</button></span></div>
+      <div class="prog-track" style="margin:8px 0 4px"><div class="prog-fill" style="width:${pct}%"></div></div>
+      <div style="font-size:11px;color:var(--txt-dim);margin-bottom:8px">Level: RL ${S.myLevel||1} / ${b.level} target · Gear: ${gotN}/${items.length} acquired</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px">
+        ${items.map(i=>`<div class="check-item ${got[i]?'done':''}" onclick="trackItemToggle('${k}','${esc(i).replace(/'/g,"\\'")}')">
+          <div class="box">${got[i]?'✔':''}</div><span style="font-size:11px">${esc(i)}</span></div>`).join("")}
+      </div>
+      ${missing.length?`<div style="font-size:11px;color:#fca5a5;margin-top:8px"><b>Still missing:</b> ${missing.slice(0,4).map(esc).join(" · ")}${missing.length>4?" · +"+(missing.length-4)+" more":""}</div>`
+        :`<div style="font-size:11px;color:var(--green);margin-top:8px"><b>✔ Full loadout acquired${ml>=b.level?" — build complete!":" — now reach RL "+b.level+"."}</b></div>`}
+    </div>`;
+  }).join("");
+}
+
+/* ---- Custom guilds + guild XP ---- */
+function allGuilds(){
+  const custom=(S.customGuilds||[]).map(g=>({id:g.id,icon:g.icon||"🏳",name:g.name,theme:(g.motto||"Custom guild")+" · "+g.fr+" faction",match:c=>c.franchise===g.fr,custom:true}));
+  return [...GUILDS, ...custom];
+}
+function guildLevel(gid){ return Math.floor(((S.guildXP||{})[gid]||0)/100)+1; }
+function createGuild(){
+  const name=document.getElementById("cgName").value.trim();
+  const icon=document.getElementById("cgIcon").value.trim()||"🏳";
+  const motto=document.getElementById("cgMotto").value.trim();
+  const fr=document.getElementById("cgFr").value;
+  if(!name){ toast("Give your guild a name."); return; }
+  S.customGuilds=S.customGuilds||[];
+  const id="custom-"+slug(name);
+  if(allGuilds().some(g=>g.id===id)){ toast("A guild with that name already exists."); return; }
+  S.customGuilds.push({id,name,icon,motto,fr});
+  S.guildFavs=S.guildFavs||[]; S.guildFavs.push(id);
+  awardRunes(50,"Guild founded: "+name);
+  save(); renderGuilds();
+}
+function deleteGuild(id){
+  S.customGuilds=(S.customGuilds||[]).filter(g=>g.id!==id);
+  S.guildFavs=(S.guildFavs||[]).filter(x=>x!==id);
+  save(); openGuild=null; renderGuilds();
+}
+
+/* ---- 3.10 Career Mode rendering ---- */
+function earnedTitles(){
+  const t=[];
+  const r=careerRank(); t.push({icon:"⚜",name:r.name,src:"Career rank"});
+  Object.entries(S.champions||{}).forEach(([tid,cid])=>{
+    const T=TOURNEYS.find(x=>x.id===tid), c=CHARACTERS.find(x=>x.id===cid);
+    if(T&&c) t.push({icon:"👑",name:"Kingmaker — "+T.name,src:"Champion: "+c.name});
+  });
+  allGuilds().forEach(g=>{ const lv=guildLevel(g.id);
+    if((S.guildFavs||[]).includes(g.id)&&lv>=3) t.push({icon:g.icon,name:g.name+" Officer (Lv "+lv+")",src:"Guild XP"});
+  });
+  if((S.viewedChars||[]).length>=100) t.push({icon:"📚",name:"Grand Archivist",src:"100 characters collected"});
+  return t;
+}
+function renderCareer(){
+  const el=document.getElementById("careerRoot"); if(!el) return;
+  ensureDaily();
+  const r=careerRank();
+  const pct=r.next? Math.round((r.runes-r.at)/(r.next[1]-r.at)*100) : 100;
+  const collected=(S.viewedChars||[]).filter(id=>CHARACTERS.some(c=>c.id===id));
+  const rc={}; collected.forEach(id=>{ const c=CHARACTERS.find(x=>x.id===id); const rr=rarityOf(c); rc[rr]=(rc[rr]||0)+1; });
+  const franchiseBars=FRANCHISES.filter(f=>f!=="All").map(f=>{
+    const all=CHARACTERS.filter(c=>c.franchise===f), got=all.filter(c=>collected.includes(c.id));
+    return {f, got:got.length, all:all.length, pct:Math.round(got.length/all.length*100)};
+  }).sort((a,b)=>b.pct-a.pct);
+  const dfAll=CHARACTERS.filter(c=>c.darkFantasy), dfGot=dfAll.filter(c=>collected.includes(c.id));
+  const erAll=CHARACTERS.filter(c=>c.franchise==="Elden Ring"||c.franchise==="Shadow of the Erdtree"), erGot=erAll.filter(c=>collected.includes(c.id));
+  el.innerHTML=`
+   <div class="panel" style="border-color:var(--gold);margin-bottom:16px">
+     <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+       <div class="logo-ring" style="width:56px;height:56px;font-size:24px">⚜</div>
+       <div style="flex:1;min-width:200px">
+         <b style="font-family:var(--font-display);font-size:20px;color:var(--gold2);letter-spacing:1px">${esc(r.name).toUpperCase()}</b>
+         <div style="font-size:12px;color:var(--txt-dim)">${r.runes.toLocaleString()} runes earned${r.next?` · next rank: ${r.next[0]} at ${r.next[1].toLocaleString()}`:" · maximum rank achieved"}</div>
+         <div class="prog-track" style="margin-top:6px"><div class="prog-fill" style="width:${pct}%"></div></div>
+       </div>
+       <div style="font-size:11px;color:var(--txt-dim);max-width:250px">Earn runes by collecting characters, fusing, voting, tracking builds, defeating bosses and completing daily challenges.</div>
+     </div>
+   </div>
+   <div class="two-col">
+     <div class="panel"><h3>📅 DAILY CHALLENGES — ${S.daily.date}</h3>
+       ${todaysChallenges().map(ch=>{
+         const done=S.daily.done.includes(ch.id), cur=Math.min(S.daily.counters[ch.k]||0,ch.need);
+         return `<div class="check-item ${done?'done':''}" style="margin-bottom:6px;cursor:default">
+           <div class="box">${done?'✔':''}</div><span>${esc(ch.label)} <small style="color:var(--txt-dim)">(${cur}/${ch.need}${done?" · +100 ⚜":""})</small></span></div>`;}).join("")}
+       <p style="font-size:11px;color:var(--txt-dim);margin-top:8px">Three challenges rotate daily. Each completion: +100 runes.</p>
+     </div>
+     <div class="panel"><h3>🏆 HALL OF FAME</h3>
+       ${(S.hallOfFame||[]).length? (S.hallOfFame||[]).map(h=>{
+         const T=TOURNEYS.find(x=>x.id===h.tid), c=CHARACTERS.find(x=>x.id===h.cid);
+         return T&&c?`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer" onclick="openChar('${c.id}')">
+           <span>👑</span><div><b>${esc(c.name)}</b><div style="color:var(--txt-dim);font-size:10px">${esc(T.name)} · crowned ${h.date}</div></div></div>`:"";}).join("")
+        : `<div class="empty" style="padding:16px">No champions crowned yet — complete a tournament bracket in the Arena.</div>`}
+       <h3 style="margin-top:14px">🎖 TITLES EARNED</h3>
+       ${earnedTitles().map(t=>`<div style="font-size:12px;padding:4px 0"><span style="margin-right:6px">${t.icon}</span><b>${esc(t.name)}</b> <small style="color:var(--txt-dim)">— ${esc(t.src)}</small></div>`).join("")}
+     </div>
+   </div>
+   <div class="panel" style="margin-top:16px"><h3>📖 CHARACTER DEX — ${collected.length} / ${CHARACTERS.length} COLLECTED (${Math.round(collected.length/CHARACTERS.length*100)}%)</h3>
+     <p style="font-size:11px;color:var(--txt-dim);margin-bottom:10px">Opening a character's profile collects them. Rarity determines the rune reward:
+       ${Object.entries(RARITY_META).map(([r,m])=>`<span class="pill" style="background:${m.col}22;color:${m.col};border:1px solid ${m.col}55;margin:0 3px">${r} +${m.runes} ⚜ (${rc[r]||0})</span>`).join("")}</p>
+     <div class="two-col" style="margin-bottom:12px">
+       <div class="bar-row"><div class="bl">🌑 Dark Fantasy Collection</div><div class="btrack"><div class="bfill" style="width:${Math.max(4,Math.round(dfGot.length/dfAll.length*100))}%;background:linear-gradient(90deg,#7f1d1d,#f87171)">${Math.round(dfGot.length/dfAll.length*100)}%</div></div></div>
+       <div class="bar-row"><div class="bl">🏰 Elden Ring Collection</div><div class="btrack"><div class="bfill" style="width:${Math.max(4,Math.round(erGot.length/erAll.length*100))}%;background:linear-gradient(90deg,var(--gold-dim),var(--gold2))">${Math.round(erGot.length/erAll.length*100)}%</div></div></div>
+     </div>
+     <div class="bar-chart" style="max-height:300px;overflow-y:auto">
+       ${franchiseBars.map(b=>`<div class="bar-row"><div class="bl" style="cursor:pointer" onclick="goCharsFiltered('${b.f.replace(/'/g,"\\'")}','All')">${esc(b.f)}</div>
+         <div class="btrack"><div class="bfill" style="width:${Math.max(4,b.pct)}%;background:linear-gradient(90deg,#8b5cf688,#8b5cf6)">${b.got}/${b.all}</div></div></div>`).join("")}
+     </div>
+   </div>`;
+}
+
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
   set(s){ try{ localStorage.setItem("arnexus", JSON.stringify(s)); }catch(e){} }
 };
-let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null}, store.get());
-S.alloc=S.alloc||{}; S.community=S.community||[]; S.guildFavs=S.guildFavs||[]; S.votes=S.votes||{};
+let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null, champions:{}, hallOfFame:[], duelVotes:{}, tracked:{}, customGuilds:[], guildXP:{}, daily:null}, store.get());
+S.alloc=S.alloc||{}; S.community=S.community||[]; S.guildFavs=S.guildFavs||[]; S.votes=S.votes||{}; S.champions=S.champions||{}; S.hallOfFame=S.hallOfFame||[]; S.duelVotes=S.duelVotes||{}; S.tracked=S.tracked||{}; S.customGuilds=S.customGuilds||[]; S.guildXP=S.guildXP||{};
+if(S.runes===undefined){ S.runes=(S.viewedChars||[]).length*15+(S.fusions||0)*15+(S.bosses||[]).length*20+(S.builds||[]).length*20+(S.unlocked||[]).length*50; }
 function save(){ store.set(S); checkAchievements(); }
 
 function esc(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -3354,7 +3675,7 @@ function go(view){
   window.scrollTo({top:0});
 }
 document.getElementById("mainNav").addEventListener("click", e=>{
-  if(e.target.dataset.view) go(e.target.dataset.view);
+  if(e.target.dataset.view){ go(e.target.dataset.view); if(e.target.dataset.view==="guilds") careerAction("guildvisit"); }
 });
 
 /* ============ ACHIEVEMENTS ENGINE ============ */
@@ -3377,6 +3698,7 @@ function renderHeader(){
   document.getElementById("hdBuilds").textContent=totalBuilds;
   document.getElementById("hdBosses").textContent=BOSSES.length;
   document.getElementById("hdAch").textContent=S.unlocked.length+"/"+ACHIEVEMENTS.length;
+  const hr=document.getElementById("hdRank"); if(hr) hr.textContent=careerRank().name;
 }
 function renderHome(){
   const stats=[
@@ -3404,8 +3726,10 @@ function renderHome(){
   const road=[["Phase 1 — Foundation","23 deep-dossier characters · full build system · databases · fusion lab","done"],
     ["Phase 2 — Franchise Expansion","Original 100-character goal passed — franchise rosters, ER & DLC casts, Build Sources hub","done"],
     ["Phase 2.5 — Dark Fantasy Pack","16 dark fantasy franchises (Vinland Saga, Frieren, Claymore, Castlevania...) · expanded goal 150–200 characters exceeded","done"],
-    ["Phase 3 — Year 2","Guilds · tournaments · seasonal events","next"],
+    ["Phase 3 — Year 2","Career Mode · Character Dex · daily challenges · guilds 2.0 · five tournament brackets · seasonal calendar","done"],
+    ["Phase Omega Push","Roster acceleration toward 1,000+ with two-tier dossiers","next"],
     ["Phase Omega","1,000+ characters · complete anime gaming universe",""]];
+
   document.getElementById("roadmap").innerHTML=road.map(r=>`
     <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px">
       <span style="color:${r[2]==='done'?'var(--green)':r[2]==='next'?'var(--gold)':'var(--txt-dim)'}">${r[2]==='done'?'✔':r[2]==='next'?'▶':'◇'}</span>
@@ -3438,7 +3762,7 @@ function renderChars(){
         <h4>${esc(c.name)}</h4>
         <div class="anime">${esc(c.anime)}</div>
         <span class="tag" style="background:${CAT_COLORS[c.category]}22;color:${CAT_COLORS[c.category]};border:1px solid ${CAT_COLORS[c.category]}55">${esc(c.category)}</span>
-        <span class="tag" style="background:rgba(212,175,55,.12);color:var(--gold2);border:1px solid var(--gold-dim)">${esc(c.archetype)}</span>${c.deep?'<span class="tag" style="background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.45)">★ Deep Dossier</span>':''}
+        <span class="tag" style="background:rgba(212,175,55,.12);color:var(--gold2);border:1px solid var(--gold-dim)">${esc(c.archetype)}</span>${c.deep?'<span class="tag" style="background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.45)">★ Deep Dossier</span>':''}${rarityTag(c)}
         <div class="char-meta">
           <span>Rating <b>${c.rating}</b></span>
           <span class="stars">${"★".repeat(c.difficulty)}${"☆".repeat(5-c.difficulty)}</span>
@@ -3540,7 +3864,7 @@ function buildBlock(b, cid, idx){
   return `
   <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
     <b style="font-family:var(--font-display);font-size:16px;color:var(--gold2)">${esc(b.name)}</b>
-    <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="pill gold">RL ${b.level} · ${esc(b.type)}</span>${cid!==undefined?`<button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px" onclick="toggleBuilderMode('${cid}',${idx})">${manual?"↺ Auto Projection":"🎮 2K Builder"}</button>`:""}</span>
+    <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="pill gold">RL ${b.level} · ${esc(b.type)}</span>${cid!==undefined?`<button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px" onclick="toggleBuilderMode('${cid}',${idx})">${manual?"↺ Auto Projection":"🎮 2K Builder"}</button><button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px;${(S.tracked||{})[trackKey(cid,idx)]?'border-color:var(--green);color:var(--green)':''}" onclick="toggleTrackBuild('${cid}',${idx})">${(S.tracked||{})[trackKey(cid,idx)]?"✔ Tracking":"📌 Track"}</button>`:""}</span>
   </div>
   ${levelChip(b)}
   ${statBars(b.stats,b.level,cid,idx)}
@@ -3561,7 +3885,14 @@ function buildBlock(b, cid, idx){
 }
 function openChar(id){
   const c=CHARACTERS.find(x=>x.id===id); if(!c) return;
-  if(!S.viewedChars.includes(id)){ S.viewedChars.push(id); save(); } else { checkAchievements(); }
+  if(!S.viewedChars.includes(id)){
+    S.viewedChars.push(id);
+    const rar=rarityOf(c);
+    awardRunes(RARITY_META[rar].runes, rar+" collected: "+c.name);
+    careerAction("collects");
+    if(/Colossal|Brawler|Str/.test(c.archetype)) careerAction("strview");
+    save();
+  } else { checkAchievements(); }
   const box=document.getElementById("modalBox");
   box.innerHTML=`
     <div class="modal-hd" style="background:linear-gradient(120deg,${c.banner[0]},${c.banner[1]})">
@@ -3652,6 +3983,8 @@ function fillFusionSelects(){
   document.getElementById("fuseA").innerHTML=opts;
   document.getElementById("fuseB").innerHTML=opts;
   document.getElementById("fuseB").selectedIndex=1;
+  const fc=document.getElementById("fuseC");
+  if(fc) fc.innerHTML=`<option value="none">— none (double fusion) —</option>`+opts;
 }
 function seededPick(arr, seed){ return arr[seed % arr.length]; }
 /* ============ FUSION LAB — LEVEL SCALING ENGINE ============ */
@@ -3714,48 +4047,58 @@ function compatBar(label,v){
 function runFusion(){
   const a=document.getElementById("fuseA").value, b=document.getElementById("fuseB").value;
   if(a===b){ toast("⚠ A character cannot fuse with themselves. Even Naruto needed Kurama."); return; }
-  window._lastFuse=[a,b];
-  S.fusions=(S.fusions||0)+1; save();
+  window._lastFuse=[a,b,(document.getElementById("fuseC")||{}).value||null].map(v=>v==="none"?null:v);
+  S.fusions=(S.fusions||0)+1;
+  careerAction("fusions"); awardRunes(15,null);
+  save();
   generateFusion(true);
 }
 function generateFusion(announce){
-  const [aid,bid]=window._lastFuse;
+  const [aid,bid,cid]=window._lastFuse;
   const a=CHARACTERS.find(c=>c.id===aid), b=CHARACTERS.find(c=>c.id===bid);
+  const c3=cid? CHARACTERS.find(c=>c.id===cid):null;
   if(!a||!b) return;
-  const rl=fuseRL(), tier=fuseTier(rl), seed=(a.id+b.id).split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
-  const bA=a.builds[0], bB=b.builds[0];
-  const dom=fuseDominant(a,b), prio=FUSE_PRIORITY[dom];
-  // priority-weighted stat allocation from the combined identity
+  const fusers=c3?[a,b,c3]:[a,b];
+  const rl=fuseRL(), tier=fuseTier(rl), seed=fusers.map(f=>f.id).join("").split("").reduce((n,ch)=>n+ch.charCodeAt(0),0);
+  const bA=a.builds[0], bB=b.builds[0], bC=c3?c3.builds[0]:null;
+  const dom=(()=>{ let best="STR",v=-1;
+    ["STR","DEX","INT","FTH","ARC"].forEach(k=>{ const m=Math.max(...fusers.map(f=>f.builds[0].stats[k])); if(m>=v){v=m;best=k;} });
+    return best; })();
+  const prio=FUSE_PRIORITY[dom];
   const weights={};
-  ["VIG","MND","END","STR","DEX","INT","FTH","ARC"].forEach(k=>weights[k]=Math.max(bA.stats[k],bB.stats[k]));
+  ["VIG","MND","END","STR","DEX","INT","FTH","ARC"].forEach(k=>weights[k]=Math.max(...fusers.map(f=>f.builds[0].stats[k])));
   prio.order.forEach((k,i)=>{ weights[k]*= [1.6,1.35,1.2,1.1][i]; });
   const stats=spreadStats(weights, rl);
   const cls= rl===1? "Wretch" : seededPick(FUSE_CLASS[dom],seed);
   // gear tiers
-  const weapAll=[...new Set([bA.weapons[0],bB.weapons[0],bA.weapons[1],bB.weapons[1]].filter(Boolean))];
+  const weapAll=[...new Set(fusers.flatMap(f=>[f.builds[0].weapons[0],f.builds[0].weapons[1]]).filter(Boolean))];
   const weapons=weapAll.slice(0,tier.weap);
-  const talAll=[...new Set([...bA.talismans,...bB.talismans])].filter(t=>t!=="—");
+  const talAll=[...new Set(fusers.flatMap(f=>f.builds[0].talismans))].filter(t=>t!=="—");
   const talis=talAll.slice(0,tier.tal), talAlt=talAll.slice(tier.tal,tier.tal+2);
-  const spellAll=[...new Set([...bA.spells,...bB.spells])].filter(x=>x!=="—");
+  const spellAll=[...new Set(fusers.flatMap(f=>f.builds[0].spells))].filter(x=>x!=="—");
   const spells=spellAll.slice(0,tier.spell);
-  const armor=[...new Set([bA.armor[0],bB.armor[0]])];
+  const armor=[...new Set(fusers.map(f=>f.builds[0].armor[0]))];
   const summon= rl<50? "None yet — spirit ashes join once the build matures (RL50+)"
     : (bA.summon!=="—"?bA.summon : bB.summon!=="—"?bB.summon : "Mimic Tear +10") + (tier.weap>=3? "  ·  Alt: Black Knife Tiche +10":"");
   const aows=weapons.map(w=>{ const hit=WEAPON_LIST.find(x=>w.includes(x.name)); const aow=weaponAow(w,hit); return aow&&aow.skill!=="—"? aow.skill.replace("Ash of War: ","") : null; }).filter(Boolean);
   const cons=FUSE_CONSUMABLES[dom];
-  const comp=compatScore(a,b,seed);
+  // pairwise compatibility, averaged for triple fusions
+  const pairs=c3?[[a,b],[a,c3],[b,c3]]:[[a,b]];
+  const comps=pairs.map(([x,y])=>compatScore(x,y,hashN(x.id+y.id)));
+  const comp={}; ["L","B","W","V","G","overall"].forEach(k=>comp[k]=Math.round(comps.reduce((n,cc)=>n+cc[k],0)/comps.length));
   const est=Math.round(120 + stats[dom]*7.5 + rl*1.35 + (seed%40));
-  const name=fuseName(a,b), title=seededPick(FUSION_TITLES,seed);
+  const name=c3? (fuseName(a,b).slice(0,Math.ceil(fuseName(a,b).length*0.66))+c3.name.split(" ")[0].slice(Math.floor(c3.name.split(" ")[0].length/2)).toLowerCase()) : fuseName(a,b);
+  const title=seededPick(FUSION_TITLES,seed);
   const lore=seededPick(FUSION_LORE,seed).replace(/{A}/g,a.name).replace(/{B}/g,b.name)
     .replace("{psA}",a.powerSystem.split("·")[0].trim()).replace("{psB}",b.powerSystem.split("·")[0].trim()).replace("{arch}",a.archetype);
   document.getElementById("fusionResult").innerHTML=`
     <div class="fusion-card">
       <h3>${esc(name.toUpperCase())}</h3>
-      <div class="ftitle">${esc(title)} — ${esc(a.name.split(" ")[0])} × ${esc(b.name.split(" ")[0])} · ${esc(prio.label)}</div>
+      <div class="ftitle">${esc(title)} — ${fusers.map(f=>esc(f.name.split(" ")[0])).join(" × ")} · ${c3?"TRIPLE FUSION · ":""}${esc(prio.label)}</div>
       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
         <span class="pill gold">RL ${rl} · ${esc(tier.name)}</span>
         <span class="pill weak">Class: ${esc(cls)}</span>
-        <span class="pill weak">Overall Compatibility ${comp.overall}%</span>
+        <span class="pill weak">Fusion Score: ${comp.overall}/100</span>
         <span class="pill resist">~${est} AR est.</span>
       </div>
       <div style="font-size:12px;color:#ddd6fe;text-align:center;margin-bottom:14px">📋 ${esc(tier.focus)}</div>
@@ -3769,7 +4112,7 @@ function generateFusion(announce){
         <div class="gear-box"><h6>☾ Spirit Ashes</h6><span>${esc(summon)}</span></div>
         <div class="gear-box"><h6>✨ Spells (${spells.length})</h6>${spells.length?spells.map(w=>`<span>${esc(w)}</span>`).join(""):`<span style="color:var(--txt-dim)">Pure martial fusion — no spells required</span>`}</div>
         <div class="gear-box"><h6>🧪 Consumables</h6>${cons.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
-        <div class="gear-box"><h6>📊 Compatibility Score</h6>
+        <div class="gear-box"><h6>📊 Fusion Analysis${c3?" (pairwise avg)":""} — ${comp.overall}/100</h6>
           ${compatBar("Lore",comp.L)}${compatBar("Build",comp.B)}${compatBar("Weapon",comp.W)}${compatBar("Visual",comp.V)}${compatBar("Gameplay",comp.G)}
         </div>
       </div>
@@ -3837,6 +4180,7 @@ const RANK_MODES=[
  {id:"popularity", label:"🔥 Popularity", score:c=>c.popularity, fmt:v=>v+""},
  {id:"pve", label:"⚔ Best PvE", score:c=>c.rating*0.7+(5-c.difficulty)*0.6, fmt:v=>v.toFixed(1)},
  {id:"pvp", label:"🗡 Best PvP", score:c=>c.builds.some(b=>b.type.includes("PvP"))?c.rating*0.8+c.difficulty*0.4:c.rating*0.5, fmt:v=>v.toFixed(1)},
+ {id:"lorepower", label:"⚡ Lore Power", score:c=>({saitama:10,goku:9.9,rimuru:9.8,ainz:9.7,madara:9.6,ryomensukuna:9.5,gojo:9.5,alucard:9.4,jinwoo:9.4,kaguyaotsutsuki:9.3,beerus:9.3,meruem:9.0,guts:8.6,reinhard:9.2,queenmarika:9.1,promisedconsortradahn:8.9}[c.id]||Math.min(9.0,c.rating*0.85+c.popularity*0.01)), fmt:v=>v.toFixed(1)},
  {id:"accuracy", label:"🎯 Anime Accuracy", score:c=>({guts:10,levi:9.8,rimuru:9.5,jinwoo:9.4,kenshin:9.3,saitama:9.2,itachi:9.0,gojo:9.0,madara:8.9,alucard:8.8}[c.id]||c.rating*0.9), fmt:v=>v.toFixed(1)},
  {id:"difficulty", label:"💀 Hardest to Master", score:c=>c.difficulty*2+c.rating*0.1, fmt:(v,c)=>"★".repeat(c.difficulty)}
 ];
@@ -3878,6 +4222,7 @@ function renderTracker(){
   const allBuilds=CHARACTERS.flatMap(c=>c.builds.map(b=>({c,b})));
   const reached=allBuilds.filter(x=>x.b.level<=ml).length;
   const upcoming=allBuilds.filter(x=>x.b.level>ml).sort((a,b)=>a.b.level-b.b.level)[0];
+  renderTrackedBuilds();
   document.getElementById("lvlNext").innerHTML=
     `<span class="pill gold">${reached} / ${allBuilds.length} build versions within your level</span> `+
     (ml>=713 ? `<span class="pill weak">HARD CAP — every attribute at 99. The Lands Between kneel.</span>`
@@ -3902,7 +4247,8 @@ function syncLevelUI(){
   const n=document.getElementById("lwNum"); if(n) n.value=ml;
 }
 function toggleBoss(id){
-  S.bosses.includes(id) ? S.bosses=S.bosses.filter(x=>x!==id) : S.bosses.push(id);
+  if(S.bosses.includes(id)){ S.bosses=S.bosses.filter(x=>x!==id); }
+  else { S.bosses.push(id); careerAction("bosses"); awardRunes(20,null); }
   save(); renderTracker();
 }
 function toggleBuild(id){
@@ -3911,7 +4257,7 @@ function toggleBuild(id){
 }
 function resetProgress(){
   if(!confirm("Reset ALL local progress — bosses, builds, fusions and achievements?")) return;
-  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null};
+  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null, champions:{}, hallOfFame:[], duelVotes:{}, tracked:{}, customGuilds:[], guildXP:{}, daily:null, runes:0};
   store.set(S); renderAll(); toast("Progress reset. A new Tarnished rises.");
 }
 
@@ -3965,8 +4311,10 @@ function renderAll(){
 renderAll();
 renderSourceTabs(); srcGo("anime");
 renderFusionPresets(); updateFuseRLLabel();
-renderGuilds(); renderArena();
-(function(){ const opts=GUILDS.map(g=>`<option value="${g.id}">${g.icon} ${esc(g.name)}</option>`).join("");
+renderGuilds(); renderArena(); renderCareer(); renderTrackedBuilds();
+(function(){ const fr=document.getElementById("cgFr");
+  if(fr) fr.innerHTML=FRANCHISES.filter(f=>f!=="All").map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join(""); })();
+(function(){ const opts=allGuilds().map(g=>`<option value="${g.id}">${g.icon} ${esc(g.name)}</option>`).join("");
   const a=document.getElementById("gcA"), b=document.getElementById("gcB");
   if(a&&b){ a.innerHTML=opts; b.innerHTML=opts; b.selectedIndex=1; renderGuildCompare(); } })();
 document.getElementById("lvlSlider").addEventListener("input",e=>setMyLevel(e.target.value));
