@@ -322,6 +322,8 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <button data-view="characters">Characters</button>
       <button data-view="builds">Build System</button>
       <button data-view="fusion">Fusion Lab</button>
+      <button data-view="guilds">🛡 Guilds</button>
+      <button data-view="arena">🏟 Arena</button>
       <button data-view="database">ER Database</button>
       <button data-view="rankings">Rankings</button>
       <button data-view="tracker">Tracker</button>
@@ -344,6 +346,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
         <button class="btn alt" onclick="go('fusion')">Enter the Fusion Lab</button>
       </div>
     </div>
+    <div id="eventBanner"></div>
     <div class="dash-grid" id="dashGrid"></div>
     <div class="home-cols">
       <div class="panel">
@@ -408,6 +411,33 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     <div style="text-align:center;margin-bottom:20px"><button class="btn alt" style="font-size:15px;padding:13px 34px" onclick="runFusion()">⚡ FUSE</button></div>
     <div style="max-width:860px;margin:0 auto 22px" id="fusionPresets"></div>
     <div class="fusion-result" id="fusionResult"></div>
+  </section>
+
+  <!-- GUILDS -->
+  <section class="view" id="view-guilds">
+    <div class="sec-title">GUILD SYSTEM</div>
+    <div class="sec-sub">Curated cross-franchise factions organized by playstyle, computed live from the roster. "Joining" favorites a guild locally — same pattern as the Tracker.</div>
+    <div class="char-grid" id="guildGrid"></div>
+    <div id="guildDetail"></div>
+    <div class="panel" style="margin-top:18px"><h3>⚖ GUILD VS GUILD</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0">
+        <select id="gcA" class="searchbar" style="margin:0;max-width:260px;cursor:pointer" onchange="renderGuildCompare()"></select>
+        <select id="gcB" class="searchbar" style="margin:0;max-width:260px;cursor:pointer" onchange="renderGuildCompare()"></select>
+      </div>
+      <div id="guildCompareOut" style="overflow-x:auto"></div>
+    </div>
+  </section>
+
+  <!-- ARENA -->
+  <section class="view" id="view-arena">
+    <div class="sec-title">THE ARENA — TOURNAMENTS & SEASONAL EVENTS</div>
+    <div class="sec-sub">Structured competitive brackets and time-boxed content drops. Community-vote format — honest about being an opinion mechanic.</div>
+    <div class="chips" id="arenaTabs">
+      <div class="chip active" data-at="t" onclick="arenaTab('t')">🏟 Tournaments</div>
+      <div class="chip" data-at="e" onclick="arenaTab('e')">📅 Seasonal Events</div>
+    </div>
+    <div id="arenaT"></div>
+    <div id="arenaE" style="display:none"></div>
   </section>
 
   <!-- DATABASE -->
@@ -525,6 +555,8 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
   Game data from community wikis (Fextralife / Fandom) — full weapon, talisman & armor indexes current to Shadow of the Erdtree · Meta references patch 1.16 · Built to grow, never finished.
 </footer>
 
+<noscript><div style="max-width:700px;margin:20px auto;padding:20px;border:1px solid #8a7325;border-radius:12px;color:#e8e4d8;font-family:sans-serif;text-align:center">
+Anime Ring Nexus is a client-rendered app — the counters and databases populate via JavaScript. Please enable JavaScript to view the 509-character roster, 1,529 builds and all Phase 3 systems.</div></noscript>
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal" id="modalBox"></div>
 </div>
@@ -1488,7 +1520,7 @@ const TALISMANS = [
 
 /* ============ ACHIEVEMENTS ============ */
 const ACHIEVEMENTS = [
-{id:"first_steps", icon:"🗺️", name:"Tarnished Otaku", desc:"Visit every section of the Nexus.", check:(s)=>["home","sources","characters","builds","fusion","database","rankings","tracker","achievements","analytics","archive"].every(v=>s.visited.includes(v))},
+{id:"first_steps", icon:"🗺️", name:"Tarnished Otaku", desc:"Visit every section of the Nexus.", check:(s)=>["home","sources","characters","builds","fusion","guilds","arena","database","rankings","tracker","achievements","analytics","archive"].every(v=>s.visited.includes(v))},
 {id:"anime_master", icon:"📖", name:"Anime Master", desc:"View 10 different character profiles.", check:(s)=>s.viewedChars.length>=10},
 {id:"scholar", icon:"🎓", name:"Lore Scholar", desc:"View 25 character profiles across the multiverse.", check:(s)=>s.viewedChars.length>=25},
 {id:"franchise_hopper", icon:"🌐", name:"Franchise Hopper", desc:"View characters from 8 different franchises.", check:(s)=>new Set(s.viewedChars.map(id=>{const c=CHARACTERS.find(x=>x.id===id);return c?c.franchise:null;}).filter(Boolean)).size>=8},
@@ -1500,6 +1532,9 @@ const ACHIEVEMENTS = [
 {id:"summoner", icon:"🌑", name:"Summoner King", desc:"View Sung Jin-Woo's full profile. Arise.", check:(s)=>s.viewedChars.includes("jinwoo")},
 {id:"one_punch", icon:"👊", name:"OK.", desc:"View Saitama's profile. That's it. That's the achievement.", check:(s)=>s.viewedChars.includes("saitama")},
 {id:"transformation", icon:"⚡", name:"Transformation Expert", desc:"View all three Dragon Ball & Naruto powerhouses (Goku, Vegeta, Naruto).", check:(s)=>["goku","vegeta","naruto"].every(c=>s.viewedChars.includes(c))},
+{id:"guild_founder", icon:"🛡", name:"Guild Founder", desc:"Join (favorite) your first guild.", check:(s)=>(s.guildFavs||[]).length>=1},
+{id:"covenant_collector", icon:"🏛", name:"Covenant Collector", desc:"Hold membership in 5 guilds at once.", check:(s)=>(s.guildFavs||[]).length>=5},
+{id:"kingmaker", icon:"👑", name:"Kingmaker", desc:"Crown a Season 1 champion by voting through the full bracket.", check:(s)=>!!s.champion_s1},
 {id:"hard_cap", icon:"⬆️", name:"Hard Cap", desc:"Reach level 713 — all eight attributes raised to their hard cap of 99.", check:(s)=>(s.myLevel||1)>=713},
 {id:"completionist", icon:"💯", name:"Completionist", desc:"Unlock every other achievement.", check:(s,unlocked)=>unlocked.filter(a=>a!=="completionist").length>=ACHIEVEMENTS.length-1}
 ];
@@ -3085,13 +3120,202 @@ function annotateTal(t){
   if(info.dlc) out+=miniPill("DLC");
   return out;
 }
+/* ============ PHASE 3 — GUILDS · TOURNAMENTS · EVENTS · INTERACTIVE MAP ============ */
+
+/* ---- 3.1 GUILDS: curated cross-franchise factions, computed live from the roster ---- */
+const GUILDS=[
+ {id:"shinobi-order",icon:"🥷",name:"The Shinobi Order",theme:"Stealth, assassination and killer instinct — strike unseen, leave nothing.",match:c=>/Assassin/.test(c.archetype)},
+ {id:"colossal-covenant",icon:"🗿",name:"Colossal Covenant",theme:"If it takes two hands and blots out the sun, it counts. Poise is a lifestyle.",match:c=>/Colossal/.test(c.archetype)},
+ {id:"glintstone-academy",icon:"🔮",name:"Glintstone Academy",theme:"Int casters, spellblades, gravity scholars and frost theorists.",match:c=>/Int Caster|Spellblade|Gravity|Frost/.test(c.archetype)},
+ {id:"golden-vow",icon:"✨",name:"Order of the Golden Vow",theme:"Faith casters, paladins and every flavor of sacred flame.",match:c=>/Faith|Fth|Sacred|Fire Faith/.test(c.archetype)},
+ {id:"lords-of-blood",icon:"🩸",name:"Lords of Blood",theme:"Hemorrhage devotees. Mohg would be proud; Mohg is a member.",match:c=>/Bleed/.test(c.archetype)},
+ {id:"dryleaf-temple",icon:"👊",name:"Dryleaf Temple",theme:"Martial artists and brawlers — the fist is the oldest ash of war.",match:c=>/Martial|Brawler|One-Shot|Stand/.test(c.archetype)},
+ {id:"roundtable-duelists",icon:"⚔️",name:"Roundtable Duelists",theme:"Katana masters, dual-wielders and polearm duelists. Honor optional, precision mandatory.",match:c=>/Katana|Iaijutsu|Dual-Wield|Backhand|Polearm|Storm Blade|Greatsword$/.test(c.archetype)},
+ {id:"shadow-legion",icon:"🌑",name:"The Shadow Legion",theme:"Summoners, commanders and death sorcerers — you never fight them, only their army.",match:c=>/Legion|Death Sorcery|Summons/.test(c.archetype)},
+ {id:"draconic-communion",icon:"🐉",name:"Draconic Communion",theme:"Those who ate the heart and took the roar.",match:c=>/Dragon/.test(c.archetype)},
+ {id:"dark-compact",icon:"🌒",name:"The Dark Fantasy Compact",theme:"The Phase 2.5 pact — every soul from the grimdark catalog.",match:c=>!!c.darkFantasy},
+ {id:"shadow-vanguard",icon:"🌫",name:"Land of Shadow Vanguard",theme:"Natives of the DLC realm — Messmer's war, Miquella's promise.",match:c=>c.franchise==="Shadow of the Erdtree"},
+ {id:"the-immovable",icon:"🛡",name:"The Immovable",theme:"Tanks, guardians and toxin specialists — outlast everything.",match:c=>/Guardian|Toxin/.test(c.archetype)}];
+function guildMembers(g){ return CHARACTERS.filter(g.match); }
+function guildStats(g){
+  const m=guildMembers(g);
+  const avg=m.length? m.reduce((n,c)=>n+c.rating,0)/m.length : 0;
+  const top=[...m].sort((a,b)=>b.rating-a.rating)[0];
+  return {count:m.length, avg:avg.toFixed(1), top};
+}
+let openGuild=null;
+function renderGuilds(){
+  const favs=S.guildFavs||[];
+  document.getElementById("guildGrid").innerHTML=GUILDS.map(g=>{
+    const st=guildStats(g), fav=favs.includes(g.id);
+    return `<div class="char-card" onclick="showGuild('${g.id}')">
+      <div class="char-banner" style="background:linear-gradient(120deg,var(--bg3),${fav?'rgba(212,175,55,.45)':'rgba(139,92,246,.35)'})">
+        <div class="char-emblem">${g.icon}</div>
+      </div>
+      <div class="char-body"><h4>${esc(g.name)} ${fav?'<span style="color:var(--gold2)">★</span>':''}</h4>
+      <p style="font-size:11px;color:var(--txt-dim);line-height:1.5;margin:4px 0 8px">${esc(g.theme)}</p>
+      <div class="char-meta"><span><b>${st.count}</b> members</span><span>Avg <b>${st.avg}</b></span><span>Top: <b>${st.top?esc(st.top.name.split(" ")[0]):"—"}</b></span></div>
+      </div></div>`;
+  }).join("");
+  renderGuildDetail(); renderGuildCompare();
+}
+function showGuild(id){ openGuild=id; renderGuildDetail(); const el=document.getElementById("guildDetail"); if(el&&el.scrollIntoView) el.scrollIntoView({behavior:"smooth",block:"nearest"}); }
+function toggleGuildFav(id){
+  S.guildFavs=S.guildFavs||[];
+  S.guildFavs.includes(id) ? S.guildFavs=S.guildFavs.filter(x=>x!==id) : S.guildFavs.push(id);
+  save(); renderGuilds();
+}
+function renderGuildDetail(){
+  const el=document.getElementById("guildDetail"); if(!el) return;
+  if(!openGuild){ el.innerHTML=""; return; }
+  const g=GUILDS.find(x=>x.id===openGuild), st=guildStats(g), m=guildMembers(g);
+  const fav=(S.guildFavs||[]).includes(g.id);
+  el.innerHTML=`<div class="panel" style="border-color:var(--gold-dim);margin-top:18px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h3>${g.icon} ${esc(g.name)}</h3>
+      <button class="btn ${fav?'':'alt'}" style="padding:7px 16px;font-size:12px" onclick="toggleGuildFav('${g.id}')">${fav?'★ Favorited — leave guild':'☆ Join (favorite locally)'}</button>
+    </div>
+    <p style="font-size:12px;color:var(--txt-dim);margin:6px 0 12px">${esc(g.theme)} · ${st.count} members · avg rating ${st.avg} · strongest: ${st.top?esc(st.top.name):"—"} (${st.top?st.top.rating:"—"})</p>
+    <div style="line-height:2.2">${m.sort((a,b)=>b.rating-a.rating).map(c=>`<span class="pill gold" style="cursor:pointer;margin:2px 3px" onclick="openChar('${c.id}')">${esc(c.name)} · ${c.rating}</span>`).join("")}</div>
+  </div>`;
+}
+function renderGuildCompare(){
+  const el=document.getElementById("guildCompareOut"); if(!el) return;
+  const a=GUILDS.find(g=>g.id===document.getElementById("gcA").value);
+  const b=GUILDS.find(g=>g.id===document.getElementById("gcB").value);
+  if(!a||!b) return;
+  const sa=guildStats(a), sb=guildStats(b);
+  const row=(l,va,vb,hi)=>`<tr><td style="color:var(--txt-dim)">${l}</td><td style="${+va>+vb?'color:var(--gold2);font-weight:700':''}">${va}</td><td style="${+vb>+va?'color:var(--gold2);font-weight:700':''}">${vb}</td></tr>`;
+  el.innerHTML=`<table><thead><tr><th></th><th>${a.icon} ${esc(a.name)}</th><th>${b.icon} ${esc(b.name)}</th></tr></thead><tbody>
+   ${row("Members",sa.count,sb.count)}${row("Avg build rating",sa.avg,sb.avg)}
+   <tr><td style="color:var(--txt-dim)">Champion</td><td>${sa.top?esc(sa.top.name):"—"}</td><td>${sb.top?esc(sb.top.name):"—"}</td></tr>
+   </tbody></table>
+   <p style="font-size:11px;color:var(--txt-dim);margin-top:8px">Guild-vs-guild comparison feeds Tournament seeding — Season 2 is planned as a guild-restricted bracket.</p>`;
+}
+
+/* ---- 3.2 TOURNAMENTS: Season 1 — community-vote single-elim, RL150 cap ---- */
+const SEASON1={id:"s1", name:"Clash of Titans", format:"Single elimination · 16 champions · RL150 cap", season:1};
+function s1Participants(){ return [...CHARACTERS].sort((a,b)=>b.rating-a.rating || b.popularity-a.popularity).slice(0,16); }
+const S1_PAIRS=[[0,15],[7,8],[3,12],[4,11],[1,14],[6,9],[2,13],[5,10]];
+function s1Bracket(){
+  const P=s1Participants();
+  const rounds=[];
+  rounds.push(S1_PAIRS.map((pr,i)=>({key:"s1_r0_m"+i, a:P[pr[0]].id, b:P[pr[1]].id})));
+  for(let r=1;r<4;r++){
+    const prev=rounds[r-1], cur=[];
+    for(let i=0;i<prev.length;i+=2){
+      cur.push({key:"s1_r"+r+"_m"+(i/2), a:(S.votes||{})[prev[i].key]||null, b:(S.votes||{})[prev[i+1].key]||null});
+    }
+    rounds.push(cur);
+  }
+  return rounds;
+}
+function s1Vote(key,cid){
+  if(!cid) return;
+  S.votes=S.votes||{};
+  // clear downstream votes if changing a pick
+  const r=+key.split("_")[1].slice(1);
+  Object.keys(S.votes).forEach(k=>{ const kr=+k.split("_")[1].slice(1); if(kr>r) delete S.votes[k]; });
+  if(S.votes[key]===cid){ delete S.votes[key]; S.champion_s1=null; }
+  else S.votes[key]=cid;
+  const final=s1Bracket()[3][0];
+  S.champion_s1=(S.votes||{})[final.key]||null;
+  save(); renderArena();
+}
+function fighterBtn(key,cid){
+  if(!cid) return `<div style="padding:7px 10px;border:1px dashed var(--line);border-radius:8px;color:var(--txt-dim);font-size:11px;text-align:center">TBD</div>`;
+  const c=CHARACTERS.find(x=>x.id===cid);
+  const picked=(S.votes||{})[key]===cid;
+  return `<div onclick="s1Vote('${key}','${cid}')" style="display:flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid ${picked?'var(--gold)':'var(--line)'};border-radius:8px;cursor:pointer;background:${picked?'rgba(212,175,55,.12)':'var(--bg3)'};transition:.15s">
+    <div class="char-emblem" style="position:static;width:24px;height:24px;font-size:11px;background:linear-gradient(135deg,${c.banner[0]},${c.banner[1]})">${esc(c.name[0])}</div>
+    <span style="font-size:11px;font-weight:600;${picked?'color:var(--gold2)':''}">${esc(c.name.split(" ")[0])}</span>
+    <span style="margin-left:auto;font-size:10px;color:var(--txt-dim)">${c.rating}</span></div>`;
+}
+function renderTournament(){
+  const rounds=s1Bracket();
+  const names=["Round of 16","Quarterfinals","Semifinals","Grand Final"];
+  const champ=S.champion_s1? CHARACTERS.find(c=>c.id===S.champion_s1):null;
+  document.getElementById("arenaT").innerHTML=`
+   <div class="panel" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h3>🏟 SEASON 1 — ${esc(SEASON1.name).toUpperCase()}</h3>
+      <button class="btn" style="padding:6px 14px;font-size:11px;border-color:var(--red);color:#fca5a5" onclick="if(confirm('Reset your Season 1 bracket?')){S.votes={};S.champion_s1=null;save();renderArena();}">Reset Bracket</button>
+    </div>
+    <p style="font-size:12px;color:var(--txt-dim);margin-top:4px">${esc(SEASON1.format)} · Top 16 by Nexus rating. <b style="color:#a5f3fc">Community-vote bracket:</b> click a fighter to advance them — this is an opinion mechanic, your picks, saved locally. No simulated outcomes are presented as fact.</p>
+   </div>
+   ${champ?`<div class="fusion-card" style="margin-bottom:14px;text-align:center"><h3>👑 YOUR SEASON 1 CHAMPION</h3>
+     <div class="ftitle">${esc(champ.name)} — ${esc(champ.franchise)} · rating ${champ.rating}</div>
+     <button class="btn" onclick="openChar('${champ.id}')">Champion's Dossier →</button></div>`:""}
+   <div style="display:flex;gap:14px;overflow-x:auto;padding-bottom:10px">
+    ${rounds.map((matches,r)=>`<div style="min-width:190px;flex-shrink:0">
+      <h3 style="font-family:var(--font-display);font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:10px;text-align:center">${names[r]}</h3>
+      <div style="display:flex;flex-direction:column;gap:${8*Math.pow(2,r)}px;justify-content:space-around;height:100%">
+      ${matches.map(m=>`<div style="display:flex;flex-direction:column;gap:4px">${fighterBtn(m.key,m.a)}${fighterBtn(m.key,m.b)}</div>`).join("")}
+      </div></div>`).join("")}
+   </div>`;
+}
+
+/* ---- 3.3 SEASONAL EVENTS ---- */
+const EVENTS=[
+ {id:"launch-festival", title:"Nexus Launch Festival", start:"2026-06-01", end:"2026-06-30", type:"character-drop",
+  badge:"🎉 Founding Tarnished", desc:"The founding celebration — the first 400+ characters, the Build Sources hub and the complete equipment databases went live."},
+ {id:"dark-invasion", title:"Dark Fantasy Invasion", start:"2026-07-01", end:"2026-07-31", type:"character-drop",
+  badge:"🌑 Shadow Realm Survivor", desc:"Phase 2.5 window: 16 dark fantasy franchises storm the Nexus — Vinland Saga, Frieren, Claymore, Castlevania and more. View any 10 dark fantasy profiles during the window to earn the badge."},
+ {id:"clash-s1", title:"Clash of Titans — Season 1", start:"2026-08-01", end:"2026-08-31", type:"tournament",
+  badge:"🏟 Season 1 Kingmaker", desc:"The first community-vote bracket: 16 champions, single elimination, RL150 cap. Voting opens with the season — the bracket is live now for early picks."},
+ {id:"fusion-contest", title:"Grand Fusion Contest", start:"2026-09-01", end:"2026-09-30", type:"fusion-contest",
+  badge:"⚗️ Fusion Laureate", desc:"Community fusion showcase — the most-loved combos get promoted into the Fusion Lab's permanent preset list."}];
+function eventStatus(e){
+  const now=new Date(), s=new Date(e.start+"T00:00:00"), en=new Date(e.end+"T23:59:59");
+  if(now<s) return {st:"upcoming", days:Math.ceil((s-now)/86400000)};
+  if(now>en) return {st:"expired", days:0};
+  return {st:"active", days:Math.ceil((en-now)/86400000)};
+}
+function renderEvents(){
+  const el=document.getElementById("arenaE"); if(!el) return;
+  el.innerHTML=EVENTS.map(e=>{
+    const st=eventStatus(e);
+    const pill= st.st==="active"?`<span class="pill weak">● LIVE — ${st.days} day${st.days!==1?"s":""} left</span>`
+      : st.st==="upcoming"?`<span class="pill gold">Starts in ${st.days} day${st.days!==1?"s":""}</span>`
+      : `<span class="pill resist">Concluded — archived</span>`;
+    return `<div class="panel" style="margin-bottom:12px;${st.st==='active'?'border-color:var(--green)':''};${st.st==='expired'?'opacity:.65':''}">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+        <h3 style="font-size:15px">${esc(e.title)}</h3>${pill}</div>
+      <p style="font-size:12px;color:var(--txt-dim);margin:6px 0">${esc(e.desc)}</p>
+      <div style="font-size:11px;color:var(--txt-dim)">${e.start} → ${e.end} · type: <b>${e.type}</b> · reward: <b style="color:var(--gold2)">${esc(e.badge)}</b></div>
+      ${e.type==="tournament"?`<button class="btn" style="margin-top:10px;padding:6px 14px;font-size:11px" onclick="arenaTab('t')">Open the Bracket →</button>`:""}
+      ${e.id==="dark-invasion"&&st.st==="active"?`<button class="btn" style="margin-top:10px;padding:6px 14px;font-size:11px" onclick="goCharsFiltered('Vinland Saga','All')">Browse the Invasion Roster →</button>`:""}
+    </div>`;
+  }).join("");
+}
+function renderEventBanner(){
+  const el=document.getElementById("eventBanner"); if(!el) return;
+  const active=EVENTS.map(e=>({e,s:eventStatus(e)})).find(x=>x.s.st==="active");
+  const next=EVENTS.map(e=>({e,s:eventStatus(e)})).find(x=>x.s.st==="upcoming");
+  const pick=active||next;
+  if(!pick){ el.innerHTML=""; return; }
+  el.innerHTML=`<div class="panel" style="margin-bottom:24px;border-color:${active?'var(--green)':'var(--gold-dim)'};display:flex;align-items:center;gap:14px;flex-wrap:wrap;cursor:pointer" onclick="go('arena');arenaTab('e')">
+    <span style="font-size:26px">${active?"🌑":"🏟"}</span>
+    <div style="flex:1;min-width:200px"><b style="font-family:var(--font-display);letter-spacing:1px">${active?"LIVE EVENT":"NEXT EVENT"}: ${esc(pick.e.title)}</b>
+    <div style="font-size:12px;color:var(--txt-dim)">${active?pick.s.days+" days remaining":"begins in "+pick.s.days+" days"} · ${esc(pick.e.badge)}</div></div>
+    <span class="pill ${active?'weak':'gold'}">${active?'● ACTIVE':'UPCOMING'}</span></div>`;
+}
+function arenaTab(t){
+  document.getElementById("arenaT").style.display=t==="t"?"block":"none";
+  document.getElementById("arenaE").style.display=t==="e"?"block":"none";
+  document.querySelectorAll("#arenaTabs .chip").forEach(c=>c.classList.toggle("active",c.dataset.at===t));
+}
+function renderArena(){ renderTournament(); renderEvents(); renderEventBanner(); }
+
+
+
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
   set(s){ try{ localStorage.setItem("arnexus", JSON.stringify(s)); }catch(e){} }
 };
-let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[]}, store.get());
-S.alloc=S.alloc||{}; S.community=S.community||[];
+let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null}, store.get());
+S.alloc=S.alloc||{}; S.community=S.community||[]; S.guildFavs=S.guildFavs||[]; S.votes=S.votes||{};
 function save(){ store.set(S); checkAchievements(); }
 
 function esc(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -3137,7 +3361,7 @@ function renderHeader(){
 function renderHome(){
   const stats=[
     {n:CHARACTERS.length,l:"Characters"},{n:totalBuilds,l:"Build Versions"},{n:BOSSES.length,l:"Bosses Documented"},
-    {n:WEAPON_TOTAL,l:"Weapons Indexed"},{n:TALIS_TOTAL,l:"Talismans"},{n:ARMOR_TOTAL,l:"Armor Sets"},{n:11,l:"Build Sources"},{n:Object.keys(FRANCHISE_COLORS).length+"","l":"Franchises"},{n:(CHARACTERS.length*(CHARACTERS.length-1)/2).toLocaleString(),l:"Fusion Combinations"}
+    {n:WEAPON_TOTAL,l:"Weapons Indexed"},{n:TALIS_TOTAL,l:"Talismans"},{n:ARMOR_TOTAL,l:"Armor Sets"},{n:11,l:"Build Sources"},{n:GUILDS.length,l:"Guilds"},{n:Object.keys(FRANCHISE_COLORS).length+"","l":"Franchises"},{n:(CHARACTERS.length*(CHARACTERS.length-1)/2).toLocaleString(),l:"Fusion Combinations"}
   ];
   document.getElementById("dashGrid").innerHTML = stats.map(s=>
     `<div class="stat-card"><div class="num">${s.n}</div><div class="lbl">${s.l}</div></div>`).join("");
@@ -3160,7 +3384,7 @@ function renderHome(){
   const road=[["Phase 1 — Foundation","23 deep-dossier characters · full build system · databases · fusion lab","done"],
     ["Phase 2 — Franchise Expansion","Original 100-character goal passed — franchise rosters, ER & DLC casts, Build Sources hub","done"],
     ["Phase 2.5 — Dark Fantasy Pack","16 dark fantasy franchises (Vinland Saga, Frieren, Claymore, Castlevania...) · expanded goal 150–200 characters exceeded","done"],
-    ["Phase 3 — Year 2","Guilds · tournaments · seasonal events · interactive map","next"],
+    ["Phase 3 — Year 2","Guilds · tournaments · seasonal events","next"],
     ["Phase Omega","1,000+ characters · complete anime gaming universe",""]];
   document.getElementById("roadmap").innerHTML=road.map(r=>`
     <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px">
@@ -3658,7 +3882,7 @@ function toggleBuild(id){
 }
 function resetProgress(){
   if(!confirm("Reset ALL local progress — bosses, builds, fusions and achievements?")) return;
-  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[]};
+  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null};
   store.set(S); renderAll(); toast("Progress reset. A new Tarnished rises.");
 }
 
@@ -3692,7 +3916,9 @@ function renderAnalytics(){
 
 /* ============ ARCHIVE ============ */
 function renderArchive(){
-  document.getElementById("archiveList").innerHTML=ARCHIVE.map(a=>`
+  const expired=EVENTS.filter(e=>eventStatus(e).st==="expired");
+  document.getElementById("archiveList").innerHTML=(expired.length?`<div class="panel" style="margin-bottom:18px"><h3>📅 CONCLUDED SEASONAL EVENTS</h3>
+    ${expired.map(e=>`<div style="padding:8px 0;border-bottom:1px solid var(--line);font-size:13px"><b>${esc(e.title)}</b> <span class="pill resist">ended ${e.end}</span><div style="font-size:11px;color:var(--txt-dim);margin-top:3px">${esc(e.desc)} · badge: ${esc(e.badge)}</div></div>`).join("")}</div>`:"")+ARCHIVE.map(a=>`
     <div class="panel" style="margin-bottom:18px">
       <h3>${esc(a.build)}</h3>
       <div class="ver-line">${a.entries.map(e=>`
@@ -3710,6 +3936,10 @@ function renderAll(){
 renderAll();
 renderSourceTabs(); srcGo("anime");
 renderFusionPresets(); updateFuseRLLabel();
+renderGuilds(); renderArena();
+(function(){ const opts=GUILDS.map(g=>`<option value="${g.id}">${g.icon} ${esc(g.name)}</option>`).join("");
+  const a=document.getElementById("gcA"), b=document.getElementById("gcB");
+  if(a&&b){ a.innerHTML=opts; b.innerHTML=opts; b.selectedIndex=1; renderGuildCompare(); } })();
 document.getElementById("lvlSlider").addEventListener("input",e=>setMyLevel(e.target.value));
 document.getElementById("lvlNum").addEventListener("change",e=>setMyLevel(e.target.value));
 (function initLevelWidget(){
