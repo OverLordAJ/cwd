@@ -348,6 +348,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
         <button class="btn alt" onclick="go('fusion')">Enter the Fusion Lab</button>
       </div>
     </div>
+    <div id="omegaHub"></div>
     <div id="eventBanner"></div>
     <div class="dash-grid" id="dashGrid"></div>
     <div class="home-cols">
@@ -381,6 +382,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     <div class="sec-title">CHARACTER ENCYCLOPEDIA</div>
     <div class="sec-sub">Every legend, properly categorized — biography, power system, combat analysis and full Elden Ring build conversion.</div>
     <input class="searchbar" id="charSearch" placeholder="Search characters, anime, power systems...">
+    <div class="chips" id="charUniverses" style="margin-bottom:10px"></div>
     <div class="chips" id="charFranchises" style="margin-bottom:10px"></div>
     <div class="chips" id="charFilters"></div>
     <div class="char-grid" id="charGrid"></div>
@@ -470,6 +472,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     <div class="sec-title">ANIME BUILD CAREER MODE</div>
     <div class="sec-sub">Start as a Tarnished. Collect characters, complete daily challenges, earn runes, found guilds, crown champions — and climb to Elden Lord. Everything you do across the Nexus feeds your career.</div>
     <div id="careerRoot"></div>
+    <div id="recEngine"></div>
   </section>
 
   <!-- DATABASE -->
@@ -2566,6 +2569,341 @@ const DARK_TIERS=[
  ["A",["Dorohedoro","Drifters","Re:Zero","Mushoku Tensei","Made in Abyss"]],
  ["B",["DanMachi","Shield Hero","Kingdom","Basilisk","Vampire Hunter D"]]];
 
+/* ============ PHASE OMEGA PUSH — MULTIVERSE ROSTER (Gaming · Comics · Mythology · Mecha) ============ */
+Object.assign(FRANCHISE_COLORS,{
+ "Dark Souls":["#57534e","#1c1917"],"Dark Souls III":["#44403c","#7f1d1d"],"Bloodborne":["#450a0a","#1c1917"],"Sekiro":["#b45309","#1c1917"],
+ "The Witcher":["#71717a","#b91c1c"],"Elder Scrolls":["#475569","#a16207"],"Diablo":["#7f1d1d","#450a0a"],"Final Fantasy":["#38bdf8","#1e293b"],
+ "Devil May Cry":["#b91c1c","#27272a"],"God of War":["#9a3412","#dc2626"],"NieR":["#d6d3d1","#44403c"],"Monster Hunter":["#65a30d","#78350f"],
+ "Fire Emblem":["#2563eb","#dc2626"],"Warcraft":["#1d4ed8","#b45309"],"StarCraft":["#0ea5e9","#4c1d95"],
+ "Marvel":["#dc2626","#facc15"],"DC":["#1e40af","#dc2626"],
+ "Greek Mythology":["#f5f5f4","#0369a1"],"Norse Mythology":["#334155","#7dd3fc"],"Egyptian Mythology":["#ca8a04","#1c1917"],
+ "Celtic Mythology":["#15803d","#78350f"],"Japanese Mythology":["#dc2626","#fef3c7"],
+ "Gundam":["#f8fafc","#dc2626"],"Code Geass":["#4c1d95","#a21caf"],"Evangelion":["#7c3aed","#f97316"],
+ "Vagabond":["#57534e","#292524"],"Devilman":["#b91c1c","#111827"]});
+const ROSTER5={
+"Dark Souls":[
+["The Chosen Undead","Main Protagonist","paladin","Undead Curse · Estus","The hollowing bearer of the Darksign who linked the First Flame — or refused.","Estus Endurance · Bonfire Rest · Kindling"],
+["Solaire of Astora","Secondary Protagonist","paladin","Sunlight Miracles","Praise the sun — the jolly cooperator whose grossly incandescent faith outlives every ending.","Sunlight Spear · Praise the Sun · Jolly Cooperation"],
+["Artorias","Legendary","greatsword","Abysswalker Covenant","The wolf knight who walked the Abyss and was walked over by it — his legend lied kindly.","Abyss Greatsword Arc · Wolf Somersault · Corrupted Onslaught","Banished Knight's Greatsword — the Abysswalker's arcing blade"],
+["Ornstein","Legendary","spear","Dragonslayer Lightning","The first knight of Gwyn — a lion-helmed lightning lance that hunted dragons for sport.","Lightning Charge · Leaping Skewer · Cross Spear Arts","Treespear (Lightning) — the Dragonslayer's cross spear"],
+["Executioner Smough","Villain","greatsword","Executioner's Bulk","The last knight standing in Anor Londo — ground bone into his feed and giggled.","Hammer Crush · Butt Slam · Golden Bulk","Great Stars — the executioner's gold hammer"],
+["Gwyn, Lord of Cinder","Legendary","pyromancer","First Flame Sovereignty","The Lord of Sunlight who fed himself to the flame — history's saddest boss theme.","Sunlight Blade (burned dark) · Firstborn's Grief · Cinder Grab"],
+["Havel the Rock","Legendary","tank","Immovable Faith","The bishop in living stone — a dragon tooth and defenses that insult arithmetic.","Dragon Tooth Crush · Stone Skin · Havel's Ring Doctrine"],
+["Dark Sun Gwyndolin","Anti-Hero","sorcerer","Moonlight Illusions","Gwyn's last son — moonlight sorcery sustaining an illusion of a sunlit age.","Moonlight Volley · Illusory Anor Londo · Darkmoon Sentinel"],
+["Crossbreed Priscilla","Anti-Hero","frost","Lifehunt","The gentle crossbreed of the Painted World — her scythe hunts life itself. Leave her be.","Lifehunt Scythe · Invisibility · Painted Sanctuary","Halo Scythe — the Lifehunt's crescent"],
+["Chaos Witch Quelaag","Villain","pyromancer","Chaos Flame","The spider-fused witch of Izalith — chaos fire spent defending a dying sister.","Chaos Firesword · Lava Bloom · Spider Lunge","Magma Blade — the chaos firesword"],
+["Gravelord Nito","Villain","deathmage","First of the Dead","Death's first lord — a throne of skeletons and a blade of miasma.","Gravelord Sword Dance · Miasma Burst · Deathly Legion"],
+["Seath the Scaleless","Villain","sorcerer","Crystal Immortality","The traitor dragon — scaleless, jealous, and the father of all sorcery's madness.","Crystal Breath · Curse Ray · Primordial Research"],
+["Manus, Father of the Abyss","Villain","madness","Primeval Humanity","Humanity gone wrong at the bottom of time — a pendant-driven catastrophe.","Dark Pursuers · Abyss Slam · Catalyst Fury"],
+["Black Dragon Kalameet","Villain","dragoon","Calamity Gaze","The last true black dragon — his eye marks victims for calamity.","Mark of Calamity · Black Flame Strafe · Tail Sweep"],
+["Great Grey Wolf Sif","Legendary","greatsword","Loyal Guardianship","Artorias' companion — a great wolf wielding his master's sword over his master's grave.","Greatsword Carry · Leaping Slash · Limping Resolve"],
+["Oscar of Astora","Secondary Protagonist","paladin","Undead Mission","The elite knight who frees you at the asylum — every journey starts with his kindness.","Estus Bequest · Crestfallen Duty · Asylum Key"]],
+"Dark Souls III":[
+["The Ashen One","Main Protagonist","greatsword","Unkindled Purpose","Unkindled ash risen to drag five Lords of Cinder back to their thrones.","Ember Surge · Bonfire Ritual · Lord-Hunting"],
+["Soul of Cinder","Legendary","spellblade","Amalgam of All Linkers","Every soul that ever linked the flame, wearing one suit of armor — including yours.","Stance Cycling · Firelink Greatsword · Gwyn's Phase"],
+["The Nameless King","Legendary","lightning","Forsaken Firstborn","Gwyn's erased heir — war god of dragons, riding the storm he tamed.","Dragonslayer Swordspear · Storm King Dive · Lightning Storm","Guardian's Swordspear (Lightning) — the storm king's glaive"],
+["Pontiff Sulyvahn","Villain","twinblade","Profaned Tyranny","The tyrant of Irithyll — two blades, one of profaned fire, one of moonlight.","Profaned Greatsword · Moonlight Clone · Pontiff's Eye Rings"],
+["Aldrich, Devourer of Gods","Villain","deathmage","Deep Consumption","The saint who ate men, then gods — a sludge dreaming of the Deep Sea.","Lifehunt Arrow Rain · Deep Soul Mass · Devoured Gwyndolin"],
+["Yhorm the Giant","Anti-Hero","greatsword","Giant Lordship","The giant who ruled the Profaned Capital and left one machete for his own killer.","Machete Cleave · Profaned Flame · Storm Ruler Weakness","Serpent-Hunter — the giant-felling machete"],
+["Sister Friede","Villain","frost","Blackflame Painting","The Painted World's usurper nun — a frost scythe and three health bars of deceit.","Frost Scythe · Invisible Stalk · Blackflame Friede","Obsidian Lamina — Friede's great scythe"],
+["Slave Knight Gael","Legendary","bleed","Dark Soul Pilgrimage","The slave knight who crossed the world's end for one drop of the Dark Soul — for the painting girl.","Executioner Cleave · Way of White Corona · Blood of the Dark Soul","Greatsword (Blood) — the executioner's slab"],
+["The Abyss Watchers","Legendary","twinblade","Undead Legion Wolfblood","Farron's legion — one soul in many bodies, forever cutting the Abyss out of each other.","Wolf Sword Stance · Legion Frenzy · Wolfblood Ignition"],
+["Lorian and Lothric","Villain","pyromancer","Twin Princes Bond","The princes who refused to link the flame — one body's curse, two brothers' spite.","Holy Flame Teleport · Lothric's Resurrection · Twin Princes' Greatsword"],
+["Dancer of the Boreal Valley","Villain","twinblade","Boreal Grace","Pontiff's exiled dancer — a swaying, ash-veiled duel that moves like grief.","Twin Blade Waltz · Grace Sweep · Boreal Ash"],
+["Champion Gundyr","Legendary","spear","Belated Champion","The champion who arrived too late to a linked flame — judged forever at the gate.","Halberd Charge · Shoulder Rush · Kick Punish"]],
+"Bloodborne":[
+["The Good Hunter","Main Protagonist","bleed","Hunter's Dream Contract","Paleblood seeker turned nightmare surgeon — the hunt ends at dawn, or never.","Trick Weapon Shift · Rally Recovery · Visceral Attack","Bloodhound's Fang — trick-weapon cadence"],
+["Gehrman","Legendary","bleed","First Hunter","The first hunter, dreaming in a wheelchair — his mercy is a scythe at dawn.","Burial Blade Arc · Dream Mercy · First Hunter's Speed","Grave Scythe (Blood) — the Burial Blade"],
+["Lady Maria","Legendary","katana","Astral Clocktower Vigil","Cainhurst's hunter of hunters — blood and fire drawn along the Rakuyo's edge.","Rakuyo Flurry · Blood Flame · Clocktower Duel","Nagakiba (Blood) — the Rakuyo's paired grace"],
+["Ludwig the Holy Blade","Legendary","greatsword","Holy Moonlight","The first church hunter — a horse-shaped nightmare who remembers, at the end, being a knight.","Holy Moonlight Arc · Nightmare Charge · Guidance","Sacred Relic Sword — the Holy Moonlight wave"],
+["Father Gascoigne","Anti-Hero","bleed","Beast Blood","The hunter who forgot the tune — half beast before the fight even starts.","Hunter Axe Cleave · Beast Transformation · Tiny Music Box Weakness","Butchering Knife — the Hunter's Axe extended"],
+["Eileen the Crow","Anti-Hero","assassin","Hunter of Hunters","The crow-feathered blade that hunts hunters drunk on blood.","Blades of Mercy Split · Crow Feint · Hunter's Duty"],
+["Djura","Anti-Hero","archer","Powder Keg Retirement","The retired hunter guarding beasts he refuses to call monsters — from a gatling tower.","Gatling Barrage · Tower Watch · Beast Sympathy"],
+["Alfred","Secondary Protagonist","paladin","Executioner Zeal","Logarius' cheerful zealot — helpful, devout, and catastrophically thorough with wheels.","Wheel Crush · Radiance Zeal · Vileblood Purge","Ghiza's Wheel — the executioner's wheel"],
+["Micolash","Villain","madness","Nightmare Host","The scholar who ran into the nightmare and never stopped running — or talking.","A Call Beyond · Nightmare Maze · Kos, or some say Kosm"],
+["Martyr Logarius","Legendary","deathmage","Crown of Illusions","The martyr on the throne — holding back Cainhurst's curse with sceptre and sacrifice.","Sword Rain · Sceptre Curse · Crown of Illusions"],
+["Laurence, the First Vicar","Villain","pyromancer","Cleric Beast Flame","The vicar who founded the Healing Church and became its burning proof of failure.","Molten Beast Flame · Lava Trail · Cleric Transformation"],
+["Orphan of Kos","Villain","bleed","Nightmare Orphan","The orphan wailing on the shore — grief given a placenta cleaver and lightning.","Placenta Cleave · Lightning Tantrum · Shoreline Frenzy"],
+["The Plain Doll","Secondary Protagonist","cleric","Dream Tending","The doll who tends the dream — channeling blood echoes into strength, gently.","Echo Channeling · Gentle Care · Dream Constancy"]],
+"Sekiro":[
+["Wolf","Main Protagonist","katana","Shinobi Prosthetic · Resurrection","The one-armed wolf — a shinobi's blade, a prosthetic arsenal, and a stubborn refusal to stay dead.","Mortal Draw · Mikiri Counter · Prosthetic Tools","Uchigatana (Keen) — Kusabimaru, with a prosthetic's tricks"],
+["Genichiro Ashina","Rival","lightning","Tomoe's Lightning","Ashina's desperate general — stole lightning from a dead style to save a dying land.","Lightning of Tomoe · Floating Passage · Black Mortal Blade"],
+["Isshin Ashina","Legendary","katana","Sword Saint","Ashina's founder, fought at the peak of his prime — glock optional, mastery mandatory.","One Mind · Ashina Cross · Spear-and-Sword Storm","Nagakiba (Keen) — the Sword Saint's reach"],
+["Emma","Secondary Protagonist","cleric","Physician's Blade","Dogen's student and Isshin's shadow — medicine in one hand, iaijutsu in the other.","Healing Gourd Craft · Defensive Iai · Physician's Oath"],
+["Lady Butterfly","Villain","assassin","Illusion Arts","The shinobi illusionist who taught Wolf — and tests him with phantom butterflies.","Phantom Butterflies · Wire Kunai · Illusion Realm"],
+["Great Shinobi Owl","Villain","assassin","Shinobi Treachery","Wolf's foster father — loyalty was the first lesson, betrayal the last.","Firecracker Feint · Poison Slash · Owl's Denial"],
+["Demon of Hatred","Villain","pyromancer","Accumulated Resentment","The Sculptor's hatred boiled into a burning demon — mercy is a flame away.","Flame Stomp · Burning Charge · Malcontent Weakness"],
+["Guardian Ape","Villain","tank","Headless Persistence","The ape that treats decapitation as a phase transition — bring confetti.","Centipede Scream · Corpse Sword · Filth Fling"],
+["Divine Child of Rejuvenation","Secondary Protagonist","cleric","Rejuvenating Waters","The last divine child — rice, persimmons and a gentle plan to end the Dragon's Heritage.","Rice Blessing · Rejuvenating Sediment · Dragon's Homecoming"],
+["True Monk","Legendary","spear","Wedding Gauntlet Vigil","The phantom monk of the wedding gauntlet — a glaive taller than the bridge mist.","Glaive Sweep Cascade · Mist Phantoms · Terror Strikes"]],
+"The Witcher":[
+["Geralt of Rivia","Main Protagonist","spellblade","Witcher Mutations · Signs","The White Wolf — two swords, five signs, and a destiny he keeps trying to outride.","Igni · Quen · Whirl · Silver for Monsters","Claymore (Quality) — silver and steel, carried together"],
+["Ciri","Main Protagonist","assassin","Elder Blood · Blink Step","The Lady of Space and Time — a swallow who blinks between worlds mid-swing.","Blink Strike · Elder Blood Surge · World Hopping"],
+["Yennefer of Vengerberg","Secondary Protagonist","sorcerer","Chaos Magic","Power dressed in lilac and gooseberries — portals, storms and zero patience.","Chaos Bolt · Portal Mastery · Djinn Bargains"],
+["Triss Merigold","Secondary Protagonist","pyromancer","Fire Magic","The fourteenth of the hill — firestorms from a healer's hands.","Firestream · Healing Arts · Battle of Sodden"],
+["Vesemir","Mentor","katana","Old Wolf's School","The last old witcher of Kaer Morhen — every Wolf School form began in his lessons.","Old School Forms · Monster Lore · Winter Training"],
+["Eredin","Villain","frost","Wild Hunt Command","The King of the Wild Hunt — frost riders crossing worlds for Elder Blood.","Frost Realm · Hunt Summons · Naval Duel"],
+["Letho of Gulet","Anti-Hero","assassin","Viper School Pragmatism","The kingslayer — viper-school efficiency and zero interest in your politics.","Kingslaying · Quen Mastery · Viper Tactics"],
+["Regis","Secondary Protagonist","bleed","Higher Vampire Restraint","A higher vampire who chose sobriety and friendship — regenerating from less than ash.","Mist Form · Regeneration · Surgeon's Precision"],
+["Dettlaff van der Eretein","Villain","bleed","Higher Vampire Fury","Regis' kin — love weaponized into a city-wide bloodletting.","Bat Swarm · Claw Storm · Blood Rage"],
+["Gaunter O'Dimm","Villain","deathmage","Pacts · Time Stop","Master Mirror — evil that signs contracts and always, always collects.","Time Stop · Soul Contract · Spoon Collecting"],
+["Imlerith","Villain","greatsword","Wild Hunt General","The Hunt's mace-bearing general — met his end at a witcher's silver on Bald Mountain.","Frost Mace · Teleport Slam · Shield Bash"],
+["Dandelion","Secondary Protagonist","cleric","Bardic Embellishment","The bard who survived every war by narrating them — morale is a weapon too.","Ballad Buffs · Heroic Retelling · Tactical Retreat"]],
+"Elder Scrolls":[
+["The Last Dragonborn","Main Protagonist","dragoon","Thu'um · Dragon Souls","The Dovahkiin — dragon souls devoured, mountains shouted apart.","Fus Ro Dah · Dragonrend · Soul Absorption"],
+["Miraak","Villain","spellblade","First Dragonborn","The first Dragonborn — a priest who bent dragons and now bends heroes' kills to his own credit.","Bend Will · Tentacle Ward · Soul Steal"],
+["Alduin","Villain","dragoon","World-Eater","The World-Eater — firstborn of Akatosh, devourer of time itself.","Meteor Storm · Soul Snare · Time Wound"],
+["Serana","Secondary Protagonist","deathmage","Daughter of Coldharbour","The vampire princess who woke after eras — necromancy with surprisingly good manners.","Raise Dead · Vampiric Drain · Elder Scroll Bearer"],
+["Paarthurnax","Mentor","dragoon","Way of the Voice","Alduin's brother who chose meditation over tyranny — the best philosophy teacher is a dragon.","Meditation on Words · Fire Breath · The Greybeards' Peak"],
+["Ulfric Stormcloak","Anti-Hero","lightning","Voice as a Weapon","The Jarl whose shout stopped a king's heart — civil war followed the echo.","Unrelenting Force · Stormcloak Command · Markarth Debt"],
+["The Nerevarine","Legendary","spear","Prophecy Reborn","Morrowind's reincarnated hero — walked into a god's heart and unmade it.","Wraithguard · Sunder and Keening · Corprus Immunity"],
+["Vivec","Legendary","spellblade","Poet God","The warrior-poet of the Tribunal — divinity maintained through verse and theft.","CHIM · Muatra · Sermon Recitation"],
+["Sheogorath","Villain","madness","Daedric Prince of Madness","The Mad God — cheese, catastrophe and the occasional stabbing with a fork. Wonderful!","Wabbajack · Cheese Rain · Split Personality"],
+["Dagoth Ur","Villain","deathmage","Heart of Lorkhan","The dreamer under Red Mountain — divine ambition wearing a golden mask.","Corprus Plague · Dream Calls · Akulakhan"]],
+"Diablo":[
+["The Nephalem","Main Protagonist","paladin","Nephalem Potential","Humanity's forgotten apex — angel and demon blood, loot-driven destiny.","Legendary Arsenal · Kanai's Power · Rift Clearing"],
+["Tyrael","Legendary","paladin","Archangel of Justice","Justice that tore off its own wings to stand with humanity.","El'druin's Light · Fallen Star · Wisdom's Seat"],
+["Diablo (Lord of Terror)","Villain","madness","Prime Evil Terror","The Lord of Terror — fear itself, endlessly returning through soulstones.","Bone Prison · Lightning Hose · Terror Realm"],
+["Lilith","Villain","bleed","Daughter of Hatred","The Mother of Sanctuary — creation through blood petals and patient whispers.","Blood Petals · Whisper Corruption · Hatred's Embrace"],
+["Inarius","Villain","cleric","Renegade Angel","Sanctuary's renegade father — vanity in golden light, crucified twice by his own pride.","Luminous Spear · Wing Sweep · Heaven's Rejection"],
+["Deckard Cain","Mentor","summoner","Horadric Scholarship","The last Horadrim — stay awhile and listen; the tomes he carried saved every hero.","Identify · Horadric Lore · Stay Awhile"],
+["The Butcher","Villain","greatsword","Fresh Meat","A demon and a cleaver and two words that traumatized a generation.","Cleaver Charge · Hook Drag · Fresh Meat"],
+["Skeleton King Leoric","Villain","deathmage","Cursed Crown","The mad king of Khanduras — buried furious, risen worse, forever crowned.","Skeletal Court · Crown Curse · Mace of the Mad King"]],
+"Final Fantasy":[
+["Cloud Strife","Main Protagonist","greatsword","Mako Infusion · SOLDIER Legacy","The mercenary with a too-big sword and a borrowed past — Midgar's reluctant savior.","Omnislash · Braver · Cross-Slash","Greatsword — the Buster Sword silhouette"],
+["Sephiroth","Villain","katana","Jenova Cells · One-Winged Angel","The one-winged angel — SOLDIER's perfection curdled into a god complex with a seven-foot blade.","Masamune Reach · Supernova · Descend Heartless Angel","Nagakiba (Magic) — Masamune's impossible reach"],
+["Tifa Lockhart","Secondary Protagonist","fists","Zangan Martial Arts","Seventh Heaven's barkeep — suplexing weapons platforms between drink orders.","Final Heaven · Somersault Kick · Limit Rush"],
+["Aerith Gainsborough","Secondary Protagonist","cleric","Cetra Bloodline","The last flower girl of the Ancients — Holy in her pocket, a planet in her prayers.","Great Gospel · Healing Wind · Lifestream Communion"],
+["Zack Fair","Legendary","greatsword","SOLDIER First Class","The puppy of SOLDIER — embraced his dreams, and his honor, all the way down.","Buster Sword Bequest · Apocalypse · Last Stand"],
+["Squall Leonhart","Main Protagonist","spellblade","Gunblade · Junction","The lion of Balamb — a gunblade's trigger-timed edge and walls made of whatever.","Renzokuken · Lionheart · Junction System"],
+["Lightning","Main Protagonist","lightning","l'Cie Power","The soldier who fought fate itself — thunder given a gunblade and a sister.","Army of One · Odin Gestalt · Ravager Shift"],
+["Noctis Lucis Caelum","Main Protagonist","spellblade","Royal Arms · Warp","The king of light — warp-striking through a road trip that ends in dawn.","Warp Strike · Armiger · Ring of the Lucii"],
+["Tidus","Main Protagonist","katana","Dream of the Fayth","The sun-bright blitzer who taught a summoner to laugh — and to stop sacrificing.","Blitz Ace · Quick Hit · Jecht Shot Memory"],
+["Auron","Mentor","katana","Unsent Guardian","The legendary guardian who finished two pilgrimages — one of them dead.","Banishing Blade · Bushido · Unsent Resolve"],
+["Yuna","Secondary Protagonist","summoner","Summoner's Pilgrimage","The high summoner who danced the dead to rest and refused the final lie.","Grand Summon · Sending Dance · Valefor's Wings"],
+["Terra Branford","Main Protagonist","sorcerer","Esper Hybrid","Half esper, half human — magic's living bridge learning what love is for.","Trance Form · Riot Blade · Magitek Escape"],
+["Kefka Palazzo","Villain","madness","God of Magic","The jester who actually won — burned the world and laughed at the ashes.","Light of Judgment · Heartless Angel · Dancing Mad"],
+["Clive Rosfield","Main Protagonist","pyromancer","Dominant of Ifrit","Valisthea's outlaw dominant — Ifrit's fire carried like a grudge and a duty.","Ifrit Semi-Prime · Phoenix Shift · Limit Break"]],
+"Devil May Cry":[
+["Dante (Son of Sparda)","Main Protagonist","greatsword","Devil Trigger · Style System","The legendary devil hunter — pizza, style rankings and a family feud measured in skyscrapers.","Devil Trigger · Stinger · Royal Guard","Greatsword — Rebellion's cadence"],
+["Vergil","Rival","katana","Yamato Judgment","Dante's mirror — motivation, a katana that cuts space, and chronic chair deficiency.","Judgment Cut End · Doppelganger · Sin Devil Trigger","Nagakiba (Keen) — Yamato's dimension-splitting draw"],
+["Nero","Main Protagonist","greatsword","Devil Breaker Arm","The kid with the demon arm — deadweight no longer, and louder about it than anyone.","Devil Breaker · Exceed Rev · Showdown"],
+["Lady","Secondary Protagonist","archer","Devil Hunting Arsenal","The human who out-guns demons — Kalina Ann is a rocket launcher with a bayonet, obviously.","Kalina Ann Barrage · Grapple Shot · Hunter's Debt"],
+["Trish","Secondary Protagonist","lightning","Demonic Lightning","Mundus' copy of a mother who chose her own side — lightning in a leather jacket.","Round Trip · Lightning Strike · Sparda Wield"],
+["V","Anti-Hero","summoner","Familiar Poetry","The mysterious poet whose nightmares fight for him — Blake quotes included.","Griffon · Shadow · Nightmare · Royal Fork"],
+["Sparda","Legendary","greatsword","Legendary Dark Knight","The demon who woke to justice — sealed hell with his own power and vanished into legend.","Force Edge · Hell Seal · Dark Knight's Legacy"],
+["Mundus","Villain","deathmage","Prince of Darkness","The three-eyed emperor of the underworld — statues, false gods and a grudge against one family.","Trinity Orbs · Realm Shift · False Divinity"]],
+"God of War":[
+["Kratos","Main Protagonist","greatsword","Godslayer · Spartan Rage","The Ghost of Sparta gone north — fury tempered into fatherhood, gods still optional.","Spartan Rage · Leviathan Recall · Blades of Chaos","Icerind Hatchet — the Leviathan Axe's frost recall"],
+["Atreus","Secondary Protagonist","archer","Loki's Becoming","The boy with a god's name learning which stories about himself to believe.","Talon Barrage · Runic Summons · Giant's Prophecy"],
+["Baldur","Villain","fists","Invulnerability Curse","The stranger who cannot feel — invulnerability as the cruelest curse in the nine realms.","Feel-Nothing Assault · Mistletoe Weakness · Relentless Pursuit"],
+["Freya","Secondary Protagonist","cleric","Vanir Witchcraft","The witch of the woods — Vanir magic, a mother's love, and a Valkyrie's buried wings.","Vanir Wards · Valkyrie Return · Nature's Bind"],
+["Mimir","Mentor","cleric","Smartest Man Alive","The smartest man alive — currently a head on a belt, still the best travel companion in myth.","Realm Lore · Diplomatic Counsel · Bifrost Knowledge"]],
+"NieR":[
+["2B","Main Protagonist","twinblade","YoRHa Combat Model","YoRHa No.2 Type B — elegance, twin blades and a duty that keeps deleting her heart.","Virtuous Contract · Pod Program · Self-Destruct","Twinned Knight Swords — Virtuous Contract and Treaty"],
+["9S","Main Protagonist","assassin","Scanner Hacking","The scanner who loved and hacked too much — knowledge is the wound.","Hacking Burst · Pod Fire · Logic Virus"],
+["A2","Anti-Hero","twinblade","Deserter Prototype","The deserter prototype — berserk mode and a long memory of the Pearl Harbor descent.","Berserk Mode · Type-40 Blade · Long Deserter's War"],
+["Emil","Secondary Protagonist","sorcerer","Weaponized Petrification","The boy who became a weapon and then a shopkeeper — his smile outlived the world twice.","Petrification Gaze · Energy Barrage · Determination Clones"],
+["Adam (NieR)","Villain","spellblade","Machine Philosophy","The machine who read too much philosophy and decided hatred was humanity's essence.","Logic Blade · Cage Construction · Eve's Brother"],
+["Devola & Popola","Secondary Protagonist","summoner","Twin Androids' Atonement","The twin androids atoning for a sin their models committed — songs and covering fire.","Twin Song · Covering Volley · Atonement"]],
+"Monster Hunter":[
+["The Monster Hunter","Main Protagonist","greatsword","Fourteen Weapon Mastery","The Guild's finest — fourteen weapon disciplines, one very patient cat chef.","True Charged Slash · Palico Command · Wyvern Riding"],
+["Rathalos","Villain","dragoon","King of the Skies","The King of the Skies — the fire wyvern every hunter's story starts with.","Fireball Strafe · Talon Poison · Aerial King"],
+["Nergigante","Villain","tank","Regenerating Spikes","The elder-eating dragon — regrowing spikes that reward its aggression and punish yours.","Spike Regrowth · Dive Bomb · Elder Predation"],
+["Fatalis","Legendary","dragoon","Legendary Black Dragon","The black dragon of legend — Castle Schrade's ruin and the endgame of endgames.","Hellfire Breath · Castle Ruin · Legendary Wrath"]],
+"Fire Emblem":[
+["Marth","Legendary","katana","Falchion Lineage","The hero-king of Altea — grace, Falchion, and the template every lord follows.","Falchion Strike · Rally Command · Hero-King's Charisma"],
+["Ike","Legendary","greatsword","Radiant Aether","The mercenary general who fought for his friends — Ragnell swings included.","Aether · Ragnell Wave · Great Aether","Claymore (Sacred) — Ragnell's golden arc"],
+["Lucina","Main Protagonist","katana","Future Falchion","The princess who walked back through time wearing her ancestor's name.","Parallel Falchion · Marth Guise · Future Averted"],
+["Byleth","Mentor","spellblade","Sword of the Creator","The Ashen Demon turned professor — a whip-sword pulsing with a goddess's heartbeat.","Sword of the Creator · Divine Pulse · Professor's Guidance"],
+["Edelgard","Anti-Hero","greatsword","Flame Emperor Ambition","The Flame Emperor — an axe against the gods' order, whatever the cost.","Aymr Cleave · Hegemon Form · Crimson Flower"],
+["Dimitri","Anti-Hero","spear","Boar Prince's Ghosts","The boar prince — Areadbhar and a head full of the dead, clawing back to kindness.","Areadbhar Thrust · Battalion Wrath · Atrocity"],
+["Robin","Main Protagonist","spellblade","Grandmaster Tactics","The amnesiac tactician — thunder tomes, marriage options and one fell secret.","Thoron · Ignis · Grandmaster Planning"],
+["Chrom","Main Protagonist","paladin","Ylissean Resolve","The prince of Ylisse — Falchion, shoulder pauldron, and unshakable faith in bonds.","Aether Strike · Shield of Seals · Bond Support"]],
+"Warcraft":[
+["Arthas Menethil","Villain","deathmage","Frostmourne · Lich King","The prince who took up the cursed blade to save his people — and became their ending.","Frostmourne Hunger · Death and Decay · Sindragosa's Call","Greatsword (Cold) — Frostmourne hungers"],
+["Illidan Stormrage","Anti-Hero","twinblade","Demon Hunter Sacrifice","The Betrayer — ten thousand years imprisoned for being right too early. You are not prepared.","Twin Warglaives · Metamorphosis · Fel Sight"],
+["Thrall","Main Protagonist","lightning","Doomhammer Shamanism","The orc raised in chains who freed his people — the elements answer his hammer.","Chain Lightning · Doomhammer · Earthen Vision"],
+["Jaina Proudmoore","Secondary Protagonist","frost","Archmage of Kul Tiras","Theramore's archmage — frost sharpened by grief, a daughter of the sea.","Blizzard · Water Elemental · Frost Nova"],
+["Sylvanas Windrunner","Villain","archer","Banshee Queen","The Ranger-General turned Banshee Queen — arrows, wails and torn allegiances.","Black Arrow · Banshee Wail · Windrunner Volley"],
+["Uther the Lightbringer","Legendary","paladin","First Paladin","The first paladin of the Silver Hand — the Light's standard, betrayed by his own student.","Holy Light · Divine Shield · Hammer of Justice"],
+["Grommash Hellscream","Legendary","greatsword","Gorehowl Fury","Hellscream of the Warsong — the axe that felled a demon lord and paid the blood debt.","Gorehowl Cleave · Bloodlust · Demon's Bane"],
+["Gul'dan","Villain","deathmage","Fel Warlock","The warlock who sold every orc's soul — twice, across two timelines.","Fel Bolt · Demonic Circle · Soul Trade"],
+["Tyrande Whisperwind","Legendary","archer","Elune's High Priestess","The high priestess of the moon — ten thousand years of vigil, Starfall on request.","Starfall · Owl Sentinels · Elune's Grace"],
+["Kael'thas Sunstrider","Villain","pyromancer","Sun King's Descent","The Sun King — merely a setback, twice, and a phoenix complex to match.","Phoenix Summon · Flamestrike · Verdant Spheres"]],
+"StarCraft":[
+["Jim Raynor","Main Protagonist","archer","Marshal's Rebellion","The marshal who kept his conscience through an interstellar war — and kept the hat.","Revolver Round · Marine Command · Hyperion Support"],
+["Sarah Kerrigan","Anti-Hero","venom","Queen of Blades","The ghost betrayed into the Swarm's throne — vengeance measured in worlds.","Psionic Storm · Zerg Command · Blade Wings"],
+["Zeratul","Legendary","assassin","Dark Templar Prophecy","The dark prelate — void blades, prophecy and apologies delivered centuries late.","Void Blade · Permanent Cloak · Prophecy Sight"],
+["Artanis","Main Protagonist","spellblade","Hierarch's Unity","The hierarch who unified the Protoss — twin psi-blades and stubborn hope.","Psi-Blade Storm · Spear of Adun · Unity Doctrine"],
+["Tychus Findlay","Anti-Hero","tank","Convict in a Suit","The convict welded into his armor — one job, one friend, one bullet at the end.","Minigun Sweep · Odin Drop · Devil's Due"],
+["Nova Terra","Secondary Protagonist","archer","Ghost Program","The Dominion's finest ghost — one shot, no memory, no trace.","Snipe · Cloak · Memory Wipe"]]
+};
+
+/* ============ OMEGA PUSH — COMICS · MYTHOLOGY · MECHA · ANIME COMPLETIONS ============ */
+const ROSTER6={
+"Marvel":[
+["Spider-Man","Main Protagonist","assassin","Spider Physiology · Web-Slinging","Queens' friendly neighborhood wall-crawler — great power, greater guilt, endless quips.","Web Zip · Spider-Sense · Maximum Effort Swing"],
+["Iron Man","Main Protagonist","sorcerer","Arc Reactor Armory","The futurist in the suit — genius, billionaire, repulsor artillery, reformed.","Repulsor Barrage · Unibeam · Suit Legion"],
+["Captain America","Legendary","tank","Super-Soldier Serum","The man out of time — a shield, a spine, and no, he can do this all day.","Shield Ricochet · Whatever It Takes · Worthy Lift"],
+["Thor Odinson","Legendary","lightning","Odinson Thunder","The God of Thunder learning worthiness the hard way — hammer optional, storm intrinsic.","Mjolnir Throw · God Tempest · Bring Me Thanos","Great Stars — Mjolnir's heft"],
+["Hulk","Legendary","fists","Gamma Transformation","The angrier he gets, the stronger he gets — and he is always angry.","Thunderclap · World Breaker · Puny God"],
+["Doctor Strange","Mentor","sorcerer","Mystic Arts · Time Stone","The Sorcerer Supreme — bargains, portals and exactly one winning future.","Crimson Bands · Time Loop · Mirror Dimension"],
+["Wolverine","Anti-Hero","bleed","Adamantium Regeneration","The best there is at what he does — and what he does isn't very nice, bub.","Berserker Rage · Adamantium Claws · Healing Factor","Bloodhound Claws — the adamantium set"],
+["Storm","Legendary","lightning","Weather Sovereignty","Wind-rider and goddess of the plains — the weather asks her permission.","Hurricane Call · Lightning Judgment · Flight of the Goddess"],
+["Magneto","Villain","gravity","Master of Magnetism","The master of magnetism — history's hardest lesson given a helmet and a cause.","Metal Storm · Field Levitation · Helmet of Will"],
+["Deadpool","Anti-Hero","twinblade","Regeneration · Fourth Wall","The merc with a mouth — unkillable, unfilterable, aware of this database entry.","Katana Spam · Regen Shrug · Fourth Wall Break"],
+["Venom","Anti-Hero","bleed","Klyntar Symbiote","Lethal protector — two beings, one appetite, many teeth.","Symbiote Tendrils · Mass Shift · We Are Venom"],
+["Thanos","Villain","gravity","Titan's Will","The Mad Titan — a farmer's patience applied to half the universe.","Infinity Snap · Titan Smash · Inevitability"],
+["Scarlet Witch","Villain","madness","Chaos Magic","Reality's editor — grief powerful enough to rewrite Westview, or everything.","Hex Bolt · Reality Rewrite · Darkhold Descent"],
+["Black Panther","Main Protagonist","assassin","Heart-Shaped Herb · Vibranium","Wakanda's king — vibranium claws and the wisdom to open the border.","Kinetic Burst · Vibranium Claws · Ancestral Plane"],
+["Miles Morales","Main Protagonist","lightning","Venom Blast · Camouflage","Brooklyn's own — venom strikes, invisibility, and his own leap of faith.","Venom Blast · Camouflage · What's Up Danger"],
+["Ghost Rider","Anti-Hero","pyromancer","Spirit of Vengeance","The devil's bounty hunter — hellfire chains and a stare that replays your sins.","Penance Stare · Hellfire Chain · Highway to Hell"]],
+"DC":[
+["Batman","Main Protagonist","assassin","Peak Human · Preparation","The Dark Knight — fear as a weapon, contingency plans for his own contingencies.","Smoke Vanish · Batarang Volley · Prep Time Victory"],
+["Superman","Legendary","paladin","Kryptonian Sun-Fueled","The last son of Krypton — hope wearing a cape, holding back for everyone's sake.","Heat Vision · Flight Charge · Solar Flare"],
+["Wonder Woman","Legendary","spear","Amazonian Divinity","Themyscira's princess — the Lasso of Truth and a war god's ending.","Lasso of Truth · Bracelet Clash · God Killer"],
+["The Flash","Main Protagonist","lightning","Speed Force","The fastest man alive — time travel by jogging, guilt by paradox.","Speed Force Surge · Phasing · Infinite Mass Punch"],
+["Aquaman","Main Protagonist","spear","Atlantean Sovereignty","The king of the seven seas — trident, tides and a kingdom's reluctant respect.","Trident Command · Tidal Call · Ocean's Wrath"],
+["Green Lantern","Main Protagonist","summoner","Willpower Constructs","In brightest day — will made into constructs, fear made irrelevant.","Hard-Light Constructs · Oath Recharge · Sector Patrol"],
+["The Joker","Villain","madness","Agent of Chaos","The clown prince of crime — one bad day, endlessly reenacted.","Joker Venom · Chaos Gambit · Punchline"],
+["Harley Quinn","Anti-Hero","fists","Unpredictable Acrobatics","Doctor turned wrecking ball — a mallet, a grin and hard-won independence.","Mallet Spin · Acrobatic Assault · Puddin' No More"],
+["Darkseid","Villain","gravity","Omega Effect","The lord of Apokolips — tyranny as physics, Omega Beams that never miss.","Omega Beams · Boom Tube · Anti-Life Equation"],
+["Deathstroke","Villain","katana","Enhanced Tactician","The Terminator — nine-tenths of his brain in the fight, all of it ahead of yours.","Promethium Blade · Tactical Precognition · Contract Discipline"],
+["Nightwing","Secondary Protagonist","twinblade","Acrobat's Escrima","The first Robin, flown — escrima sticks and the flip everyone else practices.","Escrima Flurry · Aerialist Evasion · Blüdhaven Watch"],
+["Zatanna","Secondary Protagonist","sorcerer","Backwards Speech Magic","Mistress of magic — !dnuora ytilaer snrut ehs — stagecraft hiding true sorcery.","Backwards Spell · Stage Misdirection · Shadowcrest Library"]],
+"Greek Mythology":[
+["Zeus","Legendary","lightning","King of Olympus","The sky father — thunderbolts, judgments and a family tree shaped like a storm.","Thunderbolt · Aegis Storm · Olympian Decree"],
+["Poseidon","Legendary","spear","Earthshaker","The earthshaker — trident tides, horse-making and grudges as deep as trenches.","Trident Quake · Tsunami Call · Wine-Dark Wrath"],
+["Hades","Anti-Hero","deathmage","Lord of the Underworld","The underworld's steadiest administrator — myth's most slandered brother.","Helm of Darkness · Soul Ledger · Cerberus Watch"],
+["Athena","Legendary","paladin","Wisdom in War","Grey-eyed strategy — war won before the first spear, olive branches after.","Aegis Ward · Strategic Insight · Owl's Watch"],
+["Ares","Villain","greatsword","War Incarnate","War for its own screaming sake — first to the field, first to flee it.","Bloodlust Charge · Spear Frenzy · Rout"],
+["Apollo","Legendary","archer","Sun and Plague","The far-shooter — sunlight, prophecy, plague arrows and perfect pitch.","Plague Arrow · Solar Radiance · Oracle's Word"],
+["Artemis","Legendary","archer","The Hunt","The huntress — silver arrows, wild places, and absolutely no exceptions.","Moonlit Volley · Beast Kinship · Hunter's Oath"],
+["Achilles","Legendary","spear","Styx-Forged Wrath","Wrath, sung first — invulnerable everywhere it doesn't matter.","Spear of Peleus · Rage of Achilles · Heel's Price"],
+["Perseus","Main Protagonist","assassin","Gifts of the Gods","The gorgon-slayer — mirror shield, winged sandals, and borrowed everything.","Mirror Shield · Winged Flight · Gorgon's Head"],
+["Odysseus","Main Protagonist","archer","Polytropos Cunning","The man of twists — ten years home, every trick in the epic invented en route.","Great Bow Test · Nobody Gambit · Wooden Horse"]],
+"Norse Mythology":[
+["Odin","Legendary","summoner","Allfather's Wisdom","The Allfather — an eye traded for wisdom, ravens for eyes, and Gungnir for arguments.","Gungnir Cast · Raven Sight · Rune Sacrifice","Treespear — Gungnir, the unerring spear"],
+["Thor","Legendary","lightning","Mjölnir's Thunder","The thunderer — giant-slaying as a hobby, fishing for world serpents as sport.","Mjölnir Crush · Goat Chariot · Jörmungandr Feud"],
+["Loki","Villain","madness","Shapeshifting Mischief","The bound trickster — every gift horse in myth traces back to him. Literally.","Shapeshift · Silver Tongue · Ragnarök's Spark"],
+["Freyja","Legendary","cleric","Seiðr and War","Vanir queen of love and war — half the battle-slain are hers by right.","Seiðr Weaving · Falcon Cloak · Fólkvangr's Claim"],
+["Tyr","Legendary","paladin","Oath and Sacrifice","The one-handed god of justice — fed his sword hand to a wolf to keep one oath.","Oathbound Strike · Fenrir's Price · Justice Stand"],
+["Heimdall","Legendary","tank","Watchman of Bifröst","The nine-mothered watchman — hears grass grow, sees Ragnarök coming, holds the bridge.","Gjallarhorn · Bifröst Watch · Nine Senses"],
+["Fenrir","Villain","twinblade","Bound Wolf","The bound wolf — chains of impossible things, patience of the apocalypse.","Gleipnir Strain · Devouring Lunge · Ragnarök Unbound","Beast Claw — the great wolf's talons"],
+["Surtr","Villain","pyromancer","Muspelheim's Flame","The fire giant at the world's end — his sword lights Ragnarök's last page.","Twilight Sword · Muspel Legion · World-Burning"]],
+"Egyptian Mythology":[
+["Ra","Legendary","pyromancer","Solar Barque Sovereign","The sun itself, sailing — reborn each dawn, serpent-hunted each night.","Solar Radiance · Barque Voyage · Serpent Slaying"],
+["Anubis","Legendary","deathmage","Guide of the Dead","The jackal at the scales — weighs hearts against a feather, guides what passes.","Heart Weighing · Mummification Rite · Duat Guidance"],
+["Osiris","Legendary","cleric","Resurrection Kingship","The first resurrection — king of the dead because he did it first.","Rebirth Rite · Green King's Judgment · Djed Pillar"],
+["Isis","Legendary","sorcerer","Name-Magic Mastery","The greatest magician — reassembled her husband, tricked Ra's true name loose.","True Name Bind · Healing Weave · Wing Shelter"],
+["Set","Villain","lightning","Desert Storm Chaos","The red desert's storm — chaos, usurpation and one very long boat feud.","Storm of the Red Land · Usurper's Blade · Apep Slayer (once)"],
+["Horus","Legendary","paladin","Avenger Falcon","The falcon avenger — an eye lost, a throne reclaimed, a sky worn as a face.","Falcon Dive · Eye of Horus · Throne Duel"]],
+"Celtic Mythology":[
+["The Morrigan","Villain","deathmage","Phantom Queen","The phantom queen — crows over battlefields, prophecy in triplicate.","Crow Shift · Battle Prophecy · Washer at the Ford"],
+["Lugh","Legendary","spear","Master of All Arts","The long-armed — master of every art, his spear returns like a thrown sun.","Assal Cast · Many-Skilled · Balor's Bane"],
+["Scathach","Mentor","spear","Shadow Isle Warband","The shadow-isle warrior who forges heroes — Gáe Bolg was homework.","Shadow Isle Trials · Gáe Bolg Bequest · Warrior Forge"],
+["Nuada","Legendary","paladin","Silver Arm Kingship","The king with the silver arm — crown lost to a wound, won back with a blade.","Claíomh Solais · Silver Arm · Restored Crown"]],
+"Japanese Mythology":[
+["Amaterasu","Legendary","cleric","Sun Goddess","The sun in the cave — the world's first blackout ended by a dance and a mirror.","Solar Emergence · Yata Mirror · Heavenly Weaving"],
+["Susanoo","Legendary","katana","Storm God","The storm brother — exiled for chaos, redeemed by an eight-headed serpent's death.","Orochi Slaying · Storm Sweep · Kusanagi's Finding"],
+["Raijin","Legendary","lightning","Thunder Drums","The thunder drummer — every storm is a percussion solo.","Drum Thunder · Storm Circuit · Oni's Grin"],
+["Fujin","Legendary","twinblade","Wind Bag Bearer","The wind's keeper — his bag holds every gale that ever scattered a fleet.","Gale Release · Divine Winds · Storm Sibling Duo"],
+["Izanami","Villain","deathmage","Mother of Death","The creator who died creating — now queen of Yomi, counting a thousand deaths a day.","Yomi's Curse · Thousand Deaths · Underworld Pursuit"],
+["Yamato Takeru","Legendary","katana","Kusanagi Bearer","The tragic prince — Kusanagi's first master, burning grass and burning bridges.","Kusanagi Draw · Grass-Cutting Escape · Prince's Lament"]],
+"Gundam":[
+["Amuro Ray","Main Protagonist","spellblade","Newtype Awakening","The reluctant pilot who out-evolved war itself — the White Devil's origin.","Newtype Flash · Beam Saber Precision · Last Shooting"],
+["Char Aznable","Rival","assassin","Red Comet","The Red Comet — three times faster, several masks deep, forever Amuro's mirror.","Triple Speed · Masked Agenda · Axis Drop"],
+["Heero Yuy","Main Protagonist","tank","Perfect Soldier","The perfect soldier who self-destructs first and emotes never — mission accepted.","Self-Detonation Bluff · Wing Zero System · Mission Discipline"],
+["Setsuna F. Seiei","Main Protagonist","katana","Innovator Evolution","The boy who became Gundam — dialogue optional, GN blades not.","Trans-Am · GN Sword · Quantum Dialogue"],
+["Kira Yamato","Main Protagonist","paladin","SEED Ultimate Coordinator","The ultimate coordinator who shoots to disable — pacifism at 20:1 kill ratios.","SEED Burst · Freedom's Multi-Lock · Disabling Precision"],
+["Domon Kasshu","Main Protagonist","fists","Shining Finger","The King of Hearts — martial arts mecha and a finger that explains itself loudly.","SHINING FINGER · Sekiha Tenkyoken · King of Hearts"]],
+"Code Geass":[
+["Lelouch vi Britannia","Main Protagonist","summoner","Geass of Absolute Command","The demand-obeying emperor of lies — checkmate delivered as world peace, at his own cost.","Geass Command · Zero Requiem · Knightmare Chess"],
+["Suzaku Kururugi","Rival","fists","Live-On Command","The knight who wanted to die honorably — cursed by command to live, spinning all the way.","Spinzaku Kick · Lancelot Mastery · Live Command"],
+["C.C.","Secondary Protagonist","cleric","Code Immortality","The immortal witch — pizza budgets, accumulated centuries, one real wish.","Code Bearer · Geass Grant · Immortal Poise"],
+["Kallen Kozuki","Secondary Protagonist","fists","Guren's Radiant Wave","The Black Knights' ace — the Guren's radiant surge in human form.","Radiant Wave Surger · Ace Piloting · Rebellion's Fist"],
+["Cornelia li Britannia","Anti-Hero","paladin","Witch of Britannia","The warrior princess — imperial doctrine on the field, sisterhood underneath.","Imperial Charge · Gloucester Lance · Sister's Loyalty"],
+["Jeremiah Gottwald","Anti-Hero","tank","Geass Canceller","Orange — loyalty so absolute it survived cyborg conversion and joined the enemy's gardener corps.","Geass Canceller · Loyalty Unto Oranges · Cyborg Blade"]],
+"Evangelion":[
+["Shinji Ikari","Main Protagonist","greatsword","Eva Unit-01 Synchronization","The boy in the robot — get in, fall apart, save everyone, repeat.","Berserk Unit-01 · AT Field · Third Impact Choice"],
+["Asuka Langley","Rival","spear","Eva Unit-02 Pride","The second child — brilliance armored in pride, pride armored in nothing.","Unit-02 Rampage · Progressive Knife · Mama's Guard"],
+["Rei Ayanami","Secondary Protagonist","spear","First Child Vessel","The first child — quiet vessels, replaceable bodies, one irreplaceable choice.","Lance of Longinus · AT Spread · Silent Sacrifice","Treespear — the Lance of Longinus"],
+["Kaworu Nagisa","Anti-Hero","cleric","Fifth Child Angel","The fifth child — an angel who chose humanity's side for one boy's sake.","AT Field Supremacy · Moonlight Serenity · Chosen Death"],
+["Misato Katsuragi","Mentor","archer","NERV Tactical Command","NERV's tactician — beer, grief and battle plans that shouldn't work but do.","Operation Yashima · Tactical Gambit · Guardian's Push"],
+["Gendo Ikari","Villain","deathmage","Instrumentality Schemer","The commander — humanity's extinction filed as a reunion plan.","Instrumentality Project · Rei Contingency · Glasses Adjust"]],
+"Vagabond":[
+["Musashi Miyamoto","Main Protagonist","katana","Way of the Sword","The vagabond seeking invincibility under heaven — and finding a farm, and himself.","Two-Sword Style · Duel Meditation · Invincible Under Heaven"],
+["Sasaki Kojiro (Vagabond)","Rival","katana","Deaf Prodigy's Blade","The deaf swordsman whose long blade speaks entirely fluently.","Swallow Cut · Monohoshizao Reach · Pure Instinct"],
+["Takuan Soho","Mentor","cleric","Zen Provocation","The monk who ties up demons with rope and words — enlightenment by irritation.","Zen Rebuke · Rope Binding · Path Guidance"],
+["Inshun","Rival","spear","Hozoin Spear","Hozoin's prodigy — a spear so pure it frightened its own temple.","Hozoin Thrust · Spear Purity · Gentle Killer"],
+["Ittosai Ito","Anti-Hero","katana","One-Sword Style","The one-sword founder — a killer's joy refined into a school.","Ittosai's Draw · Duel Addiction · Killer's Clarity"]],
+"Devilman":[
+["Akira Fudo","Main Protagonist","fists","Devilman Hybrid","The devil with a human heart — crybaby, berserker, humanity's last defense from itself.","Devil Arrow · Demon Merge · Human Tears"],
+["Ryo Asuka","Villain","deathmage","Satan's Amnesia","The best friend who was Satan all along — love as the apocalypse's rough draft.","Angelic Legion · Revelation · Halved World"],
+["Sirene","Villain","archer","Demon Harpy","The demon harpy — beauty, talons and a dying dive that won.","Talon Dive · Antenna Lightning · Final Union"],
+["Amon","Villain","bleed","Demon of War","The demon Akira consumed — war's appetite waiting behind a human heart.","Demonic Frenzy · Host Battle · War Hunger"]],
+"Bleach":[
+["Yhwach","Villain","deathmage","The Almighty","The Quincy father-king — sees every future and steps on the one you chose.","The Almighty · Auswählen · Soul King Absorption"]]
+};
+/* Universe taxonomy — every franchise mapped */
+const FRANCHISE_UNIVERSE={
+ "Naruto":["Anime","Shonen"],"Dragon Ball":["Anime","Shonen"],"One Piece":["Anime","Shonen"],"Bleach":["Anime","Shonen"],
+ "Demon Slayer":["Anime","Shonen"],"Jujutsu Kaisen":["Anime","Shonen"],"My Hero Academia":["Anime","Shonen"],
+ "Hunter x Hunter":["Anime","Shonen"],"Black Clover":["Anime","Shonen"],"Chainsaw Man":["Anime","Shonen"],
+ "Attack on Titan":["Anime","Seinen"],"Berserk":["Anime","Seinen"],"Vinland Saga":["Anime","Seinen"],
+ "Hellsing":["Anime","Seinen"],"Kingdom":["Anime","Seinen"],"Vagabond":["Anime","Seinen"],"Tokyo Ghoul":["Anime","Seinen"],
+ "Claymore":["Anime","Dark Fantasy"],"Castlevania":["Anime","Dark Fantasy"],"Goblin Slayer":["Anime","Dark Fantasy"],
+ "Frieren":["Anime","Dark Fantasy"],"Devilman":["Anime","Dark Fantasy"],"Dorohedoro":["Anime","Dark Fantasy"],
+ "Made in Abyss":["Anime","Dark Fantasy"],"Basilisk":["Anime","Dark Fantasy"],"Vampire Hunter D":["Anime","Dark Fantasy"],
+ "Record of Ragnarok":["Anime","Dark Fantasy"],"Fire Force":["Anime","Shonen"],"One-Punch Man":["Anime","Shonen"],
+ "Re:Zero":["Anime","Isekai"],"Mushoku Tensei":["Anime","Isekai"],"Overlord":["Anime","Isekai"],
+ "Slime (Tensura)":["Anime","Isekai"],"Shield Hero":["Anime","Isekai"],"DanMachi":["Anime","Isekai"],
+ "Solo Leveling":["Anime","Isekai"],"Sword Art Online":["Anime","Isekai"],
+ "Fate Series":["Anime","Dark Fantasy"],"JoJo's Bizarre Adventure":["Anime","Shonen"],"Fullmetal Alchemist":["Anime","Shonen"],
+ "Inuyasha":["Anime","Shonen"],"Seven Deadly Sins":["Anime","Shonen"],"Rurouni Kenshin":["Anime","Seinen"],"Drifters":["Anime","Seinen"],
+ "Gundam":["Anime","Mecha"],"Code Geass":["Anime","Mecha"],"Evangelion":["Anime","Mecha"],
+ "Elden Ring":["Gaming","Soulsborne"],"Shadow of the Erdtree":["Gaming","Soulsborne"],"Dark Souls":["Gaming","Soulsborne"],
+ "Dark Souls III":["Gaming","Soulsborne"],"Bloodborne":["Gaming","Soulsborne"],"Sekiro":["Gaming","Soulsborne"],
+ "The Witcher":["Gaming","RPG"],"Elder Scrolls":["Gaming","RPG"],"Diablo":["Gaming","RPG"],"Final Fantasy":["Gaming","RPG"],
+ "Devil May Cry":["Gaming","Action"],"God of War":["Gaming","Action"],"NieR":["Gaming","Action"],"Monster Hunter":["Gaming","Action"],
+ "Fire Emblem":["Gaming","Strategy"],"Warcraft":["Gaming","Strategy"],"StarCraft":["Gaming","Strategy"],
+ "Marvel":["Comics","Marvel"],"DC":["Comics","DC"],
+ "Greek Mythology":["Mythology","Greek"],"Norse Mythology":["Mythology","Norse"],"Egyptian Mythology":["Mythology","Egyptian"],
+ "Celtic Mythology":["Mythology","Celtic"],"Japanese Mythology":["Mythology","Japanese"]};
+[ROSTER5,ROSTER6].forEach(R=>Object.entries(R).forEach(([fr, list])=>{
+  list.forEach(e=>{
+    const [name,cat,archId,ps,bio,tech,wOver]=e;
+    const arch=ARCHETYPES[archId], h=hashN(name);
+    const techs=tech.split(" · ");
+    const mkGear=(arr)=>{ const g=arr.slice(); if(wOver) g[0]=wOver; return g; };
+    const builds=[
+      {name:"Lore Accurate — RL150", level:150, type:"Lore · "+arch.label, primary:true,
+       stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.lore), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon: archId==="summoner"?"Black Knife Tiche +10 — their signature companion, made shadow":"—",
+       notes:"Lore-accurate "+name+": "+arch.lore_note+" Signature focus: "+techs[0]+"."},
+      {name:"PvE Optimized — RL150", level:150, type:"PvE · "+arch.label,
+       stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.pve), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"Mimic Tear +10",
+       notes:"PvE-optimized: efficiency over cosplay. Mimic Tear support, encounter-swapped talismans, and "+techs[0]+" as the boss-killing core."},
+      {name:"PvP Optimized — RL125", level:125, type:"PvP · "+arch.label,
+       stats:spreadStats(Object.assign({},arch.w,{VIG:arch.w.VIG+3}),125), weapons:mkGear(arch.gear.pvp), armor:arch.armor.slice(),
+       talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"—",
+       notes:"PvP duelist tuned for the RL125 meta: higher Vigor weighting, honest neutral game, and "+techs[0]+" as the kill condition."}
+    ];
+    CHARACTERS.push({
+      id:slug(name), name, anime:fr, franchise:fr, category:cat,
+      powerSystem:ps, archetype:arch.label, difficulty:arch.diff,
+      rating: Math.round((7.8+(h%14)/10)*10)/10,
+      popularity: 60+(h%33),
+      banner: FRANCHISE_COLORS[fr]||["#8b5cf6","#0f172a"],
+      bio, personality:CATEGORY_PERSONA[cat], combat:arch.combat,
+      techniques:techs, transformations:[], allies:[], enemies:[], battles:[], quote:"",
+      builds, deep:false
+    });
+  });
+}));
+
 const FRANCHISES = ["All", ...Object.keys(FRANCHISE_COLORS).filter(f=>CHARACTERS.some(c=>c.franchise===f))];
 /* Legality pass: no build may spend more points than its Rune Level allows (level+79).
    Over-budget hand-tuned specs get trimmed from their largest non-Vigor stat. */
@@ -2582,7 +2920,7 @@ CHARACTERS.forEach(c=>c.builds.forEach(b=>{
 
 
 /* ============ BUILD SOURCES — MASTER HUB ENGINE ============ */
-const SOURCE_TABS=[["anime","⚔ Anime Builds"],["parties","👥 Anime Parties"],["erchars","🏰 ER Characters"],["dlcsrc","🌒 DLC Builds"],["fextralife","📚 Fextralife Archive"],["fusionsrc","⚗️ Fusion Builds"],["community","🌍 Community"],["random","🎲 Randomizer"],["meta","📈 Meta Builds"],["challenge","💀 Challenge Runs"],["loresrc","📜 Lore Builds"]];
+const SOURCE_TABS=[["anime","⚔ Anime Builds"],["parties","👥 Anime Parties"],["erchars","🏰 ER Characters"],["dlcsrc","🌒 DLC Builds"],["fextralife","📚 Fextralife Archive"],["fusionsrc","⚗️ Fusion Builds"],["community","🌍 Community"],["random","🎲 Randomizer"],["meta","📈 Meta Builds"],["challenge","💀 Challenge Runs"],["loresrc","📜 Lore Builds"],["frdb","🗂 Franchise Database"]];
 let srcTab="anime";
 function srcGo(t){
   srcTab=t;
@@ -2889,6 +3227,25 @@ challenge(){
     <p style="margin-top:10px">${esc(ch.rules)}</p>
     <div style="margin-top:10px">${ch.rec.map(id=>charBtn(id)).join("")}</div></div>`).join("")}</div>`;
 },
+frdb(){
+  const collected=new Set(S.viewedChars||[]);
+  return `<div class="panel" style="margin-bottom:14px"><h3>🗂 FRANCHISE DATABASE — ${FRANCHISES.length-1} FRANCHISES</h3>
+   <p style="font-size:12px;color:var(--txt-dim)">Every franchise with roster, completion, collection level and related franchises (shared sub-universe). Goal: 100+.</p></div>
+  <div class="char-grid">${FRANCHISES.filter(f=>f!=="All").map(f=>{
+    const all=CHARACTERS.filter(c=>c.franchise===f), got=all.filter(c=>collected.has(c.id));
+    const pct=Math.round(got.length/all.length*100);
+    const [uni,sub]=FRANCHISE_UNIVERSE[f]||["?","?"];
+    const top=[...all].sort((a,b)=>b.rating-a.rating)[0];
+    const related=FRANCHISES.filter(x=>x!=="All"&&x!==f&&(FRANCHISE_UNIVERSE[x]||[])[1]===sub).slice(0,3);
+    const col=FRANCHISE_COLORS[f]||["#8b5cf6","#0f172a"];
+    return `<div class="char-card" onclick="goCharsFiltered('${f.replace(/'/g,"\\'")}','All')">
+      <div class="char-banner" style="background:linear-gradient(120deg,${col[0]},${col[1]})"><div class="char-emblem">${esc(f[0])}</div></div>
+      <div class="char-body"><h4 style="font-size:14px">${esc(f)}</h4>
+      <div class="anime">${uni} · ${sub}</div>
+      <div style="margin:6px 0">${collBadge(pct)} <span class="pill gold">${got.length}/${all.length} · ${pct}%</span></div>
+      <div style="font-size:10px;color:var(--txt-dim)">Top: ${top?esc(top.name):"—"} (${top?top.rating:"—"})${related.length?"<br>Related: "+related.map(esc).join(", "):""}</div>
+      </div></div>`;}).join("")}</div>`;
+},
 loresrc(){
   const lore=CHARACTERS.flatMap(c=>c.builds.map((b,i)=>({c,b,i}))).filter(x=>/Lore|Canon/i.test(x.b.name)||/Lore/i.test(x.b.type));
   const canon=lore.filter(x=>x.c.franchise==="Elden Ring"||x.c.franchise==="Shadow of the Erdtree");
@@ -3185,7 +3542,10 @@ const GUILDS=[
  {id:"shadow-vanguard",icon:"🌫",name:"Land of Shadow Vanguard",theme:"Natives of the DLC realm — Messmer's war, Miquella's promise.",match:c=>c.franchise==="Shadow of the Erdtree"},
  {id:"the-immovable",icon:"🛡",name:"The Immovable",theme:"Tanks, guardians and toxin specialists — outlast everything.",match:c=>/Guardian|Toxin/.test(c.archetype)},
  {id:"frenzied-flame",icon:"👁",name:"Cult of the Frenzied Flame",theme:"Madness devotees — the Three Fingers accept all applicants, permanently.",match:c=>/Frenzied/.test(c.archetype)},
- {id:"nights-cavalry",icon:"🌙",name:"Night's Cavalry",theme:"Riders of the dark hours — polearm duelists and storm blades.",match:c=>/Polearm|Storm Blade/.test(c.archetype)}];
+ {id:"nights-cavalry",icon:"🌙",name:"Night's Cavalry",theme:"Riders of the dark hours — polearm duelists and storm blades.",match:c=>/Polearm|Storm Blade/.test(c.archetype)},
+ {id:"band-of-the-hawk",icon:"🦅",name:"Band of the Hawk",theme:"The mercenary band that dreamed — Berserk's full cast rides again.",match:c=>c.franchise==="Berserk"},
+ {id:"akatsuki",icon:"☁️",name:"Akatsuki",theme:"Naruto's rogue cloaks — villains and anti-heroes of the hidden villages.",match:c=>c.franchise==="Naruto"&&(c.category==="Villain"||c.category==="Anti-Hero")},
+ {id:"espada",icon:"💀",name:"Espada",theme:"Bleach's hollow aristocracy — the numbered blades of Las Noches.",match:c=>c.franchise==="Bleach"&&(c.category==="Villain"||c.category==="Rival")}];
 function guildMembers(g){ return CHARACTERS.filter(g.match); }
 function guildStats(g){
   const m=guildMembers(g);
@@ -3304,7 +3664,15 @@ const EVENTS=[
  {id:"er-anniversary", title:"Elden Ring Anniversary", start:"2027-02-25", end:"2027-03-10", type:"boss-challenge",
   badge:"🏆 Anniversary Tarnished", desc:"Special builds, community polls and boss challenge gauntlets celebrating the game's launch anniversary."},
  {id:"hero-festival", title:"Hero Festival", start:"2027-04-01", end:"2027-04-30", type:"character-drop",
-  badge:"🌸 Festival Hero", desc:"Spring rotation: Main Protagonist celebration — hero builds, mentor duos and a community vote for the Nexus's defining hero."}];
+  badge:"🌸 Festival Hero", desc:"Spring rotation: Main Protagonist celebration — hero builds, mentor duos and a community vote for the Nexus's defining hero."},
+ {id:"blood-war", title:"Blood War (Bleach)", start:"2026-11-01", end:"2026-11-30", type:"tournament",
+  badge:"🩸 Blood War Veteran", desc:"Quincy vs Shinigami: the Bleach roster (now with Yhwach) settles the Thousand-Year Blood War in the Arena."},
+ {id:"ninja-war", title:"Ninja War (Naruto)", start:"2027-01-10", end:"2027-01-31", type:"tournament",
+  badge:"🍥 War Arc Survivor", desc:"The Fourth Great Ninja War, bracket edition — the full Naruto roster in franchise war."},
+ {id:"frenzied-uprising", title:"Frenzied Flame Uprising (Elden Ring)", start:"2027-03-15", end:"2027-03-31", type:"boss-challenge",
+  badge:"👁 Three Fingers' Chosen", desc:"Chaos week: madness builds only, a Midra bracket, and the Cult of the Frenzied Flame guild earns double XP."},
+ {id:"ragnarok", title:"Ragnarök (Mythology)", start:"2027-05-01", end:"2027-05-31", type:"tournament",
+  badge:"🌋 Ragnarök Witness", desc:"The Mythology universe ends the season: Greek vs Norse franchise war, Surtr boss challenge, gods-only bracket."}];
 function eventStatus(e){
   const now=new Date(), s=new Date(e.start+"T00:00:00"), en=new Date(e.end+"T23:59:59");
   if(now<s) return {st:"upcoming", days:Math.ceil((s-now)/86400000)};
@@ -3368,7 +3736,7 @@ function rarityTag(c){
 }
 
 /* ---- Career core: runes + ranks ---- */
-const RANKS=[["Tarnished",0],["Warrior",300],["Knight",800],["Vagabond Champion",1600],["Rune Bearer",3000],["Demigod Felled",5000],["Great Rune Lord",8000],["Elden Lord",12000]];
+const RANKS=[["Tarnished Recruit",0],["Adventurer",400],["Champion",1200],["Hero",2500],["Lord",5000],["Elden Lord",10000],["Omega Lord",20000]];
 function careerRank(){
   const r=S.runes||0;
   let cur=RANKS[0], next=null;
@@ -3384,7 +3752,7 @@ function awardRunes(n, reason){
   // guild XP flows to favorited guilds
   (S.guildFavs||[]).forEach(g=>{ S.guildXP=S.guildXP||{}; S.guildXP[g]=(S.guildXP[g]||0)+Math.ceil(n/3); });
   store.set(S);
-  renderHeader(); renderCareer();
+  renderHeader(); renderCareer(); renderRecs();
 }
 /* ---- 3.9 Daily challenges ---- */
 const DAILY_POOL=[
@@ -3493,6 +3861,7 @@ function renderTournament(){
       ${matches.map(m=>`<div style="display:flex;flex-direction:column;gap:4px">${fighterBtn(m.key,m.a)}${fighterBtn(m.key,m.b)}</div>`).join("")}
       </div></div>`).join("")}
    </div>
+   ${renderWars()}
    <div class="panel" style="margin-top:14px"><h3>⚡ FEATURED MATCHUPS — QUICK VOTES</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:10px">
     ${FEATURED_DUELS.map(([x,y],i)=>{
@@ -3635,7 +4004,7 @@ function renderCareer(){
        ${earnedTitles().map(t=>`<div style="font-size:12px;padding:4px 0"><span style="margin-right:6px">${t.icon}</span><b>${esc(t.name)}</b> <small style="color:var(--txt-dim)">— ${esc(t.src)}</small></div>`).join("")}
      </div>
    </div>
-   <div class="panel" style="margin-top:16px"><h3>📖 CHARACTER DEX — ${collected.length} / ${CHARACTERS.length} COLLECTED (${Math.round(collected.length/CHARACTERS.length*100)}%)</h3>
+   <div class="panel" style="margin-top:16px"><h3>📖 CHARACTER DEX — ${collected.length} / ${CHARACTERS.length} COLLECTED (${Math.round(collected.length/CHARACTERS.length*100)}%) ${collBadge(Math.round(collected.length/CHARACTERS.length*100))}</h3>
      <p style="font-size:11px;color:var(--txt-dim);margin-bottom:10px">Opening a character's profile collects them. Rarity determines the rune reward:
        ${Object.entries(RARITY_META).map(([r,m])=>`<span class="pill" style="background:${m.col}22;color:${m.col};border:1px solid ${m.col}55;margin:0 3px">${r} +${m.runes} ⚜ (${rc[r]||0})</span>`).join("")}</p>
      <div class="two-col" style="margin-bottom:12px">
@@ -3647,6 +4016,117 @@ function renderCareer(){
          <div class="btrack"><div class="bfill" style="width:${Math.max(4,b.pct)}%;background:linear-gradient(90deg,#8b5cf688,#8b5cf6)">${b.got}/${b.all}</div></div></div>`).join("")}
      </div>
    </div>`;
+}
+
+/* ============ PHASE OMEGA — SYSTEMS ENGINE ============ */
+
+/* ---- Collection Levels: Bronze → Omega ---- */
+const COLL_LEVELS=[["Omega",100,"#f87171"],["Platinum",70,"#e2e8f0"],["Gold",40,"#d4af37"],["Silver",20,"#94a3b8"],["Bronze",0,"#b45309"]];
+function collLevel(pct){ return COLL_LEVELS.find(([n,min])=>pct>=min); }
+function collBadge(pct){
+  const [n,,col]=collLevel(pct);
+  return `<span class="pill" style="background:${col}22;color:${col};border:1px solid ${col}55">${n}</span>`;
+}
+
+/* ---- Power Scaling Engine: 8 categories + Global Power Index ---- */
+const POWER_CATS={
+ strength:{label:"💪 Strength", f:c=>{const s=c.builds[0].stats; return s.STR*1.15+s.VIG*0.3+(/Colossal|Brawler/.test(c.archetype)?8:0);}},
+ speed:{label:"💨 Speed", f:c=>{const s=c.builds[0].stats; return s.DEX*1.25+(/Assassin|Martial|Storm/.test(c.archetype)?10:0);}},
+ durability:{label:"🛡 Durability", f:c=>{const s=c.builds[0].stats; return s.VIG*0.85+s.END*0.75+(/Guardian|Tank|Colossal/.test(c.archetype)?12:0);}},
+ intelligence:{label:"🧠 Intelligence", f:c=>{const s=c.builds[0].stats; return s.INT*0.85+s.MND*0.45+(c.category==="Mentor"?14:0)+hashN(c.id)%8;}},
+ magic:{label:"✨ Magic", f:c=>{const s=c.builds[0].stats; return Math.max(s.INT,s.FTH,s.ARC)*1.25+s.MND*0.3;}},
+ leadership:{label:"👑 Leadership", f:c=>c.popularity*0.5+(["Mentor","Legendary"].includes(c.category)?20:c.category==="Main Protagonist"?12:0)+hashN(c.id)%10},
+ versatility:{label:"🌀 Versatility", f:c=>{const s=c.builds[0].stats; return Object.values(s).filter(v=>v>=20).length*11+c.rating*3;}},
+ battleiq:{label:"🎯 Battle IQ", f:c=>c.rating*7+c.difficulty*5+(c.category==="Rival"?8:0)+hashN(c.id)%10}};
+function globalPowerIndex(c){ return Object.values(POWER_CATS).reduce((n,cat)=>n+cat.f(c),0); }
+
+/* ---- AI Recommendation Engine ---- */
+function recEngine(){
+  const collected=new Set(S.viewedChars||[]);
+  const recs=[];
+  // 1. based on last collected: same archetype, different universe
+  const lastId=(S.viewedChars||[])[S.viewedChars.length-1];
+  const last=CHARACTERS.find(c=>c.id===lastId);
+  if(last){
+    const sim=CHARACTERS.find(c=>!collected.has(c.id)&&c.archetype===last.archetype&&(FRANCHISE_UNIVERSE[c.franchise]||[])[0]!==(FRANCHISE_UNIVERSE[last.franchise]||[])[0]);
+    if(sim) recs.push({icon:"🧭",title:"Because you collected "+last.name.split(" ")[0],body:sim.name+" runs the same "+sim.archetype+" archetype in the "+((FRANCHISE_UNIVERSE[sim.franchise]||["?"])[0])+" universe.",act:()=>openChar(sim.id),btn:"Open dossier"});
+  }
+  // 2. franchise closest to completion
+  const near=FRANCHISES.filter(f=>f!=="All").map(f=>{
+    const all=CHARACTERS.filter(c=>c.franchise===f), got=all.filter(c=>collected.has(c.id));
+    return {f,all:all.length,got:got.length,pct:got.length/all.length};
+  }).filter(x=>x.pct>0&&x.pct<1).sort((a,b)=>b.pct-a.pct)[0];
+  if(near) recs.push({icon:"📀",title:"Almost complete: "+near.f,body:(near.all-near.got)+" characters left for the "+near.f+" completion achievement.",act:()=>goCharsFiltered(near.f,"All"),btn:"Finish the set"});
+  // 3. fusion suggestion from two collected favorites
+  const favs=[...collected].map(id=>CHARACTERS.find(c=>c.id===id)).filter(Boolean).sort((a,b)=>b.rating-a.rating);
+  if(favs.length>=2) recs.push({icon:"⚗️",title:"Suggested fusion",body:favs[0].name.split(" ")[0]+" × "+favs[1].name.split(" ")[0]+" — your two highest-rated collected characters.",act:()=>loadFusion(favs[0].id,favs[1].id),btn:"Fuse them"});
+  // 4. build to track next
+  const untracked=CHARACTERS.filter(c=>collected.has(c.id)&&!(S.tracked||{})[c.id+"__0"]).sort((a,b)=>b.rating-a.rating)[0];
+  if(untracked) recs.push({icon:"📌",title:"Track a build",body:untracked.name+"'s "+untracked.builds[0].name+" fits your roster — pin it as an in-game shopping list.",act:()=>openChar(untracked.id),btn:"View build"});
+  return recs;
+}
+function renderRecs(){
+  const el=document.getElementById("recEngine"); if(!el) return;
+  const recs=recEngine();
+  el.innerHTML=recs.length?`<div class="panel" style="margin-top:16px"><h3>🤖 AI RECOMMENDATION ENGINE</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px">
+    ${recs.map((r,i)=>`<div class="info-box"><h5>${r.icon} ${esc(r.title)}</h5><p>${esc(r.body)}</p>
+      <button class="btn" style="padding:5px 12px;font-size:11px;margin-top:8px" onclick="REC_ACTS[${i}]()">${esc(r.btn)} →</button></div>`).join("")}
+    </div></div>`:"";
+  window.REC_ACTS=recs.map(r=>r.act);
+}
+
+/* ---- Franchise Wars ---- */
+const FRANCHISE_WARS=[["Naruto","Bleach"],["Berserk","Claymore"],["Dark Souls","Elden Ring"],["Marvel","DC"],["Greek Mythology","Norse Mythology"]];
+function warVote(i,side){
+  S.warVotes=S.warVotes||{};
+  if(S.warVotes[i]!==side){ S.warVotes[i]=side; careerAction("votes"); awardRunes(5,null); }
+  save(); renderArena();
+}
+function renderWars(){
+  return `<div class="panel" style="margin-top:14px"><h3>⚔ FRANCHISE WARS</h3>
+   <p style="font-size:11px;color:var(--txt-dim);margin:6px 0 10px">Universe vs universe — pick your side. Roster strength shown for context; your vote is the verdict.</p>
+   ${FRANCHISE_WARS.map(([A,B],i)=>{
+     const rA=CHARACTERS.filter(c=>c.franchise===A), rB=CHARACTERS.filter(c=>c.franchise===B);
+     if(!rA.length||!rB.length) return "";
+     const avgA=(rA.reduce((n,c)=>n+c.rating,0)/rA.length).toFixed(1), avgB=(rB.reduce((n,c)=>n+c.rating,0)/rB.length).toFixed(1);
+     const v=(S.warVotes||{})[i];
+     const side=(name,avg,n,key)=>`<div onclick="warVote(${i},'${key}')" style="flex:1;text-align:center;padding:10px;border-radius:10px;cursor:pointer;border:1px solid ${v===key?'var(--gold)':'var(--line)'};background:${v===key?'rgba(212,175,55,.12)':'var(--bg3)'}">
+       <b style="font-family:var(--font-display);${v===key?'color:var(--gold2)':''}">${esc(name)}</b>
+       <div style="font-size:10px;color:var(--txt-dim)">${n} fighters · avg ${avg}</div></div>`;
+     return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">${side(A,avgA,rA.length,"a")}<span style="font-family:var(--font-display);color:var(--red)">WAR</span>${side(B,avgB,rB.length,"b")}</div>`;
+   }).join("")}</div>`;
+}
+
+/* ---- Achievement Universe: dynamic franchise-completion achievements ---- */
+const FRANCHISE_ACH_NAMES={"Berserk":"Berserker","Naruto":"Hokage","Bleach":"Soul King","One Piece":"Pirate King",
+ "Dragon Ball":"Super Saiyan God","Elden Ring":"Lord of the Roundtable","Dark Souls":"Dark Soul",
+ "Bloodborne":"Paleblood Moon","Attack on Titan":"Founding Titan","Jujutsu Kaisen":"Special Grade",
+ "Demon Slayer":"Hashira of Hashira","Marvel":"Earth's Mightiest","DC":"Justice Incarnate",
+ "Greek Mythology":"Olympian","Norse Mythology":"Allfather's Chosen","Final Fantasy":"Warrior of Light"};
+FRANCHISES.filter(f=>f!=="All").forEach(f=>{
+  ACHIEVEMENTS.push({id:"fr_"+slug(f), icon:"📀", name:FRANCHISE_ACH_NAMES[f]||(f+" Complete"),
+    desc:"Collect every "+f+" character ("+CHARACTERS.filter(c=>c.franchise===f).length+").",
+    check:(s)=>CHARACTERS.filter(c=>c.franchise===f).every(c=>(s.viewedChars||[]).includes(c.id))});
+});
+ACHIEVEMENTS.push(
+ {id:"ashen_one", icon:"🔥", name:"Ashen One", desc:"Complete the entire Soulsborne universe (Elden Ring, DLC, Dark Souls, DS3, Bloodborne, Sekiro).",
+  check:(s)=>CHARACTERS.filter(c=>(FRANCHISE_UNIVERSE[c.franchise]||[])[1]==="Soulsborne").every(c=>(s.viewedChars||[]).includes(c.id))},
+ {id:"myth_walker", icon:"⚡", name:"Myth Walker", desc:"Complete the entire Mythology universe.",
+  check:(s)=>CHARACTERS.filter(c=>(FRANCHISE_UNIVERSE[c.franchise]||[])[0]==="Mythology").every(c=>(s.viewedChars||[]).includes(c.id))},
+ {id:"omega_collector", icon:"Ω", name:"Omega Collector", desc:"Collect every character in the Nexus.",
+  check:(s)=>CHARACTERS.every(c=>(s.viewedChars||[]).includes(c.id))});
+
+/* ---- Omega Hub tiles ---- */
+function renderOmegaHub(){
+  const el=document.getElementById("omegaHub"); if(!el) return;
+  const tiles=[["🗂","Build Sources","sources"],["📚","Characters","characters"],["🗂","Franchise DB","sources"],["⚗️","Fusion Lab","fusion"],
+   ["🛡","Guild Hall","guilds"],["🏟","Tournaments","arena"],["📖","Encyclopedia","database"],["📈","Rankings","rankings"],["⚜","Career Mode","career"]];
+  el.innerHTML=`<div class="panel" style="margin-bottom:24px"><h3>🌌 OMEGA HUB — ${CHARACTERS.length} CHARACTERS · ${FRANCHISES.length-1} FRANCHISES · ${CHARACTERS.reduce((n,c)=>n+c.builds.length,0).toLocaleString()} BUILDS</h3>
+   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px">
+   ${tiles.map(([ic,l,v],i)=> i===2? `<div class="stat-card" style="cursor:pointer;padding:12px" onclick="go('sources');srcGo('frdb')"><div style="font-size:20px">${ic}</div><div class="lbl">${l}</div></div>`
+     : `<div class="stat-card" style="cursor:pointer;padding:12px" onclick="go('${v}')"><div style="font-size:20px">${ic}</div><div class="lbl">${l}</div></div>`).join("")}
+   </div></div>`;
 }
 
 /* ============ APP STATE ============ */
@@ -3737,10 +4217,16 @@ function renderHome(){
 }
 
 /* ============ CHARACTERS ============ */
-let charFilter="All", charFranchise="All", charQuery="";
+let charFilter="All", charFranchise="All", charUniverse="All", charQuery="";
+function setCharUniverse(u){ charUniverse=u; charFranchise="All"; renderCharFilters(); renderChars(); }
 function renderCharFilters(){
-  const inFr=c=>charFranchise==="All"||c.franchise===charFranchise;
-  document.getElementById("charFranchises").innerHTML=FRANCHISES.map(f=>
+  const inUni=c=>charUniverse==="All"||(FRANCHISE_UNIVERSE[c.franchise]||[])[0]===charUniverse;
+  const inFr=c=>(charFranchise==="All"||c.franchise===charFranchise)&&inUni(c);
+  const unis=["All","Anime","Gaming","Comics","Mythology"];
+  document.getElementById("charUniverses").innerHTML=unis.map(u=>
+    `<div class="chip ${u===charUniverse?'active':''}" style="border-color:rgba(34,211,238,.4)" onclick="setCharUniverse('${u}')">${u==="All"?"🌌 All Universes":u} ${u!=="All"?"("+CHARACTERS.filter(c=>(FRANCHISE_UNIVERSE[c.franchise]||[])[0]===u).length+")":""}</div>`).join("");
+  const frList=["All",...FRANCHISES.filter(f=>f!=="All"&&(charUniverse==="All"||(FRANCHISE_UNIVERSE[f]||[])[0]===charUniverse))];
+  document.getElementById("charFranchises").innerHTML=frList.map(f=>
     `<div class="chip ${f===charFranchise?'active':''}" style="${f===charFranchise?'':'border-color:rgba(139,92,246,.35);'}" onclick="setCharFranchise('${f.replace(/'/g,"\\'")}')">${f==="All"?"🌐 All Franchises":f}${f!=="All"?` (${CHARACTERS.filter(x=>x.franchise===f).length})`:""}</div>`).join("");
   document.getElementById("charFilters").innerHTML=CATEGORIES.map(c=>
     `<div class="chip ${c===charFilter?'active':''}" onclick="setCharFilter('${c}')">${c}${c!=='All'?` (${CHARACTERS.filter(x=>x.category===c&&inFr(x)).length})`:''}</div>`).join("");
@@ -3751,6 +4237,7 @@ document.getElementById("charSearch").addEventListener("input", e=>{ charQuery=e
 function renderChars(){
   const list=CHARACTERS.filter(c=>
     (charFilter==="All"||c.category===charFilter) &&
+    (charUniverse==="All"||(FRANCHISE_UNIVERSE[c.franchise]||[])[0]===charUniverse) &&
     (charFranchise==="All"||c.franchise===charFranchise) &&
     (!charQuery || (c.name+" "+c.anime+" "+c.franchise+" "+c.powerSystem+" "+c.archetype+" "+(ALIASES[c.id]||"")).toLowerCase().includes(charQuery)));
   document.getElementById("charGrid").innerHTML = list.length? list.map(c=>`
@@ -3762,7 +4249,7 @@ function renderChars(){
         <h4>${esc(c.name)}</h4>
         <div class="anime">${esc(c.anime)}</div>
         <span class="tag" style="background:${CAT_COLORS[c.category]}22;color:${CAT_COLORS[c.category]};border:1px solid ${CAT_COLORS[c.category]}55">${esc(c.category)}</span>
-        <span class="tag" style="background:rgba(212,175,55,.12);color:var(--gold2);border:1px solid var(--gold-dim)">${esc(c.archetype)}</span>${c.deep?'<span class="tag" style="background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.45)">★ Deep Dossier</span>':''}${rarityTag(c)}
+        <span class="tag" style="background:rgba(212,175,55,.12);color:var(--gold2);border:1px solid var(--gold-dim)">${esc(c.archetype)}</span>${c.deep?'<span class="tag" style="background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.45)">★ Tier I — Deep Dossier</span>':''}${rarityTag(c)}
         <div class="char-meta">
           <span>Rating <b>${c.rating}</b></span>
           <span class="stars">${"★".repeat(c.difficulty)}${"☆".repeat(5-c.difficulty)}</span>
@@ -3914,7 +4401,7 @@ function openChar(id){
           ${c.battles.length?`<div class="info-box"><h5>Anime History — Major Battles</h5><ul>${c.battles.map(b=>`<li>${esc(b)}</li>`).join("")}</ul></div>`:""}
           ${c.allies.length?`<div class="info-box"><h5>Allies</h5><p>${c.allies.map(esc).join(" · ")}</p></div>`:""}
           ${c.enemies.length?`<div class="info-box"><h5>Enemies</h5><p>${c.enemies.map(esc).join(" · ")}</p></div>`:""}
-          ${c.deep?"":`<div class="info-box" style="border-color:rgba(139,92,246,.3)"><h5 style="color:var(--purple)">Profile Status</h5><p>Standard profile — full deep-dossier expansion (battles, quotes, relationships) arrives as this franchise phase is built out.</p></div>`}
+          ${c.deep?"":`<div class="info-box" style="border-color:rgba(139,92,246,.3)"><h5 style="color:var(--purple)">Tier II — Fast Dossier</h5><p>Rapid-scaling profile: overview, role, signature kit and full 3-version build. Promotion to Tier I (deep dossier with battles, quotes, relationships and progression routes) happens by franchise batch as Phase Omega advances.</p></div>`}
         </div>
       </div>
       <div id="ctab-combat" style="display:none">
@@ -4089,10 +4576,13 @@ function generateFusion(announce){
   const est=Math.round(120 + stats[dom]*7.5 + rl*1.35 + (seed%40));
   const name=c3? (fuseName(a,b).slice(0,Math.ceil(fuseName(a,b).length*0.66))+c3.name.split(" ")[0].slice(Math.floor(c3.name.split(" ")[0].length/2)).toLowerCase()) : fuseName(a,b);
   const title=seededPick(FUSION_TITLES,seed);
+  const isLegendary=fusers.every(f=>["Legendary","Mythic"].includes(rarityOf(f)));
+  const maxDiff=Math.max(...fusers.map(f=>f.difficulty));
   const lore=seededPick(FUSION_LORE,seed).replace(/{A}/g,a.name).replace(/{B}/g,b.name)
     .replace("{psA}",a.powerSystem.split("·")[0].trim()).replace("{psB}",b.powerSystem.split("·")[0].trim()).replace("{arch}",a.archetype);
   document.getElementById("fusionResult").innerHTML=`
     <div class="fusion-card">
+      ${isLegendary?`<div style="text-align:center;margin-bottom:6px"><span class="pill" style="background:linear-gradient(90deg,rgba(212,175,55,.25),rgba(248,113,113,.25));color:var(--gold2);border:1px solid var(--gold);font-family:var(--font-display);letter-spacing:2px">Ω LEGENDARY FUSION — ALL-ICONIC COMPONENTS</span></div>`:""}
       <h3>${esc(name.toUpperCase())}</h3>
       <div class="ftitle">${esc(title)} — ${fusers.map(f=>esc(f.name.split(" ")[0])).join(" × ")} · ${c3?"TRIPLE FUSION · ":""}${esc(prio.label)}</div>
       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
@@ -4100,6 +4590,7 @@ function generateFusion(announce){
         <span class="pill weak">Class: ${esc(cls)}</span>
         <span class="pill weak">Fusion Score: ${comp.overall}/100</span>
         <span class="pill resist">~${est} AR est.</span>
+        <span class="pill resist">Difficulty ${"★".repeat(maxDiff)}${"☆".repeat(5-maxDiff)}</span>
       </div>
       <div style="font-size:12px;color:#ddd6fe;text-align:center;margin-bottom:14px">📋 ${esc(tier.focus)}</div>
       ${statBars(stats)}
@@ -4113,7 +4604,7 @@ function generateFusion(announce){
         <div class="gear-box"><h6>✨ Spells (${spells.length})</h6>${spells.length?spells.map(w=>`<span>${esc(w)}</span>`).join(""):`<span style="color:var(--txt-dim)">Pure martial fusion — no spells required</span>`}</div>
         <div class="gear-box"><h6>🧪 Consumables</h6>${cons.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
         <div class="gear-box"><h6>📊 Fusion Analysis${c3?" (pairwise avg)":""} — ${comp.overall}/100</h6>
-          ${compatBar("Lore",comp.L)}${compatBar("Build",comp.B)}${compatBar("Weapon",comp.W)}${compatBar("Visual",comp.V)}${compatBar("Gameplay",comp.G)}
+          ${compatBar("Lore Synergy",comp.L)}${compatBar("Build Synergy",comp.B)}${compatBar("Combat Synergy",comp.W)}${compatBar("Theme Synergy",comp.V)}${compatBar("Gameplay",comp.G)}
         </div>
       </div>
       <div class="build-note" style="border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.07);color:#ddd6fe">🧬 BUILD SUMMARY — ${esc(lore)} At RL ${rl}, this ${esc(prio.label.toLowerCase())} runs ${esc(String(weapons.length))} weapon${weapons.length>1?"s":""}, ${talis.length} talismans and ${spells.length||"no"} spells${rl>=400?" — every relevant stat pushed to its cap":rl>=200?" — with surplus utility unlocked":""}.</div>
@@ -4184,7 +4675,9 @@ const RANK_MODES=[
  {id:"accuracy", label:"🎯 Anime Accuracy", score:c=>({guts:10,levi:9.8,rimuru:9.5,jinwoo:9.4,kenshin:9.3,saitama:9.2,itachi:9.0,gojo:9.0,madara:8.9,alucard:8.8}[c.id]||c.rating*0.9), fmt:v=>v.toFixed(1)},
  {id:"difficulty", label:"💀 Hardest to Master", score:c=>c.difficulty*2+c.rating*0.1, fmt:(v,c)=>"★".repeat(c.difficulty)}
 ];
-let rankMode="overall";
+let rankMode="overall", rankSize=10;
+Object.entries(POWER_CATS).forEach(([id,cat])=>RANK_MODES.push({id:"pw_"+id,label:cat.label,score:cat.f,fmt:v=>Math.round(v)+""}));
+RANK_MODES.push({id:"gpi",label:"Ω Global Power Index",score:globalPowerIndex,fmt:v=>Math.round(v)+""});
 function renderRankChips(){
   document.getElementById("rankChips").innerHTML=RANK_MODES.map(m=>
     `<div class="chip ${m.id===rankMode?'active':''}" onclick="setRank('${m.id}')">${m.label}</div>`).join("");
@@ -4192,8 +4685,9 @@ function renderRankChips(){
 function setRank(id){ rankMode=id; renderRankChips(); renderRanks(); }
 function renderRanks(){
   const m=RANK_MODES.find(x=>x.id===rankMode);
-  const list=[...CHARACTERS].sort((a,b)=>m.score(b)-m.score(a)).slice(0,10);
-  document.getElementById("rankList").innerHTML=list.map((c,i)=>`
+  const sizeEl=`<div class="chips" style="margin:4px 0 10px">${[10,100,500,1000].map(n=>`<div class="chip ${rankSize===n?'active':''}" onclick="rankSize=${n};renderRanks()">Top ${n}</div>`).join("")}</div>`;
+  const list=[...CHARACTERS].sort((a,b)=>m.score(b)-m.score(a)).slice(0,rankSize);
+  document.getElementById("rankList").innerHTML=sizeEl+list.map((c,i)=>`
     <div class="rank-row" style="cursor:pointer" onclick="openChar('${c.id}')">
       <div class="rank-num">${i+1}</div>
       <div class="char-emblem" style="position:static;width:38px;height:38px;font-size:16px;background:linear-gradient(135deg,${c.banner[0]},${c.banner[1]})">${esc(c.name[0])}</div>
@@ -4311,7 +4805,7 @@ function renderAll(){
 renderAll();
 renderSourceTabs(); srcGo("anime");
 renderFusionPresets(); updateFuseRLLabel();
-renderGuilds(); renderArena(); renderCareer(); renderTrackedBuilds();
+renderGuilds(); renderArena(); renderCareer(); renderTrackedBuilds(); renderRecs(); renderOmegaHub();
 (function(){ const fr=document.getElementById("cgFr");
   if(fr) fr.innerHTML=FRANCHISES.filter(f=>f!=="All").map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join(""); })();
 (function(){ const opts=allGuilds().map(g=>`<option value="${g.id}">${g.icon} ${esc(g.name)}</option>`).join("");
