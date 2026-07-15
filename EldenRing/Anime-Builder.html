@@ -326,6 +326,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <button data-view="guilds">🛡 Guilds</button>
       <button data-view="arena">🏟 Arena</button>
       <button data-view="career">⚜ Career</button>
+      <button data-view="blueprint">Ω Blueprint</button>
       <button data-view="database">ER Database</button>
       <button data-view="rankings">Rankings</button>
       <button data-view="tracker">Tracker</button>
@@ -473,6 +474,13 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     <div class="sec-sub">Start as a Tarnished. Collect characters, complete daily challenges, earn runes, found guilds, crown champions — and climb to Elden Lord. Everything you do across the Nexus feeds your career.</div>
     <div id="careerRoot"></div>
     <div id="recEngine"></div>
+  </section>
+
+  <!-- BLUEPRINT -->
+  <section class="view" id="view-blueprint">
+    <div class="sec-title">PHASE OMEGA BLUEPRINT</div>
+    <div class="sec-sub">The roster-acceleration research memo, live inside the app — item audit, 87-franchise gap analysis, named build-queue rosters and the two-tier dossier spec. Stats compute from the running database.</div>
+    <div id="bpRoot"></div>
   </section>
 
   <!-- DATABASE -->
@@ -1557,7 +1565,7 @@ const TALISMANS = [
 
 /* ============ ACHIEVEMENTS ============ */
 const ACHIEVEMENTS = [
-{id:"first_steps", icon:"🗺️", name:"Tarnished Otaku", desc:"Visit every section of the Nexus.", check:(s)=>["home","sources","characters","builds","fusion","guilds","arena","database","rankings","tracker","achievements","analytics","archive"].every(v=>s.visited.includes(v))},
+{id:"first_steps", icon:"🗺️", name:"Tarnished Otaku", desc:"Visit every section of the Nexus.", check:(s)=>["home","sources","characters","builds","fusion","guilds","arena","career","blueprint","database","rankings","tracker","achievements","analytics","archive"].every(v=>s.visited.includes(v))},
 {id:"anime_master", icon:"📖", name:"Anime Master", desc:"View 10 different character profiles.", check:(s)=>s.viewedChars.length>=10},
 {id:"scholar", icon:"🎓", name:"Lore Scholar", desc:"View 25 character profiles across the multiverse.", check:(s)=>s.viewedChars.length>=25},
 {id:"franchise_hopper", icon:"🌐", name:"Franchise Hopper", desc:"View characters from 8 different franchises.", check:(s)=>new Set(s.viewedChars.map(id=>{const c=CHARACTERS.find(x=>x.id===id);return c?c.franchise:null;}).filter(Boolean)).size>=8},
@@ -4129,6 +4137,243 @@ function renderOmegaHub(){
    </div></div>`;
 }
 
+/* ============ PHASE OMEGA BLUEPRINT — IN-APP PLANNING MEMO ============ */
+const BP_ANIME=[
+["Inuyasha","Demon Fantasy",10,1,"Long-running classic with a huge named cast — biggest single roster gap in this pass."],
+["Record of Ragnarok","Mythic Tournament",10,1,"Gods vs. humanity duels are a near 1:1 fit for the boss-matchup feature."],
+["D.Gray-man","Dark Fantasy Shonen",8,1,"Exorcist-vs-akuma premise extends the Dark Fantasy Pack with a distinct anti-hero tone."],
+["Blue Exorcist","Dark Fantasy Shonen",8,1,"Demon-blooded exorcist cast, strong faith/arcane hybrid build fit."],
+["Noblesse","Vampire Action",8,2,"Noble/werewolf faction cast gives fresh vampire-archetype builds."],
+["Trinity Seven","Magic Academy",7,2,"Grimoire-sorceress ensemble extends the Magic wave."],
+["Record of Grancrest War","War Fantasy",7,2,"Lord/mage pact system, extends the Kingdom/Arslan war-epic cluster."],
+["Noragami","Demons & Supernatural",6,2,"Minor-god-turned-weapon-user premise, distinct dual-build angle alongside Soul Eater."],
+["Kaiju No. 8","Monster Hunters",6,2,"Recent hit, kaiju-transformation gives a unique beast/colossal build angle."],
+["Ajin","Monster Hunters",6,2,"Immortal-being premise, distinct regen/dark-power build angle."],
+["Mashle","Magic Academy Comedy",6,2,"Strength-in-a-magic-world premise gives a comedic STR-vs-INT build contrast."],
+["The Misfit of Demon King Academy","Magic Academy",6,2,"Demon King reincarnation premise, overwhelming-power build fantasy."],
+["The Case Study of Vanitas","Vampires",6,2,"Vampire-doctor premise, distinct curse/cure build mechanic."],
+["The Witch and the Beast","Dark Fantasy",5,2,"Witch-hunting duo, small atmospheric cast fits the Dark Fantasy tone."],
+["Übel Blatt","Dark Fantasy",5,2,"Revenge-quest knight premise, extends the Dark Fantasy Pack."],
+["Soul Eater","Weapon-Meister Shonen",10,1,"Weapon-turns-human-partner premise is a distinct dual-build (wielder + weapon) angle."],
+["The Heroic Legend of Arslan","War Epic",10,1,"Deep war-epic cast — knight/warlord archetypes extend the Kingdom/Vinland Saga cluster."],
+["Assassination Classroom","Assassin Ensemble",8,1,"Full-classroom assassin cast, distinct comedic tone from the existing assassin archetype pool."],
+["Samurai 7","Samurai Ensemble",8,2,"Seven Samurai-style team, extends the samurai cluster."],
+["Beastars","Anthro Society",6,2,"Predator/prey society gives a distinct beast-archetype build angle."],
+["Ragna Crimson","Dark Fantasy",6,2,"Dragon-slayer time-loop premise, extends the Dark Fantasy Pack."],
+["The Beginning After the End","Isekai Fantasy",6,2,"Reincarnated-king isekai, mage/knight hybrid build angle."],
+["Miss Kobayashi's Dragon Maid","Dragon Comedy",6,2,"Dragon-human hybrid cast extends the dragon-user archetype pool."],
+["Peacemaker Kurogane","Historical Samurai",6,2,"Shinsengumi-era samurai, extends the historical-swordsman cluster."],
+["Darker Than Black","Spy-Fi Thriller",6,2,"Contractor-power premise gives a distinct arcane/gadget build angle."],
+["Wolf's Rain","Post-Apoc Beast",5,2,"Wolves-in-human-form ensemble, small atmospheric cast."],
+["Phantom: Requiem for the Phantom","Assassin Thriller",5,2,"Brainwashed-assassin premise, small tight cast."],
+["Bastard!!","Colossal-Weapon Fantasy",4,2,"Sorcerer-swordsman archetype — the one genuinely new franchise from the two-handed/colossal-weapon pass."],
+["Baki","Hand-to-Hand Combat",12,1,"Raw STR/grappling archetype — Dryleaf Arts/Beast Claw builds, S-tier fit."],
+["Kengan Ashura","Tournament Martial Arts",11,1,"Deep, distinct fighting-style roster for Star Fist/Dane's Footwork builds."],
+["The God of High School","Martial Arts/Mythic",7,1,"God-empowered martial artists bridge hand-to-hand and mythology builds."],
+["Kenichi","Martial Arts School",7,1,"Six-master dojo cast gives a clean spread of grappler/monk archetypes."],
+["Hajime no Ippo","Boxing",8,2,"First pure-boxing franchise — distinct unarmed/caestus PvP builds."],
+["Kengan Omega","Tournament Martial Arts",6,2,"Direct sequel roster to Kengan Ashura, extends the same build cluster."],
+["Tenjou Tenge","Martial Arts School",5,2,"Rival dojo premise, pairs with Kenichi's school-battle cluster."],
+["Viral Hit","Street Fighting",5,2,"Modern underground-fighting circuit, small tight cast."],
+["Air Master","Street Fighting",4,2,"Acrobatic striker archetype, distinct from the grappler-heavy cluster."],
+["Ikki Tousen","Martial Arts/Historical",4,2,"Romance of the Three Kingdoms reincarnation brawlers, small cast."],
+["Magi","Sorcery/Magic Shonen",12,1,"Djinn-equip/Magoi system is a natural arcane-build translation — S-tier fit."],
+["The Irregular at Magic High School","Battlemage",10,2,"Modern spell-engineering premise gives distinct battlemage/technomancy builds."],
+["Reign of the Seven Spellblades","Spellblade Academy",8,2,"Sword + spell hybrid archetype fills the spellblade-build gap directly."],
+["Wistoria","Sorcery Fantasy",8,2,"Dragon/human hybrid mage lead, strong Golden Order-style build fit."],
+["Tsukimichi","Isekai/Summoning",6,2,"Beast/spirit summon contracts map onto the summon-build field cleanly."],
+["Ancient Magus' Bride","Occult Fantasy",7,2,"Alchemy + fae-pact magic gives a distinct arcane/curse-build flavor."],
+["To Your Eternity","Shapeshifting Fantasy",5,2,"Immortal-shapeshifter premise, small tight cast."],
+["Dungeon Meshi","Fantasy Adventure",10,1,"Current breakout hit — party-role builds (vanguard/mage/scout) map directly onto the Anime Team Builder."],
+["Hell's Paradise","Dark Fantasy Shonen",14,1,"Recent hit, ninja/immortality powers extend the Dark Fantasy Pack."],
+["Record of Lodoss War","Classic Fantasy",14,2,"Foundational isekai-adjacent fantasy, deep named cast ready to use."],
+["Dororo","Dark Fantasy/Samurai",8,2,"Body-parts-for-demons premise gives a distinct piecemeal-armor build angle."],
+["Grimgar","Isekai/Survival",8,2,"Low-fantasy, low-level survival tone contrasts the power-fantasy isekai already in the roster."],
+["The Faraway Paladin","Isekai/Western Fantasy",7,2,"Undead-raised paladin premise, small tight cast."],
+["Fairy Tail","Guild Fantasy",18,1,"Guild-based magic maps directly onto the site's Guild System feature."],
+["Saint Seiya","Mythic Shonen",14,1,"Armor-as-power (Cloths) is a natural fit for the armor-build mechanic."],
+["Yu Yu Hakusho","Shonen Classic",14,1,"Most-requested classic missing from the current 71."],
+["Sailor Moon","Magical Girl",8,1,"First magical-girl franchise in the roster — genre diversity."],
+["Gintama","Action-Comedy",8,2,"Samurai-in-modern-Edo power fantasy, distinct from existing chanbara."],
+["Akame ga Kill","Dark Fantasy",8,2,"Extends the Phase 2.5 Dark Fantasy Pack."],
+["Bungo Stray Dogs","Urban Fantasy",8,2,"Literary-ability powers give unique talisman flavor text."],
+["Mob Psycho 100","Psychic Shonen",6,1,"Psychic archetype gap — pairs well with existing INT/FTH builds."],
+["Death Note","Psychological Thriller",6,2,"Non-combat 'build' angle — stat theorycrafting as intelligence/faith."],
+["Cowboy Bebop","Space Western",6,2,"Bounty-hunter archetype, gunplay maps to bow/crossbow builds."],
+["Fist of the North Star","Post-Apocalyptic",6,2,"Martial-arts pressure-point powers, STR/DEX hybrid builds."],
+["Gurren Lagann","Mecha Shonen",6,2,"Grows the mecha cluster alongside Gundam and Code Geass."],
+["Yu-Gi-Oh!","Card-Game Shonen",6,2,"Talisman-as-card-effect gives a distinct build vocabulary."],
+["Pokémon","Adventure",6,2,"Trainer + partner 'summon' builds, using the existing summon field."],
+["Digimon","Adventure",6,2,"Digivolution stages map onto the transformations[] field."],
+["Samurai Champloo","Chanbara",6,2,"Freestyle swordsmanship, DEX-focused builds."],
+["Haikyū!!","Sports",6,2,"First sports-anime entry — reframes 'power system' as team synergy, feeds Guilds/Parties."],
+["Blue Lock","Sports",6,2,"Ego-driven striker archetype, pairs with Haikyū as a sports pairing."],
+["The Promised Neverland","Horror/Thriller",5,2,"Escape-planning 'build' angle, small cast by design."],
+["Spy x Family","Modern Action-Comedy",5,2,"Telepathy + espionage archetypes, small tight cast."],
+["Macross","Mecha",5,2,"Rounds out the mecha cluster with a valkyrie-transform build."],
+["Trigun","Western Sci-fi",5,2,"Gunslinger pacifist archetype, distinct build tension (non-lethal builds)."],
+["Blade of the Immortal","Chanbara/Horror",9,2,"Immortality curse gives a unique regen-build angle within the samurai cluster."],
+["Ninja Scroll","Chanbara",6,2,"Ninja specialists broaden the assassin/DEX archetype pool."],
+["Afro Samurai","Chanbara/Revenge",4,2,"Number-ranking duel structure mirrors PvP tier ladders directly."],
+["Sword of the Stranger","Chanbara",4,2,"Ronin-protects-child arc, tight cast."],
+["Shigurui","Chanbara/Dark",4,2,"Brutal dueling-school setting fits the Dark Fantasy tone."]];
+const BP_GAMES=[
+["Baldur's Gate 3","CRPG",10,1,"D&D class/spell system translates directly into build stats; high fan demand."],
+["Demon's Souls","Souls-like",10,2,"Genre progenitor — distinct World/Character Tendency mechanic vs. Bloodborne/Dark Souls already in the roster."],
+["Dragon's Dogma","Action RPG",15,2,"Pawn/vocation system gives a unique summon-companion build angle."],
+["Warhammer Fantasy","Grimdark Tabletop",20,2,"Direct tonal ancestor of Elden Ring's grimdark aesthetic; deep named cast ready to use."],
+["Bloodborne","Gothic Souls-like",0,0,"Already in the 71-franchise roster — kept as a reference row per request, not additional headcount."],
+["The Witcher","Fantasy RPG",0,0,"Already in the 71-franchise roster — kept as a reference row per request, not additional headcount."],
+["Diablo","ARPG",0,0,"Already in the 71-franchise roster — kept as a reference row per request, not additional headcount."],
+["Skyrim","Open-World RPG",0,0,"Covered under the existing Elder Scrolls franchise — kept as its own reference row per request."]];
+const BP_MYTH=[
+["Chinese Mythology","Pantheon",8,2,"Largest mythology gap — Sun Wukong-class figures are frequently requested."],
+["Hindu Mythology","Pantheon",8,2,"Deep bench of avatars and epics not yet represented."],
+["Slavic Mythology","Pantheon",6,2,"Underused pantheon, fits the existing mythology cluster's tone."],
+["Mesoamerican Mythology","Pantheon",6,2,"Aztec/Maya gods, distinct visual and thematic register."],
+["Arthurian Legend","Legend",6,2,"Non-Fate-flavored Arthuriana — folk-legend versions vs. Fate's Servant versions."]];
+const BP_ROSTERS=[
+["Claymore","LIVE","Clare, Teresa, Priscilla, Miria, Riful, Isley, Jean, Galatea, Irene, Deneve, Helen, Rafaela, Luciela, Rigaldo, Hilda, Beth, Cynthia, Ophelia, Flora, Roxanne"],
+["Castlevania","LIVE","Trevor Belmont, Alucard, Sypha Belnades, Dracula, Isaac, Hector, Carmilla, Striga, Lenore, Morana, Death, Richter Belmont, Maria Renard, Juste Belmont, Leon Belmont, Soma Cruz, Julius Belmont, Shanoa, Jonathan Morris, Charlotte Aulin"],
+["Vampire Hunter D","LIVE","D, Meier Link, Carmilla, Leila, Borgoff, Grove Marker, Kyle, Mashira, Caroline, Barbarois"],
+["Record of Lodoss War","NEW","Parn, Deedlit, Ashram, Beld, Karla, Pirotess, Orson, Shiris, Slayn, Etoh, Kashue, Spark, Wagnard, Shooting Star"],
+["Goblin Slayer","LIVE","Goblin Slayer, Sword Maiden, High Elf Archer, Dwarf Shaman, Lizard Priest, Priestess, Spearman, Witch, Heavy Warrior, Female Knight, Hero, Goblin Lord, Goblin Champion"],
+["Hell's Paradise","NEW","Gabimaru, Sagiri, Shion, Tenza, Jikka, Yuzuriha, Chobei, Toma, Fuchi, Gantetsusai, Zhu Jin, Mu Dan, Ran, Ju Fa"],
+["Dororo","NEW","Hyakkimaru, Tahomaru, Dororo, Jukai, Nui, Mutsu, Hyogo, Daigo Kagemitsu"],
+["Blade of the Immortal","NEW","Manji, Rin Asano, Anotsu Kagehisa, Makie Otono-Tachibana, Magatsu Taito, Shira, Kagehisa, Sabato Kuroi, Giichi"],
+["Samurai Champloo","NEW","Mugen, Jin, Fuu, Sara, Kariya Kagetoki, Mukuro, Yatsuha"],
+["Ninja Scroll","NEW","Jubei Kibagami, Gemma Himuro, Kagero, Dakuan, Benisato, Mushizo"],
+["Frieren","LIVE","Frieren, Fern, Stark, Himmel, Heiter, Eisen, Serie, Denken, Macht, Aura, Flamme, Ubel, Land, Wirbel"],
+["Black Clover","LIVE","Asta, Yuno, Yami, Noelle, Mereoleona, Fuegoleon, Luck, Charmy, Finral, Vanessa, Julius Novachrono, William Vangeance, Patry, Licht, Lucius Zogratis"],
+["Fate Series","LIVE","Artoria Pendragon, Gilgamesh, EMIYA, Cu Chulainn, Medusa, Medea, Iskandar, Karna, Enkidu, Scathach, Morgan, Oberon, Merlin, Solomon, King Hassan"],
+["Overlord","LIVE","Ainz, Albedo, Shalltear, Demiurge, Cocytus, Aura, Mare, Sebas, Pandora's Actor, Narberal, Evileye, Zesshi"],
+["Slime (Tensura)","LIVE","Rimuru, Diablo, Benimaru, Shion, Shuna, Milim, Guy Crimson, Veldora, Testarossa, Ultima, Carrera, Leon Cromwell"],
+["Mushoku Tensei","LIVE","Rudeus, Eris, Sylphiette, Roxy, Orsted, Ruijerd, Perugius, Badigadi, Hitogami"],
+["DanMachi","LIVE","Bell Cranel, Ais Wallenstein, Ryuu Lion, Finn, Riveria, Gareth, Ottar, Freya, Loki, Hedin, Hogni"],
+["Jujutsu Kaisen","LIVE","Yuji Itadori, Toji Fushiguro, Maki Zenin, Aoi Todo, Choso, Hakari, Yuta Okkotsu"],
+["Bastard!!","NEW","Dark Schneider, Gara, Abigail, Kall-Su"],
+["Baki","NEW","Baki Hanma, Yujiro Hanma, Jack Hanma, Doppo Orochi, Katsumi Orochi, Retsu Kaioh, Biscuit Oliva, Kaoru Hanayama, Gouki Shibukawa, Muhammad Ali Jr., Pickle, Musashi Miyamoto"],
+["Kengan Ashura","NEW","Ohma Tokita, Raian Kure, Agito Kanoh, Wakatsuki Takeshi, Julius Reinhold, Gaolang Wongsawat, Cosmo Imai, Setsuna Kiryu, Kuroki Gensai, Lolong Donaire, Fei Wangfang"],
+["Hajime no Ippo","NEW","Ippo Makunouchi, Mamoru Takamura, Ichiro Miyata, Takeshi Sendo, Mashiba, Date Eiji, Volg Zangief, Ricardo Martinez"],
+["Kenichi","NEW","Kenichi Shirahama, Hayato Furinji, Apachai Hopachai, Sakaki, Kensei Ma, Akisame, Miu Furinji"],
+["Viral Hit","NEW","Hobin Yoo, Taehoon Seong, Munseong Kim, Snapper, Jiksae"],
+["The God of High School","NEW","Jin Mori, Han Daewi, Yu Mira, Park Ilpyo, Jegal Taek, Mubong Park, Jin Taejin"],
+["Kengan Omega","NEW","Narushima Koga, Ryuki Gaoh, Rolon Donaire, Carlos Medel, Liu Dongcheng, Misasa"],
+["Air Master","NEW","Maki Aikawa, Julietta Sakamoto, Renge Inui, Shun Yashiki"],
+["Tenjou Tenge","NEW","Souichiro Nagi, Maya Natsume, Aya Natsume, Masataka Takayanagi, Mitsuomi Takayanagi"],
+["Ikki Tousen","NEW","Sonsaku Hakufu, Ryomou Shimei, Kan'u Unchou, Chouhi Ekitoku"],
+["Magi","NEW","Aladdin, Alibaba, Morgiana, Sinbad, Hakuryuu, Judar, Kouen, Yunan, Scheherazade, Arba, Ugo, David"],
+["The Irregular at Magic High School","NEW","Tatsuya, Miyuki, Lina, Masaki, Mayumi, Mari, Erika, Mikihiko, Leo, Minoru"],
+["Reign of the Seven Spellblades","NEW","Oliver Horn, Nanao Hibiya, Michela, Pete, Chela, Katie, Ophelia Salvadori, Demetrio"],
+["Wistoria","NEW","Will Serfort, Elfaria, Colette, Sion, Julius, Workner, Edward, Finn"],
+["Tsukimichi","NEW","Makoto, Tomoe, Mio, Shiki, Root, Sofia Bulga"],
+["Ancient Magus' Bride","NEW","Elias Ainsworth, Chise Hatori, Lindel, Titania, Cartaphilus, Ashen Eye, Oberon"],
+["To Your Eternity","NEW","Fushi, Hayase, Kahaku, Bonchien, Tonari"],
+["Dungeon Meshi","NEW","Laios, Marcille, Senshi, Chilchuck, Falin, Izutsumi, Thistle, Kabru, Mithrun, Shuro"],
+["Grimgar","NEW","Haruhiro, Ranta, Yume, Shihoru, Moguzo, Mary, Kuzaku, Setora"],
+["The Faraway Paladin","NEW","William G. Maryblood, Blood, Mary, Gus, Meneldor, Stagnate, Gracefeel"],
+["Dark Souls","LIVE","Artorias, Great Grey Wolf Sif, Ornstein, Smough, Gwyn, Manus, Lord's Blade Ciaran, Hawkeye Gough, Crossbreed Priscilla, Quelana, Solaire, Oscar of Astora, Black Iron Tarkus, Knight Lautrec, Dark Sun Gwyndolin, Abyss Watchers, Pontiff Sulyvahn, Nameless King, Slave Knight Gael, Sister Friede, Yhorm, Lorian, Lothric, Champion Gundyr, Dragonslayer Armour, Soul of Cinder, Dancer of the Boreal Valley, Vordt, Aldrich, Fume Knight, Sir Alonne, Velstadt, Burnt Ivory King, Pursuer, Vendrick, Nashandra, Aldia, Looking Glass Knight, Old Dragonslayer, Darklurker, Sinh, Elana, Ancient Dragon, Old Iron King"],
+["Bloodborne","LIVE","The Hunter, Gehrman, Lady Maria, Ludwig, Father Gascoigne, Eileen the Crow, Djura, Martyr Logarius, Micolash, Laurence, Simon the Harrowed, Brador, Valtr, Alfred, Yamamura, The Doll, Moon Presence, Orphan of Kos, Living Failures, Celestial Emissary, Ebrietas, Rom, Amygdala, Mergo's Wet Nurse, Darkbeast Paarl, Blood-Starved Beast, Cleric Beast, Vicar Amelia, Shadows of Yharnam, The One Reborn"],
+["Demon's Souls","NEW","Old King Allant, Penetrator, Biorr, Ostrava, Garl Vinland, Maiden Astraea, Flamelurker, Old Monk, Tower Knight, Saint Urbain"],
+["Dragon's Dogma","NEW","The Arisen, Grigori, Daimon, Dragonforged, Savan, Julien, Mercedes, Selene, Death, Dark Bishop, Barroch, Olra, Grette, Ashe, The Seneschal"],
+["Diablo","LIVE","Tyrael, Imperius, Malthael, Inarius, Lilith, Diablo, Baal, Mephisto, Andariel, Duriel, Azmodan, Belial, Rathma, Bul-Kathos, Zoltun Kulle, Johanna, Valla, Nazeebo, Xul, Sonya, The Crusader, The Barbarian, The Necromancer, The Druid, The Rogue, The Sorcerer"],
+["The Witcher","LIVE","Geralt, Ciri, Yennefer, Triss, Vesemir, Eskel, Lambert, Letho, Regis, Dettlaff, Eredin, Imlerith, Caranthir, Avallac'h, Gaunter O'Dimm, Olgierd von Everec, Anna Henrietta, Emhyr var Emreis, Philippa Eilhart, Vilgefortz, Leo Bonhart, Dijkstra, Keira Metz, Fringilla Vigo, Saskia"],
+["Elder Scrolls","LIVE","Dragonborn, Miraak, Ulfric Stormcloak, General Tullius, Serana, Lord Harkon, Isran, Kodlak Whitemane, Ysgramor, Mercer Frey, Karliah, Nocturnal, Mannimarco, Divayth Fyr, Vivec, Almalexia, Sotha Sil, Dagoth Ur, Nerevar, Tiber Septim, Martin Septim, Pelinal Whitestrake, Jyggalag, Sheogorath, Mehrunes Dagon, Molag Bal, Boethiah, Azura, Hermaeus Mora, Clavicus Vile"],
+["God of War","LIVE","Kratos (Greek Era), Kratos (Norse Era), Atreus, Freya, Brok, Sindri, Tyr, Thor, Odin, Baldur, Heimdall, Angrboda, Faye, Mimir, Sif, Thrud, Ares, Zeus, Poseidon, Hades, Hermes, Helios, Hercules, Perseus, Theseus, Deimos, Athena, Gaia, Cronos, Thanatos, Charon"],
+["Warcraft","LIVE","Arthas, Illidan, Thrall, Jaina, Sylvanas, Malfurion, Tyrande, Varian, Anduin, Garrosh, Gul'dan, Kael'thas, Kel'Thuzad, Mannoroth, Archimonde, Kil'jaeden, Bolvar, Medivh, Grommash, Blackhand, Deathwing, Alexstrasza, Ysera, Nozdormu, Chen Stormstout"],
+["Warhammer Fantasy","NEW","Karl Franz, Archaon, Sigmar, Teclis, Tyrion, Malekith, Nagash, Mannfred, Vlad von Carstein, Isabella von Carstein, Settra, Kholek, Grimgor, Queek, Thanquol, Throgg, Be'lakor, Wulfrik, Balthasar Gelt, Volkmar"],
+["Norse Mythology","LIVE","Odin, Thor, Loki, Tyr, Freya, Heimdall, Fenrir, Baldur, Vidar, Njord, Skadi, Hel, Surtr, Jormungandr"],
+["Greek Mythology","LIVE","Zeus, Hades, Poseidon, Ares, Athena, Apollo, Artemis, Achilles, Perseus, Odysseus, Hercules, Theseus, Medusa, Orpheus"],
+["Arthurian Legends","NEW","King Arthur, Lancelot, Gawain, Percival, Galahad, Tristan, Mordred, Merlin, Morgan Le Fay, Lady of the Lake, Green Knight, Vortigern"]];
+const BP_WAVES=[
+["W1","Tier 1 Flagships","8 franchises (Fairy Tail, Saint Seiya, Yu Yu Hakusho, Sailor Moon, Mob Psycho 100, Persona, Street Fighter, Zelda) — ≈88 deep-dossier characters."],
+["W2","Tier 2 Bulk Rosters","Remaining franchises via the existing procedural pattern — ≈178 quick-dossier characters."],
+["W3","Systems Polish","Extend FRANCHISE_COLORS/FRANCHISE_UNIVERSE taxonomy, new achievement badges per franchise, boss-matchup entries for new Tier 1 casts, Character Dex rarity rebalance for 1,000+ scale."]];
+function bpNameLive(fr,name){
+  const sl=slug(name);
+  if(!sl) return false;
+  return CHARACTERS.some(c=>c.id===sl || c.id.includes(sl) || slug(c.name).includes(sl));
+}
+function bpTable(rows){
+  return `<div style="overflow-x:auto"><table><thead><tr><th>Franchise</th><th>Genre</th><th>Est.</th><th>Tier</th><th>Why It Fits</th></tr></thead><tbody>${
+   rows.map(([f,g,e,t,w])=>`<tr><td><b>${esc(f)}</b></td><td style="color:var(--txt-dim)">${esc(g)}</td><td style="color:var(--gold2);font-weight:700">${e||"—"}</td><td>${t===0?'<span class="pill weak">Live</span>':t===1?'<span class="pill gold">Tier 1</span>':'<span class="pill resist" style="background:rgba(139,92,246,.12);color:#c4b5fd;border-color:rgba(139,92,246,.4)">Tier 2</span>'}</td><td style="color:var(--txt-dim);font-size:12px">${esc(w)}</td></tr>`).join("")}</tbody></table></div>`;
+}
+function renderBlueprint(){
+  const el=document.getElementById("bpRoot"); if(!el) return;
+  const builds=CHARACTERS.reduce((n,c)=>n+c.builds.length,0);
+  const proposedAnime=BP_ANIME.reduce((n,r)=>n+r[2],0), proposedGames=BP_GAMES.reduce((n,r)=>n+r[2],0), proposedMyth=BP_MYTH.reduce((n,r)=>n+r[2],0);
+  const proposed=proposedAnime+proposedGames+proposedMyth;
+  el.innerHTML=`
+  <div class="hero" style="text-align:left;padding:30px 26px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><span class="pill gold">RESEARCH MEMO</span><span class="pill resist">BLUEPRINT — PLANNING LAYER, NOT YET BUILT</span></div>
+    <h2 style="font-size:clamp(22px,3.5vw,34px)">PHASE OMEGA <em>BLUEPRINT</em></h2>
+    <p style="margin:10px 0 0;max-width:none;text-align:left">Roster acceleration plan: verified Elden Ring + Shadow of the Erdtree item research, and a franchise-by-franchise gap analysis to carry the character count from ${CHARACTERS.length} to 1,000+.</p>
+  </div>
+  <div class="dash-grid">
+    <div class="stat-card"><div class="num">${CHARACTERS.length}</div><div class="lbl">Characters Live</div></div>
+    <div class="stat-card"><div class="num">${FRANCHISES.length-1}</div><div class="lbl">Franchises</div></div>
+    <div class="stat-card"><div class="num">${ARMOR_TOTAL}</div><div class="lbl">Armor Sets · ~704 pcs</div></div>
+    <div class="stat-card"><div class="num">${WEAPON_TOTAL}</div><div class="lbl">Weapons Indexed</div></div>
+    <div class="stat-card"><div class="num">${TALIS_TOTAL}</div><div class="lbl">Talismans</div></div>
+    <div class="stat-card"><div class="num">1,000+</div><div class="lbl">Phase Omega Target</div></div>
+  </div>
+  <div class="panel" style="margin:20px 0"><h3>01 — ELDEN RING + DLC ITEM AUDIT</h3>
+    <p style="font-size:12px;color:var(--txt-dim);margin:8px 0 12px">Cross-checked against current Fextralife/Fandom indexes (patch 1.16, SotE included). Every named armor set, weapon and talisman is already accounted for — this phase needs no new item research, only new characters to wear the gear.</p>
+    <div class="info-grid">
+      <div class="info-box"><h5>Armor <span class="pill weak">✔ COMPLETE</span></h5><p>${ARMOR_TOTAL} named sets — ${ARMOR_BASE.length} base + ${ARMOR_DLC.length} DLC — ≈704 individual pieces (559 base + 145 DLC). No set bonuses in ER, so mixed-piece loadouts are fully supported.</p></div>
+      <div class="info-box"><h5>Weapons <span class="pill weak">✔ COMPLETE</span></h5><p>${WEAPON_TOTAL} weapons indexed across every class including all SotE additions, with scaling and affinity data attached to builds.</p></div>
+      <div class="info-box"><h5>Talismans <span class="pill weak">✔ COMPLETE</span></h5><p>${TALIS_TOTAL} talismans — 115 base + 39 DLC — including all 8 Legendary, with location and meta-pick notes.</p></div>
+      <div class="info-box"><h5>Bosses <span class="pill gold">✔ DOCUMENTED</span></h5><p>${BOSSES.length} bosses with anime matchup write-ups. Curated for the "who wins" feature by design, not a full bestiary.</p></div>
+    </div>
+    <div class="build-note" style="margin-top:12px;font-size:12px">Also on file: the 7 correctly-excluded unobtainable/cut sets (${ARMOR_UNOBTAINABLE.join(", ")}). No further item research is required — <b>the gap is entirely characters.</b></div>
+  </div>
+  <div class="panel" style="margin-bottom:20px"><h3>02 — ROSTER GAP ANALYSIS</h3>
+    <p style="font-size:12px;color:var(--txt-dim);margin:8px 0 12px">${CHARACTERS.length} characters across ${FRANCHISES.length-1} franchises today. Below: ${BP_ANIME.length+BP_GAMES.filter(r=>r[2]>0).length+BP_MYTH.length} candidate franchises, grouped — chosen for power systems that translate cleanly into Rune Level builds.</p>
+    <h3 style="font-size:14px;margin:14px 0 8px">ANIME & MANGA <small style="color:var(--txt-dim)">${BP_ANIME.length} franchises · ~${proposedAnime} characters</small></h3>${bpTable(BP_ANIME)}
+    <h3 style="font-size:14px;margin:18px 0 8px">GAMES <small style="color:var(--txt-dim)">${BP_GAMES.filter(r=>r[2]>0).length} new franchises · ~${proposedGames} characters (+4 live reference rows)</small></h3>${bpTable(BP_GAMES)}
+    <h3 style="font-size:14px;margin:18px 0 8px">MYTHOLOGY <small style="color:var(--txt-dim)">${BP_MYTH.length} pantheons · ~${proposedMyth} characters</small></h3>${bpTable(BP_MYTH)}
+    <div class="fusion-card" style="margin-top:14px"><h3 style="font-size:16px">THE MATH</h3>
+      <p style="text-align:center;font-size:13px">${CHARACTERS.length} live + ${proposed} proposed = <b style="color:var(--gold2)">${(CHARACTERS.length+proposed).toLocaleString()} characters</b> — ${CHARACTERS.length+proposed-1000} past the 1,000 target, buffer for cuts during actual research.</p></div>
+  </div>
+  <div class="panel" style="margin-bottom:20px"><h3>03 — NAMED ROSTER DATA (READY TO BUILD)</h3>
+    <p style="font-size:12px;color:var(--txt-dim);margin:8px 0 12px">Named lists for the Dark Fantasy, Soulsborne and Mythology waves. <span class="pill weak">LIVE</span> = franchise already in the app — names already in the database glow gold, gaps stay dim. <span class="pill gold">NEW</span> = franchise not yet in the app.</p>
+    ${BP_ROSTERS.map(([fr,st,names])=>{
+      const list=names.split(", ");
+      const liveCt=st==="LIVE"? list.filter(n=>bpNameLive(fr,n)).length : 0;
+      return `<div style="border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+        <b style="font-family:var(--font-display);letter-spacing:1px">${esc(fr)}</b>
+        <span class="pill ${st==="LIVE"?"weak":"gold"}" style="margin-left:8px">${st}</span>
+        <small style="color:var(--txt-dim);margin-left:8px">${list.length} named${st==="LIVE"?` · ${liveCt} already in the database`:""}</small>
+        <div style="font-size:11.5px;line-height:2;margin-top:6px">${list.map(n=>{
+          const has=st==="LIVE"&&bpNameLive(fr,n);
+          return `<span style="color:${has?'var(--gold2)':'var(--txt-dim)'};margin-right:2px">${has?"✦ ":""}${esc(n)}</span>`;
+        }).join('<span style="color:var(--line)"> · </span>')}</div>
+      </div>`;}).join("")}
+  </div>
+  <div class="two-col" style="margin-bottom:20px">
+    <div class="panel"><h3>04 — TIER 1: DEEP DOSSIER <small style="color:var(--txt-dim)">~150–200 of roster</small></h3>
+      <div class="info-box" style="margin-top:8px"><ul>
+      <li>bio (2–3 sentences) · personality · combat summary</li><li>techniques[] · transformations[]</li>
+      <li>allies[] / enemies[] · battles[] · quote</li>
+      <li>4 build variants (Canon / Beginner / PvP / Challenge) — full stat block, weapons, armor, talismans, spells, summon, notes</li></ul></div></div>
+    <div class="panel"><h3>04 — TIER 2: QUICK DOSSIER <small style="color:var(--txt-dim)">~800+ of roster</small></h3>
+      <div class="info-box" style="margin-top:8px"><ul>
+      <li>bio (1 sentence) · category-level persona · combat summary</li><li>techniques[3–4]</li>
+      <li>3 procedural builds — stat block + weapon + armor + talismans</li>
+      <li>transformations/allies/battles left empty — upgradeable to Tier 1 later</li></ul></div></div>
+  </div>
+  <div class="panel" style="margin-bottom:20px"><h3>05 — EXECUTION WAVES</h3>
+    ${BP_WAVES.map(([w,t,d])=>`<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)">
+      <span class="pill gold" style="min-width:40px;text-align:center;font-family:var(--font-display)">${w}</span>
+      <div><b>${esc(t)}</b><div style="font-size:12px;color:var(--txt-dim)">${esc(d)}</div></div></div>`).join("")}
+  </div>
+  <div style="text-align:center;font-size:11px;color:var(--txt-dim);line-height:1.9;padding:10px 0 20px">
+    <b style="font-family:var(--font-display);letter-spacing:2px;color:var(--gold)">ANIME RING NEXUS — PHASE OMEGA BLUEPRINT</b><br>
+    Planning memo — the gap analysis and named rosters above are the build queue, not yet live characters.<br>
+    Item counts verified against Fextralife / Fandom, current to Shadow of the Erdtree · Character/franchise counts pulled live from this running app's data.
+  </div>`;
+}
+
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
@@ -4207,7 +4452,8 @@ function renderHome(){
     ["Phase 2 — Franchise Expansion","Original 100-character goal passed — franchise rosters, ER & DLC casts, Build Sources hub","done"],
     ["Phase 2.5 — Dark Fantasy Pack","16 dark fantasy franchises (Vinland Saga, Frieren, Claymore, Castlevania...) · expanded goal 150–200 characters exceeded","done"],
     ["Phase 3 — Year 2","Career Mode · Character Dex · daily challenges · guilds 2.0 · five tournament brackets · seasonal calendar","done"],
-    ["Phase Omega Push","Roster acceleration toward 1,000+ with two-tier dossiers","next"],
+    ["Phase Omega Blueprint","Item audit complete (armor/weapons/talismans verified) · 87-franchise gap analysis · named rosters for 52 franchises · two-tier dossier spec defined — see the Ω Blueprint tab","done"],
+    ["Phase Omega Push","Execute Waves 1–3 — roster acceleration toward 1,000+ with two-tier dossiers","next"],
     ["Phase Omega","1,000+ characters · complete anime gaming universe",""]];
 
   document.getElementById("roadmap").innerHTML=road.map(r=>`
@@ -4805,7 +5051,7 @@ function renderAll(){
 renderAll();
 renderSourceTabs(); srcGo("anime");
 renderFusionPresets(); updateFuseRLLabel();
-renderGuilds(); renderArena(); renderCareer(); renderTrackedBuilds(); renderRecs(); renderOmegaHub();
+renderGuilds(); renderArena(); renderCareer(); renderTrackedBuilds(); renderRecs(); renderOmegaHub(); renderBlueprint();
 (function(){ const fr=document.getElementById("cgFr");
   if(fr) fr.innerHTML=FRANCHISES.filter(f=>f!=="All").map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join(""); })();
 (function(){ const opts=allGuilds().map(g=>`<option value="${g.id}">${g.icon} ${esc(g.name)}</option>`).join("");
