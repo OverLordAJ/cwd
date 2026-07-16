@@ -3167,7 +3167,7 @@ fusionsrc(){
     if(!ca||!cb) return "";
     return `<div class="char-card" onclick="loadFusion('${a}','${b}')">
       <div class="char-banner" style="background:linear-gradient(120deg,${ca.banner[0]},${cb.banner[1]})"><div class="char-emblem">⚗</div></div>
-      <div class="char-body"><h4 style="font-size:14px">${esc(ca.name.split(" ")[0])} × ${esc(cb.name.split(" ")[0])}</h4>
+      <div class="char-body"><h4 style="font-size:14px">${esc(ca.name.split(" ")[0])} ${guildEmojis(ca,2)} × ${esc(cb.name.split(" ")[0])} ${guildEmojis(cb,2)}</h4>
       <div class="anime">${esc(ca.franchise)} × ${esc(cb.franchise)}</div>
       <p style="font-size:11px;color:var(--txt-dim);line-height:1.5">${esc(d)}</p></div></div>`;}).join("")}</div>`;
 },
@@ -3539,7 +3539,7 @@ function annotateTal(t){
 const GUILDS=[
  {id:"shinobi-order",icon:"🥷",name:"The Shinobi Order",theme:"Stealth, assassination and killer instinct — strike unseen, leave nothing.",match:c=>/Assassin/.test(c.archetype)},
  {id:"colossal-covenant",icon:"🗿",name:"Colossal Covenant",theme:"If it takes two hands and blots out the sun, it counts. Poise is a lifestyle.",match:c=>/Colossal/.test(c.archetype)},
- {id:"glintstone-academy",icon:"🔮",name:"Glintstone Academy",theme:"Int casters, spellblades, gravity scholars and frost theorists.",match:c=>/Int Caster|Spellblade|Gravity|Frost/.test(c.archetype)},
+ {id:"glintstone-academy",icon:"🔮",name:"Glintstone Academy",theme:"Int casters, spellblades, gravity scholars and frost theorists.",match:c=>/Int|Spellblade|Gravity|Frost/.test(c.archetype)},
  {id:"golden-vow",icon:"✨",name:"Order of the Golden Vow",theme:"Faith casters, paladins and every flavor of sacred flame.",match:c=>/Faith|Fth|Sacred|Fire Faith/.test(c.archetype)},
  {id:"lords-of-blood",icon:"🩸",name:"Lords of Blood",theme:"Hemorrhage devotees. Mohg would be proud; Mohg is a member.",match:c=>/Bleed/.test(c.archetype)},
  {id:"dryleaf-temple",icon:"👊",name:"Dryleaf Temple",theme:"Martial artists and brawlers — the fist is the oldest ash of war.",match:c=>/Martial|Brawler|One-Shot|Stand/.test(c.archetype)},
@@ -3553,7 +3553,8 @@ const GUILDS=[
  {id:"nights-cavalry",icon:"🌙",name:"Night's Cavalry",theme:"Riders of the dark hours — polearm duelists and storm blades.",match:c=>/Polearm|Storm Blade/.test(c.archetype)},
  {id:"band-of-the-hawk",icon:"🦅",name:"Band of the Hawk",theme:"The mercenary band that dreamed — Berserk's full cast rides again.",match:c=>c.franchise==="Berserk"},
  {id:"akatsuki",icon:"☁️",name:"Akatsuki",theme:"Naruto's rogue cloaks — villains and anti-heroes of the hidden villages.",match:c=>c.franchise==="Naruto"&&(c.category==="Villain"||c.category==="Anti-Hero")},
- {id:"espada",icon:"💀",name:"Espada",theme:"Bleach's hollow aristocracy — the numbered blades of Las Noches.",match:c=>c.franchise==="Bleach"&&(c.category==="Villain"||c.category==="Rival")}];
+ {id:"espada",icon:"💀",name:"Espada",theme:"Bleach's hollow aristocracy — the numbered blades of Las Noches.",match:c=>c.franchise==="Bleach"&&(c.category==="Villain"||c.category==="Rival")},
+ {id:"longbow-compact",icon:"🏹",name:"The Longbow Compact",theme:"Snipers, gunslingers and precision-ranged killers — the fight ends before melee begins.",match:c=>/Ranged/.test(c.archetype)}];
 function guildMembers(g){ return CHARACTERS.filter(g.match); }
 function guildStats(g){
   const m=guildMembers(g);
@@ -4708,11 +4709,13 @@ function renderBuildViewer(){
 }
 
 /* ============ FUSION LAB ============ */
+function charGuilds(c){ return allGuilds().filter(g=>{ try{ return g.match(c); }catch(e){ return false; } }); }
+function guildEmojis(c,max){ return charGuilds(c).slice(0,max||3).map(g=>g.icon).join(""); }
 function fillFusionSelects(){
   const groups={};
   CHARACTERS.forEach(c=>{ (groups[c.franchise]=groups[c.franchise]||[]).push(c); });
   const opts=Object.keys(groups).sort().map(f=>`<optgroup label="${esc(f)}">`+
-    groups[f].map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")+`</optgroup>`).join("");
+    groups[f].map(c=>`<option value="${c.id}">${esc(c.name)}  ${guildEmojis(c,3)}</option>`).join("")+`</optgroup>`).join("");
   document.getElementById("fuseA").innerHTML=opts;
   document.getElementById("fuseB").innerHTML=opts;
   document.getElementById("fuseB").selectedIndex=1;
@@ -4830,7 +4833,7 @@ function generateFusion(announce){
     <div class="fusion-card">
       ${isLegendary?`<div style="text-align:center;margin-bottom:6px"><span class="pill" style="background:linear-gradient(90deg,rgba(212,175,55,.25),rgba(248,113,113,.25));color:var(--gold2);border:1px solid var(--gold);font-family:var(--font-display);letter-spacing:2px">Ω LEGENDARY FUSION — ALL-ICONIC COMPONENTS</span></div>`:""}
       <h3>${esc(name.toUpperCase())}</h3>
-      <div class="ftitle">${esc(title)} — ${fusers.map(f=>esc(f.name.split(" ")[0])).join(" × ")} · ${c3?"TRIPLE FUSION · ":""}${esc(prio.label)}</div>
+      <div class="ftitle">${esc(title)} — ${fusers.map(f=>esc(f.name.split(" ")[0])+" "+guildEmojis(f,3)).join(" × ")} · ${c3?"TRIPLE FUSION · ":""}${esc(prio.label)}</div>
       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
         <span class="pill gold">RL ${rl} · ${esc(tier.name)}</span>
         <span class="pill weak">Class: ${esc(cls)}</span>
@@ -4849,6 +4852,10 @@ function generateFusion(announce){
         <div class="gear-box"><h6>☾ Spirit Ashes</h6><span>${esc(summon)}</span></div>
         <div class="gear-box"><h6>✨ Spells (${spells.length})</h6>${spells.length?spells.map(w=>`<span>${esc(w)}</span>`).join(""):`<span style="color:var(--txt-dim)">Pure martial fusion — no spells required</span>`}</div>
         <div class="gear-box"><h6>🧪 Consumables</h6>${cons.map(w=>`<span>${esc(w)}</span>`).join("")}</div>
+        <div class="gear-box"><h6>🛡 Guild Affiliations</h6>${fusers.map(f=>{
+          const gs=charGuilds(f);
+          return `<span><b style="color:var(--gold2)">${esc(f.name.split(" ")[0])}</b> <small style="color:var(--txt-dim)">— ${gs.length? gs.slice(0,3).map(g=>g.icon+" "+esc(g.name)).join(" · ")+(gs.length>3?" · +"+(gs.length-3)+" more":"") : "unaffiliated wanderer"}</small></span>`;
+        }).join("")}</div>
         <div class="gear-box"><h6>📊 Fusion Analysis${c3?" (pairwise avg)":""} — ${comp.overall}/100</h6>
           ${compatBar("Lore Synergy",comp.L)}${compatBar("Build Synergy",comp.B)}${compatBar("Combat Synergy",comp.W)}${compatBar("Theme Synergy",comp.V)}${compatBar("Gameplay",comp.G)}
         </div>
