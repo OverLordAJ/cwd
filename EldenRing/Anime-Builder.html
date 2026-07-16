@@ -4493,7 +4493,7 @@ function renderChars(){
         <div class="char-emblem">${esc(c.name[0])}</div>
       </div>
       <div class="char-body">
-        <h4>${esc(c.name)}</h4>
+        <h4>${esc(c.name)} <span style="font-size:12px">${guildEmojis(c,3)}</span></h4>
         <div class="anime">${esc(c.anime)}</div>
         <span class="tag" style="background:${CAT_COLORS[c.category]}22;color:${CAT_COLORS[c.category]};border:1px solid ${CAT_COLORS[c.category]}55">${esc(c.category)}</span>
         <span class="tag" style="background:rgba(212,175,55,.12);color:var(--gold2);border:1px solid var(--gold-dim)">${esc(c.archetype)}</span>${c.deep?'<span class="tag" style="background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.45)">★ Tier I — Deep Dossier</span>':''}${rarityTag(c)}
@@ -4631,7 +4631,7 @@ function openChar(id){
   box.innerHTML=`
     <div class="modal-hd" style="background:linear-gradient(120deg,${c.banner[0]},${c.banner[1]})">
       <button class="modal-close" onclick="closeModal()">✕</button>
-      <h2>${esc(c.name)}</h2>
+      <h2>${esc(c.name)} <span style="font-size:20px">${guildEmojis(c,3)}</span></h2>
       <div class="sub">${esc(c.anime)} · ${esc(c.category)} · ${esc(c.powerSystem)}</div>
     </div>
     <div class="modal-body">
@@ -4645,6 +4645,9 @@ function openChar(id){
         <div class="info-grid">
           <div class="info-box" style="grid-column:1/-1"><h5>Biography</h5><p>${esc(c.bio)}</p></div>
           <div class="info-box"><h5>Personality</h5><p>${esc(c.personality)}</p></div>
+          <div class="info-box"><h5>🛡 Guild Affiliations</h5><p style="line-height:2.2">${(()=>{const gs=charGuilds(c);
+            return gs.length? gs.map(g=>`<span class="pill gold" style="cursor:pointer;margin:2px 4px 2px 0" onclick="closeModal();go('guilds');showGuild('${g.id}')">${g.icon} ${esc(g.name)}</span>`).join("")
+            : "Unaffiliated wanderer — the Guild Hall accepts founders.";})()}</p></div>
           ${c.battles.length?`<div class="info-box"><h5>Anime History — Major Battles</h5><ul>${c.battles.map(b=>`<li>${esc(b)}</li>`).join("")}</ul></div>`:""}
           ${c.allies.length?`<div class="info-box"><h5>Allies</h5><p>${c.allies.map(esc).join(" · ")}</p></div>`:""}
           ${c.enemies.length?`<div class="info-box"><h5>Enemies</h5><p>${c.enemies.map(esc).join(" · ")}</p></div>`:""}
@@ -4700,7 +4703,7 @@ function renderBuildViewer(){
     <div class="panel" style="margin-bottom:16px">
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
         <div class="char-emblem" style="position:static;background:linear-gradient(135deg,${c.banner[0]},${c.banner[1]})">${esc(c.name[0])}</div>
-        <div style="flex:1"><b style="font-family:var(--font-display);font-size:18px">${esc(c.name)}</b>
+        <div style="flex:1"><b style="font-family:var(--font-display);font-size:18px">${esc(c.name)} <span style="font-size:13px">${guildEmojis(c,3)}</span></b>
         <div style="font-size:12px;color:var(--txt-dim)">${esc(c.archetype)} · ${c.builds.length} build versions · rating ${c.rating}</div></div>
         <button class="btn" onclick="openChar('${c.id}')">Full Profile</button>
       </div>
@@ -4944,7 +4947,7 @@ function renderRanks(){
     <div class="rank-row" style="cursor:pointer" onclick="openChar('${c.id}')">
       <div class="rank-num">${i+1}</div>
       <div class="char-emblem" style="position:static;width:38px;height:38px;font-size:16px;background:linear-gradient(135deg,${c.banner[0]},${c.banner[1]})">${esc(c.name[0])}</div>
-      <div class="rank-info"><b>${esc(c.name)}</b><small>${esc(c.anime)} · ${esc(c.archetype)} · ${esc(c.builds[0].name)}</small></div>
+      <div class="rank-info"><b>${esc(c.name)} <span style="font-size:11px">${guildEmojis(c,2)}</span></b><small>${esc(c.anime)} · ${esc(c.archetype)} · ${esc(c.builds[0].name)}</small></div>
       <div class="rank-score">${m.fmt(m.score(c),c)}</div>
     </div>`).join("");
 }
