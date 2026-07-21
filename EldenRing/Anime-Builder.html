@@ -473,6 +473,8 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     <div class="sec-title">ANIME BUILD CAREER MODE</div>
     <div class="sec-sub">Start as a Tarnished. Collect characters, complete daily challenges, earn runes, found guilds, crown champions — and climb to Elden Lord. Everything you do across the Nexus feeds your career.</div>
     <div id="careerRoot"></div>
+    <div id="tierRoot"></div>
+    <div id="setsRoot"></div>
     <div id="recEngine"></div>
   </section>
 
@@ -528,7 +530,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
   <!-- RANKINGS -->
   <section class="view" id="view-rankings">
     <div class="sec-title">COMPETITIVE RANKINGS</div>
-    <div class="sec-sub">Computed live from the Nexus database — ratings weigh damage ceiling, survivability, anime accuracy and community score.</div>
+    <div class="sec-sub">Computed live from the Nexus database. Character ratings/popularity are deterministic seeds, clearly labeled until a real backend collects community data.</div>
     <div class="chips" id="rankChips"></div>
     <div id="rankList"></div>
   </section>
@@ -575,7 +577,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
   <!-- ANALYTICS -->
   <section class="view" id="view-analytics">
     <div class="sec-title">ANALYTICS CENTER</div>
-    <div class="sec-sub">Community trend data blended with your own local activity.</div>
+    <div class="sec-sub">Your local activity, plus seeded placeholder trends. <span class="pill weak" style="font-size:9px">Seeded ratings — community data pending backend</span></div>
     <div class="two-col">
       <div class="panel"><h3>MOST POPULAR CHARACTERS</h3><div class="bar-chart" id="chartPop"></div></div>
       <div class="panel"><h3>MOST USED WEAPONS</h3><div class="bar-chart" id="chartWep"></div></div>
@@ -1585,6 +1587,8 @@ const ACHIEVEMENTS = [
 {id:"lord_of_cinder", icon:"🌑", name:"Lord of Cinder", desc:"Complete the entire Dark Fantasy collection.", check:(s)=>CHARACTERS.filter(c=>c.darkFantasy).every(c=>(s.viewedChars||[]).includes(c.id))},
 {id:"elden_lord_col", icon:"🏰", name:"Elden Lord", desc:"Complete the Elden Ring + DLC collection.", check:(s)=>CHARACTERS.filter(c=>c.franchise==="Elden Ring"||c.franchise==="Shadow of the Erdtree").every(c=>(s.viewedChars||[]).includes(c.id))},
 {id:"fusion_master", icon:"⚗️", name:"Fusion Master", desc:"Create 100 fusions.", check:(s)=>(s.fusions||0)>=100},
+{id:"set_collector", icon:"🗃", name:"Set Collector", desc:"Complete 5 collection sets.", check:(s)=>(s.setsDone||[]).length>=5},
+{id:"set_curator", icon:"🏛", name:"Grand Curator", desc:"Complete 20 collection sets.", check:(s)=>(s.setsDone||[]).length>=20},
 {id:"hard_cap", icon:"⬆️", name:"Hard Cap", desc:"Reach level 713 — all eight attributes raised to their hard cap of 99.", check:(s)=>(s.myLevel||1)>=713},
 {id:"completionist", icon:"💯", name:"Completionist", desc:"Unlock every other achievement.", check:(s,unlocked)=>unlocked.filter(a=>a!=="completionist").length>=ACHIEVEMENTS.length-1}
 ];
@@ -3300,8 +3304,17 @@ function analyzeParty(ids){
   const roles=members.map(roleOf), uniq=[...new Set(roles)];
   const avg=members.reduce((n,c)=>n+c.rating,0)/members.length;
   const sameFr=new Set(members.map(m=>m.franchise)).size===1;
-  const synergy=Math.min(10, Math.round((avg*0.62 + uniq.length*1.15 + (sameFr?0.9:0.3))*10)/10);
-  return {members,roles,uniq,avg,sameFr,synergy};
+  let bondBonus=0, volatile=null, bonds=[];
+  for(let i=0;i<members.length;i++) for(let j=i+1;j<members.length;j++){
+    const e=getRel(members[i].id,members[j].id);
+    if(!e) continue;
+    bonds.push(e);
+    if(e[2]==="team"||e[2]==="ally"||e[2]==="family"||e[2]==="mentor") bondBonus+=e[3]*0.06;
+    if(e[2]==="nemesis") volatile=e;
+    if(e[2]==="rival") bondBonus+=e[3]*0.03;
+  }
+  const synergy=Math.min(10, Math.round((avg*0.62 + uniq.length*1.15 + (sameFr?0.9:0.3) + Math.min(1.2,bondBonus))*10)/10);
+  return {members,roles,uniq,avg,sameFr,synergy,bonds,volatile};
 }
 function partyCard(p,i){
   const a=analyzeParty(p.members); if(!a) return "";
@@ -3310,7 +3323,7 @@ function partyCard(p,i){
       <h3 style="margin-bottom:4px">${esc(p.name)}</h3>
       <span class="pill gold">Synergy ${a.synergy}/10</span>
     </div>
-    <p style="font-size:12px;color:var(--txt-dim);margin-bottom:12px">${esc(p.desc)} ${a.sameFr?'<span class="pill weak">Same-universe bond bonus</span>':''}</p>
+    <p style="font-size:12px;color:var(--txt-dim);margin-bottom:12px">${esc(p.desc)} ${a.sameFr?'<span class="pill weak">Same-universe bond bonus</span>':''}${a.bonds&&a.bonds.length?` <span class="pill gold">🔗 ${a.bonds.length} canon bond${a.bonds.length>1?"s":""}</span>`:""}${a.volatile?` <span class="pill resist">💢 Volatile chemistry: ${esc(a.volatile[4])}</span>`:""}</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
       ${a.members.map((m,j)=>`<div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:7px 12px;cursor:pointer" onclick="openChar('${m.id}')">
         <div class="char-emblem" style="position:static;width:30px;height:30px;font-size:13px;background:linear-gradient(135deg,${m.banner[0]},${m.banner[1]})">${esc(m.name[0])}</div>
@@ -4204,7 +4217,7 @@ function renderTournament(){
     ${rounds.map((matches,r)=>`<div style="min-width:190px;flex-shrink:0">
       <h3 style="font-family:var(--font-display);font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:10px;text-align:center">${names[r]}</h3>
       <div style="display:flex;flex-direction:column;gap:${8*Math.pow(2,r)}px;justify-content:space-around;height:100%">
-      ${matches.map(m=>`<div style="display:flex;flex-direction:column;gap:4px">${fighterBtn(m.key,m.a)}${fighterBtn(m.key,m.b)}</div>`).join("")}
+      ${matches.map(m=>{const g=(m.a&&m.b)?getRel(m.a,m.b):null; return `<div style="display:flex;flex-direction:column;gap:4px">${g?`<div style="text-align:center;font-size:9px;color:#fca5a5;letter-spacing:1px">🔥 GRUDGE MATCH — ${REL_TYPES[g[2]].l.toUpperCase()}</div>`:""}${fighterBtn(m.key,m.a)}${fighterBtn(m.key,m.b)}</div>`;}).join("")}
       </div></div>`).join("")}
    </div>
    ${renderWars()}
@@ -4705,6 +4718,13 @@ function renderBlueprint(){
       <span class="pill gold" style="min-width:40px;text-align:center;font-family:var(--font-display)">${w}</span>
       <div><b>${esc(t)}</b><div style="font-size:12px;color:var(--txt-dim)">${esc(d)}</div></div></div>`).join("")}
   </div>
+  <div class="panel" style="margin-bottom:20px"><h3>19 — SOURCE-AUDIT RECONCILIATION (MERGED QUEUE)</h3>
+    <p style="font-size:12px;color:var(--txt-dim);margin:8px 0 10px">The Section 18 slate is merged into this queue as the canonical list. Net-new franchises from the slate, with live status:</p>
+    ${["Spice and Wolf","Rokka no Yuusha","Yona of the Dawn","Arslan Senki","Magi","Blade of the Immortal","Akame ga Kill","Seraph of the End","Scrapped Princess","Legend of the Legendary Heroes","Maoyu","Moribito","Chaika the Coffin Princess","Alderamin on the Sky"].map(f=>{
+      const live=FRANCHISES.includes(f);
+      return `<span class="pill ${live?'weak':'gold'}" style="margin:3px 4px 3px 0;${live?'':'opacity:.8'}">${live?"✅ ":"⏳ "}${esc(f)}${live?" — LIVE ("+CHARACTERS.filter(c=>c.franchise===f).length+")":" — queued"}</span>`;}).join("")}
+    <div class="build-note" style="margin-top:12px;font-size:11.5px">🗺 <b>Interactive Map — decision recorded:</b> shipped in Phase 3, then formally removed by maintainer decision. Cancelled, not pending — planning debt cleared per §19.3. · 📊 <b>Stat homogeneity (§19.2):</b> resolved — every Tier II character now carries a unique, deterministic, budget-legal stat spread (0 collisions across the roster). · ⚖ <b>Seeded-data honesty:</b> ratings/popularity/analytics now labeled as seeds in-UI.</div>
+  </div>
   <div style="text-align:center;font-size:11px;color:var(--txt-dim);line-height:1.9;padding:10px 0 20px">
     <b style="font-family:var(--font-display);letter-spacing:2px;color:var(--gold)">ANIME RING NEXUS — PHASE OMEGA BLUEPRINT</b><br>
     Planning memo — the gap analysis and named rosters above are the build queue, not yet live characters.<br>
@@ -4712,13 +4732,239 @@ function renderBlueprint(){
   </div>`;
 }
 
+/* ============ OMEGA WAVE 2 SYSTEMS — RELATIONSHIPS · COLLECTION SETS · TIER TRANSPARENCY ============ */
+
+/* ---- 20.2 Relationship edges: typed, hand-authored canon. No procedurally invented lore. ---- */
+const REL_TYPES={ally:{i:"🤝",l:"Ally"},rival:{i:"⚔️",l:"Rival"},mentor:{i:"📜",l:"Mentor / Student"},family:{i:"🩸",l:"Family / Bond"},nemesis:{i:"💢",l:"Nemesis"},team:{i:"🛡",l:"Canonical Team"},fusion:{i:"⚗️",l:"Fusion History"}};
+const RELS=[
+["naruto","sasuke","rival",10,"The Final Valley — twice."],["naruto","jiraiya","mentor",9,"The pervy sage and his true heir."],
+["naruto","kakashihatake","mentor",8,"Team 7's teacher."],["naruto","madara","nemesis",9,"The war's endgame."],
+["naruto","hinatahyuga","family",8,"Married — she always saw him."],["sasuke","itachi","nemesis",10,"A brother's requiem — hatred built from love."],
+["sasuke","orochimaru","mentor",6,"The curse mark bargain."],["naruto","sakuraharuno","team",7,"Team 7."],
+["kakashihatake","minatonamikaze","mentor",8,"The Yellow Flash's student."],["jiraiya","minatonamikaze","mentor",8,"Master of the Fourth."],
+["jiraiya","pain","mentor",9,"The student who became his death."],["madara","hashiramasenju","rival",10,"Valley of the End — the original."],
+["madara","obitouchiha","mentor",8,"The ghost's pawn."],["itachi","kisame","team",7,"Akatsuki's odd partnership."],
+["gaara","naruto","ally",8,"The first friend of two jinchūriki."],["mightguy","kakashihatake","rival",8,"Eternal rivals — score kept meticulously."],
+["goku","vegeta","rival",10,"Kakarot. The whole word is a rivalry."],["goku","gohan","family",9,"Father and the sleeping giant."],
+["goku","piccolo","ally",8,"Enemy turned co-parent."],["goku","frieza","nemesis",10,"Namek burns forever."],
+["goku","masterroshi","mentor",8,"Kame House fundamentals."],["gohan","piccolo","mentor",9,"The year that changed both."],
+["futuretrunks","vegeta","family",8,"The son from a dead tomorrow."],
+["luffy","zoro","team",10,"Captain and first mate."],["luffy","sanji","team",8,"The cook stays."],["zoro","sanji","rival",7,"Marimo vs. dartboard brow."],
+["luffy","shanks","mentor",9,"The hat is a promise."],["luffy","portgasdace","family",10,"Marineford's wound."],["luffy","sabo","family",8,"The third brother."],
+["zoro","draculemihawk","mentor",9,"The world's strongest took an apprentice."],["luffy","kaido","nemesis",9,"Onigashima's rooftop."],
+["luffy","blackbeard","nemesis",8,"The inheritor of will vs. its thief."],["boahancock","luffy","ally",7,"The Empress, smitten."],
+["ichigo","rukiakuchiki","ally",9,"The Shinigami who changed his fate."],["ichigo","sosukeaizen","nemesis",10,"The hundred-year script."],
+["ichigo","uryuishida","rival",7,"Quincy and Substitute."],["ichigo","kisukeurahara","mentor",8,"The shopkeeper's training pit."],
+["byakuyakuchiki","rukiakuchiki","family",8,"Pride and adoption."],["kenpachizaraki","ichigo","rival",8,"The fight that woke the beast."],
+["yhwach","yamamoto","nemesis",9,"A thousand-year grudge repaid."],["grimmjow","ichigo","rival",8,"The grin that keeps coming back."],
+["guts","griffith","nemesis",10,"The Eclipse — betrayal that defines both."],["guts","casca","family",10,"Everything that survived the Eclipse."],
+["guts","skullknight","ally",8,"The enemy of the inhumans."],["guts","nosferatuzodd","rival",8,"Three centuries meets one sword."],
+["griffith","casca","nemesis",9,"The unforgivable."],["farnese","schierke","mentor",7,"Witchcraft as rebirth."],
+["guts","puck","team",7,"The sanity chestnut."],["rickert","griffith","nemesis",6,"The slap heard across Falconia."],
+["eren","mikasaackerman","family",9,"The scarf."],["eren","arminarlert","team",9,"The sea they promised."],
+["eren","reinerbraun","nemesis",9,"Two sides of the same wall."],["eren","zekeyeager","family",8,"Brothers with one plan too many."],
+["levi","erwinsmith","ally",10,"His heart, devoted."],["levi","zekeyeager","nemesis",9,"The vow to Erwin."],
+["gojo","sugurugeto","nemesis",10,"The only one — best friend, other path."],["gojo","yujiitadori","mentor",8,"The strongest's student."],
+["yujiitadori","ryomensukuna","nemesis",10,"Vessel and king."],["yujiitadori","aoitodo","team",8,"Brothers. Full stop."],
+["megumifushiguro","tojifushiguro","family",8,"The father who sold the name."],["gojo","tojifushiguro","nemesis",9,"The awakening duel."],
+["tanjiro","nezukokamado","family",10,"The whole reason."],["tanjiro","zenitsuagatsuma","team",8,"The trio's thunder."],
+["tanjiro","inosukehashibira","team",8,"The trio's beast."],["tanjiro","muzankibutsuji","nemesis",10,"The earrings he cannot forget."],
+["tanjiro","giyutomioka","mentor",8,"The Hashira who spared her."],["kyojurorengoku","akaza","nemesis",9,"Set your heart ablaze — until dawn."],
+["jinwoo","chahaein","family",8,"The only scent that isn't rotten."],["jinwoo","igris","team",8,"The crimson marshal."],
+["jinwoo","beru","team",8,"The devoted ant."],["jinwoo","antares","nemesis",9,"Monarch against Monarch."],["ashborn","jinwoo","mentor",9,"The heir of shadow."],
+["artoriapendragon","mordred","nemesis",9,"Camlann, always Camlann."],["shirouemiya","emiyaarcher","family",9,"Arguing with your own future."],
+["cuchulainn","scathach","mentor",8,"The Shadow Isle's homework."],
+["alucard","integrahellsing","ally",10,"Master and monster, thirty years."],["alucard","serasvictoria","mentor",9,"Police girl to true nosferatu."],
+["alucard","alexanderanderson","rival",10,"Monster vs. monster of God."],["themajor","alucard","nemesis",9,"A war declared on one vampire."],
+["waltercdornez","alucard","nemesis",8,"The Angel of Death's last betrayal."],
+["trevorbelmont","syphabelnades","team",9,"The wagon crew."],["trevorbelmont","alucardcastlevania","team",8,"Grudging brothers-in-arms."],
+["dracula","alucardcastlevania","nemesis",10,"Father, mother, and the stake between."],["isaac","hector","rival",7,"Two forgemasters, two loyalties."],
+["carmilla","lenore","team",7,"The Council of Sisters."],
+["clare","teresa","mentor",10,"The flesh she carries."],["clare","priscilla","nemesis",10,"The hunt that spans the series."],
+["miria","clare","team",8,"The ghosts of Pieta."],["irene","clare","mentor",8,"The arm and the Quicksword."],
+["frieren","fern","mentor",9,"A human lifetime, properly witnessed."],["frieren","himmel","team",10,"Ten years she finally understood."],
+["flamme","frieren","mentor",9,"The founder's plan, a millennium long."],["stark","eisen","mentor",8,"The axe passed down."],
+["frieren","auratheguillotine","nemesis",8,"Sois dich hin, Aura."],
+["ainz","albedo","team",9,"Devotion (settings may have been edited)."],["ainz","shalltearbloodfallen","team",7,"The World Item incident."],
+["subaru","emilia","family",9,"The reason for every loop."],["subaru","rem","family",9,"The zero of Return by Death."],
+["rem","ram","family",10,"Twin horns, one heart."],["subaru","beatrice","team",8,"The contract in the library."],
+["subaru","juliusjuukulius","rival",7,"The duel that taught him shame."],
+["holo","kraftlawrence","team",10,"The cart, the wheat, the centuries."],["holo","myuri","family",9,"The wolf's daughter."],
+["evebolan","kraftlawrence","rival",7,"Profit against principle."],
+["arslan","daryun","ally",10,"The lance sworn at the oath's dawn."],["arslan","narsus","mentor",9,"Strategy (and terrible paintings)."],
+["arslan","hilmes","nemesis",9,"Two claims, one throne."],["gieve","farangis","rival",6,"Courtship as siege warfare."],
+["aladdin","alibabasaluja","team",10,"Magi and king vessel."],["alibabasaluja","morgiana","team",8,"The chains she chose."],
+["aladdin","judar","rival",8,"Two magi, two rukh."],["sinbad","jafar","team",8,"King and conscience."],["kouenren","hakuryuuren","nemesis",8,"Kou's succession in flames."],
+["manji","rinasano","team",10,"The vow of a hundred villains."],["manji","shira","nemesis",9,"The one he cannot forgive."],
+["rinasano","anotsukagehisa","nemesis",9,"The man who broke her dojo."],["makieotonotachibana","anotsukagehisa","ally",8,"Peerless grace, reluctant loyalty."],
+["akame","kurome","nemesis",10,"Sisters on opposite blades."],["tatsumi","esdeath","nemesis",8,"The obsession he refused."],
+["akame","esdeath","rival",9,"The duel the empire ends on."],["tatsumi","bulat","mentor",8,"Incursio inherited."],["leone","tatsumi","team",7,"Night Raid's big sister."],
+["adletmayer","fremyspeeddraw","team",8,"The strongest man and the gunpowder saint."],["adletmayer","nashetania","nemesis",8,"The seventh."],
+["yona","sonhak","team",10,"The Thunder Beast and his dawn."],["yona","soowon","nemesis",10,"The coup that made her."],
+["sonhak","soowon","nemesis",9,"Best friend, king-slayer."],["kija","jaeha","rival",6,"White claw, green leg."],["zeno","yona","ally",8,"The oldest promise."],
+["artorias","greatgreywolfsif","team",9,"The wolf still guards the grave."],["ornstein","executionersmough","team",8,"Anor Londo's last defense."],
+["gwynlordofcinder","darksungwyndolin","family",7,"The son left to the dark."],["ranni","blaidd","team",9,"The shadow sworn to the moon."],
+["malenia","radahn","rival",10,"The stalemate that rotted a star."],["morgott","mohg","family",9,"Twin omens, opposite thrones."],
+["messmer","queenmarika","family",9,"The hidden son's crusade."],["maliketh","queenmarika","ally",9,"Shadowbound beast of the queen."],
+["ludwigtheholyblade","laurencethefirstvicar","ally",7,"The church's first hunters."],["gehrman","thegoodhunter","mentor",9,"The dream's first and last."],
+["gehrman","ladymaria","mentor",8,"The student he couldn't keep."],["wolf","isshinashina","nemesis",9,"The Sword Saint at the field's end."],
+["wolf","greatshinobiowl","nemesis",9,"The foster father's final lesson."],["wolf","emma","ally",7,"The physician's quiet aid."],
+["spiderman","venom","nemesis",8,"The suit that bit back."],["ironman","captainamerica","rival",8,"The Accords broke the family."],
+["batman","thejoker","nemesis",10,"One bad day, forever reenacted."],["superman","darkseid","nemesis",9,"Hope against Apokolips."],
+["thorodinson","hulk","team",7,"Friend from work."],
+["zeus","hades","family",8,"The underworld got the short straw."],["thor","loki","family",9,"Brothers, technically."],
+["odin","fenrir","nemesis",9,"The wolf and the one-eyed debt."],["zeus","poseidon","family",7,"Sky and sea, always arguing."],
+["geraltofrivia","ciri","family",10,"The Law of Surprise made true."],["geraltofrivia","yenneferofvengerberg","family",9,"The wish that bound them."],
+["vesemir","geraltofrivia","mentor",9,"Kaer Morhen's last lesson."],["geraltofrivia","lethoofgulet","rival",7,"Kingslayer's debt."],["ciri","eredin","nemesis",9,"The Hunt never stops riding."],
+["cloudstrife","sephiroth","nemesis",10,"One-winged angel, endless descent."],["cloudstrife","tifalockhart","team",9,"Seventh Heaven."],
+["cloudstrife","zackfair","family",9,"The Buster Sword's true weight."],
+["dantesonofsparda","vergil","rival",10,"The Sparda brothers' eternal argument."],["nero","vergil","family",8,"The arm was his father's."],
+["kratos","atreus","family",10,"BOY."],["kratos","baldur","nemesis",9,"The stranger who couldn't feel."],["freya","baldur","family",9,"A mother's spell, a son's rage."],
+["arthasmenethil","jainaproudmoore","family",8,"The prince she couldn't follow."],["arthasmenethil","utherthelightbringer","mentor",9,"Stratholme ended the lesson."],
+["illidanstormrage","malfurion","family",9,"Ten thousand years of brotherly grudge."],["sylvanaswindrunner","arthasmenethil","nemesis",10,"The banshee remembers Quel'Thalas."],
+["shinjiikari","gendoikari","family",9,"The father at the bottom of it all."],["shinjiikari","kaworunagisa","ally",9,"The fifth child's kindness."],
+["lelouchvibritannia","suzakukururugi","rival",10,"Zero Requiem — enemies to the plan's end."],["lelouchvibritannia","cc","team",9,"The witch and her warlock."],
+["amuroray","charaznable","rival",10,"The White Devil and the Red Comet."],
+["edwardelric","alphonseelric","family",10,"The armor holds his brother's debt."],["edwardelric","roymustang","ally",8,"Fullmetal and the Flame."],
+["scar","edwardelric","nemesis",7,"Vengeance turned alliance."],["kingbradley","lingyao","nemesis",8,"Wrath against the next Greed."],
+["denji","power","team",10,"Buddy. The first one."],["denji","makima","nemesis",10,"The leash disguised as love."],["akihayakawa","denji","family",9,"Found family, curse included."],
+["izukumidoriya","katsukibakugo","rival",10,"Kacchan. Since the sandbox."],["izukumidoriya","allmight","mentor",10,"One For All, passed with a smile."],
+["tomurashigaraki","izukumidoriya","nemesis",9,"Symbols of opposite eras."],["endeavor","dabi","nemesis",9,"The family debt, on live television."],
+["gonfreecss","killuazoldyck","team",10,"The friendship the assassin chose."],["gonfreecss","hisoka","rival",8,"Unripe fruit, patient monster."],
+["killuazoldyck","illumizoldyck","family",9,"The needle in his head."],["kurapika","chrollolucilfer","nemesis",10,"Scarlet eyes against the spider."],
+["meruem","isaacnetero","nemesis",10,"The rose that answered evolution."],
+["jotaro","diobrando","nemesis",10,"Star Platinum meets The World."],["jonathanjoestar","diobrando","nemesis",10,"The first JoJo, the stolen body."],
+["jotaro","josukehigashikata","family",7,"Uncle-nephew, roughly."],["giornogiovanna","diobrando","family",8,"The son of DIO, heart of Jonathan."]];
+const REL_INDEX={};
+RELS.forEach(r=>{ const [a,b]=r; (REL_INDEX[a]=REL_INDEX[a]||[]).push(r); (REL_INDEX[b]=REL_INDEX[b]||[]).push(r); });
+function getRel(a,b){ return RELS.find(r=>(r[0]===a&&r[1]===b)||(r[0]===b&&r[1]===a)); }
+function relationshipsOf(id){ return (REL_INDEX[id]||[]).slice().sort((x,y)=>y[3]-x[3]); }
+/* validation guard: edges must reference real ids */
+const REL_BAD=RELS.filter(r=>!CHARACTERS.find(c=>c.id===r[0])||!CHARACTERS.find(c=>c.id===r[1]));
+
+/* ---- 20.3 Collection Sets ---- */
+function idsOk(arr){ return arr.filter(id=>CHARACTERS.some(c=>c.id===id)); }
+const SETS_RAW=[
+["team-7","Team 7","Naruto",["naruto","sasuke","sakuraharuno","kakashihatake"],"The Hidden Leaf's most dysfunctional, most legendary genin cell."],
+["sannin","The Legendary Sannin","Naruto",["jiraiya","tsunade","orochimaru"],"Three students of the Third — legend, healer, serpent."],
+["kage-line","The Hokage Line","Naruto",["hashiramasenju","tobiramasenju","hiruzensarutobi","minatonamikaze","tsunade","kakashihatake","naruto"],"Every hat the Leaf has trusted."],
+["akatsuki-core","Akatsuki Strike Cell","Naruto",["itachi","kisame","deidara","pain","konan","sasori","hidan","kakuzu"],"The red clouds at dawn."],
+["straw-hats","Straw Hat Crew","One Piece",["luffy","zoro","sanji","nami","usopp","nicorobin","franky","brook","jinbe"],"The future Pirate King's family."],
+["worst-generation","Worst Generation Sample","One Piece",["luffy","zoro","trafalgarlaw","eustasskid","blackbeard"],"The supernovas who broke the sea."],
+["espada-top","The Espada","Bleach",["coyotestarrk","baraggan","tierharribel","ulquiorra","nnoitra","grimmjow","szayelaporrogranz"],"Las Noches' numbered blades."],
+["gotei-captains","Gotei 13 Sample","Bleach",["yamamoto","byakuyakuchiki","kenpachizaraki","toshirohitsugaya","shunsuikyoraku","jushiroukitake","mayurikurotsuchi"],"The captains' haori."],
+["band-of-hawk","Band of the Hawk","Berserk",["guts","griffith","casca","judeau","pippin","corkus","rickert"],"The mercenary band that dreamed."],
+["god-hand-apostles","The Reborn Hawks","Berserk",["griffith","nosferatuzodd","grunbeld","locus","irvine"],"Falconia's monstrous knights."],
+["eclipse-survivors","Eclipse Survivors","Berserk",["guts","casca","rickert"],"What the Brand left behind."],
+["hashira","The Hashira","Demon Slayer",["giyutomioka","kyojurorengoku","tengenuzui","muichirotokito","mitsurikanroji","shinobukocho","gyomeihimejima","obanaiiguro","sanemishinazugawa"],"The Corps' nine pillars."],
+["kamado-unit","Demon Slayer Squad","Demon Slayer",["tanjiro","nezukokamado","zenitsuagatsuma","inosukehashibira"],"The Kamado unit."],
+["upper-moons","Upper Moon Sample","Demon Slayer",["kokushibo","doma","akaza","gyutaro","daki","enmu"],"Muzan's strongest curse."],
+["survey-corps","Survey Corps Elite","Attack on Titan",["eren","mikasaackerman","arminarlert","levi","erwinsmith","hangezoe","jeankirstein","conniespringer","sashablouse"],"Humanity's wings."],
+["warriors-marley","Marleyan Warriors","Attack on Titan",["reinerbraun","annieleonhart","zekeyeager","pieckfinger","porcogalliard"],"The other side of the walls."],
+["jujutsu-first-years","Jujutsu Tech First Years","Jujutsu Kaisen",["yujiitadori","megumifushiguro","nobarakugisaki","gojo"],"Three students and the Honored One."],
+["night-raid","Night Raid","Akame ga Kill",["akame","tatsumi","mine","bulat","leone","lubbock","sheele","najenda","chelsea","susanooteigu"],"The empire's shadow blade."],
+["jaegers","The Jaegers","Akame ga Kill",["esdeath","kurome","wave","run"],"The empire's counter-blade."],
+["six-braves","The Braves of the Six Flowers","Rokka no Yuusha",["adletmayer","nashetania","fremyspeeddraw","goldofauora","hanshumpty","morachester","chamorosso","roloniamanchetta"],"Six chosen — seven present."],
+["four-dragons","The Four Dragon Warriors","Yona of the Dawn",["kija","shinah","jaeha","zeno"],"The founding king's blood, scattered."],
+["yona-company","Yona's Company","Yona of the Dawn",["yona","sonhak","yun","kija","shinah","jaeha","zeno"],"The Dark Dragon and the Happy Hungry Bunch."],
+["hero-party","Himmel's Hero Party","Frieren",["frieren","himmel","heiter","eisen"],"The party the demon king fell to."],
+["frieren-journey","Journey North","Frieren",["frieren","fern","stark"],"The second journey — the one that matters."],
+["itto-ryu","The Itto-ryu","Blade of the Immortal",["anotsukagehisa","makieotonotachibana","magatsutaito","sabatokuroi"],"The school that eats schools."],
+["sindria-eight","Sindria's Generals","Magi",["sinbad","jafar","masrur","yamraiha","sharrkan"],"The Seven Seas Alliance core."],
+["kou-royals","Kou Imperial Court","Magi",["kouenren","hakuryuuren","kougyokuren","judar"],"The empire's burning succession."],
+["pars-loyalists","Arslan's Court","Arslan Senki",["arslan","daryun","narsus","gieve","farangis","elam","alfreed"],"The exiled prince's dawn."],
+["council-sisters","Council of Sisters","Castlevania",["carmilla","lenore","striga","morana"],"Styria's four-throned ambition."],
+["belmont-line","Belmont Bloodline","Castlevania",["trevorbelmont","richterbelmont"],"The whip's inheritance."],
+["abyssal-ones","The Abyssal Ones","Claymore",["riful","isley","luciela"],"The three thrones of awakening."],
+["ghosts-pieta","Ghosts of Pieta","Claymore",["clare","miria","deneve","helen","jean"],"The seven who refused to die."],
+["nazarick-floor","Floor Guardians","Overlord",["albedo","shalltearbloodfallen","demiurge","cocytus","aurabellafiora","mare"],"Nazarick's devoted overseers."],
+["pleiades-sample","Nazarick Court","Overlord",["ainz","albedo","narberal","sebastian","pandorasactor"],"The Sorcerer King's household."],
+["emilia-camp","Emilia Camp","Re:Zero",["subaru","emilia","rem","ram","beatrice","otto","garfiel","roswaal"],"The mansion's chaotic faction."],
+["wolf-pack","Kaer Morhen Wolves","The Witcher",["geraltofrivia","vesemir","eskel","lambert","ciri"],"The last of the Wolf School."],
+["lodge-sample","Hansa Sample","The Witcher",["geraltofrivia","regis","dandelion","ciri"],"The company that crossed a war."],
+["anor-londo","Anor Londo Guard","Dark Souls",["ornstein","executionersmough","darksungwyndolin","gwynlordofcinder"],"The city of gods' last watch."],
+["four-knights-gwyn","Four Knights of Gwyn","Dark Souls",["ornstein","artorias","lordsbladeciaran","hawkeyegough"],"The lord's chosen blades."],
+["old-hunters","The Old Hunters","Bloodborne",["gehrman","ladymaria","ludwigtheholyblade","simontheharrowed","brador"],"The nightmare remembers them."],
+["shardbearers","Demigod Shardbearers","Elden Ring",["godrick","radahn","rykard","malenia","morgott","mohg"],"The Shattering's crowned children."],
+["land-shadow-lords","Lords of the Shadow Realm","Shadow of the Erdtree",["messmer","rellana","midra","baylethedread","romina","metyr","promisedconsortradahn"],"The DLC's remembrance ring."],
+["ashina-clan","Ashina's Last Stand","Sekiro",["isshinashina","genichiroashina","emma","wolf"],"The fading kingdom's blades."],
+["avengers-core","Avengers Assembled","Marvel",["ironman","captainamerica","thorodinson","hulk","spiderman","doctorstrange","blackpanther","scarletwitch"],"Earth's mightiest heroes."],
+["justice-league","Justice League","DC",["superman","batman","wonderwoman","theflash","aquaman","greenlantern"],"The world's finest."],
+["olympian-council","Olympian Council","Greek Mythology",["zeus","poseidon","hades","athena","ares","apollo","artemis","hermes"],"The twelve thrones' core."],
+["aesir-court","Court of the Aesir","Norse Mythology",["odin","thor","loki","tyr","heimdall","freyja","baldr"],"Asgard before the twilight."],
+["z-fighters","Z Fighters","Dragon Ball",["goku","vegeta","gohan","piccolo","krillin","tienshinhan"],"Earth's last line of defense."],
+["sparda-line","Legacy of Sparda","Devil May Cry",["sparda","dantesonofsparda","vergil","nero"],"The bloodline hell keeps losing to."],
+["inuyasha-party","Inuyasha's Party","Inuyasha",["inuyasha","kagome","miroku","sango","kirara"],"The feudal fairy tale, complete."],
+["founders","The Founders","—",null,"The original 23 deep dossiers — where the Nexus began."]];
+const SETS=SETS_RAW.map(([id,name,fr,members,flavor])=>{
+  const m = members===null? CHARACTERS.filter(c=>c.deep).map(c=>c.id) : idsOk(members);
+  return {id,name,fr,members:m,flavor,runes:150+m.length*25};
+}).filter(s=>s.members.length>=2);
+function setProgress(s){
+  const got=s.members.filter(id=>(S.viewedChars||[]).includes(id));
+  return {got:got.length, total:s.members.length, missing:s.members.filter(id=>!(S.viewedChars||[]).includes(id))};
+}
+function checkSets(){
+  S.setsDone=S.setsDone||[];
+  SETS.forEach(s=>{
+    if(S.setsDone.includes(s.id)) return;
+    const p=setProgress(s);
+    if(p.got===p.total){ S.setsDone.push(s.id); awardRunes(s.runes,"Collection set complete: "+s.name); }
+  });
+  store.set(S);
+}
+function renderSets(){
+  const el=document.getElementById("setsRoot"); if(!el) return;
+  const list=SETS.map(s=>({s,p:setProgress(s)})).sort((a,b)=>(b.p.got/b.p.total)-(a.p.got/a.p.total));
+  el.innerHTML=`<div class="panel" style="margin-top:16px"><h3>🗃 COLLECTION SETS — ${(S.setsDone||[]).length}/${SETS.length} COMPLETE</h3>
+   <p style="font-size:11px;color:var(--txt-dim);margin:6px 0 12px">Canonical teams, villain orders and cross-franchise legends. Complete a set for a rune bounty — the bars tell you exactly who you're missing.</p>
+   <div style="max-height:420px;overflow-y:auto">
+   ${list.map(({s,p})=>{
+     const done=(S.setsDone||[]).includes(s.id);
+     const missNames=p.missing.slice(0,4).map(id=>{const c=CHARACTERS.find(x=>x.id===id);return c?c.name.split(" ")[0]:id;});
+     return `<div style="padding:9px 0;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12.5px">
+        <b>${done?"✅ ":""}${esc(s.name)} <small style="color:var(--txt-dim)">· ${esc(s.fr)}</small></b>
+        <span class="pill ${done?'weak':'gold'}">${p.got}/${p.total}${done?"":" · +"+s.runes+" ⚜"}</span></div>
+      <div class="prog-track" style="height:8px;margin:6px 0 4px"><div class="prog-fill" style="width:${Math.max(3,Math.round(p.got/p.total*100))}%"></div></div>
+      <div style="font-size:10.5px;color:${done?'var(--green)':'var(--txt-dim)'}">${done? esc(s.flavor) : (p.missing.length? "Missing: "+missNames.map(esc).join(", ")+(p.missing.length>4?" +"+(p.missing.length-4)+" more":"") : "")}</div>
+     </div>`;}).join("")}
+   </div></div>`;
+}
+
+/* ---- 9.2/9.3 Tier transparency: dual counter + promotion queue ---- */
+function renderTierPanel(){
+  const el=document.getElementById("tierRoot"); if(!el) return;
+  const t1=CHARACTERS.filter(c=>c.deep), t2=CHARACTERS.filter(c=>!c.deep);
+  // promotion signals: local usage the site already tracks
+  const usage=c=>((S.viewedChars||[]).includes(c.id)?4:0)
+    +(Object.keys(S.tracked||{}).some(k=>k.startsWith(c.id+"__"))?6:0)
+    +(Object.values(S.votes||{}).includes(c.id)?3:0)
+    +SETS.filter(s=>s.members.includes(c.id)&&setProgress(s).missing.length===1&&setProgress(s).missing[0]===c.id).length*8
+    +c.popularity*0.05;
+  const queue=[...t2].sort((a,b)=>usage(b)-usage(a)).slice(0,10);
+  el.innerHTML=`<div class="panel" style="margin-top:16px"><h3>📇 DOSSIER TIERS — HONEST COUNT</h3>
+   <div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0">
+     <span class="pill" style="background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.45)">★ ${t1.length} Tier I Deep Dossiers</span>
+     <span class="pill gold">${t2.length} Tier II Fast Dossiers</span>
+     <span class="pill weak">${CHARACTERS.length} total</span>
+   </div>
+   <p style="font-size:11px;color:var(--txt-dim);margin-bottom:10px">The headline number never implies uniform depth — per the blueprint's §9.2. Below: the <b>Promotion Queue</b>, ranked by your actual usage signals (views, tracked builds, tournament picks, sets blocked on a single missing member).</p>
+   ${queue.map((c,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer" onclick="openChar('${c.id}')">
+     <span style="font-family:var(--font-display);width:20px;color:var(--txt-dim)">${i+1}</span>
+     <div class="char-emblem" style="position:static;width:26px;height:26px;font-size:12px;background:linear-gradient(135deg,${c.banner[0]},${c.banner[1]})">${esc(c.name[0])}</div>
+     <span style="flex:1">${esc(c.name)} <small style="color:var(--txt-dim)">· ${esc(c.franchise)}</small></span>
+     <span class="pill gold" style="font-size:9px">T-II → T-I candidate</span></div>`).join("")}
+   <p style="font-size:10px;color:var(--txt-dim);margin-top:8px">Promotion happens by franchise batch — queue order is a transparent signal, not an automatic trigger.</p></div>`;
+}
+
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
   set(s){ try{ localStorage.setItem("arnexus", JSON.stringify(s)); }catch(e){} }
 };
-let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null, champions:{}, hallOfFame:[], duelVotes:{}, tracked:{}, customGuilds:[], guildXP:{}, daily:null}, store.get());
-S.alloc=S.alloc||{}; S.community=S.community||[]; S.guildFavs=S.guildFavs||[]; S.votes=S.votes||{}; S.champions=S.champions||{}; S.hallOfFame=S.hallOfFame||[]; S.duelVotes=S.duelVotes||{}; S.tracked=S.tracked||{}; S.customGuilds=S.customGuilds||[]; S.guildXP=S.guildXP||{};
+let S = Object.assign({visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null, champions:{}, hallOfFame:[], duelVotes:{}, tracked:{}, customGuilds:[], guildXP:{}, daily:null, setsDone:[], fuseHist:[]}, store.get());
+S.alloc=S.alloc||{}; S.community=S.community||[]; S.guildFavs=S.guildFavs||[]; S.votes=S.votes||{}; S.champions=S.champions||{}; S.hallOfFame=S.hallOfFame||[]; S.duelVotes=S.duelVotes||{}; S.tracked=S.tracked||{}; S.customGuilds=S.customGuilds||[]; S.guildXP=S.guildXP||{}; S.setsDone=S.setsDone||[]; S.fuseHist=S.fuseHist||[];
 if(S.runes===undefined){ S.runes=(S.viewedChars||[]).length*15+(S.fusions||0)*15+(S.bosses||[]).length*20+(S.builds||[]).length*20+(S.unlocked||[]).length*50; }
 function save(){ store.set(S); checkAchievements(); }
 
@@ -4793,7 +5039,8 @@ function renderHome(){
     ["Phase Omega Blueprint","Item audit complete (armor/weapons/talismans verified) · 87-franchise gap analysis · named rosters for 52 franchises · two-tier dossier spec defined — see the Ω Blueprint tab","done"],
     ["Omega Wave 1 — Franchise Completion","850-character goal exceeded — 20 existing franchises deepened (Berserk 19, Claymore 17, Frieren 14, Castlevania 13, Re:Zero 13, full Espada, Abyssal Ones, God Hand apostles...)","done"],
     ["Skyrim-Resonance Wave","7 lore-fit franchises added (Spice and Wolf, Arslan, Magi, Blade of the Immortal, Akame ga Kill, Rokka, Yona) + every Tier II character re-statted with unique spreads","done"],
-    ["Omega Wave 2","Reach 1,000 — relationship system · collection sets","next"],
+    ["Omega Wave 2 — Systems","Relationship edges (typed, hand-authored, never invented) · 50 collection sets · dual tier counter · promotion queue · grudge matches · edge-aware fusion & party synergy","done"],
+    ["Omega Wave 2 — Final Push","Close the last ~53 characters to 1,000 — lands after relationships so the milestone showcases the finished system","next"],
     ["Phase Omega","1,000+ characters · complete anime gaming universe",""]];
 
   document.getElementById("roadmap").innerHTML=road.map(r=>`
@@ -4963,6 +5210,7 @@ function openChar(id){
     const rar=rarityOf(c);
     awardRunes(RARITY_META[rar].runes, rar+" collected: "+c.name);
     careerAction("collects");
+    checkSets(); renderSets(); renderTierPanel();
     if(/Colossal|Brawler|Str/.test(c.archetype)) careerAction("strview");
     save();
   } else { checkAchievements(); }
@@ -4977,6 +5225,7 @@ function openChar(id){
       <div class="mtabs">
         <div class="mtab active" onclick="charTab(this,'profile')">Profile</div>
         <div class="mtab" onclick="charTab(this,'combat')">Combat Analysis</div>
+        <div class="mtab" onclick="charTab(this,'rels')">🔗 Relationships</div>
         <div class="mtab" onclick="charTab(this,'builds')">Builds (${c.builds.length})</div>
       </div>
       <div id="ctab-profile">
@@ -5004,6 +5253,24 @@ function openChar(id){
             Popularity: ${c.popularity}/100 · Archetype: ${esc(c.archetype)}</p></div>
         </div>
       </div>
+      <div id="ctab-rels" style="display:none">
+        <div class="info-grid">
+          <div class="info-box" style="grid-column:1/-1"><h5>🔗 Canon Bonds — hand-authored, never invented</h5>
+          ${(()=>{const rs=relationshipsOf(c.id); return rs.length? rs.map(r=>{
+            const other=CHARACTERS.find(x=>x.id===(r[0]===c.id?r[1]:r[0])); if(!other) return "";
+            const t=REL_TYPES[r[2]]||REL_TYPES.ally;
+            return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)">
+              <span style="font-size:16px">${t.i}</span>
+              <div class="char-emblem" style="position:static;width:28px;height:28px;font-size:12px;cursor:pointer;background:linear-gradient(135deg,${other.banner[0]},${other.banner[1]})" onclick="openChar('${other.id}')">${esc(other.name[0])}</div>
+              <div style="flex:1"><b style="cursor:pointer" onclick="openChar('${other.id}')">${esc(other.name)}</b>
+                <span class="pill gold" style="font-size:9px;margin-left:6px">${t.l} · ${r[3]}/10</span>
+                <div style="font-size:11px;color:var(--txt-dim)">${esc(r[4])}</div></div></div>`;
+          }).join("") : `<p style="color:var(--txt-dim);font-size:12px">No hand-authored canon bonds yet — this character's edges arrive with their franchise's authoring batch. Edges are never procedurally invented.</p>`;})()}
+          </div>
+          <div class="info-box"><h5>Franchise Ties</h5><p style="font-size:12px">${CHARACTERS.filter(x=>x.franchise===c.franchise&&x.id!==c.id).length} fellow ${esc(c.franchise)} characters hold <span class="pill weak" style="font-size:9px">franchise-default</span> weak ally ties — generic by design, not canon claims.</p></div>
+          <div class="info-box"><h5>⚗️ Fusion History — yours</h5><p style="line-height:2">${(()=>{const h=(S.fuseHist||[]).filter(pr=>pr.split("|").includes(c.id)); return h.length? h.slice(-6).map(pr=>{const oid=pr.split("|").find(x=>x!==c.id); const o=CHARACTERS.find(x=>x.id===oid); return o?`<span class="pill gold" style="cursor:pointer;margin:2px 3px" onclick="loadFusion('${c.id}','${o.id}')">⚗ ${esc(o.name.split(" ")[0])}</span>`:"";}).join("") : "You haven't fused this character yet — the app records fusion-history edges as you experiment.";})()}</p></div>
+        </div>
+      </div>
       <div id="ctab-builds" style="display:none">
         <div class="build-tabs">${c.builds.map((b,i)=>`<div class="mtab ${i===0?'active':''}" onclick="charBuildTab(this,'${c.id}',${i})">${esc(b.name.split("—")[0].trim())}</div>`).join("")}</div>
         <div id="charBuildBody">${buildBlock(c.builds[0],c.id,0)}</div>
@@ -5015,7 +5282,7 @@ function openChar(id){
 }
 function charTab(el,name){
   el.parentElement.querySelectorAll(".mtab").forEach(t=>t.classList.remove("active")); el.classList.add("active");
-  ["profile","combat","builds"].forEach(t=>document.getElementById("ctab-"+t).style.display = t===name?"block":"none");
+  ["profile","combat","rels","builds"].forEach(t=>{const el=document.getElementById("ctab-"+t); if(el) el.style.display = t===name?"block":"none";});
 }
 function charBuildTab(el,id,i){
   el.parentElement.querySelectorAll(".mtab").forEach(t=>t.classList.remove("active")); el.classList.add("active");
@@ -5110,14 +5377,15 @@ function compatScore(a,b,seed){
   const domA=fuseDominant(a,a), domB=fuseDominant(b,b);
   const catA=WEAPON_CAT[(WEAPON_LIST.find(x=>a.builds[0].weapons[0].includes(x.name))||{}).name];
   const catB=WEAPON_CAT[(WEAPON_LIST.find(x=>b.builds[0].weapons[0].includes(x.name))||{}).name];
-  const lore = a.franchise===b.franchise? 88+seed%10 : 68+seed%26;
+  const relEdge=getRel(a.id,b.id);
+  const lore = relEdge? 86+relEdge[3] : (a.franchise===b.franchise? 88+seed%10 : 68+seed%26);
   const build = a.archetype===b.archetype? 92+seed%7 : domA===domB? 84+seed%12 : 64+seed%20;
   const weap = catA&&catA===catB? 90+seed%9 : 66+seed%24;
   const visual = 68+(seed*7)%30;
   const gameplay = Math.round((build+weap)/2 + (seed%9)-4);
   const clamp=v=>Math.max(50,Math.min(99,v));
   const L=clamp(lore),B=clamp(build),W=clamp(weap),V=clamp(visual),G=clamp(gameplay);
-  return {L,B,W,V,G, overall:Math.round(L*.2+B*.3+W*.2+V*.1+G*.2)};
+  return {L,B,W,V,G, overall:Math.round(L*.2+B*.3+W*.2+V*.1+G*.2), edge:relEdge||null};
 }
 function compatBar(label,v){
   return `<div class="bar-row"><div class="bl">${label}</div><div class="btrack"><div class="bfill" style="width:${v}%;background:linear-gradient(90deg,${v>=85?'var(--green)':v>=70?'var(--gold)':'#f87171'}88,${v>=85?'var(--green)':v>=70?'var(--gold)':'#f87171'})">${v}%</div></div></div>`;
@@ -5126,6 +5394,12 @@ function runFusion(){
   const a=document.getElementById("fuseA").value, b=document.getElementById("fuseB").value;
   if(a===b){ toast("⚠ A character cannot fuse with themselves. Even Naruto needed Kurama."); return; }
   window._lastFuse=[a,b,(document.getElementById("fuseC")||{}).value||null].map(v=>v==="none"?null:v);
+  S.fuseHist=S.fuseHist||[];
+  const fusersIds=window._lastFuse.filter(Boolean);
+  for(let i=0;i<fusersIds.length;i++) for(let j=i+1;j<fusersIds.length;j++){
+    const key=[fusersIds[i],fusersIds[j]].sort().join("|");
+    if(!S.fuseHist.includes(key)){ S.fuseHist.push(key); if(S.fuseHist.length>300) S.fuseHist.shift(); }
+  }
   S.fusions=(S.fusions||0)+1;
   careerAction("fusions"); awardRunes(15,null);
   save();
@@ -5202,6 +5476,8 @@ function generateFusion(announce){
           ${compatBar("Lore Synergy",comp.L)}${compatBar("Build Synergy",comp.B)}${compatBar("Combat Synergy",comp.W)}${compatBar("Theme Synergy",comp.V)}${compatBar("Gameplay",comp.G)}
         </div>
       </div>
+      ${(()=>{const bonds=pairs.map(([x,y])=>getRel(x.id,y.id)).filter(Boolean);
+        return bonds.length? `<div class="build-note" style="border-color:rgba(212,175,55,.4);background:rgba(212,175,55,.06);color:var(--gold2);margin-bottom:10px">🔗 CANON BOND DETECTED — ${bonds.map(e=>`${REL_TYPES[e[2]].i} ${REL_TYPES[e[2]].l} (${e[3]}/10): ${esc(e[4])}`).join(" · ")} Lore synergy reads this real edge, not a hash.</div>`:"";})()}
       <div class="build-note" style="border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.07);color:#ddd6fe">🧬 BUILD SUMMARY — ${esc(lore)} At RL ${rl}, this ${esc(prio.label.toLowerCase())} runs ${esc(String(weapons.length))} weapon${weapons.length>1?"s":""}, ${talis.length} talismans and ${spells.length||"no"} spells${rl>=400?" — every relevant stat pushed to its cap":rl>=200?" — with surplus utility unlocked":""}.</div>
     </div>`;
   if(announce) toast("⚗️ Fusion #"+S.fusions+" created: "+name+" (RL "+rl+")");
@@ -5346,7 +5622,7 @@ function toggleBuild(id){
 }
 function resetProgress(){
   if(!confirm("Reset ALL local progress — bosses, builds, fusions and achievements?")) return;
-  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null, champions:{}, hallOfFame:[], duelVotes:{}, tracked:{}, customGuilds:[], guildXP:{}, daily:null, runes:0};
+  S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null, champions:{}, hallOfFame:[], duelVotes:{}, tracked:{}, customGuilds:[], guildXP:{}, daily:null, runes:0, setsDone:[], fuseHist:[]};
   store.set(S); renderAll(); toast("Progress reset. A new Tarnished rises.");
 }
 
@@ -5400,7 +5676,7 @@ function renderAll(){
 renderAll();
 renderSourceTabs(); srcGo("anime");
 renderFusionPresets(); updateFuseRLLabel();
-renderGuilds(); renderArena(); renderCareer(); renderTrackedBuilds(); renderRecs(); renderOmegaHub(); renderBlueprint();
+renderGuilds(); renderArena(); renderCareer(); renderTrackedBuilds(); renderRecs(); renderOmegaHub(); renderBlueprint(); renderSets(); renderTierPanel(); checkSets();
 (function(){ const fr=document.getElementById("cgFr");
   if(fr) fr.innerHTML=FRANCHISES.filter(f=>f!=="All").map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join(""); })();
 (function(){ const opts=allGuilds().map(g=>`<option value="${g.id}">${g.icon} ${esc(g.name)}</option>`).join("");
