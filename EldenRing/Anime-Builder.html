@@ -3231,28 +3231,8 @@ Object.entries(ROSTER8).forEach(([fr, list])=>{
   });
 });
 
-/* ============ STAT INDIVIDUATION PASS ============
-   Fix for "characters all feel the same": every generated (Tier II) character now gets a
-   unique, deterministic stat spread. Points are shuffled between attributes seeded by the
-   character's id — budget stays exact, bounds stay legal, archetype identity stays dominant. */
-CHARACTERS.forEach(c=>{
-  if(c.deep) return;
-  c.builds.forEach((b,bi)=>{
-    let h=hashN(c.id+"::"+bi);
-    const keys=Object.keys(b.stats);
-    // find the archetype's signature stat so individuation never dethrones it
-    const prime=keys.reduce((a,k)=>b.stats[k]>b.stats[a]?k:a,"VIG");
-    for(let i=0;i<10;i++){
-      h=(Math.imul(h,1103515245)+12345)>>>0;
-      const from=keys[(h>>>3)%8], to=keys[(h>>>13)%8];
-      if(from===to||from===prime) continue;
-      const amt=1+((h>>>21)%5);
-      const take=Math.min(amt, b.stats[from]-7);
-      const give=Math.min(take, 99-b.stats[to]);
-      if(give>0){ b.stats[from]-=give; b.stats[to]+=give; }
-    }
-  });
-});
+/* (superseded by the lore-accurate stat engine — see applyLoreStats) */
+
 
 /* ============ OMEGA WAVE 3 — THE FINAL PUSH TO 1,000 ============ */
 Object.assign(FRANCHISE_COLORS,{
@@ -3465,6 +3445,252 @@ Object.entries(ROSTER10).forEach(([fr, list])=>{
     });
   });
 });
+
+/* ============ ELDEN RING EXPANSION — THE LANDS BETWEEN, COMPLETED ============ */
+const ROSTER11={
+"Elden Ring":[
+["Rennala","Legendary","sorcerer","Queen of the Full Moon · Rebirth","The Carian queen cradling an amber egg — moonlight sorcery's mother, undone by a red-haired husband who left.","Full Moon Cast · Rebirth Rite · Scholar Summons","Carian Regal Scepter — the queen's own"],
+["Miquella","Legendary","cleric","Empyrean · Unalloyed Gold","The empyrean who could charm gods and never grow — every kindness in his plan is also a chain.","Great Rune of the Unborn · Charm · Haligtree Cultivation"],
+["Godwyn the Golden","Legendary","paladin","First Death · Prince of Death","Marika's beloved firstborn — the first demigod to die, killed in soul while his body kept growing.","Golden Charge · Deathblight Root · Beloved Prince"],
+["Torrent","Secondary Protagonist","dragoon","Spectral Steed","The spectral steed — double-jumps, spirit springs, and the only companion who never argues.","Spirit Spring Leap · Loyal Charge · Melina's Gift"],
+["Sellen","Mentor","sorcerer","Primeval Sorceress","The exiled Raya Lucaria sorceress teaching from a ruin — glintstone heresy with excellent posture.","Primeval Sorcery · Comet Azur Bequest · Body Transfer"],
+["Nepheli Loux","Secondary Protagonist","greatsword","Warrior of Godfrey's Blood","Godfrey's daughter by adoption or blood — a warrior who chooses Stormveil's throne to fix it.","Stormhawk Axe Cleave · Warrior's Roar · Chieftain's Claim"],
+["White Mask Varre","Villain","bleed","Mohg's Herald","The first voice you meet, and the worst — bloody fingers offered like a sacrament.","Bloody Finger Invasion · Maiden Slander · Dynasty Recruitment"],
+["Patches","Anti-Hero","assassin","Untethered Opportunist","The eternal traitor — an ambush, an apology, a shop, and no shame in any order.","Ambush Kick · Grovel · Merchant Pivot"],
+["Bernahl","Anti-Hero","greatsword","Recusant Knight","The Roundtable's warmest knight and Volcano Manor's coldest recruiter — both sincerely.","Beast Champion Cleave · Recusant Contract · Duelist's Farewell"],
+["Tanith","Villain","cleric","Volcano Manor's Lady","Rykard's devoted lady — hospitality, assassination contracts, and a love that outlasts digestion.","Manor Contract · Devoted Hostess · Serpent's Bride"],
+["Diallos","Secondary Protagonist","fists","Hoslow Nobleman","The failson knight who finally finds something worth dying for — and does it well.","Hoslow's Fists · Late Resolve · Jar Defense"],
+["Boc the Seamster","Secondary Protagonist","assassin","Demi-Human Tailor","The gentlest soul in the Lands Between — a needle, a mother's memory, and one wish about beauty.","Tailor's Needle · Alteration Craft · Kindest Wish"],
+["Roderika","Secondary Protagonist","summoner","Spirit Tuner","The trembling girl who learns to tune spirit ashes — the Roundtable's quiet backbone.","Spirit Tuning · Chrysalid's Memento · Grafted Grief"],
+["Sorceress Sellen's Rival Jerren","Anti-Hero","archer","Castle Redmane's Witness","Jerren of Redmane — festival warden, duel witness, and Sellen's oldest complication.","Festival Warden · Duel Oversight · Redmane Bow"],
+["Blackguard Big Boggart","Anti-Hero","tank","Boiled Prawn Merchant","The blackguard on the boardwalk — boiled prawns, betrayal, and a friendship worth the risk.","Prawn Provision · Blackguard Charge · Rya's Debt"],
+["Rya","Secondary Protagonist","assassin","Serpent-Blooded Scion","Tanith's daughter of the manor — a necklace, a lie, and a serpent beneath the courtesy.","Serpent Dagger · Manor Errand · True Face"],
+["Gowry","Villain","venom","Sage of Rot","The needle-mending sage of Caelid — every kindness a step in Malenia's rot bloom.","Unalloyed Needle · Rot Cultivation · Sage's Deceit"],
+["Brother Corhyn","Mentor","cleric","Golden Order Fundamentalist","The Roundtable's incantation scholar — faith as arithmetic, following Goldmask into the dust.","Golden Order Prayers · Fundamentalist Study · Pilgrim's Loyalty"],
+["Goldmask","Mentor","cleric","Golden Order Heretic","The silent scholar who out-reasoned the Golden Order — the perfect Order, one gesture at a time.","Law of Regression · Silent Reason · Mending Rune"],
+["Hyetta","Anti-Hero","madness","Frenzied Flame Maiden","The blind girl following shabriri grapes to the Three Fingers — a maiden for the wrong lord.","Frenzy Sight · Grape Hunger · Lord of Chaos Oath"],
+["Shabriri","Villain","madness","Yellow Fingerprint","The world's most hated man, wearing whatever face gets you to the flame.","Howl of Shabriri · Chaos Sermon · Face Theft"],
+["Seluvis","Villain","deathmage","Preceptor of Puppets","Ranni's preceptor — potions, puppet ambitions, and the most punchable prose in the game.","Puppet Rite · Amber Draught · Preceptor's Scheme"],
+["Iji","Mentor","greatsword","Blacksmith of the Giants","Ranni's blacksmith and warden — a giant of a man guarding a doll with a warhammer's patience.","Giant Forge · Sorcery Ward · Warden's Vigil"],
+["Vyke","Legendary","spear","Knight of the Roundtable Hold","The Tarnished who nearly became Elden Lord, then took the Frenzied Flame — a warning in armor.","Frenzyflame Thrust · Near-Lord's Might · Roundtable Fall"],
+["Bloody Finger Yura","Anti-Hero","katana","Hunter of Bloody Fingers","The old hunter chasing Nagakiba's owner and a bloodfiend's trail — a friend who invades for you.","Unsheathe · Bloody Finger Hunt · Nagakiba's Reach"],
+["Eleonora","Villain","twinblade","Violet Bloody Finger","The violet bloody finger — a poleblade in each hand and Yura's ending in the other.","Eleonora's Poleblade · Bloodflame Whirl · Violet Invasion"],
+["Okina","Villain","katana","Masked Swordsman","The white-masked swordsman of the Inner Consecrated Snowfield — Hand of Malenia's silent test.","Masked Draw · Snowfield Duel · Silent Judgment"],
+["Ensha","Villain","assassin","Royal Remains","The bone-clad shade at the Roundtable — Godwyn's death worn as armor.","Deathroot Invasion · Bone Vestige · Silent Watch"],
+["Commander Niall","Villain","spear","Castle Sol's Commander","The one-legged commander of Castle Sol — two spirit knights and a storm that never thaws.","Spirit Knight Summon · Frost Halberd · Last Order"],
+["Loretta","Villain","sorcerer","Royal Knight of Caria","Caria's royal knight — a greatbow of light and a loyalty that survived her queen's collapse.","Loretta's Greatbow · Mastery Slash · Haligtree Vigil"],
+["Astel","Villain","gravity","Naturalborn of the Void","The void-born star that ate an eternal city — gravity as a wound in the sky.","Gravity Bolt · Dark Nebula · Void Grasp"],
+["Godskin Apostle","Villain","pyromancer","Godskin Noble Order","The stretching apostle in stitched god-skin — black flame that burns divinity by percentage.","Black Flame Torch · Stretch Stance · Apostle Twinblade"],
+["Fire Giant","Villain","dragoon","Last of the Giants","The last giant guarding a forge he was chained to — a war fought with ankles and grief.","Forge Fire · Rolling Wheel · Giant's Curse"],
+["Elden Beast","Legendary","cleric","Vessel of the Elden Ring","The Order given a body — golden holy law swimming through space, allergic to being fought fairly.","Elden Stars · Golden Wave · Ring Vessel"],
+["Rya's Mother Tanith's Serpent","Villain","dragoon","God-Devouring Serpent","The great serpent of Mt. Gelmir — the mouth Rykard chose over godhood's rules.","Devouring Bite · Magma Spew · Blasphemous Vessel"],
+["Ancestor Spirit","Legendary","dragoon","Spirit of the Nomads","The antlered spirit of Siofra's forgotten people — a stag made of stars and mourning.","Spirit Stag Charge · Antler Cascade · Nomad's Rite"],
+["Regal Ancestor Spirit","Legendary","dragoon","Nokstella's Ancestor","The greater ancestor spirit — Nokstella's deepest reverence, wearing an aurora as antlers.","Aurora Antlers · Spirit Trample · Ancestral Blessing"],
+["Mimic Tear","Anti-Hero","spellblade","Silver Tear Mimicry","The silver tear that becomes you — your build, your gear, your mistakes, played back.","Perfect Mimicry · Silver Tear Split · Your Own Build"],
+["Maliketh's Shadow Gurranq","Villain","dragoon","Beast Clergyman","Gurranq, Beast Clergyman — Maliketh starving in a chapel, trading incantations for deathroot.","Beast Claw Rite · Deathroot Hunger · Clergyman's Fury"],
+["Enia","Mentor","cleric","Finger Reader of the Roundtable","The Two Fingers' voice at the Roundtable — remembrances traded, prophecy delivered dryly.","Finger Reading · Remembrance Exchange · Two Fingers' Word"],
+["Fia's Champion D","Anti-Hero","paladin","Hunter of the Dead","D, Hunter of the Dead — golden order steel against those who live in death, betrayed in his sleep.","Order's Blade · Deathbed Betrayal · Twinned Armor"],
+["Kenneth Haight","Secondary Protagonist","paladin","Lord of Limgrave (Self-Appointed)","The nobleman on a ruin insisting the land is his — comedy that curdles into a real claim.","Nobleman's Decree · Fort Haight Claim · Steward's Demand"],
+["Gatekeeper Gostoc","Anti-Hero","assassin","Stormveil's Gatekeeper","Stormveil's gatekeeper — helpful, thieving, and honest about neither until the end.","Backstab Opportunism · Rune Skim · Gate Shortcut"],
+["Latenna","Secondary Protagonist","archer","Albinauric Marksman","The albinauric half-sister carried in a lap — a bow that never misses and a home she'll never reach.","Albinauric Volley · Wolf Bond · Lakeside Vow"],
+["Thops","Mentor","sorcerer","Academy Scholar","The sorcerer who only ever wanted back into the Academy — a glintstone key and a small tragedy.","Academy Lore · Glintstone Key · Thops's Barrier"],
+["Jar-Bairn","Secondary Protagonist","tank","Living Jar Successor","The little jar of Jarburg — Alexander's heir in spirit, deciding what a warrior jar should be.","Jar Roll · Successor's Question · Jarburg Watch"],
+["Millicent's Sister","Villain","venom","Scarlet Rot Bloom","One of Malenia's scattered blooms — rot given a sister's face and a needle's grudge.","Rot Bloom · Sisters' Ambush · Prosthesis Envy"]],
+"Shadow of the Erdtree":[
+["St. Trina","Anti-Hero","venom","Miquella's Other Half","Miquella's discarded half — sleep offered as mercy, a knife wrapped in a lullaby.","Mists of Slumber · Sleep Blade · Abandoned Half"],
+["Igon","Legendary","archer","Dragon-Hunter of Jagged Peak","The broken hunter screaming Bayle's name — a greatbow, a grudge, and the finest voice acting in the DLC.","Igon's Greatbow · Curse-Roar · Dragon-Hunter's Vow"],
+["Moore","Secondary Protagonist","tank","Sorrowful Gravedigger","The gravedigger carrying his friends' weight — kindness that ends in one terrible request.","Grave Burden · Mourner's Guard · Final Request"],
+["Jolán","Anti-Hero","katana","Rakshasa's Bearer","Dane's companion bearing the Rakshasa's curse — a great katana and a devotion that isn't quite hers.","Rakshasa Slash · Cursed Bearing · Dane's Partner"],
+["Ymir, Mother of Fingers","Villain","sorcerer","Priest of the Fingers","The Finger priest brewing a new god in a bathtub of prayer — courtesy over a widening madness.","Finger Ritual · Metyr's Womb · Priestly Deceit"],
+["Count Ymir's Attendant Swordhand","Villain","katana","Nameless Swordhand","The Count's silent swordhands — nameless blades enforcing a mother's new theology.","Silent Draw · Attendant Duty · Nameless Blade"],
+["Divine Beast Dancing Lion","Villain","dragoon","Storm-Dancing Divine Beast","The lion of shifting storms — three elements danced through one enormous mane.","Storm Dance · Frost Shift · Lightning Coil"],
+["Commander Gaius","Villain","spear","Messmer's Foster Brother","Messmer's boar-charging commander — the DLC's most hated entrance and a genuinely tragic loyalty.","Boar Charge · Foster Brother's Oath · Impaling Lance"],
+["Scadutree Avatar","Villain","cleric","Shadow Tree Guardian","The shadow tree's avatar — a great sentinel of bark and blessing at the realm's heart.","Blessing Wave · Root Slam · Avatar's Vigil"],
+["Putrescent Knight","Villain","deathmage","Ghostflame Rider","The putrescent knight on a rotting steed — ghostflame and grave-rot in one charge.","Ghostflame Charge · Putrescence Cleave · Rotting Mount"]]
+};
+Object.entries(ROSTER11).forEach(([fr, list])=>{
+  list.forEach(e=>{
+    const [name,cat,archId,ps,bio,tech,wOver]=e;
+    const arch=ARCHETYPES[archId], h=hashN(name);
+    const techs=(tech||"Signature Technique").split(" · ");
+    const mkGear=(arr)=>{ const g=arr.slice(); if(wOver) g[0]=wOver; return g; };
+    CHARACTERS.push({
+      id:slug(name), name, anime:fr, franchise:fr, category:cat,
+      powerSystem:ps, archetype:arch.label, difficulty:arch.diff,
+      rating: Math.round((8.0+(h%12)/10)*10)/10, popularity: 60+(h%32),
+      banner: FRANCHISE_COLORS[fr]||["#d4af37","#1c1917"],
+      bio, personality:CATEGORY_PERSONA[cat], combat:arch.combat,
+      techniques:techs, transformations:[], allies:[], enemies:[], battles:[], quote:"",
+      builds:[
+        {name:"Canon Lore — RL150", level:150, type:"Lore · "+arch.label, primary:true,
+         stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.lore), armor:arch.armor.slice(),
+         talismans:arch.tal.slice(), spells:arch.spells.slice(), summon: archId==="summoner"?"Black Knife Tiche +10":"—",
+         notes:"Canon "+name+": built from what the Lands Between actually show us — "+arch.lore_note+" Signature focus: "+techs[0]+"."},
+        {name:"PvE Optimized — RL150", level:150, type:"PvE · "+arch.label,
+         stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.pve), armor:arch.armor.slice(),
+         talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"Mimic Tear +10",
+         notes:"PvE-optimized: efficiency over cosplay. Mimic Tear support, encounter-swapped talismans, and "+techs[0]+" as the boss-killing core."},
+        {name:"PvP Optimized — RL125", level:125, type:"PvP · "+arch.label,
+         stats:spreadStats(Object.assign({},arch.w,{VIG:arch.w.VIG+3}),125), weapons:mkGear(arch.gear.pvp), armor:arch.armor.slice(),
+         talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"—",
+         notes:"PvP duelist tuned for the RL125 meta: higher Vigor weighting, honest neutral game, and "+techs[0]+" as the kill condition."}
+      ],
+      deep:false
+    });
+  });
+});
+
+/* ============ LORE-ACCURATE STAT ENGINE ============
+   Replaces the previous deterministic-but-arbitrary jitter. Every Tier II character's spread is now
+   derived from who they actually are: hand-authored deltas for notable figures, and for everyone else
+   a rules pass reading their own power system, techniques, bio, category and difficulty.
+   §18.3 Rule 3: "the eight-attribute spread must encode character identity, not just damage math."   */
+const LORE_MODS={
+ /* --- glass cannons: lethal, fragile by design --- */
+ hiei:{DEX:9,VIG:-9,MND:5}, killuazoldyck:{DEX:11,VIG:-9,ARC:3}, akame:{DEX:10,VIG:-8,ARC:4},
+ levi:{DEX:12,VIG:-10,END:6}, kurome:{DEX:7,VIG:-7,ARC:6}, homuraakemi:{DEX:8,VIG:-8,MND:9},
+ mine:{DEX:9,VIG:-11,INT:5}, shinah:{DEX:9,VIG:-6,MND:4}, jaeha:{DEX:10,VIG:-7,END:4},
+ sasuke:{DEX:6,VIG:-6,INT:7}, tojifushiguro:{DEX:11,VIG:-6,MND:6,FTH:-8},
+ /* --- immortals & regenerators: absurd VIG --- */
+ manji:{VIG:16,END:6,DEX:-6,MND:-5}, alucard:{VIG:14,ARC:8,MND:-6}, zeno:{VIG:18,END:8,STR:-6,DEX:-5},
+ tenzen:{VIG:15,END:7,DEX:-6}, kakuzu:{VIG:12,END:8,DEX:-7}, hidan:{VIG:14,ARC:7,MND:-8},
+ noro:{VIG:16,END:9,MND:-9,DEX:-5}, eldertoguro:{VIG:13,ARC:6,MND:-6}, raizen:{VIG:12,STR:7,MND:-5},
+ dracula:{VIG:11,ARC:7,INT:5}, mukuro:{VIG:9,ARC:7,DEX:4},
+ /* --- tacticians & scholars: MND/INT over muscle --- */
+ shikamarunara:{MND:13,INT:9,STR:-9,VIG:-5}, narsus:{MND:14,INT:10,STR:-10,VIG:-6},
+ lelouchvibritannia:{MND:15,INT:9,STR:-11,VIG:-7,END:-4}, erwinsmith:{MND:10,FTH:6,VIG:4,DEX:-6},
+ armin:{MND:12,INT:8,STR:-9,VIG:-5}, hangezoe:{MND:11,INT:9,STR:-7}, scipioafricanus:{MND:12,FTH:5,STR:-8},
+ sionastal:{MND:11,INT:7,STR:-6}, adletmayer:{MND:9,DEX:6,STR:-5}, kraftlawrence:{MND:12,FTH:4,STR:-9,VIG:-4},
+ goldmask:{MND:14,INT:9,FTH:8,STR:-12,VIG:-8}, seluvis:{MND:10,INT:9,VIG:-8},
+ deckardcain:{MND:13,INT:9,STR:-11,VIG:-7}, samuelhayden:{MND:11,INT:8,STR:-5},
+ /* --- berserkers: VIG/STR, no patience --- */
+ thorkell:{VIG:14,STR:11,MND:-12,DEX:-5}, bjorn:{VIG:12,STR:9,MND:-10,ARC:5},
+ kenpachizaraki:{VIG:15,STR:10,MND:-13,DEX:-4}, garou:{STR:9,DEX:8,MND:-6},
+ nnoitra:{VIG:13,STR:8,MND:-10}, grimmjow:{VIG:8,STR:7,DEX:5,MND:-9},
+ sanemishinazugawa:{VIG:9,ARC:8,MND:-7}, muscular:{VIG:13,STR:12,MND:-14,DEX:-6},
+ doomslayer:{VIG:14,STR:12,END:8,MND:-12,INT:-8}, asuraberserk:{VIG:12,STR:11,MND:-11},
+ yujirohanma:{VIG:12,STR:13,MND:-9}, bakihanma:{VIG:9,STR:9,MND:-5},
+ /* --- walls: END/VIG, slow --- */
+ gyomeihimejima:{VIG:11,END:10,STR:8,DEX:-9,MND:-4}, reinerbraun:{VIG:10,END:9,DEX:-7},
+ naofumi:{VIG:12,END:11,STR:-8,DEX:-7}, alphonseelric:{VIG:11,END:10,DEX:-6,MND:4},
+ havelthe:{VIG:12,END:12,DEX:-10}, executionersmough:{VIG:11,STR:9,DEX:-9},
+ iconofsin:{VIG:14,STR:11,DEX:-11,MND:-7}, charon:{VIG:11,END:10,DEX:-8},
+ /* --- casters: MND above all, paper VIG --- */
+ frieren:{MND:14,INT:11,VIG:-9,STR:-8}, fern:{MND:12,INT:10,VIG:-9,STR:-7},
+ rudeus:{MND:11,INT:9,VIG:-6}, beatrice:{MND:13,INT:10,VIG:-10,STR:-7},
+ yamraiha:{MND:12,INT:9,VIG:-8}, serie:{MND:15,INT:12,VIG:-11,STR:-9},
+ kyubey:{MND:14,INT:11,VIG:-13,STR:-10,END:-6}, metyr:{MND:12,INT:10,VIG:-6},
+ macht:{MND:11,INT:9,VIG:-5}, thelivingtribunal:{MND:13,INT:12,FTH:9,STR:-8},
+ /* --- faith & divinity --- */
+ virgoshaka:{FTH:13,MND:9,VIG:-6,STR:-6}, buddha:{FTH:12,MND:10,STR:-5},
+ miquella:{FTH:14,MND:11,VIG:-11,STR:-11,END:-6}, eldenbeast:{FTH:13,MND:8,DEX:-7},
+ melina:{FTH:11,MND:8,VIG:-8,STR:-7}, brothercorhyn:{FTH:12,MND:9,STR:-8,VIG:-5},
+ amaterasu:{FTH:12,MND:9,VIG:-5}, jeannedarc:{FTH:13,MND:7,STR:-6},
+ /* --- speed/ranged specialists --- */
+ igon:{DEX:11,VIG:-5,STR:5,MND:-4}, latenna:{DEX:12,VIG:-13,MND:6,END:-6},
+ hawks:{DEX:12,VIG:-7,MND:5}, yokolittner:{DEX:10,VIG:-6,MND:4}, sinon:{DEX:11,VIG:-8,MND:6},
+ nova:{DEX:11,VIG:-7,ARC:4}, usopp:{DEX:9,VIG:-9,MND:8}, kagome:{DEX:8,FTH:9,VIG:-8},
+ loretta:{DEX:8,INT:8,VIG:-5},
+ /* --- children/small frames: low VIG, high agility --- */
+ riful:{VIG:-8,DEX:9,ARC:8}, chamorosso:{VIG:-11,ARC:11,MND:6}, mare:{VIG:-9,MND:9,FTH:6},
+ aurabellafiora:{VIG:-7,DEX:8,MND:5}, jarbairn:{VIG:-6,END:7,STR:-5}, boctheseamster:{VIG:-9,DEX:7,MND:6},
+ tanyadegurechaff:{VIG:-10,MND:13,INT:8,STR:-9},
+ /* --- rot/blood/curse specialists --- */
+ malenia:{ARC:6,DEX:8,VIG:-5}, romina:{ARC:10,VIG:5,MND:4}, gowry:{ARC:11,MND:7,VIG:-8,STR:-7},
+ mohg:{ARC:10,VIG:6,MND:-4}, shalltearbloodfallen:{ARC:10,DEX:6,VIG:-4}, gyutaro:{ARC:11,DEX:6,VIG:-6},
+ sttrina:{ARC:9,MND:9,VIG:-10,STR:-8}, shabriri:{ARC:9,FTH:8,VIG:-9,MND:-5}
+};
+function loreDelta(c){
+  const d={VIG:0,MND:0,END:0,STR:0,DEX:0,INT:0,FTH:0,ARC:0};
+  const A=(k,v)=>{ d[k]+=v; };
+  const txt=((c.powerSystem||"")+" "+(c.techniques||[]).join(" ")+" "+(c.bio||"")+" "+(c.archetype||"")).toLowerCase();
+  /* narrative role */
+  if(c.category==="Mentor"){ A("MND",7); A("FTH",4); A("END",-4); A("STR",-3); }
+  if(c.category==="Legendary"){ A("VIG",5); A("END",3); A("MND",2); }
+  if(c.category==="Villain"){ A("ARC",4); A("MND",3); A("FTH",-2); }
+  if(c.category==="Rival"){ A("DEX",5); A("STR",2); A("VIG",-3); }
+  if(c.category==="Anti-Hero"){ A("ARC",3); A("VIG",2); A("FTH",-2); }
+  if(c.category==="Main Protagonist"){ A("VIG",4); A("END",2); }
+  /* power-system and technique semantics */
+  if(/immortal|regenerat|undying|revive|eternal|unkillable|deathless/.test(txt)){ A("VIG",11); A("END",5); A("MND",-4); }
+  if(/speed|flash|instant|blitz|swift|godspeed|shunpo|teleport|time-skip|lightning-fast/.test(txt)){ A("DEX",8); A("VIG",-5); }
+  if(/strateg|tactic|genius|intellect|scholar|analy|calcul|planner|professor|study|research/.test(txt)){ A("MND",8); A("INT",5); A("STR",-6); A("VIG",-3); }
+  if(/berserk|rage|fury|reckless|rampage|frenzy|wrath|bloodlust|savage/.test(txt)){ A("VIG",8); A("STR",6); A("MND",-9); }
+  if(/assassin|stealth|silent|shadow|dagger|infiltrat|ambush|hidden/.test(txt)){ A("DEX",7); A("VIG",-6); A("ARC",3); }
+  if(/king|emperor|command|general|lead|captain|lord|monarch|throne|marshal/.test(txt)){ A("MND",5); A("FTH",4); }
+  if(/blood|bleed|hemorrhage|vampire|crimson/.test(txt)){ A("ARC",8); A("VIG",2); }
+  if(/poison|rot|venom|plague|toxin|miasma|decay/.test(txt)){ A("ARC",7); A("VIG",3); A("FTH",-3); }
+  if(/holy|divine|god|sacred|priest|saint|prayer|blessing|miracle|angel/.test(txt)){ A("FTH",9); A("MND",3); }
+  if(/curse|demon|devil|hell|abyss|dark|nightmare|malice/.test(txt)){ A("ARC",6); A("FTH",-4); }
+  if(/giant|colossal|titan|massive|mountain|hulking|greathammer|greataxe/.test(txt)){ A("STR",9); A("END",6); A("DEX",-8); }
+  if(/armor|shield|guard|defen|wall|fortress|bulwark|unbreakable|impact absorption/.test(txt)){ A("END",8); A("VIG",6); A("DEX",-6); }
+  if(/frail|sickly|dying|ill|blind|crippl|prosthe|one-arm|wheelchair/.test(txt)){ A("VIG",-8); A("MND",6); }
+  if(/summon|familiar|beast|shikigami|spirit|puppet|companion|legion|army/.test(txt)){ A("MND",6); A("FTH",3); A("STR",-4); }
+  if(/bow|arrow|snipe|marksman|gun|shot|crossbow|rifle|volley/.test(txt)){ A("DEX",7); A("VIG",-4); }
+  if(/ice|frost|freez|glacial|snow|blizzard|cryo/.test(txt)){ A("INT",7); A("MND",3); }
+  if(/fire|flame|burn|inferno|blaze|pyro|magma|ember/.test(txt)){ A("FTH",6); A("MND",2); }
+  if(/lightning|thunder|storm|volt|electr/.test(txt)){ A("DEX",5); A("FTH",4); }
+  if(/gravity|meteor|star|cosmic|void|space/.test(txt)){ A("INT",8); A("MND",4); A("STR",-3); }
+  if(/martial|fist|palm|grapple|karate|boxing|kick|hand-to-hand/.test(txt)){ A("STR",5); A("DEX",5); A("INT",-5); }
+  if(/merchant|trade|econom|coin|ledger|profit/.test(txt)){ A("MND",9); A("STR",-8); A("VIG",-5); A("INT",4); }
+  if(/heal|medic|physician|doctor|restor|nurse/.test(txt)){ A("FTH",8); A("MND",6); A("STR",-6); }
+  if(/samurai|katana|swordsman|iai|blade saint|kenjutsu|draw/.test(txt)){ A("DEX",6); A("VIG",-2); }
+  if(/dragon|wyrm|draconic|scale/.test(txt)){ A("FTH",5); A("STR",5); A("END",4); A("DEX",-5); }
+  if(/madness|insan|frenzied|chaos|three fingers/.test(txt)){ A("FTH",6); A("MND",-7); A("VIG",5); }
+  /* difficulty: high-skill characters are specialists, not tanks */
+  A("VIG",(3-(c.difficulty||3))*3);
+  A("END",(3-(c.difficulty||3))*2);
+  /* hand-authored override wins where present */
+  const hand=LORE_MODS[c.id];
+  if(hand) Object.keys(hand).forEach(k=>{ d[k]=(d[k]*0.35)+hand[k]; });
+  return d;
+}
+function applyLoreStats(){
+  const KEYS=["VIG","MND","END","STR","DEX","INT","FTH","ARC"];
+  const seen=new Set();
+  CHARACTERS.forEach(c=>{
+    if(c.deep) return;                       // the 24 hand-written dossiers keep their authored spreads
+    const d=loreDelta(c);
+    // the archetype's identity stat = its highest weighted attribute that isn't Vigor,
+    // because nearly every weight vector peaks at Vigor and that is not what defines a character.
+    c.builds.forEach((b,bi)=>{
+      const budget=b.level+79;
+      const ident=KEYS.filter(k=>k!=="VIG").reduce((a,k)=>b.stats[k]>b.stats[a]?k:a,"STR");
+      const scale=Math.min(1.15, b.level/150);
+      // 1. apply the lore delta as a shape change
+      const shaped={};
+      KEYS.forEach(k=>{ shaped[k]=Math.max(7, Math.min(99, b.stats[k]+(d[k]||0)*scale)); });
+      // 2. keep the identity stat in the top three — lore may bend an archetype, not erase it
+      const ranked=KEYS.slice().sort((x,y)=>shaped[y]-shaped[x]);
+      if(ranked.indexOf(ident)>2){ const swapK=ranked[2]; const t=shaped[ident]; shaped[ident]=shaped[swapK]; shaped[swapK]=t; }
+      // 3. proportional fit to the exact rune budget — preserves the shape instead of flattening it
+      const FLOOR=7, base=FLOOR*8, need=budget-base;
+      let flex=0; KEYS.forEach(k=>{ flex+=Math.max(0,shaped[k]-FLOOR); });
+      const f=flex>0? need/flex : 0;
+      const out={}; let sum=0;
+      KEYS.forEach(k=>{ out[k]=Math.max(FLOOR,Math.min(99, FLOOR+Math.round(Math.max(0,shaped[k]-FLOOR)*f))); sum+=out[k]; });
+      // 4. settle rounding drift against the largest/smallest flex stats
+      let guard=0;
+      while(sum!==budget && guard++<600){
+        const order=KEYS.slice().sort((x,y)=>out[y]-out[x]);
+        if(sum<budget){ const k=order.find(k=>out[k]<99); if(!k) break; out[k]++; sum++; }
+        else { const k=order.find(k=>out[k]>FLOOR); if(!k) break; out[k]--; sum--; }
+      }
+      // 5. uniqueness: minimal deterministic nudge only when this exact spread already exists
+      let sig=c.archetype+"|"+KEYS.map(k=>out[k]).join(",");
+      let h=hashN(c.id+"::u::"+bi), tries=0;
+      while(seen.has(sig) && tries++<24){
+        h=(Math.imul(h,1103515245)+12345)>>>0;
+        const from=KEYS[(h>>>3)%8], to=KEYS[(h>>>13)%8];
+        if(from!==to && from!==ident && out[from]>FLOOR && out[to]<99){ out[from]--; out[to]++; }
+        sig=c.archetype+"|"+KEYS.map(k=>out[k]).join(",");
+      }
+      seen.add(sig);
+      b.stats=out;
+    });
+  });
+}
+applyLoreStats();
 
 const FRANCHISES = ["All", ...Object.keys(FRANCHISE_COLORS).filter(f=>CHARACTERS.some(c=>c.franchise===f))];
 /* Legality pass: no build may spend more points than its Rune Level allows (level+79).
@@ -5266,26 +5492,8 @@ FRANCHISES.filter(f=>f!=="All").forEach(f=>{
     flavor:"Every character in the "+f+" roster. A completion grouping, not a canon claim.", runes:100+roster.length*15});
 });
 
-/* --- Final individuation sweep: Wave 3 characters were pushed after the first pass ran,
-   so re-run it across every Tier II character with a fresh seed. Deterministic, budget-exact,
-   bounds-legal, archetype-preserving — identical rules, applied to the complete roster. --- */
-CHARACTERS.forEach(c=>{
-  if(c.deep) return;
-  c.builds.forEach((b,bi)=>{
-    let h=hashN(c.id+"::final::"+bi);
-    const keys=Object.keys(b.stats);
-    const prime=keys.reduce((a,k)=>b.stats[k]>b.stats[a]?k:a,"VIG");
-    for(let i=0;i<10;i++){
-      h=(Math.imul(h,1103515245)+12345)>>>0;
-      const from=keys[(h>>>3)%8], to=keys[(h>>>13)%8];
-      if(from===to||from===prime) continue;
-      const amt=1+((h>>>21)%5);
-      const take=Math.min(amt, b.stats[from]-7);
-      const give=Math.min(take, 99-b.stats[to]);
-      if(give>0){ b.stats[from]-=give; b.stats[to]+=give; }
-    }
-  });
-});
+/* (superseded by the lore-accurate stat engine — see applyLoreStats) */
+
 
 /* --- Canon Grade / Build Grade (the new doc's dual-tier read) --- */
 function gradeOf(v,max){ const p=v/max; return p>=.97?"S+":p>=.92?"S":p>=.85?"A+":p>=.75?"A":p>=.62?"B+":p>=.5?"B":p>=.35?"C":"D"; }
@@ -5419,6 +5627,7 @@ function renderHome(){
     ["Skyrim-Resonance Wave","7 lore-fit franchises added (Spice and Wolf, Arslan, Magi, Blade of the Immortal, Akame ga Kill, Rokka, Yona) + every Tier II character re-statted with unique spreads","done"],
     ["Omega Wave 2 — Systems","Relationship edges (typed, hand-authored, never invented) · 50 collection sets · dual tier counter · promotion queue · grudge matches · edge-aware fusion & party synergy","done"],
     ["Omega Wave 3 — The Crossing","1,000 crossed — Yusuke Urameshi is character #1,000 as a Tier I deep dossier · 11 new franchises · Millennium set · Ω1000 badge · crossing checklist computed live","done"],
+    ["Lore-Accurate Stat Pass","Every Tier II spread re-derived from character identity — role, power system, techniques, frame and difficulty — with hand-authored deltas for 120+ notable figures · Lands Between roster expanded","done"],
     ["Phase Omega","Complete — the universe runs itself. Built to grow, never to be finished.","done"]];
 
   document.getElementById("roadmap").innerHTML=road.map(r=>`
@@ -5571,7 +5780,7 @@ function buildBlock(b, cid, idx){
     : (S.myLevel||1)>=713 ? "⬆ RL 713 — every attribute at the 99 hard cap."
     : (S.myLevel||1)>b.level ? "Target spec exceeded — surplus levels distributed toward the 99 hard cap (faint gold = original RL "+b.level+" spec)."
     : (S.myLevel||1)===b.level ? "✔ Exact target spec for this build."
-    : "Projected attributes at your RL "+(S.myLevel||1)+" — faint gold shows the RL "+b.level+" target. Drag your level to watch them grow."
+    : "Projected attributes at your RL "+(S.myLevel||1)+" — faint gold shows the RL "+b.level+" target. Spreads are lore-derived: role, power system, techniques and physique drive the allocation, not a template."
   }</div>
   <div class="gear-grid">
     <div class="gear-box"><h6>⚔ Weapons</h6>${b.weapons.map(w=>`<span>${annotateWep(w)}</span>`).join("")}</div>
