@@ -497,6 +497,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <div class="chip" data-db="weapons" onclick="dbTab('weapons',this)">⚔ Weapons</div>
       <div class="chip" data-db="talismans" onclick="dbTab('talismans',this)">🧿 Talismans</div>
       <div class="chip" data-db="armor" onclick="dbTab('armor',this)">🛡 Armor Sets</div>
+      <div class="chip" data-db="physick" onclick="dbTab('physick',this)">🧪 Crystal Tears</div>
     </div>
     <div id="dbBosses"></div>
     <div id="dbWeapons" style="display:none">
@@ -518,6 +519,15 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
       <div style="font-size:11px;color:var(--txt-dim);margin-bottom:12px">★ = Legendary Talisman (8 needed for the trophy) · effects per Fextralife, current to SotE</div>
       <div id="talisList"></div>
       <div style="margin-top:16px"><h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px;margin-bottom:10px">META PICKS — LOCATIONS & NOTES</h3><div id="talisMeta" style="overflow-x:auto"></div></div>
+    </div>
+    <div id="dbPhysick" style="display:none">
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+        <h3 style="font-family:var(--font-display);color:var(--gold);letter-spacing:1px">FLASK OF WONDROUS PHYSICK</h3>
+        <span id="tearCount" style="font-size:12px;color:var(--txt-dim)"></span>
+      </div>
+      <input class="searchbar" placeholder="Search Crystal Tears and effects..." oninput="tearQuery=this.value;renderTearDb()">
+      <div class="build-note" style="margin-bottom:12px;font-size:12px">Two tears mix at any Site of Grace, and they can be swapped freely before a boss — the physick is the one loadout slot tuned per encounter rather than per build. Every character's builds below carry a matched pair chosen from this table.</div>
+      <div id="tearList"></div>
     </div>
     <div id="dbArmor" style="display:none">
       <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px">
@@ -6253,6 +6263,126 @@ function applyLoreGear(){
 }
 applyLoreGear();
 
+/* ============ FLASK OF WONDROUS PHYSICK — 40 CRYSTAL TEARS ============
+   32 base game (29 unique effects; Crimson, Cerulean and Ruptured each appear twice in the world)
+   + 8 from Shadow of the Erdtree, all dropped by Furnace Golems in the Realm of Shadow.
+   Two tears mix at any Site of Grace, so the physick is the one loadout slot you retune per boss. */
+const TEARS=[
+/* --- HP --- */
+["Crimson Crystal Tear","HP","Restores 50% of maximum HP immediately.",false,2],
+["Crimsonburst Crystal Tear","HP","Gradually restores HP over roughly 3 minutes.",false,1],
+["Crimsonspill Crystal Tear","HP","Temporarily raises maximum HP.",false,1],
+["Crimson Bubbletear","HP","Automatically heals when HP falls critically low.",false,1],
+["Crimsonwhorl Bubbletear","HP","Converts non-physical damage taken into HP for a short duration.",false,1],
+/* --- FP --- */
+["Cerulean Crystal Tear","FP","Restores half of maximum FP immediately.",false,2],
+["Cerulean Hidden Tear","FP","Eliminates all FP consumption for about 15 seconds.",false,1],
+/* --- Stamina --- */
+["Greenspill Crystal Tear","Stamina","Temporarily raises maximum stamina.",false,1],
+["Greenburst Crystal Tear","Stamina","Greatly increases stamina recovery speed.",false,1],
+/* --- Attribute knots --- */
+["Strength-Knot Crystal Tear","Attribute","+10 Strength for 3 minutes.",false,1],
+["Dexterity-Knot Crystal Tear","Attribute","+10 Dexterity for 3 minutes.",false,1],
+["Intelligence-Knot Crystal Tear","Attribute","+10 Intelligence for 3 minutes.",false,1],
+["Faith-Knot Crystal Tear","Attribute","+10 Faith for 3 minutes.",false,1],
+/* --- Defence --- */
+["Opaline Bubbletear","Defence","Negates almost all damage from the next hit taken.",false,1],
+["Opaline Hardtear","Defence","Increases all damage negation for 3 minutes.",false,1],
+["Speckled Hardtear","Defence","Raises immunity, robustness, focus and vitality, and cures status buildup.",false,1],
+["Leaden Hardtear","Defence","Greatly increases poise — far harder to stagger.",false,1],
+/* --- Movement --- */
+["Winged Crystal Tear","Movement","Greatly lowers equip load — heavy kit without fat-rolling.",false,1],
+["Windy Crystal Tear","Movement","Significantly improves dodge rolls, but increases damage taken.",false,1],
+/* --- Offence --- */
+["Stonebarb Cracked Tear","Offence","Enemy stance breaks more easily — extra poise damage.",false,1],
+["Spiked Cracked Tear","Offence","Increases charged attack damage.",false,1],
+["Thorny Cracked Tear","Offence","Successive attacks grow progressively stronger.",false,1],
+["Magic-Shrouding Cracked Tear","Offence","Boosts Magic damage by 20%.",false,1],
+["Flame-Shrouding Cracked Tear","Offence","Boosts Fire damage by 20%.",false,1],
+["Lightning-Shrouding Cracked Tear","Offence","Boosts Lightning damage by 20%.",false,1],
+["Holy-Shrouding Cracked Tear","Offence","Boosts Holy damage by 20%.",false,1],
+/* --- Utility --- */
+["Twiggy Cracked Tear","Utility","Prevents rune loss on death while active.",false,1],
+["Purifying Crystal Tear","Utility","Cancels Mohg's blood curse (Nihil) during his fight.",false,1],
+["Ruptured Crystal Tear","Utility","Detonates a large explosion centred on you — damaging enemies and yourself.",false,2],
+/* --- Shadow of the Erdtree --- */
+["Bloodsucking Cracked Tear","Offence","Raises attack power while steadily draining your own HP.",true,1],
+["Deflecting Hardtear","Defence","Enables timed guard deflection — Sekiro-style parries and stronger guard counters.",true,1],
+["Oil-Soaked Tear","Offence","Coats nearby enemies in oil, making them take far more Fire damage.",true,1],
+["Viridian Hidden Tear","Stamina","Eliminates all stamina consumption for a short duration.",true,1],
+["Glovewort Crystal Tear","Utility","Temporarily strengthens spirit ashes after summoning.",true,1],
+["Crimsonburst Dried Tear","HP","Slowly regenerates the HP of nearby allies.",true,1],
+["Cerulean-Sapping Cracked Tear","FP","Attacks restore FP — boosts focus restorative effects.",true,1],
+["Crimson-Sapping Cracked Tear","HP","Attacks restore HP on hit.",true,1]];
+const TEAR_BY_NAME={}; TEARS.forEach(t=>TEAR_BY_NAME[t[0]]=t);
+const TEAR_TOTAL=TEARS.reduce((n,t)=>n+t[4],0);
+
+/* --- Selection: two tears, matched to the build's actual identity --- */
+function physickFor(c,b,variant){
+  const th=(typeof gearTheme==="function")?gearTheme(c):{text:"",status:null,element:null,heavy:false,light:false};
+  const s=b.stats, A=c.archetype||"", txt=th.text||"";
+  const caster=/Int Caster|Faith Caster|Death Sorcery|Legion Commander|Dragon Communion|Frenzied Flame|Gravity Warlord/.test(A);
+  const heavyHitter=/Colossal|Guardian|Sacred$/.test(A)||s.STR>=Math.max(s.DEX,s.INT,s.FTH,s.ARC);
+  const flurry=/Speed|Assassin|Katana|Bleed|Martial|Backhand/.test(A)||s.DEX>=45;
+  const picks=[], why=[];
+  const add=(n,reason)=>{ if(picks.length<2 && TEAR_BY_NAME[n] && picks.indexOf(n)<0){ picks.push(n); why.push(reason); } };
+
+  /* 1. signature slot — who this character actually is */
+  if(th.status==="Blood") add("Thorny Cracked Tear","successive hits ramp with the bleed cadence");
+  else if(th.status==="Cold") add("Magic-Shrouding Cracked Tear","frost scales off the magic damage line");
+  else if(th.status==="Rot"||th.status==="Poison") add("Speckled Hardtear","stands in their own toxin without losing the fight");
+  else if(th.status==="Madness") add("Flame-Shrouding Cracked Tear","frenzied flame reads as fire damage");
+  if(picks.length<1){
+    if(th.element==="Fire") add("Flame-Shrouding Cracked Tear","+20% to the fire that defines them");
+    else if(th.element==="Lightning") add("Lightning-Shrouding Cracked Tear","+20% to their storm");
+    else if(th.element==="Sacred") add("Holy-Shrouding Cracked Tear","+20% holy for a divine kit");
+    else if(th.element==="Magic"||th.element==="Cold") add("Magic-Shrouding Cracked Tear","+20% to their sorcery");
+    /* note: the game has no Occult-Shrouding tear — occult/arcane kits deal physical damage,
+       so slot 1 is deliberately left to the archetype and trait rules below rather than forced. */
+  }
+  /* 2. archetype/stat slot */
+  if(caster) add("Cerulean Hidden Tear","15 seconds of free casting — the ultimate, uncapped");
+  if(heavyHitter){ add("Stonebarb Cracked Tear","stance-breaks arrive a full swing sooner"); add("Spiked Cracked Tear","charged attacks are the whole gameplan"); }
+  if(flurry) add("Thorny Cracked Tear","damage climbs across a combo string");
+  /* 3. character-trait slot */
+  if(/immortal|regenerat|undying|revive|deathless/.test(txt)) add("Crimsonwhorl Bubbletear","turns incoming punishment into health — the immortal's tempo");
+  if(/\bberserk\w*|\brage\b|\bfury\b|\breckless\b|\bdesperat\w*|\bcornered\b|\bcursed?\b|\bsacrific\w*|at the cost of/.test(txt))
+    add("Bloodsucking Cracked Tear","more power, less life — exactly the bargain they make");
+  if(/tank|wall|guard|unmov|fortress|shield|armor/.test(txt)) add("Leaden Hardtear","poise past the point of being interrupted");
+  if(/parry|counter|deflect|riposte|block/.test(txt)) add("Deflecting Hardtear","timed deflection for a counter-first fighter");
+  if(/summon|familiar|spirit|puppet|legion|shikigami/.test(txt)) add("Glovewort Crystal Tear","the army hits harder than the summoner does");
+  if(/heal|medic|support|protect|restor/.test(txt)) add("Crimsonburst Dried Tear","regenerates the party, not just the caster");
+  if(th.light) add("Windy Crystal Tear","dodge windows widen — the price is taking more when caught");
+  if(th.heavy) add("Winged Crystal Tear","carries the heavy kit without the fat roll");
+  /* 4. variant defaults, straight from the community's build table */
+  if(variant==="pvp"){ add("Opaline Bubbletear","eats the opener in a duel"); add("Leaden Hardtear","PvP poise"); add("Winged Crystal Tear","equip-load headroom"); }
+  else if(variant==="pve"){ add("Opaline Bubbletear","negates one boss hit outright"); add("Greenburst Crystal Tear","stamina back between punish windows"); }
+  else { add("Opaline Bubbletear","a free mistake against anything"); add("Greenburst Crystal Tear","sustains the pressure"); }
+  return {tears:picks.slice(0,2), why:why.slice(0,2)};
+}
+function renderPhysick(c,b,variant){
+  const p=physickFor(c,b,variant);
+  return p.tears.map((n,i)=>{
+    const t=TEAR_BY_NAME[n];
+    return `<span>${t[3]?'<span class="pill gold" style="font-size:9px;padding:1px 5px;margin-right:4px">DLC</span>':''}<b>${esc(n)}</b>`+
+      `<small style="display:block;color:var(--txt-dim);font-size:10.5px;line-height:1.5;padding-left:8px">${esc(t[2])}<br><i style="color:#a5f3fc">→ ${esc(p.why[i]||"")}</i></small></span>`;
+  }).join("");
+}
+/* --- Database tab --- */
+let tearQuery="";
+function renderTearDb(){
+  const el=document.getElementById("tearList"); if(!el) return;
+  const q=tearQuery.toLowerCase();
+  const groups={};
+  TEARS.forEach(t=>{ if(q&&(t[0]+" "+t[2]).toLowerCase().indexOf(q)<0) return; (groups[t[1]]=groups[t[1]]||[]).push(t); });
+  const order=["HP","FP","Stamina","Attribute","Defence","Movement","Offence","Utility"];
+  el.innerHTML=order.filter(g=>groups[g]).map(g=>`<div class="panel" style="margin-bottom:10px"><h3 style="font-size:13px">${g} <span style="color:var(--txt-dim);font-weight:400">(${groups[g].length})</span></h3>
+    <div style="overflow-x:auto"><table><tbody>${groups[g].map(t=>`<tr>
+      <td style="width:34%"><b>${esc(t[0])}</b>${t[4]>1?` <small style="color:var(--txt-dim)">×${t[4]} in the world</small>`:""}${t[3]?' <span class="pill gold">DLC</span>':''}</td>
+      <td style="color:var(--txt-dim)">${esc(t[2])}</td></tr>`).join("")}</tbody></table></div></div>`).join("")
+    || `<div class="empty">No tears match.</div>`;
+}
+
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
@@ -6307,7 +6437,7 @@ function renderHeader(){
 function renderHome(){
   const stats=[
     {n:CHARACTERS.length,l:"Characters"},{n:totalBuilds,l:"Build Versions"},{n:BOSSES.length,l:"Bosses Documented"},
-    {n:WEAPON_TOTAL,l:"Weapons Indexed"},{n:TALIS_TOTAL,l:"Talismans"},{n:ARMOR_TOTAL,l:"Armor Sets"},{n:11,l:"Build Sources"},{n:GUILDS.length,l:"Guilds"},{n:Object.keys(FRANCHISE_COLORS).length+"","l":"Franchises"},{n:(CHARACTERS.length*(CHARACTERS.length-1)/2).toLocaleString(),l:"Fusion Combinations"}
+    {n:WEAPON_TOTAL,l:"Weapons Indexed"},{n:TALIS_TOTAL,l:"Talismans"},{n:ARMOR_TOTAL,l:"Armor Sets"},{n:TEARS.length,l:"Crystal Tears"},{n:11,l:"Build Sources"},{n:GUILDS.length,l:"Guilds"},{n:Object.keys(FRANCHISE_COLORS).length+"","l":"Franchises"},{n:(CHARACTERS.length*(CHARACTERS.length-1)/2).toLocaleString(),l:"Fusion Combinations"}
   ];
   document.getElementById("dashGrid").innerHTML = stats.map(s=>
     `<div class="stat-card"><div class="num">${s.n}</div><div class="lbl">${s.l}</div></div>`).join("");
@@ -6338,6 +6468,7 @@ function renderHome(){
     ["Omega Wave 3 — The Crossing","1,000 crossed — Yusuke Urameshi is character #1,000 as a Tier I deep dossier · 11 new franchises · Millennium set · Ω1000 badge · crossing checklist computed live","done"],
     ["Lore-Accurate Stat Pass","Every Tier II spread re-derived from character identity — role, power system, techniques, frame and difficulty — with hand-authored deltas for 120+ notable figures · Lands Between roster expanded","done"],
     ["Conversion Framework","Power Tier calibration (1–6) · Tier-6 narrative-adjustment disclaimers · Remembrances gated to Tier 3+ · tier-set canon build levels · Waves 1–2 rosters (Hell\u2019s Paradise, Blue Exorcist, D.Gray-man, Fairy Tail, Mob Psycho, Dungeon Meshi, Black Butler)","done"],
+    ["Physick Layer","All 40 Crystal Tears catalogued (32 base + 8 SotE) · every build carries a matched two-tear physick with a reason line · new Crystal Tears database tab","done"],
     ["Phase Omega","Complete — the universe runs itself. Built to grow, never to be finished.","done"]];
 
   document.getElementById("roadmap").innerHTML=road.map(r=>`
@@ -6502,6 +6633,7 @@ function buildBlock(b, cid, idx){
     <div class="gear-box"><h6>🛡 Armor</h6>${b.armor.map(w=>`<span>${annotateArmor(w)}</span>`).join("")}</div>
     <div class="gear-box"><h6>🧿 Talismans</h6>${b.talismans.map(w=>`<span>${annotateTal(w)}</span>`).join("")}</div>
     <div class="gear-box"><h6>✨ Spells & Summon</h6>${b.spells.map(w=>`<span>${esc(w)}</span>`).join("")}<span style="color:var(--purple);margin-top:4px">☾ ${esc(b.summon)}</span></div>
+    <div class="gear-box" style="border-color:rgba(34,211,238,.28)"><h6>🧪 Flask of Wondrous Physick</h6>${cid!==undefined?renderPhysick(CHARACTERS.find(x=>x.id===cid)||{},b,/PvP/.test(b.type)?"pvp":/PvE/.test(b.type)?"pve":"lore"):'<span style="color:var(--txt-dim)">Mix two Crystal Tears at any Site of Grace.</span>'}</div>
   </div>
   <div class="build-note">📜 ${esc(b.notes)}</div>`;
 }
@@ -6806,7 +6938,7 @@ function renderFusionPresets(){
 /* ============ DATABASE ============ */
 function dbTab(which, el){
   document.querySelectorAll('#view-database .chip').forEach(c=>c.classList.remove("active")); el.classList.add("active");
-  ["bosses","weapons","talismans","armor"].forEach(t=>document.getElementById("db"+t[0].toUpperCase()+t.slice(1)).style.display = t===which?"block":"none");
+  ["bosses","weapons","talismans","armor","physick"].forEach(t=>{const el=document.getElementById("db"+t[0].toUpperCase()+t.slice(1)); if(el) el.style.display = t===which?"block":"none";});
 }
 function renderBosses(){
   document.getElementById("dbBosses").innerHTML=BOSSES.map(b=>`
@@ -6840,6 +6972,8 @@ function renderWeapons(){
 function renderTalismans(){
   document.getElementById("talisCount").textContent=TALIS_TOTAL+" talismans · "+TALISMAN_DB.reduce((n,g)=>n+g.items.filter(i=>i[0].includes("[DLC]")).length,0)+" from the DLC · 8 Legendary";
   document.getElementById("armorCount").textContent=ARMOR_TOTAL+" sets · ~704 pieces (559 base + 145 DLC)";
+  const tc=document.getElementById("tearCount"); if(tc) tc.textContent=TEAR_TOTAL+" tears in the world · "+TEARS.length+" unique effects · "+TEARS.filter(t=>t[3]).length+" from Shadow of the Erdtree";
+  renderTearDb();
   document.getElementById("armorCut").textContent=ARMOR_UNOBTAINABLE.join(", ");
   renderTalismanDb(); renderArmorDb();
   document.getElementById("talisMeta").innerHTML=`<table><thead><tr><th>Talisman</th><th>Effect</th><th>Location</th><th>Meta Note</th></tr></thead><tbody>`+
