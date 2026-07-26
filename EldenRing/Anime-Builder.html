@@ -384,6 +384,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     <div class="sec-sub">Every legend, properly categorized — biography, power system, combat analysis and full Elden Ring build conversion.</div>
     <input class="searchbar" id="charSearch" placeholder="Search characters, anime, power systems...">
     <div class="chips" id="charUniverses" style="margin-bottom:10px"></div>
+    <div class="chips" id="charTiers" style="margin-bottom:10px"></div>
     <div class="chips" id="charFranchises" style="margin-bottom:10px"></div>
     <div class="chips" id="charFilters"></div>
     <div class="char-grid" id="charGrid"></div>
@@ -482,6 +483,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
   <section class="view" id="view-blueprint">
     <div class="sec-title">PHASE OMEGA BLUEPRINT</div>
     <div class="sec-sub">The roster-acceleration research memo, live inside the app — item audit, 87-franchise gap analysis, named build-queue rosters and the two-tier dossier spec. Stats compute from the running database.</div>
+    <div id="tierCalRoot"></div>
     <div id="crossRoot"></div>
     <div id="bpRoot"></div>
   </section>
@@ -862,7 +864,7 @@ quote:"Arise.",
 builds:[
  {name:"Shadow Monarch — RL150", level:150, type:"PvE · Dex/Summons", primary:true,
   stats:{VIG:50,MND:30,END:22,STR:14,DEX:55,INT:12,FTH:18,ARC:10},
-  weapons:["Black Knife (Blade of Death)","Misericorde (Keen) — powerstanced daggers"],
+  weapons:["Black Knife (Blade of Death)","Miséricorde (Keen) — powerstanced daggers"],
   armor:["Black Knife set — the silent assassin armor"],
   talismans:["Shard of Alexander","Erdtree's Favor +2","Millicent's Prosthesis","Assassin's Cerulean Dagger"],
   spells:["Golden Vow"],
@@ -1204,7 +1206,7 @@ quote:"I keep moving forward, until all my enemies are destroyed.",
 builds:[
  {name:"Attack Titan — RL150", level:150, type:"PvE · Colossal Quality", primary:true,
   stats:{VIG:58,MND:12,END:34,STR:45,DEX:35,INT:8,FTH:10,ARC:8},
-  weapons:["Greatsword (Quality, Giant Hunt — poetry)","Misericorde (ODM blades, offhand)"],
+  weapons:["Greatsword (Quality, Giant Hunt — poetry)","Miséricorde (ODM blades, offhand)"],
   armor:["Bare-chested with long hair: Wandering Knight trousers only"],
   talismans:["Shard of Alexander","Erdtree's Favor +2","Great-Jar's Arsenal","Green Turtle Talisman"],
   spells:["—"],
@@ -1350,7 +1352,7 @@ builds:[
   notes:"Unsheathe is Battōjutsu, mechanically and spiritually: sheathe, wait, and answer everything with a single instant draw. House rule for the vow: no critical hits on downed enemies — the sakabatō does not execute."},
  {name:"Hitokiri Battōsai — Dark past", level:125, type:"PvP · Lethal",
   stats:{VIG:48,MND:14,END:26,STR:12,DEX:60,INT:9,FTH:8,ARC:12},
-  weapons:["Uchigatana (Blood, Unsheathe)","Misericorde"],
+  weapons:["Uchigatana (Blood, Unsheathe)","Miséricorde"],
   armor:["Dark blue, night work"],
   talismans:["Lord of Blood's Exultation","Shard of Alexander","Assassin's Cerulean Dagger","Millicent's Prosthesis"],
   spells:["—"],
@@ -1424,7 +1426,7 @@ builds:[
   summon:"—", notes:"The exam arc: outwork everyone with a hand-me-down blade and unreasonable volume."},
  {name:"Black Meteorite — PvP", level:125, type:"PvP · Anti-caster",
   stats:{VIG:52,MND:8,END:34,STR:55,DEX:20,INT:7,FTH:7,ARC:8},
-  weapons:["Greatsword (Heavy, Lion's Claw)","Misericorde"],
+  weapons:["Greatsword (Heavy, Lion's Claw)","Miséricorde"],
   armor:["Medium black"],
   talismans:["Pearldrake +2","Spelldrake +2","Shard of Alexander","Erdtree's Favor +2"],
   spells:["—"],
@@ -1603,7 +1605,7 @@ const ARCHIVE = [
  {v:"v4.0 — current", date:"patch 1.16", note:"Final form: 66 STR two-hand breakpoint, Full Moon Crossbow sidearm officially canonized. Rating raised to 9.7."}]},
 {build:"Sung Jin-Woo — Shadow Monarch", entries:[
  {v:"v1.0", date:"pre-DLC", note:"Ran Mimic Tear as Igris. Community feedback: Black Knife Tiche's death-drain is more lore-faithful to shadow extraction."},
- {v:"v2.0", date:"patch 1.10", note:"Swapped to powerstanced daggers full-time; Misericorde crit ceiling fits the assassin fantasy."},
+ {v:"v2.0", date:"patch 1.10", note:"Swapped to powerstanced daggers full-time; Miséricorde crit ceiling fits the assassin fantasy."},
  {v:"v3.0 — current", date:"patch 1.16", note:"Added Tibia's Summons to the RL200 Domain variant — the shadow army finally exists in-engine."}]},
 {build:"Gojo — The Honored One", entries:[
  {v:"v1.0", date:"launch meta", note:"Standard Azur comet-spam. Functional, but Infinity wasn't represented."},
@@ -1660,7 +1662,7 @@ katana:{label:"Dex Katana",diff:3,w:{VIG:10,MND:3,END:6,STR:3,DEX:13,INT:2,FTH:2
  spells:["—"],combat:"Blade-first duelist: spacing, counter-timing and single-draw punishes decide every exchange.",
  lore_note:"the drawn-blade fantasy — Unsheathe answers everything with one perfectly timed cut."},
 greatsword:{label:"Str Colossal",diff:2,w:{VIG:12,MND:2,END:8,STR:13,DEX:3,INT:1,FTH:2,ARC:2},
- gear:{lore:["Greatsword (Heavy, Lion's Claw)"],pve:["Giant-Crusher (Heavy) — charged R2 stagger loops"],pvp:["Greatsword (Heavy, Lion's Claw)","Misericorde (stance-break crits)"]},
+ gear:{lore:["Greatsword (Heavy, Lion's Claw)"],pve:["Giant-Crusher (Heavy) — charged R2 stagger loops"],pvp:["Greatsword (Heavy, Lion's Claw)","Miséricorde (stance-break crits)"]},
  armor:["Heavy plate mix — poise above fashion"],tal:["Shard of Alexander","Erdtree's Favor +2","Bull-Goat's Talisman","Great-Jar's Arsenal"],
  spells:["—"],combat:"Overwhelming poise warfare — trade once, win the trade, repeat until the stance breaks.",
  lore_note:"raw monster-slaying force: a slab of iron swung with total conviction."},
@@ -1700,7 +1702,7 @@ bleed:{label:"Arcane Bleed",diff:3,w:{VIG:10,MND:3,END:6,STR:4,DEX:9,INT:1,FTH:1
  spells:["Bloodflame Blade","Swarm of Flies"],combat:"Hemorrhage stacking — every exchange leaves a wound that finishes itself.",
  lore_note:"blood as both weapon and price, exactly as their story tells it."},
 assassin:{label:"Crit Assassin",diff:4,w:{VIG:9,MND:4,END:6,STR:3,DEX:12,INT:2,FTH:2,ARC:4},
- gear:{lore:["Black Knife","Misericorde (powerstanced)"],pve:["Black Knife","Misericorde"],pvp:["Reduvia","Bloodhound's Step swap"]},
+ gear:{lore:["Black Knife","Miséricorde (powerstanced)"],pve:["Black Knife","Miséricorde"],pvp:["Reduvia","Bloodhound's Step swap"]},
  armor:["Black Knife set — silent steps"],tal:["Dagger Talisman","Shard of Alexander","Rotten Winged Sword Insignia","Erdtree's Favor +2"],
  spells:["Golden Vow"],combat:"Openings manufactured, then executed — backstabs, stance-breaks and vanishing steps.",
  lore_note:"killer instinct distilled: strike unseen, finish before the reaction."},
@@ -1730,7 +1732,7 @@ venom:{label:"Toxin Specialist",diff:4,w:{VIG:10,MND:4,END:6,STR:3,DEX:10,INT:1,
  spells:["Poison Mist","Poison Armament"],combat:"Death by arithmetic — land the toxins, then simply survive the clock.",
  lore_note:"a poisoner's patience: one graceful touch and the fight is already decided."},
 archer:{label:"Precision Ranged",diff:4,w:{VIG:9,MND:4,END:7,STR:5,DEX:11,INT:1,FTH:2,ARC:2},
- gear:{lore:["Black Bow (Barrage)"],pve:["Black Bow","Rain of Arrows ash"],pvp:["Black Bow","Misericorde (if cornered)"]},
+ gear:{lore:["Black Bow (Barrage)"],pve:["Black Bow","Rain of Arrows ash"],pvp:["Black Bow","Miséricorde (if cornered)"]},
  armor:["Ranger leathers"],tal:["Arrow's Reach Talisman","Arrow's Sting Talisman","Shard of Alexander","Erdtree's Favor +2"],
  spells:["—"],combat:"The fight ends before melee begins — angles, range and perfect shot selection.",
  lore_note:"their marksmanship honored: every arrow placed like a signature."},
@@ -3690,8 +3692,167 @@ function applyLoreStats(){
     });
   });
 }
-applyLoreStats();
+/* invoked once, after every roster block — see below */
 
+/* ============ CONVERSION FRAMEWORK — WAVE 1 & 2 ROSTERS (§9.5) ============ */
+Object.assign(FRANCHISE_COLORS,{
+ "Hell's Paradise":["#b91c1c","#0f172a"],"Blue Exorcist":["#0ea5e9","#1e1b4b"],"D.Gray-man":["#e2e8f0","#111827"],
+ "Fairy Tail":["#dc2626","#f59e0b"],"Mob Psycho 100":["#a3e635","#4c1d95"],"Dungeon Meshi":["#f59e0b","#78350f"],
+ "Black Butler":["#111827","#7f1d1d"]});
+Object.assign(FRANCHISE_UNIVERSE,{
+ "Hell's Paradise":["Anime","Dark Fantasy"],"Blue Exorcist":["Anime","Dark Fantasy"],"D.Gray-man":["Anime","Dark Fantasy"],
+ "Fairy Tail":["Anime","Shonen"],"Mob Psycho 100":["Anime","Shonen"],"Dungeon Meshi":["Anime","Dark Fantasy"],
+ "Black Butler":["Anime","Dark Fantasy"]});
+const ROSTER12={
+"Hell's Paradise":[
+["Gabimaru","Main Protagonist","assassin","Ninjutsu · Tan Regeneration",3,"The Hollow of Iwagakure — a shinobi who cannot die because he refuses to stop wanting to go home to his wife.","Fire Style Ninjutsu · Tan Circulation · Hollow's Regeneration"],
+["Sagiri Yamada Asaemon","Secondary Protagonist","katana","Yamada Asaemon Executioner Style",2,"The executioner assigned to behead Gabimaru — a swordswoman proving her blade belongs to her, not her name.","Asaemon Draw · Beheading Form · Certain Cut"],
+["Yuzuriha","Secondary Protagonist","assassin","Ninjutsu · Deception",2,"The Keishu ninja who lies with every sentence and survives with all of them — silk threads and sharper motives.","Thread Trap · Feigned Surrender · Kunoichi Guile"],
+["Shion Yamada Asaemon","Secondary Protagonist","katana","Blind Sword Mastery",3,"The blind Asaemon whose hearing cuts more precisely than most eyes ever see.","Sound Draw · Blind Precision · Asaemon Doctrine"],
+["Chobei Aza","Anti-Hero","bleed","Criminal Tenacity",2,"The bandit brother whose loyalty is the only clean thing about him — and it is very sharp.","Sibling Fury · Bandit's Grip · Survival Instinct"],
+["Toma Aza","Secondary Protagonist","katana","Aza Brotherhood",2,"The gentler Aza brother, carrying his sibling's violence like luggage he never packed.","Paired Draw · Brother's Guard · Steady Blade"],
+["Gantetsusai Tamiya","Anti-Hero","greatsword","Great Blade Bravado",3,"The self-declared greatest swordsman — an enormous blade and a mouth even larger.","Oversized Cleave · Boastful Charge · Legend's Claim"],
+["Nurugai","Secondary Protagonist","archer","Sanka Tribe Survival",1,"The last of a hunted tribe — small, quick, and refusing to be the final one.","Blowdart · Tribal Trap · Survivor's Sprint"],
+["Fuchi","Secondary Protagonist","archer","Asaemon Marksman",2,"The Asaemon who reads a battlefield before drawing — patience with a bow.","Precision Volley · Field Reading · Asaemon Restraint"],
+["Tensa Yamada Asaemon","Rival","katana","Asaemon Prodigy",3,"The Asaemon prodigy whose talent outpaced his years and his caution.","Swift Draw · Prodigy's Form · Youthful Certainty"],
+["Zhu Jin","Villain","cleric","Tao Mastery · Tensen",4,"A Tensen of Shinsenkyo — Tao circulated through a body that stopped being human centuries ago.","Tao Circulation · Arborescent Form · Doushi Union"],
+["Mu Dan","Villain","spellblade","Tao Mastery · Tensen",4,"The Tensen who wears beauty like a blade — Tao refined past the point of mercy.","Tao Blade · Petal Storm · Immortal Poise"],
+["Ran","Villain","fists","Tao Mastery · Tensen",4,"A Tensen whose martial Tao turns a palm strike into a natural disaster.","Tao Palm · Bloom Strike · Rikishi Form"],
+["Rien","Villain","deathmage","Lord Tensen · Elixir",5,"The lord of Shinsenkyo — immortality manufactured, and everyone else's death as the raw material.","Elixir of Life · Tao Dominion · Doushi Ascension"]],
+"Blue Exorcist":[
+["Rin Okumura","Main Protagonist","pyromancer","Satan's Blue Flame · Kurikara",3,"Satan's son raised human — a demon-sealing sword that, once drawn, sets his own inheritance loose.","Blue Flame · Kurikara Draw · Demon Heart"],
+["Yukio Okumura","Secondary Protagonist","archer","Exorcist Gunmanship",2,"The younger twin who became a teacher before he became an adult — pistols, poise, and an unravelling secret.","Twin Pistols · Doctor Meister · Suppressed Flame"],
+["Shiemi Moriyama","Secondary Protagonist","summoner","Tamer Meister · Nii",2,"The shy tamer whose greenman familiar shields an entire class — kindness as a summoning circle.","Nii Summon · Herbal Ward · Tamer's Bond"],
+["Ryuji Suguro","Secondary Protagonist","cleric","Aria Meister · Sutra Recitation",2,"Bon — the delinquent monk who out-memorizes everyone in the room and shouts scripture like a war cry.","Sutra Recitation · Aria Chant · Stubborn Faith"],
+["Shura Kirigakure","Mentor","katana","Upper First Class Exorcist",3,"The sword-swinging inspector in far too little armor — a serpent blade and a mentor's hidden concern.","Serpent Fang Draw · Kirigakure Style · Inspector's Eye"],
+["Mephisto Pheles","Villain","summoner","Demon King of Time",4,"The headmaster who is also the Demon King of Time — every rule bent, every clock his.","Time Manipulation · Eins Zwei Drei · Contract Games"],
+["Amaimon","Villain","gravity","Demon King of Earth",3,"The Earth King — bored, immensely strong, and treating a school like a scratching post.","Earth Rend · King's Durability · Idle Cruelty"],
+["Izumo Kamiki","Secondary Protagonist","summoner","Tamer · Byakko Foxes",2,"The prickly shrine heir with two fox familiars and a lineage that cost her everything.","Byakko Summon · Fox Pair · Inari Lineage"],
+["Konekomaru Miwa","Secondary Protagonist","cleric","Aria Meister",1,"The smallest voice in the room, reciting the verses that hold the line.","Sutra Chant · Nervous Precision · Kyoto Devotion"],
+["Renzo Shima","Secondary Protagonist","spear","Aria · Staff Combat",2,"The pink-haired flirt hiding a spy's assignment and a genuinely unsettling loyalty problem.","Staff Sweep · Aria Support · Double Agent"],
+["Satan","Villain","pyromancer","God of Demons",5,"Gehenna's god — a blue flame that incinerates any vessel it inhabits, including his own children.","Blue Flame Incarnate · Vessel Burn · Gehenna's Will"],
+["Arthur Auguste Angel","Rival","paladin","Paladin of the Order",3,"The Order's shining Paladin — Caliburn drawn, ego undimmed, absolutely certain he is the hero.","Caliburn Slash · Paladin's Decree · Radiant Certainty"],
+["Lightning (Exorcist)","Anti-Hero","lightning","Aria · Demon Hunter",3,"The lightning-fast exorcist with a bad attitude and an excellent record.","Lightning Chant · Hunter's Pace · Reluctant Duty"]],
+"D.Gray-man":[
+["Allen Walker","Main Protagonist","paladin","Innocence · Crown Clown",3,"The cursed eye and the white arm — an exorcist who sees the souls inside the Akuma he must destroy.","Cross Grave · Crown Belt · Cursed Eye"],
+["Lenalee Lee","Secondary Protagonist","assassin","Innocence · Dark Boots",3,"The Dark Boots — speed measured in shattered air, fighting for the family the Order gave and took.","Dark Boots Kick · Crystal Type · Whirlwind Descent"],
+["Kanda Yu","Rival","katana","Innocence · Mugen",3,"Mugen's bearer — a lotus counting down his borrowed life with every regeneration.","Mugen Hell Insects · Netherworld Insects · Lotus Countdown"],
+["Lavi","Secondary Protagonist","gravity","Innocence · Iron Hammer",3,"The Bookman apprentice whose hammer grows with the elements — a recorder forbidden from caring, failing at it.","Big Hammer Little Hammer · Fire Seal · Bookman's Record"],
+["Komui Lee","Mentor","sorcerer","Science Division Chief",2,"The Order's science chief — inventions, coffee, and a sister complex approaching weaponization.","Komurin Deployment · Science Division · Sister Protocol"],
+["Cross Marian","Mentor","archer","Innocence · Judgment",4,"General Cross — a pistol, a mountain of debt, and the only man the Earl seems to fear socially.","Judgment · Grave of Maria · Debt Collection"],
+["Road Kamelot","Villain","madness","Noah of Dreams",4,"The Noah of Dreams — a child's giggle over a dimension where your death is a game she's already won.","Dream Realm · Candle Rain · Noah's Memory"],
+["Tyki Mikk","Villain","assassin","Noah of Pleasure",4,"The Noah of Pleasure — a gentleman who reaches through your chest because he chose to.","Tease Butterflies · Selective Intangibility · Noah Awakening"],
+["The Millennium Earl","Villain","summoner","Creator of Akuma",5,"The grinning Earl — grief harvested into Akuma, a war fought with other people's dead.","Akuma Creation · Dark Matter · Ark Command"],
+["Miranda Lotto","Secondary Protagonist","cleric","Innocence · Time Record",2,"The Time Record — an anxious woman whose Innocence rewinds wounds and holds whole squads together.","Time Record · Time Out · Anxious Devotion"],
+["Arystar Krory","Secondary Protagonist","bleed","Innocence · Fangs",2,"The vampire-castle exorcist whose fangs drink Akuma blood — gothic, gentle, and terrifying at meals.","Bloodsucking Fangs · Vampire Strength · Gothic Sorrow"],
+["Bak Chang","Mentor","sorcerer","Asia Branch Chief",2,"The Asia Branch chief — brilliant, itchy with nerves, and better under pressure than he admits.","Branch Command · Chang Lineage · Hives Under Stress"],
+["Howard Link","Anti-Hero","assassin","Crow Order Inspector",2,"Central's inspector shadowing Allen — surveillance as loyalty, right up to where it stops being.","Crow Talisman · Surveillance Duty · Reluctant Verdict"],
+["Alma Karma","Villain","katana","Second Exorcist",3,"The Second Exorcist — a synthetic apostle whose memories were assembled and then weaponized against Kanda.","Second Exorcist Regeneration · Blade Union · Buried Memory"],
+["Yeegar","Mentor","cleric","General · Innocence",3,"The gentlest General, killed by the Akuma he pitied — the Order's first real warning.","Whip of Judgment · Gentle Command · Martyr's End"]],
+"Fairy Tail":[
+["Natsu Dragneel","Main Protagonist","pyromancer","Fire Dragon Slayer Magic",3,"The Fire Dragon Slayer raised by Igneel — a guild mark, a scarf, and a nose for family.","Fire Dragon's Roar · Iron Fist · Dragon Force"],
+["Lucy Heartfilia","Secondary Protagonist","summoner","Celestial Spirit Magic",2,"The celestial mage who treats her spirits as friends first and keys second — the guild's heart and narrator.","Gate of the Lion · Twelve Zodiac Keys · Urano Metria"],
+["Erza Scarlet","Legendary","spellblade","Requip · The Knight",3,"Titania — a hundred armors summoned mid-swing, and the discipline that terrifies an entire guild.","Requip Armor Swap · Heaven's Wheel · Titania's Charge"],
+["Gray Fullbuster","Secondary Protagonist","frost","Ice-Make Magic",3,"The ice-make mage with a stripping habit and a devil-slayer's secret — Ur's discipline, Silver's blood.","Ice-Make Lance · Devil Slayer Ice · Iced Shell"],
+["Wendy Marvell","Secondary Protagonist","cleric","Sky Dragon Slayer Magic",2,"The Sky Dragon Slayer — healing winds, support enchantments, and courage far past her size.","Sky Dragon's Roar · Arms Enchantment · Healing Wind"],
+["Gajeel Redfox","Secondary Protagonist","greatsword","Iron Dragon Slayer Magic",3,"The Iron Dragon Slayer — a former enemy who became the guild's blunt instrument and worst singer.","Iron Dragon's Club · Iron Scales · Karaoke Assault"],
+["Juvia Lockser","Secondary Protagonist","frost","Water Body Magic",2,"The rain woman whose body is water and whose devotion is a weather system aimed at Gray.","Water Slicer · Water Body · Love Rival Detection"],
+["Mirajane Strauss","Secondary Protagonist","deathmage","Satan Soul Takeover",3,"The barmaid who is also a demon — Satan Soul beneath a smile that hosts an entire guild.","Satan Soul · Takeover · Sitri Form"],
+["Laxus Dreyar","Rival","lightning","Lightning Dragon Slayer Magic",3,"The master's grandson — lightning, arrogance, and a redemption he had to be beaten into accepting.","Lightning Dragon's Roar · Raging Bolt · Fairy Law"],
+["Makarov Dreyar","Mentor","tank","Giant Magic · Fairy Law",4,"The tiny master with titan magic — Fairy Law cast in defense of children he calls his own.","Fairy Law · Titan Form · Master's Wrath"],
+["Zeref Dragneel","Villain","deathmage","Ankhseram Black Magic",5,"The black wizard cursed to kill everything he loves — four hundred years of trying to die.","Ankhseram Curse · Death Wave · Immortal Grief"],
+["Acnologia","Villain","dragoon","Dragon King · Magic Devourer",5,"The Dragon King — a man who bathed in dragon blood until nothing human was left to negotiate with.","Dragon's Roar · Magic Devour · Apocalypse Flight"],
+["Jellal Fernandes","Anti-Hero","sorcerer","Heavenly Body Magic",3,"The tower's tyrant turned penitent — meteors and grief in equal measure.","Meteor · Grand Chariot · Sema"],
+["Gildarts Clive","Legendary","fists","Crash Magic",4,"The guild's ace — a walking demolition permit who splits the town in half getting home.","Crash · Disassembly Magic · Ace's Presence"],
+["Erza Knightwalker","Rival","spear","Edolas Fairy Hunter",3,"Edolas's Erza — the same steel with none of the mercy, wielding Ten Commandments.","Ten Commandments Spear · Fairy Hunter · Mirror Discipline"],
+["Levy McGarden","Secondary Protagonist","sorcerer","Solid Script Magic",2,"The bookworm who writes words into weapons — the guild's translator and quiet backbone.","Solid Script Fire · Written Ward · Codebreaker"],
+["Cana Alberona","Secondary Protagonist","assassin","Card Magic",2,"The card mage who drinks a barrel to steady her hands — Gildarts's daughter, on her own terms.","Card Assault · Fairy Glitter · Prayer's Fountain"],
+["Elfman Strauss","Secondary Protagonist","fists","Beast Soul Takeover",2,"The takeover mage shouting about manliness while carrying the guilt of one terrible night.","Beast Soul · Lizardman · Manly Charge"],
+["Ultear Milkovich","Anti-Hero","sorcerer","Arc of Time",3,"Ur's daughter — time-arc magic and an atonement that costs her every year she has left.","Arc of Time · Second Origin Release · Last Ages"],
+["Sting Eucliffe","Rival","lightning","White Dragon Slayer Magic",3,"Sabertooth's white dragon — a rival guild's ace learning what a guild is actually for.","White Dragon's Roar · Holy Ray · White Drive"],
+["Rogue Cheney","Rival","assassin","Shadow Dragon Slayer Magic",3,"The shadow dragon — a quiet man haunted by the future version of himself he refuses to become.","Shadow Dragon's Roar · Shadow Form · Twin Dragon"],
+["Irene Belserion","Villain","dragoon","Enchantment · Dragon Queen",4,"The Scarlet Despair — enchantment magic's inventor and a mother who reshaped a continent.","Universe One · Dragon Enchantment · Scarlet Despair"],
+["Mavis Vermillion","Legendary","sorcerer","Fairy Tactician · Law",3,"Fairy Tail's first master — a strategist ghost whose three great fairy spells define the guild.","Fairy Glitter · Law · Tactician's Gambit"],
+["August","Villain","sorcerer","Magic King",4,"The Magic King of Spriggan — every magic he sees, copied and improved.","Copy Magic · Magic King's Judgment · Filial Grief"],
+["Happy","Secondary Protagonist","archer","Aera · Exceed",1,"The blue cat with wings, fish loyalty, and the guild's worst puns — Aye, sir.","Aera Flight · Max Speed · Fish Motivation"],
+["Erik (Cobra)","Anti-Hero","venom","Poison Dragon Slayer Magic",3,"The Poison Dragon Slayer who hears your next move before you make it.","Poison Dragon's Roar · Sound Hearing · Venom Scales"]],
+"Mob Psycho 100":[
+["Shigeo Kageyama","Main Protagonist","gravity","Esper · 100% Emotional Explosion",5,"Mob — the strongest esper alive, desperate to matter for anything other than that.","???% Explosion · Psychic Barrier · Emotional Threshold"],
+["Arataka Reigen","Mentor","fists","Con Artist · Salt Splash",1,"The greatest psychic of the 21st century (self-appointed) — no powers, all the right words.","Salt Splash · Massage Technique · Words That Actually Help"],
+["Dimple","Anti-Hero","summoner","Evil Spirit Possession",3,"The deflated cult-god spirit tagging along — schemes constantly, sticks around anyway.","Possession · Spirit Fusion · Dimple's Scheme"],
+["Teruki Hanazawa","Rival","fists","Esper Combat",4,"The esper who learned humility the hardest way and became Mob's most reliable friend.","Psychic Combat · Wig Regeneration · Chosen Restraint"],
+["Ritsu Kageyama","Secondary Protagonist","gravity","Awakened Esper",3,"Mob's brother — awakened powers, an inferiority complex, and a real talent for scheming.","Psychic Grip · Awakened Burst · Brother's Shadow"],
+["Katsuya Serizawa","Secondary Protagonist","gravity","Umbrella Esper",4,"The shut-in esper who found a job, a mentor, and a reason to fold the umbrella.","Umbrella Barrier · Psychic Torrent · Late Bloom"],
+["Toichiro Suzuki","Villain","gravity","Ultimate Esper",5,"Claw's boss — raw psychic force and a father's terrible ambition for his son.","Psychic Overload · Ultimate Form · Father's Doctrine"],
+["Sho Suzuki","Anti-Hero","assassin","Esper · Rebellion",3,"Toichiro's son — rebelling against his father's plan with his father's power.","Psychic Blade · Rebel Strike · Son's Refusal"],
+["Shimazaki","Villain","assassin","Teleportation Esper",4,"Claw's blind teleporter — the fastest fight in the series and the least earned confidence.","Teleport Strike · Blind Sense · Ultimate Five"],
+["Tsubomi Takane","Secondary Protagonist","cleric","Ordinary Life",1,"The girl Mob likes — utterly unimpressed by psychic powers, which is exactly the point.","Ordinary Kindness · Unimpressed Gaze · The Reason"],
+["Body Improvement Club","Secondary Protagonist","fists","Muscle Solidarity",1,"The gentlest bodybuilders in fiction — no powers, infinite encouragement, undefeated in spirit.","Muscle Solidarity · Encouragement · Push-Up Doctrine"]],
+"Dungeon Meshi":[
+["Laios Touden","Main Protagonist","greatsword","Monster Scholarship",2,"The party leader who would rather eat the monster than avoid it — a tactician disguised as a weirdo.","Monster Knowledge · Kensuke Blade · Appetite Tactics"],
+["Marcille Donato","Secondary Protagonist","sorcerer","Elven Magic · Ancient Study",3,"The elf mage horrified by every meal and studying the magic that could end the dungeon's cycle.","Explosive Sigil · Ancient Magic · Culinary Objection"],
+["Chilchuck Tims","Secondary Protagonist","assassin","Half-Foot Locksmith",2,"The union-minded trap expert — no magic, no heroics, excellent at not dying.","Trap Disarm · Lockpick Mastery · Union Rules"],
+["Senshi","Mentor","tank","Dwarven Dungeon Cuisine",2,"The dwarf who has lived off the dungeon for decades — a cooking pot, an axe, and hard-won wisdom.","Cooking Pot Guard · Axe Butchery · Dungeon Lore"],
+["Falin Touden","Secondary Protagonist","cleric","Healing Magic · Chimera",3,"Laios's sister — the healer whose death starts everything and whose chimera form nearly ends it.","Healing Circle · Chimera Form · Gentle Sacrifice"],
+["Izutsumi","Secondary Protagonist","assassin","Beastkin Chimera",2,"The cat-chimera fleeing everyone who ever owned her — claws, appetite, and trust issues.","Feral Pounce · Chimera Agility · Refusal to Sit"],
+["Kabru","Rival","assassin","People-Reading Adventurer",2,"The adventurer who studies people the way Laios studies monsters — charming and quietly lethal.","Read the Room · Party Command · Short Sword"],
+["Namari","Secondary Protagonist","greatsword","Dwarven Weaponsmith",2,"The dwarf fighter who left the party over money and kept caring anyway.","Heavy Cleave · Smith's Appraisal · Mercenary Sense"],
+["Shuro","Rival","katana","Eastern Swordsman",2,"The eastern noble whose politeness hides exhaustion and one very direct punch.","Eastern Draw · Retainer Command · Silent Grievance"],
+["Thistle","Villain","sorcerer","Mad Mage of the Dungeon",4,"The elf mage who bargained with a demon to keep a kingdom that already died.","Dungeon Dominion · Demon Contract · Immortal Guardianship"],
+["Mithrun","Anti-Hero","spear","Canary Dungeon Lord",3,"The canary whose desires were eaten by a demon — a hollow man hunting the thing that hollowed him.","Desire Consumption · Canary Discipline · Empty Focus"],
+["Marcille's Winged Lion","Villain","deathmage","The Demon",5,"The demon beneath the dungeon — it eats desire, and it is always very reasonable about it.","Desire Feast · Wish Granting · Endless Bargain"],
+["Chimera Falin","Villain","dragoon","Dragon-Fused Chimera",4,"Falin, remade wrong — a sister wearing a red dragon's body and a hunger she did not choose.","Chimera Breath · Fused Flight · Sister's Ruin"]],
+"Black Butler":[
+["Ciel Phantomhive","Main Protagonist","archer","Faustian Contract · Queen's Watchdog",2,"The child earl who traded his soul for revenge — a pistol, a cane, and no remaining innocence.","Contract Command · Queen's Warrant · Revenge Doctrine"],
+["Sebastian Michaelis","Legendary","assassin","Demon Butler · Silverware",4,"One hell of a butler — a demon serving perfectly while waiting to eat the soul that hired him.","Silverware Rain · Demon Speed · Yes, My Lord"],
+["Grell Sutcliff","Anti-Hero","greatsword","Grim Reaper · Death Scythe",3,"The reaper with a chainsaw scythe and theatrical devotion to whoever is currently bleeding.","Chainsaw Scythe · Cinematic Record · Crimson Passion"],
+["Undertaker","Villain","greatsword","Legendary Reaper",4,"The laughing mortician — a retired reaper whose price is a genuine laugh and whose scythe is enormous.","Reaper's Scythe · Cinematic Record Splice · Fee of Laughter"],
+["Alois Trancy","Villain","assassin","Faustian Contract",2,"The other contracted child — cruelty as armor over a grief nobody bothered to notice.","Contract Command · Spider's Order · Manic Cruelty"],
+["Claude Faustus","Villain","spear","Demon Butler · Spider Threads",3,"Trancy's butler — a spider's patience and a hunger less polite than Sebastian's.","Thread Web · Golden Knives · Cold Service"],
+["Elizabeth Midford","Secondary Protagonist","twinblade","Midford Fencing",2,"Ciel's fiancée — a champion fencer hiding her skill so her cousin never feels small.","Twin Sabre Dance · Midford Form · Hidden Strength"],
+["Madam Red","Anti-Hero","assassin","Surgeon's Blade",2,"The red baroness — a surgeon's precision turned on the city, and a sister's grief underneath it.","Surgical Strike · Red Deception · Aunt's Mercy"],
+["Lau","Anti-Hero","assassin","Kunlun Trade",2,"The opium trader who agrees with everything and means none of it — a blade behind a smile.","Concealed Blade · Trade Network · Cheerful Ambiguity"],
+["Prince Soma","Secondary Protagonist","fists","Bengali Royalty",1,"The Indian prince learning that being loved and being served are not the same thing.","Royal Guard · Curry Diplomacy · Earnest Charge"],
+["Agni","Secondary Protagonist","fists","Right Hand of God",3,"Soma's khansama — a right hand blessed into a weapon and a loyalty that outlives him.","Right Hand of God · Blade Flurry · Devoted Service"],
+["Baldroy","Secondary Protagonist","archer","Ex-Soldier Chef",2,"The Phantomhive chef who cooks with a flamethrower and shoots like the soldier he was.","Flamethrower Cooking · Rifle Cover · Soldier's Instinct"],
+["Finnian","Secondary Protagonist","tank","Enhanced Strength",2,"The gardener with experimental super strength and a gentleness he has to consciously maintain.","Uprooted Tree Swing · Enhanced Grip · Gentle Restraint"],
+["Mey-Rin","Secondary Protagonist","archer","Sniper Maid",3,"The clumsy maid who is, at range, the deadliest person on the estate.","Dual Rifle Snipe · Glasses Off · Maid's Cover"],
+["Tanaka","Mentor","katana","Former Phantomhive Steward",3,"The steward who seems asleep until the moment he is emphatically not.","Steward's Draw · Full Size · Ho ho ho"]]
+};
+Object.entries(ROSTER12).forEach(([fr, list])=>{
+  list.forEach(e=>{
+    const [name,cat,archId,ps,ptier,bio,tech,wOver]=e;
+    const arch=ARCHETYPES[archId], h=hashN(name);
+    const techs=(tech||"Signature Technique").split(" · ");
+    const mkGear=(arr)=>{ const g=arr.slice(); if(wOver) g[0]=wOver; return g; };
+    const lv = ptier<=1?60 : ptier===2?125 : ptier===3?150 : ptier===4?200 : ptier===5?300 : 713;
+    CHARACTERS.push({
+      id:slug(name), name, anime:fr, franchise:fr, category:cat,
+      powerSystem:ps, archetype:arch.label, difficulty:arch.diff, powerTier:ptier,
+      rating: Math.round((7.6+ptier*0.35+(h%6)/10)*10)/10, popularity: 58+(h%34),
+      banner: FRANCHISE_COLORS[fr]||["#8b5cf6","#0f172a"],
+      bio, personality:CATEGORY_PERSONA[cat], combat:arch.combat,
+      techniques:techs, transformations:[], allies:[], enemies:[], battles:[], quote:"",
+      builds:[
+        {name:"Canon Lore — RL"+lv, level:lv, type:"Lore · "+arch.label, primary:true,
+         stats:spreadStats(arch.w,lv), weapons:mkGear(arch.gear.lore), armor:arch.armor.slice(),
+         talismans:arch.tal.slice(), spells:arch.spells.slice(), summon: archId==="summoner"?"Black Knife Tiche +10":"—",
+         notes:"Canon "+name+": "+arch.lore_note+" Level set by Power Tier "+ptier+" — the framework's calibration layer, not a flat RL150 default. Signature focus: "+techs[0]+"."},
+        {name:"PvE Optimized — RL150", level:150, type:"PvE · "+arch.label,
+         stats:spreadStats(arch.w,150), weapons:mkGear(arch.gear.pve), armor:arch.armor.slice(),
+         talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"Mimic Tear +10",
+         notes:"PvE-optimized: efficiency over cosplay. Mimic Tear support, encounter-swapped talismans, and "+techs[0]+" as the boss-killing core."},
+        {name:"PvP Optimized — RL125", level:125, type:"PvP · "+arch.label,
+         stats:spreadStats(Object.assign({},arch.w,{VIG:arch.w.VIG+3}),125), weapons:mkGear(arch.gear.pvp), armor:arch.armor.slice(),
+         talismans:arch.tal.slice(), spells:arch.spells.slice(), summon:"—",
+         notes:"PvP duelist tuned for the RL125 meta: higher Vigor weighting, honest neutral game, and "+techs[0]+" as the kill condition."}
+      ],
+      deep:false, darkFantasy: ["Hell's Paradise","Blue Exorcist","D.Gray-man","Black Butler","Dungeon Meshi"].includes(fr)||undefined
+    });
+  });
+});
+
+applyLoreStats();   /* lore-accurate stat pass — runs once, over the complete roster */
 const FRANCHISES = ["All", ...Object.keys(FRANCHISE_COLORS).filter(f=>CHARACTERS.some(c=>c.franchise===f))];
 /* Legality pass: no build may spend more points than its Rune Level allows (level+79).
    Over-budget hand-tuned specs get trimmed from their largest non-Vigor stat. */
@@ -4266,7 +4427,7 @@ const AOW_DEFAULT={ // infusible weapons: stock skill if the build doesn't name 
  "Uchigatana":"Unsheathe","Nagakiba":"Piercing Fang","Greatsword":"Stamp (Upward Cut)","Claymore":"Lion's Claw",
  "Giant-Crusher":"Endure","Backhand Blade":"Blind Spot","Dryleaf Arts":"Palm Blast","Great Katana":"Overhead Stance",
  "Black Bow":"Barrage","Scavenger's Curved Sword":"Spinning Slash","Cross-Naginata":"Repeating Thrust",
- "Antspur Rapier":"Repeating Thrust","Misericorde":"Quickstep","Star Fist":"Endure","Banished Knight's Greatsword":"Stamp (Upward Cut)",
+ "Antspur Rapier":"Repeating Thrust","Miséricorde":"Quickstep","Star Fist":"Endure","Banished Knight's Greatsword":"Stamp (Upward Cut)",
  "Smithscript Dagger":"Piercing Throw","Smithscript Greathammer":"Crushing Throw","Rogier's Rapier":"Glintblade Phalanx","Highland Axe":"War Cry"};
 const AFFINITIES=["Heavy","Keen","Quality","Fire","Flame Art","Lightning","Sacred","Magic","Cold","Poison","Blood","Occult","Standard"];
 const ASH_KNOWN=["Unsheathe","Lion's Claw","Bloodhound's Step","Blind Spot","Palm Blast","Flaming Strike","Chilling Mist","Giant Hunt","Sacred Blade","Golden Land","Double Slash","Phantom Slash","Repeating Thrust","Poison Moth Flight","Impaling Thrust","Quickstep","Barrage","Rain of Arrows","Endure","Royal Knight's Resolve","Wild Strikes","Square Off","Stormcaller","Spinning Slash","Piercing Fang","War Cry","Warcry","Lightning Slash","Overhead Stance","Dragonwound Slash"];
@@ -5544,6 +5705,554 @@ function renderCrossing(){
   </div>`;
 }
 
+/* ============ CONVERSION FRAMEWORK §1 — POWER TIER CALIBRATION ============
+   Every character is tiered against Elden Ring's own power ceiling BEFORE stats mean anything.
+   Without this a genin and Saitama both read as "an anime build," which is the single biggest
+   credibility risk in a 1,000-character catalogue.                                              */
+const POWER_TIERS=[
+ {t:1,label:"Tarnished Novice",bench:"Early Limgrave · Margit-level threat",rl:"~40–60",col:"#9a94a8"},
+ {t:2,label:"Legacy Dungeon Threat",bench:"Godrick · Rennala · early Radahn",rl:"~90–125",col:"#38bdf8"},
+ {t:3,label:"Demigod",bench:"Morgott · Rykard · Mohg",rl:"~150",col:"#a78bfa"},
+ {t:4,label:"Elden Lord Candidate",bench:"Malenia · Maliketh · Godfrey",rl:"~200",col:"#d4af37"},
+ {t:5,label:"Outer God-Touched",bench:"Radagon / Elden Beast",rl:"~300",col:"#f87171"},
+ {t:6,label:"Conceptual / Off-Scale",bench:"Exceeds the game's own ceiling",rl:"713 + disclaimer",col:"#fb7185"}];
+/* Explicit calibration anchors — the ruler's fixed points. Everything else is derived from these. */
+const TIER_OVERRIDE={
+ /* 6 — the game has no honest answer for these */
+ saitama:6, thelivingtribunal:6, shigeokageyama:6, kyubey:6, beingx:6, zeref:6,
+ /* 5 — outer-god touched */
+ beerus:6-1, whis:5, jiren:5, eldenbeast:5, radagon:5, queenmarika:5, placidusax:5, rien:5, satan:5,
+ themillenniumearl:5, acnologia:5, zerefdragneel:5, toichirosuzuki:5, marcilleswingedlion:5,
+ madaramyth:5, thedarklord:5, antares:5, ashborn:5, alduin:5, gaunterodimm:5, sheogorath:5, darkseid:5,
+ /* 4 — Elden Lord candidates */
+ naruto:4, madara:4, goku:4, vegeta:4, gojo:4, ryomensukuna:4, ainz:4, rimuru:4, escanor:4,
+ malenia:4, maliketh:4, godfrey:4, hoarahloux:4, messmer:4, promisedconsortradahn:4, radahn:4,
+ whitebeard:4, kaido:4, bigmom:4, shanks:4, draculemihawk:4, blackbeard:4, yhwach:4, sosukeaizen:4,
+ muzankibutsuji:4, kokushibo:4, meruem:4, jinwoo:4, alucard:4, sephiroth:4, arthasmenethil:4,
+ doomslayer:4, mephistopheles:4, roadkamelot:4, tykimikk:4, gildartsclive:4, august:4, irenebelserion:4,
+ makarovdreyar:4, mirajanestrauss:4-1, teruki:4, katsuyaserizawa:4, shimazaki:4, thistle:4,
+ sebastianmichaelis:4, undertaker:4, crossmarian:4, mudan:4, zhujin:4, ran:4, chimerafalin:4,
+ /* 3 — demigod tier */
+ guts:3, itachi:3, sasuke:3, ichigo:3, levi:3, eren:3, luffy:3, zoro:3, tanjiro:3, asta:3,
+ morgott:3, mohg:3, rykard:3, godrick:3, rennala:3, rellana:3, midra:3, baylethedread:3,
+ /* 2 — legacy dungeon threat */
+ sakuraharuno:2, konohamarusarutobi:2, nurugai:1, boctheseamster:1, jarbairn:1,
+ /* 1 — novice */
+ arataka:1, aratakareigen:1, tsubomitakane:1, bodyimprovementclub:1, happy:1, konekomarumiwa:1
+};
+function powerTier(c){
+  if(c.powerTier) return c.powerTier;
+  if(TIER_OVERRIDE[c.id]) return TIER_OVERRIDE[c.id];
+  /* derived: rating is the seeded proxy, adjusted by narrative role and franchise ceiling */
+  let t=2;
+  if(c.rating>=9.4) t=5; else if(c.rating>=9.0) t=4; else if(c.rating>=8.4) t=3; else if(c.rating>=7.8) t=2; else t=1;
+  if(c.category==="Legendary") t=Math.min(6,t+1);
+  if(c.category==="Mentor"&&t<3) t=Math.min(6,t+1);
+  if(c.deep) t=Math.max(t,3);
+  if(/god|divine|cosmic|multivers|creator|primordial|eternal|outer/i.test(c.powerSystem||"")) t=Math.min(6,t+1);
+  if(/student|apprentice|rookie|novice|child|villager|ordinary/i.test((c.bio||"")+(c.powerSystem||""))) t=Math.max(1,t-1);
+  return Math.max(1,Math.min(6,t));
+}
+function tierMeta(c){ const t=powerTier(c); return POWER_TIERS.find(x=>x.t===t)||POWER_TIERS[1]; }
+function tierBadge(c){
+  const m=tierMeta(c);
+  return `<span class="pill" style="background:${m.col}22;color:${m.col};border:1px solid ${m.col}66;font-weight:700">T${m.t} ${esc(m.label)}</span>`;
+}
+/* §1 Rule — Tier 6 gets an explicit narrative-adjustment disclaimer rather than a fake equivalence. */
+function tier6Note(c){
+  if(powerTier(c)!==6) return "";
+  return `<div class="build-note" style="border-color:rgba(251,113,133,.45);background:rgba(251,113,133,.08);color:#fecdd3;margin-bottom:10px">
+    ⚠ <b>Narrative adjustment — Tier 6 (Conceptual / Off-Scale).</b> ${esc(c.name)} exceeds Elden Ring's own power ceiling.
+    The build below is the closest <i>mechanical approximation</i> the game's systems allow; no combination of stats, weapons or
+    incantations truly represents this character. Presented as an honest translation, not an equivalence.</div>`;
+}
+
+/* ============ §5 — REMEMBRANCES: reserved for Tier 3+ ============ */
+function remembranceOf(c){
+  if(powerTier(c)<3) return null;
+  const b=c.builds[0];
+  const wep=(b.weapons[0]||"a nameless armament").split("(")[0].trim();
+  const sig=(c.techniques&&c.techniques[0])||"their signature art";
+  const spell=(b.spells&&b.spells[0]&&b.spells[0]!=="—")?b.spells[0]:null;
+  return {
+    name:"Remembrance of "+(/^(the|a) /i.test(c.name)?c.name:"the "+(c.category==="Villain"?"Fell ":c.category==="Legendary"?"Undying ":"")+c.name.split(" ")[0]),
+    flavor:"Remembrance of "+c.name+", held fast within the "+(c.franchise)+" cycle. The memory of one who "+
+      (powerTier(c)>=5?"stood beyond the Order's reckoning":powerTier(c)===4?"might have claimed a throne":"walked as a demigod walks")+
+      ". Use to gain its strength, or transpose at a mausoleum.",
+    weapon:wep, art:sig, spell:spell
+  };
+}
+function renderRemembrance(c){
+  const r=remembranceOf(c);
+  if(!r) return `<div class="info-box"><h5>Remembrance</h5><p style="font-size:12px;color:var(--txt-dim)">Reserved for Power Tier 3 and above. ${esc(c.name)} is Tier ${powerTier(c)} — a threat, not a shardbearer.</p></div>`;
+  return `<div class="info-box" style="border-color:var(--gold-dim)"><h5>💠 ${esc(r.name)}</h5>
+    <p style="font-style:italic;color:var(--gold2);font-size:12px;line-height:1.7">"${esc(r.flavor)}"</p>
+    <div style="margin-top:8px;font-size:12px"><b style="color:var(--purple)">Transpose — two options:</b>
+      <div style="padding:4px 0 2px 10px">⚔ <b>${esc(r.weapon)}</b> <small style="color:var(--txt-dim)">— armament, bearing the Ash of War <i>${esc(r.art)}</i></small></div>
+      <div style="padding:2px 0 0 10px">${r.spell?"✨ <b>"+esc(r.spell)+"</b> <small style='color:var(--txt-dim)'>— incantation/sorcery inheritance</small>":"◈ <b>"+esc(r.art)+"</b> <small style='color:var(--txt-dim)'>— skill inheritance (no spell school; physical archetype)</small>"}</div>
+    </div></div>`;
+}
+
+/* ============ §7 — the framework's worked example, added as Guts's canon spec ============ */
+(function addFrameworkGuts(){
+  const g=CHARACTERS.find(c=>c.id==="guts"); if(!g) return;
+  if(g.builds.some(b=>b.name.indexOf("Framework")>=0)) return;
+  g.powerTier=3;
+  g.builds.push({name:"Framework Canon — RL196", level:196, type:"Lore · Conversion Framework §7",
+    stats:{VIG:60,MND:15,END:50,STR:80,DEX:30,INT:10,FTH:10,ARC:20},
+    weapons:["Greatsword (Heavy, Storm Blade) — crude, oversized, sharpened more by force than skill","Full Moon Crossbow — the prosthetic's cannon and repeater"],
+    armor:["Mismatched, battered heavy set — Raging Wolf and Night's Cavalry pieces over black leather"],
+    talismans:["Taker's Cameo","Claw Talisman","Erdtree's Favor +2","Bull-Goat's Talisman"],
+    spells:["—"], summon:"—",
+    notes:"The Conversion Framework's worked example, transcribed exactly: Tier 3 Demigod, Vagabond start, STR 80 one-handing a weapon the size of a person, ARC 20 for the Berserker Armor's curse and the blood/madness motif. Poise-break tank-and-spank — wins on HP pool and colossal stagger, not technique variety. The Armor is a timed hyper-mode with a drawback, never a permanent buff. (Sum 275 = RL196; the framework's spec does not fit RL150, so it is presented at its true level rather than trimmed.)"});
+})();
+
+/* ============ Power Tier distribution panel (Blueprint) ============ */
+function renderTierCalibration(){
+  const el=document.getElementById("tierCalRoot"); if(!el) return;
+  const dist={}; CHARACTERS.forEach(c=>{ const t=powerTier(c); dist[t]=(dist[t]||0)+1; });
+  const max=Math.max(...Object.values(dist));
+  el.innerHTML=`<div class="panel" style="margin-bottom:20px"><h3>⚖ POWER TIER CALIBRATION — THE RULER</h3>
+   <p style="font-size:12px;color:var(--txt-dim);margin:8px 0 12px">Every character is tiered against Elden Ring's own ceiling before a single stat is assigned. Tier sets the canon build's Rune Level, gates Remembrances (Tier 3+), and triggers the Tier 6 narrative-adjustment disclaimer.</p>
+   ${POWER_TIERS.map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)">
+     <span class="pill" style="background:${t.col}22;color:${t.col};border:1px solid ${t.col}66;min-width:34px;text-align:center;font-family:var(--font-display)">T${t.t}</span>
+     <div style="min-width:150px"><b style="font-size:12.5px">${esc(t.label)}</b><div style="font-size:10px;color:var(--txt-dim)">${esc(t.bench)}</div></div>
+     <div class="btrack" style="flex:1"><div class="bfill" style="width:${Math.max(4,Math.round((dist[t.t]||0)/max*100))}%;background:linear-gradient(90deg,${t.col}88,${t.col})">${dist[t.t]||0}</div></div>
+     <span style="font-size:10px;color:var(--txt-dim);min-width:88px;text-align:right">canon RL ${t.rl}</span>
+   </div>`).join("")}
+   <p style="font-size:11px;color:#fecdd3;margin-top:10px">⚠ Tier 6 (${dist[6]||0} characters) carry an explicit disclaimer on their build: the game has no honest stat combination for them, and the site says so rather than pretending otherwise.</p>
+  </div>`;
+}
+
+/* ============ LORE-DRIVEN GEAR ENGINE ============
+   Stats stopped being templated. Gear hadn't. Every "Dex Katana" carried the same Uchigatana,
+   the same Land of Reeds set and the same four talismans. This engine selects weapons, affinities,
+   Ashes of War, armor, talismans and spells per character — scored against their own power system,
+   techniques, bio and tier, drawing from the real item databases already in this file.            */
+
+/* --- 1. Read the character's elemental / status / physical identity from their own text --- */
+const GEAR_OVERRIDE={
+ /* hand-authored kit for characters whose canon weapon is unmistakable */
+ akame:{w:"Rivers of Blood",st:"Blood",ar:"Land of Reeds Set"},
+ kurome:{w:"Black Knife",st:"Blood",ar:"Black Knife Set"},
+ esdeath:{w:"Dark Moon Greatsword",st:"Cold",ar:"Snow Witch Set"},
+ natsudragneel:{w:"Dryleaf Arts",el:"Fire",ar:"Fire Monk Set"},
+ grayfullbuster:{w:"Dark Moon Greatsword",st:"Cold",el:"Cold",ar:"Snow Witch Set"},
+ erzascarlet:{w:"Banished Knight's Greatsword",ar:"Royal Knight Set"},
+ gajeelredfox:{w:"Great Stars",ar:"Iron Set"},
+ laxusdreyar:{w:"Bolt of Gransax",el:"Lightning",ar:"Godrick Knight Set"},
+ gyomeihimejima:{w:"Great Stars",ar:"Fingerprint Set"},
+ hiei:{w:"Godslayer's Seal",el:"Fire",ar:"Black Knife Set"},
+ kurama:{w:"Hoslow's Petal Whip",st:"Poison",ar:"Depraved Perfumer Set"},
+ kazumakuwabara:{w:"Cipher Pata",ar:"Champion Set"},
+ sebastianmichaelis:{w:"Miséricorde",el:"Occult",ar:"Alberich's Set"},
+ grellsutcliff:{w:"Ghiza's Wheel",st:"Blood",ar:"Sanguine Noble Set"},
+ undertaker:{w:"Halo Scythe",ar:"Royal Remains Set"},
+ allenwalker:{w:"Sacred Relic Sword",el:"Sacred",ar:"Cleanrot Set"},
+ kandayu:{w:"Uchigatana",el:"Occult",ar:"Land of Reeds Set"},
+ lavi:{w:"Giant-Crusher",el:"Fire",ar:"Iron Set"},
+ lenaleelee:{w:"Raptor Talons",ar:"Raptor's Set"},
+ gabimaru:{w:"Great Knife",el:"Fire",ar:"Black Knife Set"},
+ sagiriyamadaasaemon:{w:"Uchigatana",ar:"White Reed Set"},
+ shigeokageyama:{w:"Fallingstar Beast Jaw",el:"Magic",ar:"Commoner's Set"},
+ aratakareigen:{w:"Caestus",ar:"Nomadic Merchant's Set"},
+ laiostouden:{w:"Claymore",ar:"Vagabond Knight Set"},
+ marcilledonato:{w:"Carian Regal Scepter",el:"Magic",ar:"Snow Witch Set"},
+ senshi:{w:"Highland Axe",ar:"Fur Set"},
+ rinokumura:{w:"Uchigatana",el:"Fire",ar:"Fire Monk Set"},
+ yukiookumura:{w:"Pulley Crossbow",ar:"Confessor Set"},
+ mephistopheles:{w:"Carian Regal Scepter",el:"Magic",ar:"Alberich's Set"},
+ holo:{w:"Beast Claw",ar:"Fur Set"}, sonhak:{w:"Cross-Naginata",ar:"Raging Wolf Set"},
+ manji:{w:"Uchigatana",st:"Blood",ar:"Ronin's Set"}, sinbad:{w:"Bolt of Gransax",el:"Lightning",ar:"Ruler's Set"},
+ aladdin:{w:"Azur's Glintstone Staff",el:"Magic",ar:"Preceptor's Set"},
+ alibabasaluja:{w:"Sword of Night and Flame",el:"Fire",ar:"Consort's Set"},
+ doomslayer:{w:"Giant-Crusher",ar:"Bull-Goat Set"}, kratos:{w:"Icerind Hatchet",st:"Cold",ar:"Beast Champion Set"},
+ cloudstrife:{w:"Greatsword",ar:"Raging Wolf Set"}, sephiroth:{w:"Nagakiba",el:"Occult",ar:"Black Knife Set"},
+ geraltofrivia:{w:"Claymore",ar:"Banished Knight Set"}, ciri:{w:"Rogier's Rapier",el:"Magic",ar:"Blue Silver Set"},
+ artorias:{w:"Banished Knight's Greatsword",ar:"Banished Knight Set"},
+ ornstein:{w:"Treespear",el:"Lightning",ar:"Royal Knight Set"},
+ gehrman:{w:"Grave Scythe",st:"Blood",ar:"Black Knife Set"},
+ ladymaria:{w:"Nagakiba",st:"Blood",ar:"Black Knife Set"},
+ wolf:{w:"Uchigatana",ar:"Land of Reeds Set"}, isshinashina:{w:"Nagakiba",el:"Fire",ar:"Land of Reeds Set"},
+ thorfinn:{w:"Miséricorde",ar:"Bandit Set"}, thorkell:{w:"Greataxe",ar:"Fur Set"},
+ askeladd:{w:"Longsword",ar:"Chain Set"}, clare:{w:"Claymore",el:"Occult",ar:"Cleanrot Set"},
+ teresa:{w:"Claymore",ar:"Cleanrot Set"}, trevorbelmont:{w:"Hoslow's Petal Whip",el:"Sacred",ar:"Beast Champion Set"},
+ dracula:{w:"Prince of Death's Staff",el:"Occult",ar:"Alberich's Set"},
+ frieren:{w:"Carian Regal Scepter",el:"Magic",ar:"Snow Witch Set"},
+ fern:{w:"Academy Glintstone Staff",el:"Magic",ar:"Juvenile Scholar Set"},
+ stark:{w:"Greataxe",ar:"Fur Set"}, tanyadegurechaff:{w:"Pulley Crossbow",el:"Magic",ar:"Iron Rivet Set"},
+ pegasusseiya:{w:"Star Fist",ar:"Champion Set"}, geminisaga:{w:"Carian Regal Scepter",el:"Magic",ar:"Elden Lord Set"},
+ yona:{w:"Black Bow",ar:"Traveling Maiden Set"}, adletmayer:{w:"Smithscript Dagger",ar:"Bandit Set"},
+ simon:{w:"Fallingstar Beast Jaw",ar:"Iron Set"}, kamina:{w:"Zweihander",ar:"Raging Wolf Set"},
+ homuraakemi:{w:"Pulley Crossbow",el:"Magic",ar:"Juvenile Scholar Set"},
+ red:{w:"Black Bow",ar:"Traveler's Set"}, arthasmenethil:{w:"Greatsword",st:"Cold",el:"Cold",ar:"Death Knight Set"},
+ illidanstormrage:{w:"Twinblade",el:"Occult",ar:"Beast Champion Set"},
+ zeus:{w:"Bolt of Gransax",el:"Lightning",ar:"Elden Lord Set"},
+ thor:{w:"Great Stars",el:"Lightning",ar:"Beast Champion Set"},
+ odin:{w:"Treespear",ar:"Ruler's Set"}, hades:{w:"Prince of Death's Staff",el:"Occult",ar:"Royal Remains Set"}
+};
+function gearTheme(c){
+  const raw=((c.powerSystem||"")+" "+(c.techniques||[]).join(" ")+" "+(c.bio||"")+" "+(c.combat||"")).toLowerCase();
+  /* word-boundary matching — "justice" must not read as ice, "bloodhound" must not read as bleed */
+  const W=(...words)=>new RegExp("\\b("+words.join("|")+")\\w{0,3}\\b");
+  const has=(re)=>re.test(raw);
+  const ov=GEAR_OVERRIDE[c.id]||{};
+  const A=c.archetype||"";
+  /* archetype is the prior; prose can refine it but never contradict it */
+  let status=ov.st||null, element=ov.el||null;
+  if(!status){
+    if(/Arcane Bleed/.test(A)) status="Blood";
+    else if(/Toxin/.test(A)) status="Poison";
+    else if(/Frost/.test(A)) status="Cold";
+    else if(/Frenzied/.test(A)) status="Madness";
+    else if(has(W("blood","bleed","hemorrhage","vampire","sanguine"))&&!has(W("bloodhound"))) status="Blood";
+    else if(has(W("poison","venom","toxin","plague"))) status="Poison";
+    else if(has(W("rot","decay","putrid","blight"))||has(/scarlet rot/)) status="Rot";
+    else if(has(W("ice","frost","freeze","frozen","glacial","snow","blizzard","cryo"))) status="Cold";
+    else if(has(W("madness","frenzy","frenzied","insanity"))) status="Madness";
+    else if(has(W("sleep","slumber","lullaby"))) status="Sleep";
+  }
+  if(!element){
+    if(/Fire Faith|Pyro/.test(A)) element="Fire";
+    else if(/Storm Blade|Lightning/.test(A)) element="Lightning";
+    else if(/Frost/.test(A)) element="Cold";
+    else if(/Int Caster|Gravity|Spellblade/.test(A)) element="Magic";
+    else if(/Faith Caster|Sacred|Legion/.test(A)) element="Sacred";
+    else if(/Death Sorcery/.test(A)) element="Occult";
+    else if(has(W("lightning","thunder","storm","volt","electric","bolt"))) element="Lightning";
+    else if(has(W("fire","flame","flaming","burn","inferno","blaze","magma","ember","solar"))) element="Fire";
+    else if(has(W("ice","frost","frozen","glacial","snow","blizzard"))) element="Cold";
+    else if(has(W("holy","divine","sacred","saint","angel","prayer","blessing"))) element="Sacred";
+    else if(has(W("gravity","meteor","star","cosmic","void","moon","glintstone","sorcery","psychic"))) element="Magic";
+    else if(has(W("curse","cursed","demon","devil","hell","abyss","death","shadow","nightmare"))) element="Occult";
+  }
+  const heavy=/Colossal|Guardian|Sacred$/.test(A)||has(W("giant","colossal","titan","armor","armored","plate","fortress","juggernaut"));
+  const light=/Assassin|Speed|Ranged/.test(A)||has(W("speed","agile","agility","acrobat","nimble","swift","stealth","blink"));
+  const noble=has(W("king","queen","prince","princess","noble","royal","emperor","lord","aristocrat","crown"));
+  const feral=has(W("beast","wolf","monster","claw","fang","feral","savage","wild","dragon"));
+  const scholar=/Int Caster|Death Sorcery/.test(A)||has(W("scholar","mage","sorcerer","wizard","academy","witch","professor"));
+  const eastern=has(W("ninja","shinobi","samurai","katana","edo","shogun","clan","dojo"));
+  const undead=has(W("undead","immortal","revive","corpse","grave","ghost","spirit","reaper","zombie"));
+  const monk=has(W("monk","martial","fist","palm","temple","meditation","karate"));
+  return {status,element,heavy,light,noble,feral,scholar,eastern,undead,monk,text:raw,ov};
+}
+/* --- 2. Real weapon pools, pulled straight from the 402-weapon index --- */
+function classPool(cls){
+  const row=WEAPON_INDEX.find(r=>r[0].replace(" [DLC]","")===cls.replace(" [DLC]",""));
+  return row? widxItems(row).map(i=>i.name) : [];
+}
+const ARCH_CLASSES={
+ "Dex Katana":["Katanas","Great Katanas [DLC]","Curved Swords"],
+ "Str Colossal":["Colossal Swords","Colossal Weapons","Greataxes","Great Hammers"],
+ "Martial Artist":["Fists","Claws","Hand-to-Hand Arts [DLC]","Beast Claws [DLC]"],
+ "Dual-Wield Speed":["Twinblades","Backhand Blades [DLC]","Curved Swords","Daggers"],
+ "Int Caster":["Glintstone Staffs"],
+ "Faith Caster":["Sacred Seals"],
+ "Dex/Int Spellblade":["Katanas","Light Greatswords [DLC]","Straight Swords","Thrusting Swords"],
+ "Fire Faith":["Sacred Seals","Curved Greatswords","Greatswords"],
+ "Arcane Bleed":["Katanas","Daggers","Reapers","Whips"],
+ "Crit Assassin":["Daggers","Claws","Throwing Blades [DLC]"],
+ "Str/Faith Sacred":["Greatswords","Colossal Swords","Halberds"],
+ "Gravity Warlord":["Colossal Weapons","Great Hammers","Glintstone Staffs"],
+ "Storm Blade":["Spears","Great Spears","Halberds","Katanas"],
+ "Frost Blade":["Katanas","Greatswords","Glintstone Staffs"],
+ "Toxin Specialist":["Thrusting Swords","Daggers","Perfume Bottles [DLC]","Whips"],
+ "Precision Ranged":["Bows","Light Bows","Greatbows","Crossbows"],
+ "Polearm Duelist":["Spears","Great Spears","Halberds"],
+ "Immovable Guardian":["Great Hammers","Colossal Weapons","Greataxes"],
+ "Legion Commander":["Sacred Seals","Straight Swords","Glintstone Staffs"],
+ "Dragon Communion":["Sacred Seals","Colossal Weapons","Great Spears"],
+ "Death Sorcery":["Glintstone Staffs","Reapers","Sacred Seals"],
+ "Frenzied Flame":["Sacred Seals","Great Spears","Torches"]};
+/* keyword hints that make a specific armament the right one for a specific character */
+const WEAPON_HINTS={
+ "Rivers of Blood":/blood|bleed|crimson|corpse/, "Hand of Malenia":/rot|prosthe|goddess|undefeated/,
+ "Moonveil":/moon|magic|glint|instant|draw|flash/, "Dragonscale Blade":/dragon|scale|lightning/,
+ "Serpentbone Blade":/poison|serpent|snake|venom/, "Meteoric Ore Blade":/gravity|meteor|star|cosmic/,
+ "Nagakiba":/long|reach|hunt|assassin/, "Uchigatana":/samurai|ronin|traditional|swordsman/,
+ "Sword of Night":/night|shadow|dark|stealth/, "Star-Lined Sword":/star|cosmic|light|celestial/,
+ "Dragon-Hunter's Great Katana":/dragon|slay|hunter/, "Rakshasa's Great Katana":/curse|blood|rage|demon/,
+ "Blasphemous Blade":/devour|god|heal|blasphem|serpent|hunger/, "Dark Moon Greatsword":/moon|ice|frost|cold|sorcer/,
+ "Sword of Night and Flame":/dual|both|night|flame|hybrid|two/, "Golden Order Greatsword":/order|golden|law|fundament/,
+ "Sacred Relic Sword":/holy|sacred|relic|golden|wave/, "Helphen's Steeple":/death|ghost|soul|spirit/,
+ "Death's Poker":/death|ghostflame|frost|undead/, "Marais Executioner's Sword":/execut|noble|blood|dance/,
+ "Maliketh's Black Blade":/death|destined|black|beast|shadow/, "Starscourge Greatsword":/gravity|star|scourge|meteor/,
+ "Ruins Greatsword":/gravity|ruin|colossal|smash/, "Grafted Blade Greatsword":/graft|amalgam|steal|many/,
+ "Giant-Crusher":/crush|giant|hammer|brute|smash|strongest/, "Greatsword":/slab|iron|black|mercenary|huge/,
+ "Axe of Godfrey":/lord|axe|earthshak|first/, "Axe of Godrick":/graft|storm|command/,
+ "Bloodfiend's Arm":/blood|fiend|chainsaw|rip|savage/, "Ghiza's Wheel":/wheel|torture|execut|spin/,
+ "Fallingstar Beast Jaw":/gravity|star|beast|meteor|jaw/, "Devourer's Scepter":/devour|hunger|eat|consum/,
+ "Rivers of Blood ":/x/, "Star Fist":/fist|punch|brawl|star/, "Cipher Pata":/holy|invisible|faith|spirit/,
+ "Clinging Bone":/lifesteal|drain|bone|leech/, "Dryleaf Arts":/martial|palm|monk|hand-to-hand|ki/,
+ "Grafted Dragon":/dragon|graft|arm/, "Poisoned Hand":/poison|venom|touch/, "Madding Hand":/madness|frenzy/,
+ "Bloodhound Claws":/claw|beast|hunter|feral|adamant/, "Venomous Fang":/poison|fang|venom/,
+ "Raptor Talons":/talon|bird|leap|raptor/, "Claws of Night":/night|shadow|assassin/,
+ "Hookclaws":/hook|climb|claw/, "Reduvia":/blood|dagger|flick|bloodflame/,
+ "Black Knife":/death|assassin|shadow|silent|drain/, "Miséricorde":/crit|mercy|execut|pierce/,
+ "Great Knife":/quick|step|knife/, "Scorpion's Stinger":/scorpion|poison|sting/,
+ "Glintstone Kris":/magic|glint|caster|dagger/, "Blade of Calling":/holy|call|sacred/,
+ "Eleonora's Poleblade":/twin|blood|flame|violet/, "Godskin Peeler":/god|skin|black flame|stretch/,
+ "Gargoyle's Black Blades":/twin|black|gargoyle|dual/, "Euporia":/twin|holy|light/,
+ "Twinblade":/twin|dual|spin/, "Backhand Blade":/reverse|backhand|dodge|blind spot/,
+ "Curseblade's Cirque":/curse|blade|dance/, "Smithscript Cirque":/throw|script|smith/,
+ "Lusat's Glintstone Staff":/power|overwhelm|strongest|glass cannon|ruin/,
+ "Carian Regal Scepter":/carian|royal|queen|moon|full moon/, "Prince of Death's Staff":/death|undead|lich|necro/,
+ "Meteorite Staff":/gravity|meteor|rock|star/, "Azur's Glintstone Staff":/comet|azur|primeval|instant/,
+ "Staff of Loss":/invisib|loss|hidden|unseen/, "Rotten Crystal Staff":/rot|crystal|decay/,
+ "Academy Glintstone Staff":/academy|scholar|student|raya/, "Staff of the Great Beyond":/both|hybrid|beyond|dual/,
+ "Maternal Staff":/mother|finger|maternal/, "Erdtree Seal":/faith|erdtree|golden|pure/,
+ "Godslayer's Seal":/godslay|black flame|kill god/, "Dragon Communion Seal":/dragon|communion|beast|heart/,
+ "Frenzied Flame Seal":/frenzy|madness|chaos|three fingers/, "Giant's Seal":/giant|fire|flame/,
+ "Golden Order Seal":/order|law|fundament|golden/, "Clawmark Seal":/beast|claw|gurranq|bestial/,
+ "Gravel Stone Seal":/dragon|lightning|ancient/, "Fire Knight's Seal":/fire knight|messmer|flame/,
+ "Bolt of Gransax":/lightning|ancient|spear|bolt/, "Mohgwyn's Sacred Spear":/blood|dynasty|nihil|bloodflame/,
+ "Serpent-Hunter":/serpent|snake|god-devour/, "Vyke's War Spear":/frenzy|madness|vyke/,
+ "Spear of the Impaler":/impale|serpent|messmer|flame/, "Siluria's Tree":/lance|tree|charge/,
+ "Treespear":/holy|tree|sacred|spear/, "Cross-Naginata":/naginata|bleed|reach/,
+ "Death Ritual Spear":/death|ritual|ancient rancor/, "Cleanrot Spear":/rot|cleanrot|holy/,
+ "Golden Halberd":/golden|holy|tree sentinel|halberd/, "Loretta's War Sickle":/loretta|magic|sickle|caria/,
+ "Poleblade of the Bud":/rot|bud|saint|dance/, "Guardian's Swordspear":/guardian|storm|dance/,
+ "Winged Scythe":/holy|scythe|winged|death/, "Halo Scythe":/holy|halo|heal|scythe/,
+ "Grave Scythe":/grave|death|ghost|scythe/, "Obsidian Lamina":/frost|obsidian|scythe|friede/,
+ "Hoslow's Petal Whip":/whip|petal|bleed|hoslow/, "Giant's Red Braid":/braid|red|giant|whip/,
+ "Urumi":/lightning|flexible|whip/, "Thorned Whip":/thorn|bleed|whip/,
+ "Black Bow":/black|precise|snipe|long/, "Erdtree Bow":/holy|erdtree|sacred/,
+ "Ansbach's Longbow":/blood|ansbach|servant/, "Igon's Greatbow":/dragon|hunt|curse|greatbow/,
+ "Serpent Bow":/poison|serpent|venom/, "Pulley Crossbow":/pulley|rapid|crossbow/,
+ "Full Moon Crossbow":/moon|magic|bolt/, "Jar Cannon":/cannon|jar|explos/,
+ "Rabbath's Cannon":/cannon|artillery|siege/, "Great Stars":/star|heal|drain|mace/,
+ "Devonia's Hammer":/crucible|hammer|devonia/, "Anvil Hammer":/anvil|forge|smith/,
+ "Beastclaw Greathammer":/beast|claw|hammer/, "Envoy's Long Horn":/horn|bubble|envoy/,
+ "Marika's Hammer":/marika|rune|hammer|holy/, "Ringed Finger":/finger|madness|fist/,
+ "Prelate's Inferno Crozier":/fire|prelate|inferno/, "Watchdog's Staff":/stone|watchdog|guard/,
+ "Golem's Halberd":/golem|giant|halberd|colossal/, "Great Club":/club|brute|simple/,
+ "Troll's Hammer":/troll|giant|hammer/, "Gazing Finger":/finger|gaze|smash/,
+ "Shadow Sunflower Blossom":/sunflower|holy|shadow|blossom/,
+ "Dane's Footwork":/martial|dane|footwork|kick/, "Milady":/light|greatsword|noble|swift/,
+ "Leda's Sword":/leda|needle|devotion/, "Rellana's Twin Blades":/twin|moon|flame|rellana/,
+ "Velvet Sword of St. Trina":/sleep|trina|slumber/, "Greatsword of Damnation":/damn|frenzy|midra/,
+ "Nanaya's Torch":/torch|flame|nanaya/, "St. Trina's Torch":/sleep|trina|torch/,
+ "Ghostflame Torch":/ghost|flame|torch/, "Steel-Wire Torch":/torch|fire/,
+ "Red Bear's Claw":/bear|beast|claw|feral/, "Beast Claw":/beast|claw|feral|wild/,
+ "Smithscript Dagger":/throw|smith|script/, "Firespark Perfume Bottle":/fire|perfume|spark/,
+ "Chilling Perfume Bottle":/frost|chill|perfume/, "Deadly Poison Perfume Bottle":/poison|perfume|deadly/,
+ "Frenzyflame Perfume Bottle":/frenzy|madness|perfume/, "Lightning Perfume Bottle":/lightning|perfume/};
+const AFFINITY_BY_THEME={Blood:"Blood",Poison:"Poison",Rot:"Occult",Cold:"Cold",Madness:"Flame Art",Sleep:"Occult"};
+const AFF_BY_ELEMENT={Lightning:"Lightning",Fire:"Flame Art",Cold:"Cold",Sacred:"Sacred",Magic:"Magic",Occult:"Occult"};
+const ASH_BY_CLASS={
+ "Katanas":["Unsheathe","Bloodhound's Step","Double Slash","Blood Blade","Chilling Mist","Flaming Strike","Piercing Fang","Phantom Slash","Poisonous Mist","Lightning Slash"],
+ "Great Katanas [DLC]":["Overhead Stance","Dragonwound Slash","Blood Blade","Flaming Strike"],
+ "Colossal Swords":["Lion's Claw","Stamp (Upward Cut)","Giant Hunt","Endure","Royal Knight's Resolve","Wild Strikes","War Cry"],
+ "Colossal Weapons":["Endure","Braggart's Roar","Ground Slam","Prelate's Charge","Wild Strikes","Barbaric Roar"],
+ "Greataxes":["Wild Strikes","Barbaric Roar","War Cry","Ground Slam","Lion's Claw"],
+ "Great Hammers":["Endure","Braggart's Roar","Ground Slam","Barbaric Roar","Royal Knight's Resolve"],
+ "Fists":["Endure","Kick","Raptor of the Mists","Golden Vow","Blood Tax"],
+ "Claws":["Quickstep","Bloodhound's Step","Raptor of the Mists","Blood Blade"],
+ "Hand-to-Hand Arts [DLC]":["Palm Blast","Dryleaf Whirlwind","Raptor of the Mists"],
+ "Beast Claws [DLC]":["Wild Roar","Savage Claws","Raptor of the Mists"],
+ "Twinblades":["Spinning Slash","Double Slash","Sword Dance","Storm Blade","Bloodhound's Step"],
+ "Backhand Blades [DLC]":["Blind Spot","Quickstep","Double Slash"],
+ "Curved Swords":["Spinning Slash","Sword Dance","Blood Blade","Storm Blade","Wild Strikes"],
+ "Curved Greatswords":["Wild Strikes","Spinning Slash","Lion's Claw","Sword Dance"],
+ "Daggers":["Quickstep","Bloodhound's Step","Blood Blade","Poisonous Mist","Repeating Thrust"],
+ "Straight Swords":["Square Off","Impaling Thrust","Sacred Blade","Storm Blade","Charge Forth","Lion's Claw"],
+ "Greatswords":["Lion's Claw","Stamp (Upward Cut)","Giant Hunt","Sacred Blade","Flaming Strike","Storm Blade","Golden Land"],
+ "Thrusting Swords":["Impaling Thrust","Repeating Thrust","Piercing Fang","Poisonous Mist"],
+ "Heavy Thrusting Swords":["Impaling Thrust","Piercing Fang","Charge Forth"],
+ "Light Greatswords [DLC]":["Wing Stance","Twin Moons","Impaling Thrust"],
+ "Spears":["Impaling Thrust","Charge Forth","Repeating Thrust","Sky Shot","Storm Stomp","Piercing Fang"],
+ "Great Spears":["Charge Forth","Impaling Thrust","Sky Shot","Storm Stomp"],
+ "Halberds":["Spinning Strikes","Charge Forth","Loretta's Slash","Storm Stomp","Sky Shot"],
+ "Reapers":["Spinning Slash","Sky Shot","Vow of the Indomitable","Ghostflame Call"],
+ "Whips":["Kick","Sword Dance","Repeating Thrust","Quickstep"],
+ "Bows":["Barrage","Mighty Shot","Rain of Arrows","Through and Through"],
+ "Light Bows":["Barrage","Mighty Shot","Quickstep"],
+ "Greatbows":["Through and Through","Mighty Shot","Rain of Arrows"],
+ "Crossbows":["—"],"Ballistas":["—"],"Torches":["Kick","Beastly Vitality"],
+ "Perfume Bottles [DLC]":["—"],"Throwing Blades [DLC]":["Piercing Throw"],
+ "Glintstone Staffs":["—"],"Sacred Seals":["—"]};
+/* --- 3. Armor: score the real 153-set list against the character's identity --- */
+const ARMOR_HINTS=[
+ [/shadow|assassin|stealth|silent|night|dark|shinobi|ninja/,["Black Knife Set","Night Set","Bandit Set","Nox Swordstress Set","Nox Monk Set","Shadow Militiaman Set"]],
+ [/fire|flame|burn|inferno|pyro|magma|ember/,["Fire Monk Set","Fire Prelate Set","Fire Knight Set","Blackflame Monk Set"]],
+ [/ice|frost|freez|snow|glacial|blizzard/,["Snow Witch Set","Zamor Set","Night Maiden Set","Solitude Set"]],
+ [/holy|divine|sacred|saint|angel|prayer|blessing|priest/,["Cleanrot Set","Haligtree Knight Set","High Priest Set","Leyndell Knight Set","Traveling Maiden Set"]],
+ [/blood|bleed|crimson|vampire|sanguine/,["Sanguine Noble Set","Bloodsoaked Set","Raging Wolf Set","War Surgeon Set"]],
+ [/rot|poison|decay|plague|venom|toxin/,["Cleanrot Set","Mushroom Set","Depraved Perfumer Set","War Surgeon Set"]],
+ [/king|queen|emperor|royal|noble|prince|aristocrat|lord|crown/,["Ruler's Set","Elden Lord Set","Noble's Set","Aristocrat Set","Consort's Set","Lionel's Set"]],
+ [/beast|wolf|feral|savage|wild|claw|fang|monster/,["Beast Champion Set","Fur Set","Raptor's Set","Bull-Goat Set","Divine Beast Set"]],
+ [/scholar|mage|sorcer|wizard|academy|study|research|witch|professor/,["Lusat's Set","Azur's Glintstone Set","Preceptor's Set","Errant Sorcerer Set","Raya Lucarian Sorcerer Set","Snow Witch Set"]],
+ [/knight|armor|plate|guard|vanguard|sentinel|commander|soldier/,["Banished Knight Set","Royal Knight Set","Tree Sentinel Set","Veteran's Set","Lionel's Set","Oathseeker Knight Set","Black Knight Set"]],
+ [/samurai|ronin|katana|edo|clan|dojo|eastern|blade saint/,["Land of Reeds Set","White Reed Set","Ronin's Set"]],
+ [/undead|immortal|corpse|grave|ghost|death|reaper|revive|skeleton/,["Royal Remains Set","Prisoner Set","Death Knight Set","Guilty Set"]],
+ [/monk|martial|fist|palm|discipline|temple|meditat/,["Blackflame Monk Set","Nox Monk Set","Ascetic's Set","Dane's Set"]],
+ [/giant|colossal|titan|massive|juggernaut|fortress|tank|wall/,["Bull-Goat Set","Fingerprint Set","Lionel's Set","Iron Set","Verdigris Set"]],
+ [/dragon|wyrm|draconic|scale/,["Drake Knight Set","Malformed Dragon Set","Scaled Set"]],
+ [/madness|frenzy|chaos|insane|three fingers/,["Ascetic's Set","Guilty Set","Depraved Perfumer Set"]],
+ [/archer|bow|snipe|marksman|hunter|arrow/,["Bandit Set","Raptor's Set","Gravebird Set","Ansbach's Set"]],
+ [/merchant|trade|coin|ledger|profit|traveler|wander/,["Nomadic Merchant's Set","Traveler's Set","Commoner's Set"]],
+ [/child|small|young|student|apprentice|shy|timid/,["Commoner's Set","Page Set","High Page Set","Juvenile Scholar Set"]],
+ [/storm|lightning|thunder|wind|sky/,["Godrick Knight Set","Drake Knight Set","Gelmir Knight Set"]],
+ [/perfume|alchem|potion|medicine|doctor|physician/,["Depraved Perfumer Set","Perfumer Set","War Surgeon Set"]],
+ [/spirit|summon|familiar|puppet|legion|army/,["Mausoleum Knight Set","Twinned Set","Alberich's Set"]]];
+function armorFor(c,th,alt){
+  if(th.ov&&th.ov.ar) return th.ov.ar;
+  const pool=[]; ARMOR_HINTS.forEach(([re,sets])=>{ if(re.test(th.text)) pool.push(...sets); });
+  const all=[...ARMOR_DLC,...ARMOR_BASE].map(x=>x[0]);
+  const valid=pool.filter(n=>all.includes(n));
+  if(!valid.length) return null;
+  const h=hashN(c.id+"::armor"+(alt||""));
+  return valid[h%valid.length];
+}
+/* --- 4. Talismans: real effects matched to who they are --- */
+function talismansFor(c,th,arch,variant){
+  const out=[];
+  const push=n=>{ if(n&&!out.includes(n)&&out.length<4) out.push(n); };
+  if(th.status==="Blood") push("Lord of Blood's Exultation");
+  if(th.status==="Rot"||th.status==="Poison") push("Kindred of Rot's Exultation");
+  if(th.status==="Madness") push("Aged One's Exultation");
+  if(th.status==="Sleep") push("St. Trina's Smile");
+  if(th.element==="Fire") push("Fire Scorpion Charm");
+  else if(th.element==="Lightning") push("Lightning Scorpion Charm");
+  else if(th.element==="Sacred") push("Sacred Scorpion Charm");
+  else if(th.element==="Magic"||th.element==="Cold") push("Magic Scorpion Charm");
+  if(/martial|fist|palm|monk|kick/.test(th.text)) push("Shattered Stone Talisman");
+  if(/bow|arrow|snipe|marksman|gun/.test(th.text)) push("Arrow's Sting Talisman");
+  if(/charge|charged|wind.?up|gather|build.?up/.test(th.text)) push("Godfrey Icon");
+  if(/combo|flurry|barrage|successive|rapid|storm of/.test(th.text)) push("Rotten Winged Sword Insignia");
+  if(/immortal|regenerat|undying|revive|heal/.test(th.text)) push("Crimson Seed Talisman");
+  if(/rage|berserk|fury|desperat|last stand|cornered/.test(th.text)) push("Red-Feathered Branchsword");
+  if(/tactic|strateg|calm|patient|counter|precision/.test(th.text)) push("Blue-Feathered Branchsword");
+  if(/poise|unmov|stagger|endure|wall|guard/.test(th.text)) push("Bull-Goat's Talisman");
+  if(th.light) push("Blue Dancer Charm");
+  if(th.scholar) push("Graven-Mass Talisman");
+  if(/incant|prayer|miracle|faith|divine/.test(th.text)) push("Flock's Canvas Talisman");
+  if(/summon|familiar|spirit|puppet|legion/.test(th.text)) push("Dried Bouquet");
+  if(/crit|backstab|execut|assassin|riposte/.test(th.text)) push("Assassin's Crimson Dagger");
+  if(/kill|slaughter|hunt|reap/.test(th.text)) push("Taker's Cameo");
+  if(variant==="pvp"){ push("Erdtree's Favor +2"); push("Bull-Goat's Talisman"); }
+  (arch.tal||[]).forEach(push);
+  push("Shard of Alexander"); push("Erdtree's Favor +2"); push("Crimson Amber Medallion +2");
+  return out.slice(0,4);
+}
+/* --- 5. Spells: real ER catalogues, themed --- */
+const SPELL_POOLS={
+ Fire:["Flame, Grant Me Strength","Giantsflame Take Thee","Flame of the Fell God","Whirl, O Flame!","Surge, O Flame!","Black Flame","Black Flame Ritual","Scouring Black Flame","Catch Flame","Burn, O Flame!"],
+ Lightning:["Lightning Spear","Honed Bolt","Ancient Dragons' Lightning Strike","Lansseax's Glaive","Electrify Armament","Frozen Lightning Spear","Vyke's Dragonbolt"],
+ Sacred:["Golden Vow","Blessing of the Erdtree","Discus of Light","Elden Stars","Radagon's Rings of Light","Wrath of Gold","Triple Rings of Light","Litany of Proper Death","Order's Blade"],
+ Magic:["Glintstone Pebble","Great Glintstone Shard","Comet","Comet Azur","Stars of Ruin","Loretta's Greatbow","Carian Slicer","Carian Greatsword","Glintblade Phalanx","Terra Magica","Rennala's Full Moon","Founding Rain of Stars","Shard Spiral"],
+ Cold:["Adula's Moonblade","Glintstone Icecrag","Freezing Mist","Zamor Ice Storm","Ranni's Dark Moon","Frozen Armament"],
+ Occult:["Ancient Death Rancor","Rancorcall","Explosive Ghostflame","Fia's Mist","Tibia's Summons","Death Lightning","Ghostflame Call"],
+ Blood:["Bloodflame Blade","Bloodboon","Swarm of Flies","Bloodflame Talons"],
+ Poison:["Poison Mist","Poison Armament","Rotten Breath","Scarlet Aeonia","Pest Threads"],
+ Dragon:["Dragonfire","Rotten Breath","Dragonclaw","Dragonmaw","Agheel's Flame","Greyoll's Roar","Placidusax's Ruin","Borealis's Mist"],
+ Madness:["Frenzied Burst","Unendurable Frenzy","Howl of Shabriri","The Flame of Frenzy","Inescapable Frenzy"],
+ Beast:["Beast Claw","Bestial Sling","Stone of Gurranq","Bestial Vitality","Beast's Roar"],
+ Buff:["Golden Vow","Flame, Grant Me Strength","Barrier of Gold","Divine Fortification","Blessing's Boon","Bestial Vitality"],
+ Heal:["Urgent Heal","Erdtree Heal","Lord's Heal","Blessing of the Erdtree","Great Heal"]};
+function spellsFor(c,th,arch,n){
+  const caster=/Caster|Sorcery|Commander|Communion|Frenzied|Fire Faith|Death/.test(c.archetype);
+  const pool=[];
+  const add=k=>{ (SPELL_POOLS[k]||[]).forEach(s=>{ if(!pool.includes(s)) pool.push(s); }); };
+  if(th.element&&SPELL_POOLS[th.element]) add(th.element);
+  if(th.status==="Blood") add("Blood");
+  if(th.status==="Poison"||th.status==="Rot") add("Poison");
+  if(th.status==="Madness") add("Madness");
+  if(th.status==="Cold") add("Cold");
+  if(/dragon|wyrm|draconic/.test(th.text)) add("Dragon");
+  if(th.feral) add("Beast");
+  if(/heal|medic|restor|support|protect/.test(th.text)) add("Heal");
+  if(!pool.length){ if(!caster) return ["—"]; add("Magic"); }
+  if(caster) add("Buff");
+  const h=hashN(c.id+"::spell");
+  const picked=[];
+  for(let i=0;i<Math.min(n,pool.length);i++) picked.push(pool[(h+i*7)%pool.length]);
+  return [...new Set(picked)];
+}
+/* --- 6. Weapon selection: score the class pool against the character --- */
+function weaponFor(c,th,arch,slot,variant,used){
+  if(slot===0 && th.ov && th.ov.w && WEAPON_LIST.some(x=>x.name===th.ov.w)){
+    const w=th.ov.w;
+    const cat=(WEAPON_CAT[w]||"Straight Swords");
+    const ashes=ASH_BY_CLASS[cat]||["—"];
+    let ash=ashes[hashN(c.id+"::ovash"+variant)%ashes.length];
+    if(th.status==="Blood"&&ashes.indexOf("Blood Blade")>=0) ash="Blood Blade";
+    if(th.status==="Cold"&&ashes.indexOf("Chilling Mist")>=0) ash="Chilling Mist";
+    if(th.element==="Fire"&&ashes.indexOf("Flaming Strike")>=0) ash="Flaming Strike";
+    if(AOW_UNIQUE[w]) return w;
+    const aff=AFFINITY_BY_THEME[th.status]||AFF_BY_ELEMENT[th.element]||(th.heavy?"Heavy":th.light?"Keen":"Quality");
+    const parts=[aff,(ash&&ash!=="—")?ash:null].filter(Boolean);
+    return w+(parts.length?" ("+parts.join(", ")+")":"");
+  }
+  const classes=ARCH_CLASSES[c.archetype]||["Straight Swords"];
+  const cls=classes[(hashN(c.id+"::wc"+slot+variant)+ (slot||0)) % classes.length];
+  const pool=classPool(cls);
+  if(!pool.length) return null;
+  let best=null,bestScore=-1;
+  pool.forEach((w,i)=>{
+    let sc=0;
+    const hint=WEAPON_HINTS[w];
+    if(hint&&hint.test(th.text)) sc+=10;
+    if(LEGENDARY_WEAPONS.has(w)) sc+= (powerTier(c)>=4?4:powerTier(c)>=3?1:-3);
+    const wi=WEAPON_LIST.find(x=>x.name===w);
+    if(wi&&wi.dlc) sc+=1;
+    if(used&&used.has(w)) sc-=14;                     // §18.3 Rule 1 — one primary per franchise
+    sc += ((hashN(c.id+"::w"+slot+variant+i)%7)/2);   // deterministic tail-breaker
+    if(sc>bestScore){ bestScore=sc; best=w; }
+  });
+  const cat=cls;
+  const ashes=ASH_BY_CLASS[cat]||["—"];
+  let ash=ashes[hashN(c.id+"::ash"+slot+variant)%ashes.length];
+  if(th.status==="Blood"&&ashes.includes("Blood Blade")) ash="Blood Blade";
+  if(th.status==="Cold"&&ashes.includes("Chilling Mist")) ash="Chilling Mist";
+  if(th.status==="Poison"&&ashes.includes("Poisonous Mist")) ash="Poisonous Mist";
+  if(th.element==="Fire"&&ashes.includes("Flaming Strike")) ash="Flaming Strike";
+  if(th.element==="Sacred"&&ashes.includes("Sacred Blade")) ash="Sacred Blade";
+  if(th.light&&ashes.includes("Bloodhound's Step")) ash="Bloodhound's Step";
+  if(th.heavy&&ashes.includes("Endure")) ash="Endure";
+  let aff=null;
+  if(!AOW_UNIQUE[best]){
+    aff = AFFINITY_BY_THEME[th.status] || AFF_BY_ELEMENT[th.element] ||
+          (th.heavy?"Heavy": th.light?"Keen": "Quality");
+    if(variant==="pvp"&&th.status==="Blood") aff="Blood";
+  }
+  const parts=[aff,(ash&&ash!=="—"&&!AOW_UNIQUE[best])?ash:null].filter(Boolean);
+  return best + (parts.length?" ("+parts.join(", ")+")":"");
+}
+/* --- 7. Apply to every Tier II character --- */
+function applyLoreGear(){
+  const claimed={};                          // franchise -> Set of primary weapons already taken
+  CHARACTERS.forEach(c=>{
+    if(c.deep) return;                       // hand-written dossiers keep their authored kit
+    const used=claimed[c.franchise]||(claimed[c.franchise]=new Set());
+    const th=gearTheme(c);
+    const arch=Object.values(ARCHETYPES).find(a=>a.label===c.archetype)||{tal:[],spells:[],armor:[]};
+    c.builds.forEach((b,i)=>{
+      const variant = /PvP/.test(b.type)?"pvp" : /PvE/.test(b.type)?"pve" : "lore";
+      const w1=weaponFor(c,th,arch,0,variant,used);
+      const w2=(variant!=="lore")?weaponFor(c,th,arch,1,variant,used):null;
+      const caster=/Int Caster|Faith Caster|Death Sorcery|Legion Commander|Dragon Communion|Frenzied Flame/.test(c.archetype);
+      const inIndex=(w)=>{ const base=String(w).split(" (")[0]; return WEAPON_LIST.some(x=>x.name===base); };
+      const weps=[];
+      if(w1&&inIndex(w1)) weps.push(w1);
+      if(w2&&w2!==w1&&inIndex(w2)) weps.push(w2);
+      if(caster&&weps.length<2){
+        const seal=classPool(/Int Caster|Death Sorcery/.test(c.archetype)?"Glintstone Staffs":"Sacred Seals");
+        const s=seal[hashN(c.id+"::cat")%seal.length];
+        if(s&&!weps.some(x=>x.indexOf(s)===0)) weps.push(s);
+      }
+      if(weps.length){ b.weapons=weps; if(variant==="lore") used.add(String(weps[0]).split(" (")[0]); }
+      const arm=armorFor(c,th,variant==="pvp"?"p":"");
+      if(arm) b.armor=[arm+(th.light?" — light roll":th.heavy?" — poise breakpoint":"")];
+      b.talismans=talismansFor(c,th,arch,variant);
+      const sp=spellsFor(c,th,arch, variant==="lore"?3:4);
+      b.spells = sp;
+      if(variant==="pve"&&b.summon==="—") b.summon="Mimic Tear +10";
+    });
+  });
+}
+applyLoreGear();
+
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
@@ -5628,6 +6337,7 @@ function renderHome(){
     ["Omega Wave 2 — Systems","Relationship edges (typed, hand-authored, never invented) · 50 collection sets · dual tier counter · promotion queue · grudge matches · edge-aware fusion & party synergy","done"],
     ["Omega Wave 3 — The Crossing","1,000 crossed — Yusuke Urameshi is character #1,000 as a Tier I deep dossier · 11 new franchises · Millennium set · Ω1000 badge · crossing checklist computed live","done"],
     ["Lore-Accurate Stat Pass","Every Tier II spread re-derived from character identity — role, power system, techniques, frame and difficulty — with hand-authored deltas for 120+ notable figures · Lands Between roster expanded","done"],
+    ["Conversion Framework","Power Tier calibration (1–6) · Tier-6 narrative-adjustment disclaimers · Remembrances gated to Tier 3+ · tier-set canon build levels · Waves 1–2 rosters (Hell\u2019s Paradise, Blue Exorcist, D.Gray-man, Fairy Tail, Mob Psycho, Dungeon Meshi, Black Butler)","done"],
     ["Phase Omega","Complete — the universe runs itself. Built to grow, never to be finished.","done"]];
 
   document.getElementById("roadmap").innerHTML=road.map(r=>`
@@ -5637,12 +6347,15 @@ function renderHome(){
 }
 
 /* ============ CHARACTERS ============ */
-let charFilter="All", charFranchise="All", charUniverse="All", charQuery="";
+let charFilter="All", charFranchise="All", charUniverse="All", charTier="All", charQuery="";
+function setCharTier(t){ charTier=t; renderCharFilters(); renderChars(); }
 function setCharUniverse(u){ charUniverse=u; charFranchise="All"; renderCharFilters(); renderChars(); }
 function renderCharFilters(){
   const inUni=c=>charUniverse==="All"||(FRANCHISE_UNIVERSE[c.franchise]||[])[0]===charUniverse;
   const inFr=c=>(charFranchise==="All"||c.franchise===charFranchise)&&inUni(c);
   const unis=["All","Anime","Gaming","Comics","Mythology"];
+  document.getElementById("charTiers").innerHTML=`<div class="chip ${charTier==="All"?'active':''}" onclick="setCharTier('All')">⚖ All Power Tiers</div>`+
+    POWER_TIERS.map(t=>`<div class="chip ${String(charTier)===String(t.t)?'active':''}" style="border-color:${t.col}55" onclick="setCharTier(${t.t})">T${t.t} ${esc(t.label)} (${CHARACTERS.filter(c=>powerTier(c)===t.t).length})</div>`).join("");
   document.getElementById("charUniverses").innerHTML=unis.map(u=>
     `<div class="chip ${u===charUniverse?'active':''}" style="border-color:rgba(34,211,238,.4)" onclick="setCharUniverse('${u}')">${u==="All"?"🌌 All Universes":u} ${u!=="All"?"("+CHARACTERS.filter(c=>(FRANCHISE_UNIVERSE[c.franchise]||[])[0]===u).length+")":""}</div>`).join("");
   const frList=["All",...FRANCHISES.filter(f=>f!=="All"&&(charUniverse==="All"||(FRANCHISE_UNIVERSE[f]||[])[0]===charUniverse))];
@@ -5658,6 +6371,7 @@ function renderChars(){
   const list=CHARACTERS.filter(c=>
     (charFilter==="All"||c.category===charFilter) &&
     (charUniverse==="All"||(FRANCHISE_UNIVERSE[c.franchise]||[])[0]===charUniverse) &&
+    (charTier==="All"||powerTier(c)===charTier) &&
     (charFranchise==="All"||c.franchise===charFranchise) &&
     (!charQuery || (c.name+" "+c.anime+" "+c.franchise+" "+c.powerSystem+" "+c.archetype+" "+(ALIASES[c.id]||"")).toLowerCase().includes(charQuery)));
   document.getElementById("charGrid").innerHTML = list.length? list.map(c=>`
@@ -5669,7 +6383,7 @@ function renderChars(){
         <h4>${esc(c.name)} <span style="font-size:12px">${guildEmojis(c,3)}</span></h4>
         <div class="anime">${esc(c.anime)}</div>
         <span class="tag" style="background:${CAT_COLORS[c.category]}22;color:${CAT_COLORS[c.category]};border:1px solid ${CAT_COLORS[c.category]}55">${esc(c.category)}</span>
-        <span class="tag" style="background:rgba(212,175,55,.12);color:var(--gold2);border:1px solid var(--gold-dim)">${esc(c.archetype)}</span>${c.deep?'<span class="tag" style="background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.45)">★ Tier I — Deep Dossier</span>':''}${rarityTag(c)}
+        <span class="tag" style="background:rgba(212,175,55,.12);color:var(--gold2);border:1px solid var(--gold-dim)">${esc(c.archetype)}</span>${c.deep?'<span class="tag" style="background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.45)">★ Tier I — Deep Dossier</span>':''}${rarityTag(c)}${tierBadge(c)}
         <div class="char-meta">
           <span>Rating <b>${c.rating}</b></span>
           <span class="stars">${"★".repeat(c.difficulty)}${"☆".repeat(5-c.difficulty)}</span>
@@ -5773,6 +6487,7 @@ function buildBlock(b, cid, idx){
     <b style="font-family:var(--font-display);font-size:16px;color:var(--gold2)">${esc(b.name)}</b>
     <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="pill gold">RL ${b.level} · ${esc(b.type)}</span>${cid!==undefined?`<button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px" onclick="toggleBuilderMode('${cid}',${idx})">${manual?"↺ Auto Projection":"🎮 2K Builder"}</button><button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px;${(S.tracked||{})[trackKey(cid,idx)]?'border-color:var(--green);color:var(--green)':''}" onclick="toggleTrackBuild('${cid}',${idx})">${(S.tracked||{})[trackKey(cid,idx)]?"✔ Tracking":"📌 Track"}</button>`:""}</span>
   </div>
+  ${cid!==undefined?tier6Note(CHARACTERS.find(x=>x.id===cid)||{}):""}
   ${levelChip(b)}
   ${statBars(b.stats,b.level,cid,idx)}
   <div style="font-size:11px;color:var(--txt-dim);margin-bottom:4px">${
@@ -5807,6 +6522,7 @@ function openChar(id){
       <button class="modal-close" onclick="closeModal()">✕</button>
       ${c.milestone?`<div style="margin-bottom:6px"><span class="pill" style="background:linear-gradient(90deg,rgba(212,175,55,.3),rgba(139,92,246,.3));color:var(--gold2);border:1px solid var(--gold);font-family:var(--font-display);letter-spacing:2px">Ω CHARACTER #${c.milestone} — THE CROSSING</span></div>`:""}
       <h2>${esc(c.name)} <span style="font-size:20px">${guildEmojis(c,3)}</span></h2>
+      <div style="margin-top:6px">${tierBadge(c)}</div>
       <div class="sub">${esc(c.anime)} · ${esc(c.category)} · ${esc(c.powerSystem)}</div>
     </div>
     <div class="modal-body">
@@ -5835,6 +6551,10 @@ function openChar(id){
           <div class="info-box" style="grid-column:1/-1"><h5>Combat Analysis</h5><p>${esc(c.combat)}</p></div>
           <div class="info-box"><h5>Signature Techniques</h5><ul>${c.techniques.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>
           ${c.transformations.length?`<div class="info-box"><h5>Transformations</h5><ul>${c.transformations.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
+          <div class="info-box" style="grid-column:1/-1"><h5>⚖ Power Tier — Conversion Framework §1</h5>
+            <p style="font-size:12.5px;line-height:1.7">${tierBadge(c)} <b style="color:var(--gold2)">Benchmark:</b> ${esc(tierMeta(c).bench)} · <b style="color:var(--gold2)">Canon build level:</b> RL ${esc(tierMeta(c).rl)}<br>
+            <small style="color:var(--txt-dim)">Tier is assigned against Elden Ring's own power ceiling before any stat is allocated — it sets the canon build's level, gates Remembrance eligibility, and keeps a novice and a god from reading as the same kind of build.</small></p></div>
+          ${renderRemembrance(c)}
           <div class="info-box"><h5>Nexus Metrics</h5>
             <p><b style="color:var(--gold2)">Canon Grade ${canonGrade(c)}</b> <small style="color:var(--txt-dim)">(narrative tier, from seeded rating)</small> ·
             <b style="color:var(--cyan)">Build Grade ${buildGrade(c)}</b> <small style="color:var(--txt-dim)">(system tier, from Global Power Index)</small><br>
@@ -6266,7 +6986,7 @@ function renderAll(){
 renderAll();
 renderSourceTabs(); srcGo("anime");
 renderFusionPresets(); updateFuseRLLabel();
-renderGuilds(); renderArena(); renderCareer(); renderTrackedBuilds(); renderRecs(); renderOmegaHub(); renderBlueprint(); renderSets(); renderTierPanel(); checkSets(); renderCrossing();
+renderGuilds(); renderArena(); renderCareer(); renderTrackedBuilds(); renderRecs(); renderOmegaHub(); renderBlueprint(); renderSets(); renderTierPanel(); checkSets(); renderCrossing(); renderTierCalibration();
 (function(){ const fr=document.getElementById("cgFr");
   if(fr) fr.innerHTML=FRANCHISES.filter(f=>f!=="All").map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join(""); })();
 (function(){ const opts=allGuilds().map(g=>`<option value="${g.id}">${g.icon} ${esc(g.name)}</option>`).join("");
