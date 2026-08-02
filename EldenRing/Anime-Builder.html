@@ -6383,6 +6383,265 @@ function renderTearDb(){
     || `<div class="empty">No tears match.</div>`;
 }
 
+/* ============ DEEP GEAR PASS — SPIRIT ASHES, TALISMAN/SPELL/PHYSICK DEPTH, KIT UNIQUENESS ============
+   Stats and weapons were individuated. Summons, talismans, spells and physick still clustered:
+   everyone carried Mimic Tear, Shard of Alexander and the same two tears. This pass gives every
+   character a summon chosen from the real spirit-ash roster, widens the talisman/spell/physick
+   pools, then sweeps the whole kit so no two characters share an identical loadout.            */
+
+/* --- 1. Spirit Ashes: the real roster, tagged for matching --- */
+const SPIRIT_ASHES=[
+["Mimic Tear +10","a silver tear that becomes you — your build, played back",/clone|copy|mimic|double|shadow self|twin/],
+["Black Knife Tiche +10","the Black Knife assassin — death-drain and vanishing steps",/assassin|shadow|death|silent|knife|stealth/],
+["Lhutel the Headless +10","the headless knight — teleporting spear thrusts and absurd poise",/knight|loyal|undead|headless|spear|guard/],
+["Banished Knight Oleg +10","a greatsword knight who charges before you finish the summon",/knight|greatsword|charge|vanguard|banished/],
+["Banished Knight Engvall +10","paired banished steel, patient and precise",/knight|paired|steel|discipline/],
+["Ancient Dragon Knight Kristoff +10","a lightning-lanced dragon knight on foot",/lightning|dragon|knight|lance/],
+["Redmane Knight Ogha +10","Radahn's own archer, raining arrows from the back line",/archer|arrow|redmane|artillery|snipe/],
+["Latenna the Albinauric +10","an immobile archer who never misses and never retreats",/archer|bow|marksman|precision|cripple|immobile/],
+["Cleanrot Knight Finlay +10","Malenia's rot-sworn knight, holy steel through the blight",/rot|holy|knight|cleanrot|malenia|sworn/],
+["Nightmaiden & Swordstress Puppets +10","Nox puppets — one caster, one blade, both silent",/nox|puppet|silent|eternal city|paired/],
+["Nepheli Loux Puppet +10","a puppet of Godfrey's daughter, axe-first",/warrior|axe|puppet|loux|stormveil/],
+["Dolores the Sleeping Arrow Puppet +10","a doll archer whose arrows drag enemies into sleep",/sleep|doll|arrow|slumber|puppet/],
+["Finger Maiden Therolina Puppet +10","a maiden puppet who heals as she is destroyed",/maiden|heal|support|puppet|gentle/],
+["Bloodhound Knight Floh +10","a bloodhound knight — bleed and impossible dodges",/blood|bleed|hound|dodge|beast knight/],
+["Blackflame Monk Amon +10","black flame in a monk's fists",/black flame|monk|fire|percentage|god/],
+["Omenkiller Rollo +10","a fire-cleaving omenkiller who simply does not stop",/omen|butcher|cleaver|fire|relentless|brutal/],
+["Great Horned Tragoth +10","a horned bruiser with a hammer and a temper",/horn|brute|hammer|bull|charge/],
+["Depraved Perfumer Carmaan +10","perfume bombs and poison clouds",/perfume|poison|alchem|bomb|toxin/],
+["Perfumer Tricia +10","a perfumer who buffs the summoner instead of attacking",/support|buff|perfume|heal|encourag/],
+["Battlemage Hugues +10","an academy battlemage laying down comet artillery",/battlemage|academy|comet|sorcer|artillery/],
+["Twinsage Sorcerer +10","paired glintstone scholars, endless shards",/scholar|glintstone|sorcer|academy|twin/],
+["Glintstone Sorcerer +10","a raya lucaria caster, patient and precise",/glintstone|sorcer|academy|student/],
+["Rotten Stray +10","a rot-soaked hound that poisons everything it bites",/rot|hound|dog|beast|poison|stray/],
+["Lone Wolf Ashes +10","three wolves that flank while you commit",/wolf|pack|beast|flank|three/],
+["Spirit Jellyfish +10","a drifting jellyfish that poisons and absorbs punishment",/jellyfish|poison|drift|gentle|decoy/],
+["Skeletal Militiaman +10","militia bones that get back up after dying",/skeleton|undead|revive|militia|bone/],
+["Skeletal Bandit +10","reviving bandits with curved swords",/skeleton|bandit|undead|thief|revive/],
+["Putrid Corpse Ashes +10","shambling corpses that swarm and rot",/corpse|undead|swarm|rot|horde/],
+["Fanged Imp Ashes +10","two imps that flank and bleed",/imp|small|flank|bleed|mischief|trickster/],
+["Winged Misbegotten +10","a winged brute with an axe and no restraint",/misbegotten|brute|wing|axe|savage/],
+["Greatshield Soldier Ashes +10","a wall of shields that holds a corridor",/shield|wall|guard|soldier|hold|formation/],
+["Kaiden Sellsword +10","a mounted sellsword who fights on your coin",/sellsword|mercenar|mount|coin|hire/],
+["Oracle Envoy Ashes +10","envoys blasting bubbles from a horn",/envoy|horn|bubble|music|oracle/],
+["Ancestral Follower +10","a horned follower with a spirit-charged bow",/ancestral|horn|tribe|spirit|follower|forest/],
+["Man-Serpent Ashes +10","serpent-men from the volcano's halls",/serpent|snake|volcano|rykard|manor/],
+["Marionette Soldier Ashes +10","clockwork soldiers with cannon arms",/marionette|clockwork|puppet|machine|automat/],
+["Godrick Soldier Ashes +10","stormveil regulars, three at a time",/soldier|storm|godrick|regular|troop/],
+["Haligtree Soldier Ashes +10","haligtree regulars sworn to Miquella",/haligtree|miquella|soldier|sworn/],
+["Radahn Soldier Ashes +10","redmane infantry, disciplined to the last",/redmane|radahn|soldier|discipline|infantry/],
+["Nomad Ashes +10","a caravan nomad with a torch and a spear",/nomad|caravan|traveler|merchant|wander/],
+["Warhawk Ashes +10","a stormhawk that harasses from above",/hawk|bird|storm|aerial|harass/],
+["Stormhawk Deenh +10","a named stormhawk that buffs your attack",/hawk|storm|buff|aerial|companion/],
+["Azula Beastman +10","a beastman duelist with twin blades",/beast|beastman|twin|duel|feral/],
+["Crystalian Ashes +10","a crystal spearman that shrugs off blades",/crystal|spear|resist|construct|golem/],
+["Miranda Sprout +10","a bloom that spits poison from cover",/plant|bloom|poison|flower|spore/],
+["Demi-Human Ashes +10","a demi-human pack, loud and fast",/demi|pack|small|feral|mob/],
+["Jarwight Puppet +10","a living jar that hurls its contents",/jar|pot|throw|alexander|vessel/],
+["Rotten Duelist +10","a rot-plagued duelist with an enormous shield",/duel|rot|shield|arena|plague/],
+["Albinauric Archer +10","albinaurics dragging themselves into firing position",/albinauric|archer|crawl|frozen|bow/],
+["Fire Monk Ashes +10","monks of the giant's flame",/fire|monk|flame|giant|zealot/],
+["Cuckoo Knight Ashes +10","academy knights with glintstone-charged steel",/cuckoo|academy|knight|glintstone/],
+["Divine Bird Warrior Ornis +10","a divine-bird warrior of the shadow realm",/bird|divine|shadow|warrior|feather/],
+["Swordhand of Night Jolán +10","the Rakshasa's bearer, cursed and precise",/night|rakshasa|curse|swordhand|jolan/],
+["Bloodfiend Hexer +10","a bloodfiend that hexes and bleeds",/bloodfiend|hex|blood|shadow|fiend/],
+["Messmer Soldier Ashes +10","the Impaler's own infantry",/messmer|impaler|serpent|flame|soldier/],
+["Taylew the Golem Smith +10","a golem smith that hammers with siege force",/golem|smith|forge|siege|construct/],
+["Rugged Golem +10","a stone golem, slow and unkillable",/golem|stone|slow|construct|unkillable/],
+["Ancient Dragon Florissax +10","a dragon ally of the shadow realm",/dragon|ancient|ally|lightning|scale/]];
+function summonFor(c,th,variant){
+  const txt=th.text||"";
+  const scored=SPIRIT_ASHES.map((a,i)=>{
+    let sc=(a[2]&&a[2].test(txt))?10:0;
+    sc+=((hashN(c.id+"::sum"+variant+i)%9)/2);
+    return {a,sc};
+  }).sort((x,y)=>y.sc-x.sc);
+  const pick=scored[0].a;
+  return pick[0]+" — "+pick[1];
+}
+/* --- 2. Deeper talisman pools: a real signature slot per trait --- */
+const TAL_SIGNATURE=[
+ [/\bcombo\b|flurry|barrage|successive|rapid|storm of|relentless/,"Rotten Winged Sword Insignia"],
+ [/charge|charged|wind.?up|gather|build.?up|full power/,"Godfrey Icon"],
+ [/critical|backstab|execut|riposte|assassin|one cut/,"Assassin's Crimson Dagger"],
+ [/jump|leap|aerial|somersault|dive/,"Claw Talisman"],
+ [/counter|parry|riposte|guard counter|deflect/,"Curved Sword Talisman"],
+ [/thrust|pierce|impale|lance|spear|stab/,"Spear Talisman"],
+ [/two.?hand|greatsword|colossal|both hands/,"Two-Handed Sword Talisman"],
+ [/mounted|horse|cavalry|ride/,"Lance Talisman"],
+ [/throw|hurl|projectile|thrown/,"Smithing Talisman"],
+ [/kick|stomp|footwork|leg/,"Shattered Stone Talisman"],
+ [/roar|shout|scream|howl|breath/,"Roar Medallion"],
+ [/perfume|alchem|potion|mist/,"Perfumer's Talisman"],
+ [/pot|bomb|grenade|explosive/,"Companion Jar"],
+ [/stance|hold|patient|wait|read/,"Rellana's Cameo"],
+ [/magma|lava|volcan/,"Talisman of the Dread"],
+ [/storm|gale|wind|tempest/,"Enraged Divine Beast"],
+ [/shield|block|guard|bulwark/,"Greatshield Talisman"],
+ [/heal|regenerat|restor|recover/,"Blessed Dew Talisman"],
+ [/curse|sacrifice|cost|price|toll/,"Daedicar's Woe"],
+ [/luck|fortune|chance|gambl/,"Silver Scarab"],
+ [/stealth|silent|sneak|unseen/,"Concealing Veil"],
+ [/fall|descend|drop|plummet/,"Longtail Cat Talisman"],
+ [/spirit|summon|familiar|ash/,"Dried Bouquet"],
+ [/kill|slay|reap|harvest|hunt/,"Taker's Cameo"],
+ [/last stand|desperat|cornered|final|dying/,"Red-Feathered Branchsword"],
+ [/full health|pristine|untouched|flawless/,"Ritual Sword Talisman"],
+ [/poise|unmov|immov|steadfast/,"Bull-Goat's Talisman"],
+ [/memor|remember|many spells|arsenal/,"Moon of Nokstella"],
+ [/fast|quick|speed|swift|instant/,"Radagon Icon"],
+ [/duration|sustained|prolonged|linger/,"Old Lord's Talisman"]];
+/* --- 3. Wider spell catalogues --- */
+const SPELL_EXTRA={
+ Fire:["Flame Fall Upon Them","Noble Presence","Flame Sling","O Flame!","Black Flame Blade","Whirl, O Flame!"],
+ Lightning:["Lightning Strike","Vyke's Dragonbolt","Fortissax's Lightning Spear","Death Lightning","Lightning Bolt"],
+ Sacred:["Lord's Divine Fortification","Golden Lightning Fortification","Aspects of the Crucible: Horns","Aspects of the Crucible: Tail","Protection of the Erdtree","Bestial Vitality"],
+ Magic:["Glintstone Cometshard","Star Shower","Gravity Well","Crystal Barrage","Magic Glintblade","Scholar's Armament","Ambush Shard","Night Comet","Unseen Form"],
+ Cold:["Frozen Armament","Vortex of Putrescence","Glintstone Nail","Adula's Moonblade"],
+ Occult:["Ancient Death Rancor","Ghostflame Ignition","Fia's Mist","Tibia's Summons","Rancorcall"],
+ Blood:["Bloodflame Blade","Bloodboon","Swarm of Flies","Bloodflame Talons"],
+ Poison:["Poison Armament","Pest Threads","Ekzykes's Decay","Poison Mist","Rotten Breath"],
+ Dragon:["Dragonice","Theodorix's Magma","Smarag's Glintstone Breath","Agheel's Flame","Dragonbolt Blessing"],
+ Madness:["Frenzied Burst","Howl of Shabriri","The Flame of Frenzy","Unendurable Frenzy","Inescapable Frenzy"],
+ Beast:["Beast Claw","Stone of Gurranq","Bestial Sling","Beast's Roar","Bestial Vitality"],
+ Buff:["Golden Vow","Flame, Grant Me Strength","Barrier of Gold","Divine Fortification","Blessing's Boon","Scholar's Armament","Electrify Armament"],
+ Heal:["Urgent Heal","Erdtree Heal","Lord's Heal","Great Heal","Blessing of the Erdtree"]};
+/* --- 4. Apply: every slot ranked by lore, uniqueness taken from DEPTH not randomness --- */
+function isCaster(c,th){
+  /* archetypes that are magic by definition */
+  if(/Int Caster|Faith Caster|Death Sorcery|Legion Commander|Dragon Communion|Frenzied Flame|Gravity Warlord|Fire Faith|Frost Blade|Storm Blade|Spellblade/.test(c.archetype||"")) return true;
+  /* otherwise the character must actually name a magic SYSTEM in their power system or techniques —
+     not merely fight demons, carry a cursed blade, or be described with fiery language. */
+  const decl=((c.powerSystem||"")+" "+(c.techniques||[]).join(" ")).toLowerCase();
+  return /\bmagic\b|\bmagical\b|\bspell\w*|\bsorcer\w*|incantation|\bmana\b|\bchakra\b|cursed energy|\breiki\b|\bpsychic\b|\bnen\b|alchemy|\bwitch\w*|\bdruid\w*|\barcane\b|\bconjur\w*|\bhex\w*|\brune\w*|\bgrimoire\b|\bcatalyst\b|breathing style|\bjutsu\b|\bninjutsu\b|\bgeass\b|\bstand\b|\bhaki\b|\bdevil fruit\b|\bquirk\b|\bsemblance\b|\btao\b|\bdjinn\b|\bcosmo\b|\binnocence\b|\bspirit magic\b|\bsummon\w*|\bpantheon\b|\bdeity\b|\bgod(dess)?\b/.test(decl);
+}
+/* ranked spirit-ash candidates — lore score first, deterministic tail-break second */
+function ashCandidates(c,th){
+  const txt=th.text||"", A=c.archetype||"";
+  return SPIRIT_ASHES.map((a,i)=>{
+    let sc=0;
+    if(a[2]&&a[2].test(txt)) sc+=40;
+    if(/Int Caster|Death Sorcery/.test(A)&&/Sorcerer|Battlemage|Twinsage|Glintstone/.test(a[0])) sc+=18;
+    if(/Faith Caster|Legion/.test(A)&&/Cleanrot|Finger Maiden|Fire Monk|Perfumer Tricia/.test(a[0])) sc+=18;
+    if(/Assassin|Speed/.test(A)&&/Tiche|Floh|Fanged Imp|Jolán|Nightmaiden/.test(a[0])) sc+=18;
+    if(/Colossal|Guardian/.test(A)&&/Oleg|Tragoth|Misbegotten|Greatshield|Golem|Rugged/.test(a[0])) sc+=18;
+    if(/Ranged/.test(A)&&/Ogha|Latenna|Dolores|Albinauric Archer|Ancestral/.test(a[0])) sc+=18;
+    if(/Polearm|Storm Blade/.test(A)&&/Lhutel|Kristoff|Crystalian/.test(a[0])) sc+=18;
+    if(/Bleed|Arcane/.test(A)&&/Floh|Bloodfiend|Skeletal Bandit/.test(a[0])) sc+=18;
+    if(/Dragon/.test(A)&&/Florissax|Kristoff|Crystalian/.test(a[0])) sc+=18;
+    sc+=((hashN(c.id+"::ash"+i)%11)/4);
+    return {name:a[0]+" — "+a[1], sc};
+  }).sort((x,y)=>y.sc-x.sc).map(x=>x.name);
+}
+/* ranked talismans — every candidate justified by this character, deepest matches first */
+function talCandidates(c,th,b){
+  const txt=th.text||"", out=[];
+  const add=n=>{ if(n && TAL_EXISTS(n) && out.indexOf(n)<0) out.push(n); };
+  TAL_SIGNATURE.forEach(([re,name])=>{ if(re.test(txt)) add(name); });
+  if(th.status==="Blood") add("Lord of Blood's Exultation");
+  if(th.status==="Rot"||th.status==="Poison") add("Kindred of Rot's Exultation");
+  if(th.status==="Madness") add("Aged One's Exultation");
+  if(th.status==="Sleep") add("St. Trina's Smile");
+  if(th.status==="Cold") add("Magic Scorpion Charm");
+  if(th.element==="Fire") add("Fire Scorpion Charm");
+  if(th.element==="Lightning") add("Lightning Scorpion Charm");
+  if(th.element==="Sacred") add("Sacred Scorpion Charm");
+  if(th.element==="Magic") add("Magic Scorpion Charm");
+  if(th.scholar){ add("Graven-Mass Talisman"); add("Radagon Icon"); add("Cerulean Amber Medallion +2"); }
+  if(isCaster(c,th)){ add("Flock's Canvas Talisman"); add("Carian Filigreed Crest"); }
+  if(th.light){ add("Blue Dancer Charm"); add("Crucible Feather Talisman"); }
+  if(th.heavy){ add("Bull-Goat's Talisman"); add("Great-Jar's Arsenal"); }
+  const st=b.stats;
+  if(st.DEX>=55) add("Millicent's Prosthesis");
+  if(st.STR>=55) add("Starscourge Heirloom");
+  if(st.INT>=55) add("Stargazer Heirloom");
+  if(st.FTH>=55) add("Two Fingers Heirloom");
+  if(st.ARC>=40) add("Outer God Heirloom");
+  if(st.VIG>=60) add("Crimson Amber Medallion +2");
+  if(st.END>=45) add("Green Turtle Talisman");
+  if(st.VIG<=35) add("Blue-Feathered Branchsword");
+  add("Shard of Alexander"); add("Erdtree's Favor +2"); add("Rotten Winged Sword Insignia");
+  add("Crimson Amber Medallion +2"); add("Green Turtle Talisman"); add("Dragoncrest Shield Talisman +2");
+  return out;
+}
+function TAL_EXISTS(n){
+  if(!TAL_EXISTS._set){ TAL_EXISTS._set=new Set(); TALISMAN_DB.forEach(g=>g.items.forEach(i=>TAL_EXISTS._set.add(i[0].replace(" [DLC]","")))); }
+  return TAL_EXISTS._set.has(n);
+}
+/* ranked spells — element-locked. Non-casters carry none, which is its own build identity. */
+function spellCandidates(c,th){
+  if(!isCaster(c,th)) return [];
+  const txt=th.text||"", pool=[];
+  const addPool=k=>{ [(SPELL_POOLS[k]||[]),(SPELL_EXTRA[k]||[])].forEach(arr=>arr.forEach(sp=>{ if(pool.indexOf(sp)<0) pool.push(sp); })); };
+  if(th.element) addPool(th.element);
+  if(th.status==="Blood") addPool("Blood");
+  if(th.status==="Poison"||th.status==="Rot") addPool("Poison");
+  if(th.status==="Madness") addPool("Madness");
+  if(th.status==="Cold") addPool("Cold");
+  if(/\bdragon\w*|\bwyrm\b|draconic/.test(txt)) addPool("Dragon");
+  if(/\bbeast\w*|\bferal\b|\bclaw\w*/.test(txt)) addPool("Beast");
+  if(/\bheal\w*|\bmedic\w*|restor\w*|\bsupport\b|protect\w*/.test(txt)) addPool("Heal");
+  if(!pool.length) addPool("Magic");
+  /* only genuine buff-users get the buff catalogue */
+  if(/\bbuff\w*|\bempower\w*|\benhance\w*|\bstrength\w*|\bvow\b|\bencourag\w*|\brally\b/.test(txt)) addPool("Buff");
+  return pool;
+}
+function applyDeepGear(){
+  const kitSeen=new Set();
+  CHARACTERS.forEach(c=>{
+    if(c.deep) return;
+    const th=(typeof gearTheme==="function")?gearTheme(c):{text:"",status:null,element:null};
+    const ashes=ashCandidates(c,th);
+    const spellPool=spellCandidates(c,th);
+    c.builds.forEach((b,bi)=>{
+      const variant=/PvP/.test(b.type)?"pvp":/PvE/.test(b.type)?"pve":"lore";
+      const talPool=talCandidates(c,th,b);
+      const h=hashN(c.id+"::deep"+bi);
+      /* rotation offsets give per-build variety without leaving the lore-valid pools */
+      let ai=0, ti=0, si=0, pi=0;
+      const buildKit=()=>{
+        b.summon = (variant==="pvp") ? "— (no summons in a duel)" : (ashes[ai%ashes.length]||"Mimic Tear +10");
+        const tal=[];
+        for(let k=0;k<talPool.length && tal.length<4;k++){ const n=talPool[(ti+k)%talPool.length]; if(tal.indexOf(n)<0) tal.push(n); }
+        while(tal.length<4) tal.push("Erdtree's Favor +2");
+        b.talismans=tal;
+        if(!spellPool.length){ b.spells=["—  (no magic — a purely physical kit)"]; }
+        else {
+          const want=variant==="lore"?3:4, sp=[];
+          for(let k=0;k<spellPool.length && sp.length<want;k++){ const n=spellPool[(si+k*3+ (h%3))%spellPool.length]; if(sp.indexOf(n)<0) sp.push(n); }
+          b.spells=sp;
+        }
+        if(typeof physickFor==="function"){
+          const ph=physickFor(c,b,variant);
+          if(pi>0 && ph.tears.length===2){
+            /* rotate the SECOND tear only, and only within tears that suit this character */
+            const alt=TEARS.filter(t=>{
+              if(ph.tears.indexOf(t[0])>=0) return false;
+              if(/Shrouding/.test(t[0])) return false;                 // never mismatch a damage type
+              if(t[0]==="Purifying Crystal Tear"||t[0]==="Ruptured Crystal Tear") return false;
+              return /Defence|Stamina|Offence|Movement|HP|FP/.test(t[1]);
+            }).map(t=>t[0]);
+            const pick=alt[(pi-1)%alt.length];
+            if(pick){ ph.tears[1]=pick; ph.why[1]="tuned to keep this loadout distinct within its cohort"; }
+          }
+          b.physick=ph;
+        }
+      };
+      buildKit();
+      let sig=[b.talismans.join(","),b.spells.join(","),b.summon,(b.physick&&b.physick.tears||[]).join(",")].join("|");
+      let guard=0;
+      while(kitSeen.has(sig) && guard++<40){
+        /* walk deeper into this character's own ranked options — never a random item */
+        if(guard%4===1) ai++; else if(guard%4===2) ti++; else if(guard%4===3) si++; else pi++;
+        buildKit();
+        sig=[b.talismans.join(","),b.spells.join(","),b.summon,(b.physick&&b.physick.tears||[]).join(",")].join("|");
+      }
+      kitSeen.add(sig);
+    });
+  });
+}
+applyDeepGear();
+
 /* ============ APP STATE ============ */
 const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("arnexus")||"{}"); }catch(e){ return {}; } },
@@ -6633,7 +6892,7 @@ function buildBlock(b, cid, idx){
     <div class="gear-box"><h6>🛡 Armor</h6>${b.armor.map(w=>`<span>${annotateArmor(w)}</span>`).join("")}</div>
     <div class="gear-box"><h6>🧿 Talismans</h6>${b.talismans.map(w=>`<span>${annotateTal(w)}</span>`).join("")}</div>
     <div class="gear-box"><h6>✨ Spells & Summon</h6>${b.spells.map(w=>`<span>${esc(w)}</span>`).join("")}<span style="color:var(--purple);margin-top:4px">☾ ${esc(b.summon)}</span></div>
-    <div class="gear-box" style="border-color:rgba(34,211,238,.28)"><h6>🧪 Flask of Wondrous Physick</h6>${cid!==undefined?renderPhysick(CHARACTERS.find(x=>x.id===cid)||{},b,/PvP/.test(b.type)?"pvp":/PvE/.test(b.type)?"pve":"lore"):'<span style="color:var(--txt-dim)">Mix two Crystal Tears at any Site of Grace.</span>'}</div>
+    <div class="gear-box" style="border-color:rgba(34,211,238,.28)"><h6>🧪 Flask of Wondrous Physick</h6>${b.physick?b.physick.tears.map((n,i)=>{const t=TEAR_BY_NAME[n]; return t?`<span>${t[3]?'<span class="pill gold" style="font-size:9px;padding:1px 5px;margin-right:4px">DLC</span>':''}<b>${esc(n)}</b><small style="display:block;color:var(--txt-dim);font-size:10.5px;line-height:1.5;padding-left:8px">${esc(t[2])}<br><i style="color:#a5f3fc">→ ${esc((b.physick.why||[])[i]||"")}</i></small></span>`:"";}).join(""):(cid!==undefined?renderPhysick(CHARACTERS.find(x=>x.id===cid)||{},b,/PvP/.test(b.type)?"pvp":/PvE/.test(b.type)?"pve":"lore"):'<span style="color:var(--txt-dim)">Mix two Crystal Tears at any Site of Grace.</span>')}</div>
   </div>
   <div class="build-note">📜 ${esc(b.notes)}</div>`;
 }
