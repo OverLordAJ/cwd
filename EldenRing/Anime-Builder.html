@@ -310,7 +310,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
         </div>
       </div>
       <div class="hd-stats">
-        <div><b id="hdChars">0</b>Characters</div>
+        <div><b id="hdChars">0</b>Characters<div id="hdTiers" style="font-size:9px;letter-spacing:.5px;color:var(--txt-dim);margin-top:2px;text-transform:none"></div></div>
         <div><b id="hdBuilds">0</b>Builds</div>
         <div><b id="hdBosses">0</b>Bosses</div>
         <div><b id="hdAch">0</b>Achievements</div>
@@ -577,6 +577,16 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
     <div class="check-grid" id="bossChecks"></div>
     <h3 style="font-family:var(--font-display);color:var(--gold);margin:26px 0 12px;letter-spacing:1px">BUILDS COMPLETED</h3>
     <div class="check-grid" id="buildChecks"></div>
+    <h3 style="font-family:var(--font-display);color:var(--gold);margin:26px 0 12px;letter-spacing:1px">SAVE DATA</h3>
+    <div class="prog-wrap">
+      <p style="font-size:12px;color:var(--txt-dim);line-height:1.7;margin-bottom:12px">Your entire career — rune total, rank, collected characters, completed sets, pinned builds, guilds, tournament brackets and achievements — lives in this browser's storage only. Export it before clearing site data, or to carry it to another device.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn" onclick="exportProgress()">💾 Export Save</button>
+        <button class="btn alt" onclick="document.getElementById('importFile').click()">📥 Import Save</button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importProgress(this.files[0]);this.value=''">
+        <span id="saveSize" style="font-size:11px;color:var(--txt-dim)"></span>
+      </div>
+    </div>
     <div style="margin-top:26px"><button class="btn" style="border-color:var(--red);color:#fca5a5" onclick="resetProgress()">Reset All Progress</button></div>
   </section>
 
@@ -604,7 +614,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
   <!-- ARCHIVE -->
   <section class="view" id="view-archive">
     <div class="sec-title">HISTORICAL ARCHIVE</div>
-    <div class="sec-sub">Every build version preserved — watch the meta evolve patch by patch.</div>
+    <div class="sec-sub">Hand-written revision histories for the Nexus's flagship builds, plus the concluded seasonal events. <span class="pill weak" style="font-size:9px">Curated, not exhaustive — three builds tracked so far, not the full roster</span></div>
     <div id="archiveList"></div>
   </section>
 </main>
@@ -616,7 +626,7 @@ input[type=range].lvl-slider{flex:1;min-width:180px;accent-color:var(--gold);cur
 </footer>
 
 <noscript><div style="max-width:700px;margin:20px auto;padding:20px;border:1px solid #8a7325;border-radius:12px;color:#e8e4d8;font-family:sans-serif;text-align:center">
-Anime Ring Nexus is a client-rendered app — the counters and databases populate via JavaScript. Please enable JavaScript to view the 509-character roster, 1,529 builds and all Phase 3 systems.</div></noscript>
+Anime Ring Nexus is a client-rendered app — the roster, build system and databases all populate via JavaScript. Please enable JavaScript to view them.</div></noscript>
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal" id="modalBox"></div>
 </div>
@@ -4952,7 +4962,12 @@ function renderCareer(){
          <div style="font-size:12px;color:var(--txt-dim)">${r.runes.toLocaleString()} runes earned${r.next?` · next rank: ${r.next[0]} at ${r.next[1].toLocaleString()}`:" · maximum rank achieved"}</div>
          <div class="prog-track" style="margin-top:6px"><div class="prog-fill" style="width:${pct}%"></div></div>
        </div>
-       <div style="font-size:11px;color:var(--txt-dim);max-width:250px">Earn runes by collecting characters, fusing, voting, tracking builds, defeating bosses and completing daily challenges.</div>
+       <div style="font-size:11px;color:var(--txt-dim);max-width:250px">Earn runes by collecting characters, fusing, voting, tracking builds, defeating bosses and completing daily challenges.
+         <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+           <button class="stat-btn" style="width:auto;padding:3px 11px;font-size:11px;border-color:var(--cyan);color:#a5f3fc" onclick="shareCareer()">🔗 Share career card</button>
+           <button class="stat-btn" style="width:auto;padding:3px 11px;font-size:11px" onclick="exportProgress()">💾 Export save</button>
+         </div>
+       </div>
      </div>
    </div>
    <div class="two-col">
@@ -6688,6 +6703,8 @@ function checkAchievements(){
 const totalBuilds = CHARACTERS.reduce((n,c)=>n+c.builds.length,0);
 function renderHeader(){
   document.getElementById("hdChars").textContent=CHARACTERS.length;
+  const ht=document.getElementById("hdTiers");
+  if(ht){ const d=CHARACTERS.filter(c=>c.deep).length; ht.textContent=d+" deep · "+(CHARACTERS.length-d)+" fast"; }
   document.getElementById("hdBuilds").textContent=totalBuilds;
   document.getElementById("hdBosses").textContent=BOSSES.length;
   document.getElementById("hdAch").textContent=S.unlocked.length+"/"+ACHIEVEMENTS.length;
@@ -6875,7 +6892,7 @@ function buildBlock(b, cid, idx){
   return `
   <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px">
     <b style="font-family:var(--font-display);font-size:16px;color:var(--gold2)">${esc(b.name)}</b>
-    <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="pill gold">RL ${b.level} · ${esc(b.type)}</span>${cid!==undefined?`<button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px" onclick="toggleBuilderMode('${cid}',${idx})">${manual?"↺ Auto Projection":"🎮 2K Builder"}</button><button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px;${(S.tracked||{})[trackKey(cid,idx)]?'border-color:var(--green);color:var(--green)':''}" onclick="toggleTrackBuild('${cid}',${idx})">${(S.tracked||{})[trackKey(cid,idx)]?"✔ Tracking":"📌 Track"}</button>`:""}</span>
+    <span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="pill gold">RL ${b.level} · ${esc(b.type)}</span>${cid!==undefined?`<button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px" onclick="toggleBuilderMode('${cid}',${idx})">${manual?"↺ Auto Projection":"🎮 2K Builder"}</button><button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px;${(S.tracked||{})[trackKey(cid,idx)]?'border-color:var(--green);color:var(--green)':''}" onclick="toggleTrackBuild('${cid}',${idx})">${(S.tracked||{})[trackKey(cid,idx)]?"✔ Tracking":"📌 Track"}</button><button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px;border-color:var(--cyan);color:#a5f3fc" onclick="shareBuild('${cid}',${idx})">🔗 Share</button>`:""}</span>
   </div>
   ${cid!==undefined?tier6Note(CHARACTERS.find(x=>x.id===cid)||{}):""}
   ${levelChip(b)}
@@ -7157,6 +7174,7 @@ function generateFusion(announce){
         <span class="pill weak">Fusion Score: ${comp.overall}/100</span>
         <span class="pill resist">~${est} AR est.</span>
         <span class="pill resist">Difficulty ${"★".repeat(maxDiff)}${"☆".repeat(5-maxDiff)}</span>
+        <button class="stat-btn" style="width:auto;padding:3px 12px;font-size:11px;border-color:var(--cyan);color:#a5f3fc" onclick="shareFusion()">🔗 Copy link</button>
       </div>
       <div style="font-size:12px;color:#ddd6fe;text-align:center;margin-bottom:14px">📋 ${esc(tier.focus)}</div>
       ${statBars(stats)}
@@ -7287,6 +7305,7 @@ function renderTracker(){
   const ml=S.myLevel||1;
   document.getElementById("lvlSlider").value=ml;
   document.getElementById("lvlNum").value=ml;
+  saveSizeLabel();
   const allBuilds=CHARACTERS.flatMap(c=>c.builds.map(b=>({c,b})));
   const reached=allBuilds.filter(x=>x.b.level<=ml).length;
   const upcoming=allBuilds.filter(x=>x.b.level>ml).sort((a,b)=>a.b.level-b.b.level)[0];
@@ -7327,6 +7346,110 @@ function resetProgress(){
   if(!confirm("Reset ALL local progress — bosses, builds, fusions and achievements?")) return;
   S={visited:["home"], viewedChars:[], bosses:[], builds:[], fusions:0, unlocked:[], myLevel:1, alloc:{}, community:[], guildFavs:[], votes:{}, champion_s1:null, champions:{}, hallOfFame:[], duelVotes:{}, tracked:{}, customGuilds:[], guildXP:{}, daily:null, runes:0, setsDone:[], fuseHist:[]};
   store.set(S); renderAll(); toast("Progress reset. A new Tarnished rises.");
+}
+
+/* ============ SAVE DATA — EXPORT · IMPORT · SHARE ============
+   Everything the Nexus knows about you lives in one localStorage key. That means clearing
+   site data wipes a career, and a phone and a desktop are two unrelated Tarnished. These
+   three functions are the whole fix, and they need no backend to work.                     */
+const SAVE_VERSION=1;
+function exportProgress(){
+  const payload={v:SAVE_VERSION, app:"anime-ring-nexus", ts:Date.now(), exported:new Date().toISOString(), data:S};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download="nexus-save-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  toast("💾 Save exported — "+careerRank().name+", "+(S.runes||0).toLocaleString()+" runes.");
+}
+function importProgress(file){
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onerror=()=>toast("⚠ Could not read that file.");
+  reader.onload=e=>{
+    let payload;
+    try{ payload=JSON.parse(e.target.result); }
+    catch(err){ toast("⚠ That isn't a valid save file."); return; }
+    if(!payload||typeof payload!=="object"||!payload.data||typeof payload.data!=="object"){ toast("⚠ Unrecognized save format."); return; }
+    if(payload.v>SAVE_VERSION){ toast("⚠ That save came from a newer version of the Nexus."); return; }
+    const inc=payload.data;
+    const summary=(inc.viewedChars||[]).length+" characters · "+(inc.runes||0).toLocaleString()+" runes · RL "+(inc.myLevel||1);
+    const hasProgress=(S.viewedChars||[]).length||(S.runes||0)||(S.bosses||[]).length;
+    if(hasProgress && !confirm("Overwrite your current career?\n\nCurrent: "+(S.viewedChars||[]).length+" characters · "+(S.runes||0).toLocaleString()+" runes\nIncoming: "+summary)) return;
+    /* merge over the default shape so an older save missing newer keys still loads clean */
+    S=Object.assign({visited:["home"],viewedChars:[],bosses:[],builds:[],fusions:0,unlocked:[],myLevel:1,alloc:{},community:[],guildFavs:[],votes:{},champion_s1:null,champions:{},hallOfFame:[],duelVotes:{},tracked:{},customGuilds:[],guildXP:{},daily:null,runes:0,setsDone:[],fuseHist:[]}, inc);
+    store.set(S); renderAll(); renderCareer(); renderSets(); renderTierPanel(); renderTrackedBuilds(); renderGuilds(); renderArena(); renderRecs();
+    toast("📥 Save imported — "+summary);
+  };
+  reader.readAsText(file);
+}
+function saveSizeLabel(){
+  const el=document.getElementById("saveSize"); if(!el) return;
+  let bytes=0; try{ bytes=new Blob([JSON.stringify(S)]).size; }catch(e){ return; }
+  el.textContent="Current save: "+(bytes<1024? bytes+" B" : (bytes/1024).toFixed(1)+" KB")+
+    " · "+(S.viewedChars||[]).length+" characters · "+(S.runes||0).toLocaleString()+" runes";
+}
+/* --- Share links. The fragment never reaches a server, so this works on static hosting.
+       Character IDs are stable roster fields, so links survive every future roster wave. --- */
+function b64e(o){ return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/=+$/,""); }
+function b64d(s){ try{ return JSON.parse(decodeURIComponent(escape(atob(s)))); }catch(e){ return null; } }
+function shareURL(frag){ return location.origin+location.pathname+location.search+frag; }
+function copyText(txt,label){
+  const done=()=>toast("📋 "+(label||"Link copied")+" — paste it anywhere.");
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done,()=>fallback());
+  else fallback();
+  function fallback(){
+    const ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); done(); }catch(e){ prompt("Copy this link:",txt); }
+    ta.remove();
+  }
+}
+function shareFusion(){
+  if(!window._lastFuse){ toast("Run a fusion first."); return; }
+  const [a,b,c]=window._lastFuse;
+  copyText(shareURL("#f="+b64e({a,b,c:c||null,rl:fuseRL()})),"Fusion link copied");
+}
+function shareBuild(cid,idx){ copyText(shareURL("#b="+b64e({c:cid,i:idx})),"Build link copied"); }
+function shareCareer(){
+  const r=careerRank();
+  copyText(shareURL("#c="+b64e({r:r.name,ru:S.runes||0,ch:(S.viewedChars||[]).length,st:(S.setsDone||[]).length,lv:S.myLevel||1})),"Career card link copied");
+}
+function missingChar(id){
+  return `<div class="fusion-card" style="border-color:var(--red)"><h3>SHARED LINK — CHARACTER NOT FOUND</h3>
+    <div class="ftitle">This link references "${esc(id)}", who isn't in your copy of the Nexus.</div>
+    <p style="text-align:center;font-size:13px">The roster grows constantly. Reload the page to pick up the latest version, then open the link again.</p></div>`;
+}
+function readSharedLink(){
+  const h=location.hash||"";
+  let m;
+  if((m=h.match(/^#f=([A-Za-z0-9+/]+)/))){
+    const d=b64d(m[1]); if(!d) return;
+    const ids=[d.a,d.b,d.c].filter(Boolean);
+    const missing=ids.find(id=>!CHARACTERS.some(c=>c.id===id));
+    go("fusion");
+    if(missing){ document.getElementById("fusionResult").innerHTML=missingChar(missing); return; }
+    document.getElementById("fuseA").value=d.a;
+    document.getElementById("fuseB").value=d.b;
+    const fc=document.getElementById("fuseC"); if(fc) fc.value=d.c||"none";
+    setFuseRL(d.rl||150);
+    window._lastFuse=[d.a,d.b,d.c||null];
+    generateFusion(false);
+    toast("🔗 Shared fusion loaded.");
+  } else if((m=h.match(/^#b=([A-Za-z0-9+/]+)/))){
+    const d=b64d(m[1]); if(!d) return;
+    if(!CHARACTERS.some(c=>c.id===d.c)){ go("characters"); toast("⚠ That link references a character not in your version — reload the page."); return; }
+    openChar(d.c);
+    const tabs=document.querySelectorAll("#modalBox .mtab");
+    if(tabs[3]) tabs[3].click();
+    const bt=document.querySelectorAll("#modalBox .build-tabs .mtab");
+    if(bt[d.i]) bt[d.i].click();
+    toast("🔗 Shared build loaded.");
+  } else if((m=h.match(/^#c=([A-Za-z0-9+/]+)/))){
+    const d=b64d(m[1]); if(!d) return;
+    go("career");
+    toast("🔗 Shared career card: "+d.r+" · "+(d.ru||0).toLocaleString()+" runes · "+(d.ch||0)+" characters");
+  }
 }
 
 /* ============ ACHIEVEMENTS ============ */
@@ -7417,4 +7540,8 @@ document.getElementById("lvlNum").addEventListener("change",e=>setMyLevel(e.targ
   syncLevelUI();
 })();
 checkAchievements();
+/* Shared links open their target directly — a fusion, a build, or a career card.
+   Runs last so every view and select is already populated. */
+readSharedLink();
+window.addEventListener("hashchange",readSharedLink);
 </script></body></html>
