@@ -767,7 +767,62 @@ html,body{max-width:100%;overflow-x:hidden;}
 </footer>
 
 <script>
-// ── PROXY CHAIN ───────────────────────────────────────────────────────────────
+// ── DATA SOURCE ───────────────────────────────────────────────────────────────
+// When the Worker is deployed, set base to its origin and enabled to true. The
+// page then makes ONE request per load instead of 153, and the proxy chain below
+// becomes a fallback that only runs if the Worker is unreachable.
+const API = {
+  enabled: false,
+  base: 'https://netwatch-api.<your-subdomain>.workers.dev',
+  ttl: 45 * 1000,
+};
+
+let _bundle = null, _bundleAt = 0, _bundleInflight = null;
+
+async function fetchBundle(force = false) {
+  if (!API.enabled) return null;
+  if (!force && _bundle && Date.now() - _bundleAt < API.ttl) return _bundle;
+  if (_bundleInflight) return _bundleInflight;
+  _bundleInflight = (async () => {
+    try {
+      const res = await fetch(`${API.base}/api/front`, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (!data?.sections) throw new Error('malformed bundle');
+      _bundle = data; _bundleAt = Date.now();
+      return _bundle;
+    } catch (e) {
+      return null;                       // caller falls back to the proxy chain
+    } finally {
+      _bundleInflight = null;
+    }
+  })();
+  return _bundleInflight;
+}
+
+// Worker payload uses short keys to keep the bundle small; widen it back out to
+// the shape the renderers already expect.
+function bundleSection(bundle, sec, limit) {
+  const rows = bundle?.sections?.[sec];
+  if (!rows?.length) return null;
+  return rows.slice(0, limit).map(r => ({
+    title: r.t, link: r.u, description: r.d || '', content: '',
+    thumbnail: r.i || '', pubDate: r.p, author: r.n || '', lean: r.l || '',
+  }));
+}
+
+/**
+ * Preferred entry point for every section load: one Worker request, or the
+ * 153-feed client-side fan-out if the Worker is off or down.
+ */
+async function fetchSection(sec, keys, limit = 400) {
+  const bundle = await fetchBundle();
+  const items = bundle && bundleSection(bundle, sec, limit);
+  if (items) return items;
+  return fetchMulti(keys, limit);
+}
+
+// ── PROXY CHAIN (fallback) ────────────────────────────────────────────────────
 const PROXIES = [
   url => `https://api.rss2json.com/v1/api.json?count=100&rss_url=${encodeURIComponent(url)}`,
   url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
@@ -1479,7 +1534,7 @@ async function loadUS(silent=false) {
     if (cached.length) renderUS(cached);
     else document.getElementById('heroCard').innerHTML = SPIN;
   }
-  const fresh = await fetchMulti(keys, 400);
+  const fresh = await fetchSection('us', keys, 400);
   if (!fresh.length) return;
   arcAdd(fresh, 'us');
   if (!silent) { renderUS(fresh); return; }
@@ -1491,7 +1546,7 @@ async function loadWorldSidebar() {
   const keys = SECTION_FEEDS.world.slice(0,5);
   const cached = getCachedMulti(keys, 20);
   if (cached.length) renderSidebar(cached);
-  const fresh = await fetchMulti(keys, 20);
+  const fresh = await fetchSection('world', keys, 20);
   renderSidebar(fresh);
 }
 
@@ -1508,7 +1563,7 @@ async function loadSection(sec, gridId, silent=false) {
       if(el) el.innerHTML = SPIN;
     }
   }
-  const fresh = await fetchMulti(keys, 400);
+  const fresh = await fetchSection(sec, keys, 400);
   if (!fresh.length) return;
   sectionItems[sec] = filterStrictly(fresh, sec);
   arcAdd(sectionItems[sec], sec);
@@ -1527,7 +1582,7 @@ async function loadRegion(region) {
   const cached = getCachedMulti(keys,400);
   if (cached.length) renderGrid('regional','regionalGrid',cached);
   else document.getElementById('regionalGrid').innerHTML = SPIN;
-  const fresh = await fetchMulti(keys,400);
+  const fresh = await fetchSection(region, keys, 400);
   if (fresh.length) arcAdd(fresh, region);
   renderGrid('regional','regionalGrid',fresh);
 }
@@ -1645,6 +1700,7 @@ async function refreshAll() {
   btn.classList.add('spinning');
   Object.keys(cache).forEach(k => delete cache[k]);
   try { localStorage.removeItem(LS_KEY); } catch(e) {}
+  await fetchBundle(true);   // bypass the bundle TTL on an explicit refresh
   await Promise.all([loadUS(), loadWorldSidebar()]);
   if (currentSection !== 'us') {
     if (currentSection==='regional') await loadRegion(currentRegion);
@@ -1656,6 +1712,9 @@ async function refreshAll() {
 
 // ── BACKGROUND PRELOADER ──────────────────────────────────────────────────────
 async function preloadAll() {
+  // The Worker already holds every section; fanning out to 153 feeds from the
+  // browser would defeat the entire point of it.
+  if (API.enabled) return;
   const allKeys = [...new Set(Object.values(SECTION_FEEDS).flat())];
   for (let i=0; i<allKeys.length; i+=8) {
     await Promise.allSettled(allKeys.slice(i,i+8).map(k=>fetchFeed(k)));
@@ -1671,7 +1730,7 @@ async function liveLoop() {
   if (currentSection==='us') await loadUS(true);
   else if (currentSection==='regional') {
     const keys = SECTION_FEEDS[currentRegion]||[];
-    const fresh = await fetchMulti(keys,400);
+    const fresh = await fetchSection(currentRegion, keys, 400);
     const firstCard = document.querySelector('#regionalGrid .news-card-title')?.textContent;
     if(fresh.length && fresh[0]?.title!==firstCard){pendingItems=fresh;showToast(Math.min(fresh.length,5));}
   } else {
@@ -2052,5 +2111,3 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
-
-
