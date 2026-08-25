@@ -589,6 +589,20 @@ html[data-theme="light"] .hero-media::after{
 .tab[aria-pressed="true"]{background:var(--yellow);border-color:var(--yellow);color:var(--on-yellow);}
 .tab .n{font-family:var(--f-mono);font-size:9px;opacity:.65;}
 
+/* stories / all-articles switch */
+.modes{display:inline-flex;flex:0 0 auto;border:1px solid var(--line-2);margin-right:var(--s3);}
+.mode{
+  background:none;border:none;border-right:1px solid var(--line-2);
+  color:var(--text-3);font-family:var(--f-ui);font-size:11.5px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;padding:7px 13px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;transition:all .18s ease;white-space:nowrap;
+}
+.mode:last-child{border-right:none;}
+.mode:hover{color:var(--text);background:var(--surface-2);}
+.mode[aria-pressed="true"]{background:var(--cyan);color:var(--on-cyan);}
+.mode .n{font-family:var(--f-mono);font-size:9px;opacity:.7;}
+.mode[aria-pressed="true"] .n{opacity:.85;}
+
 /* region rail */
 .regions{display:flex;gap:var(--s2);margin-bottom:var(--s5);overflow-x:auto;scrollbar-width:none;}
 .regions::-webkit-scrollbar{display:none;}
@@ -1192,6 +1206,14 @@ const FEEDS = {
   ps_whitehouse:'https://www.whitehouse.gov/feed/',
   ps_courtlistener:'https://www.courtlistener.com/feed/court/scotus/',
   ps_noaa:'https://www.noaa.gov/rss.xml',
+  ps_cdc:'https://tools.cdc.gov/api/v2/resources/media/404952.rss',
+  ps_nih:'https://www.nih.gov/news-events/news-releases/feed.xml',
+  ps_state:'https://www.state.gov/rss-feed/press-releases/feed/',
+  ps_defense:'https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=945',
+  ps_justice:'https://www.justice.gov/news/rss',
+  ps_ftc:'https://www.ftc.gov/feeds/press-release.xml',
+  ps_gao:'https://www.gao.gov/rss/reports.xml',
+  ps_energy:'https://www.energy.gov/rss/articles.xml',
 
   /* ── Politics ── */
   npr_pol:'https://feeds.npr.org/1014/rss.xml',
@@ -1337,6 +1359,111 @@ const FEEDS = {
   cfr:'https://www.cfr.org/rss.xml',
   reuters_gnews:'https://news.google.com/rss/search?q=when:24h+allinurl:reuters.com&hl=en-US&gl=US&ceid=US:en',
 
+  /* ── EXPANSION SET ────────────────────────────────────────────────────
+     Added to lift every section to a ~300-article working set. These are
+     UNVERIFIED — plausible endpoints, not confirmed live. Run Diagnostics →
+     Feed Health Check and delete whatever reports Dead. */
+  us_latimes:'https://www.latimes.com/rss2.0.xml',
+  us_nypost:'https://nypost.com/feed/',
+  us_newsweek:'https://www.newsweek.com/rss',
+  us_msnbc:'https://www.msnbc.com/feeds/latest',
+  us_dailybeast:'https://www.thedailybeast.com/arc/outboundfeeds/rss/',
+  us_chicagotribune:'https://www.chicagotribune.com/arc/outboundfeeds/rss/',
+  us_npr_national:'https://feeds.npr.org/1003/rss.xml',
+  us_cbs_us:'https://www.cbsnews.com/latest/rss/us',
+
+  world_cbc:'https://www.cbc.ca/webfeed/rss/rss-world',
+  world_japantimes:'https://www.japantimes.co.jp/feed/',
+  world_scmp:'https://www.scmp.com/rss/91/feed',
+  world_timesofindia:'https://timesofindia.indiatimes.com/rssfeedstopstories.cms',
+  world_straitstimes:'https://www.straitstimes.com/news/world/rss.xml',
+  world_euronews:'https://www.euronews.com/rss?level=theme&name=news',
+  world_npr_world:'https://feeds.npr.org/1004/rss.xml',
+  world_csmonitor:'https://rss.csmonitor.com/feeds/world',
+
+  pol_ap:'https://feeds.apnews.com/rss/apf-politics',
+  pol_guardian:'https://www.theguardian.com/politics/rss',
+  pol_rollcall:'https://rollcall.com/feed/',
+  pol_scotusblog:'https://www.scotusblog.com/feed/',
+  pol_lawfare:'https://www.lawfaremedia.org/feeds/all.rss',
+  pol_nbc:'https://feeds.nbcnews.com/nbcnews/public/politics',
+  pol_cbs:'https://www.cbsnews.com/latest/rss/politics',
+  pol_newsweek:'https://www.newsweek.com/rss',
+
+  biz_insider:'https://feeds.businessinsider.com/custom/all',
+  biz_investing:'https://www.investing.com/rss/news.rss',
+  biz_seekingalpha:'https://seekingalpha.com/market_currents.xml',
+  biz_nyt:'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml',
+  biz_bbc:'https://feeds.bbci.co.uk/news/business/rss.xml',
+  biz_guardian:'https://www.theguardian.com/uk/business/rss',
+  biz_cnbc_finance:'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664',
+
+  tech_zdnet:'https://www.zdnet.com/news/rss.xml',
+  tech_techradar:'https://www.techradar.com/rss',
+  tech_tomshardware:'https://www.tomshardware.com/feeds/all',
+  tech_bleeping:'https://www.bleepingcomputer.com/feed/',
+  tech_register:'https://www.theregister.com/headlines.atom',
+  tech_slashdot:'https://rss.slashdot.org/Slashdot/slashdotMain',
+  tech_gizmodo:'https://gizmodo.com/feed',
+  tech_bbc:'https://feeds.bbci.co.uk/news/technology/rss.xml',
+
+  ai_marktechpost:'https://www.marktechpost.com/feed/',
+  ai_deepmind:'https://deepmind.google/blog/rss.xml',
+  ai_nvidia:'https://blogs.nvidia.com/feed/',
+  ai_microsoft:'https://blogs.microsoft.com/ai/feed/',
+  ai_arxiv:'https://export.arxiv.org/rss/cs.AI',
+  ai_synced:'https://syncedreview.com/feed/',
+  ai_aibusiness:'https://aibusiness.com/rss.xml',
+  ai_bair:'https://bair.berkeley.edu/blog/feed.xml',
+
+  gam_vg247:'https://www.vg247.com/feed',
+  gam_pushsquare:'https://www.pushsquare.com/feeds/latest',
+  gam_purexbox:'https://www.purexbox.com/feeds/latest',
+  gam_gamedeveloper:'https://www.gamedeveloper.com/rss.xml',
+  gam_dexerto:'https://www.dexerto.com/feed/',
+  gam_siliconera:'https://www.siliconera.com/feed/',
+  gam_gamerant:'https://gamerant.com/feed/',
+
+  mov_avclub:'https://www.avclub.com/rss',
+  mov_vulture:'https://www.vulture.com/rss/index.xml',
+  mov_empire:'https://www.empireonline.com/movies/news/rss/',
+  mov_gamesradar:'https://www.gamesradar.com/rss/entertainment/',
+  mov_looper:'https://www.looper.com/feed/',
+  mov_cbr:'https://www.cbr.com/feed/',
+  mov_nyt:'https://rss.nytimes.com/services/xml/rss/nyt/Movies.xml',
+
+  mus_mbw:'https://www.musicbusinessworldwide.com/feed/',
+  mus_ucr:'https://ultimateclassicrock.com/feed/',
+  mus_hiphopdx:'https://hiphopdx.com/rss',
+  mus_guardian:'https://www.theguardian.com/music/rss',
+  mus_variety:'https://variety.com/v/music/feed/',
+  mus_edm:'https://edm.com/.rss/full/',
+
+  sci_quanta:'https://api.quantamagazine.org/feed/',
+  sci_arstech:'https://feeds.arstechnica.com/arstechnica/science',
+  sci_sciencenews:'https://www.sciencenews.org/feed',
+  sci_smithsonian:'https://www.smithsonianmag.com/rss/latest_articles/',
+  sci_nyt_climate:'https://rss.nytimes.com/services/xml/rss/nyt/Climate.xml',
+  sci_bbc:'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
+  sci_guardian:'https://www.theguardian.com/science/rss',
+  sci_eurekalert:'https://www.eurekalert.org/rss/technology_engineering.xml',
+
+  spo_bleacher:'https://bleacherreport.com/articles/feed',
+  spo_bbc_football:'https://feeds.bbci.co.uk/sport/football/rss.xml',
+  spo_goal:'https://www.goal.com/feeds/en/news',
+  spo_espn_nfl:'https://www.espn.com/espn/rss/nfl/news',
+  spo_espn_nba:'https://www.espn.com/espn/rss/nba/news',
+  spo_espn_mlb:'https://www.espn.com/espn/rss/mlb/news',
+  spo_skysports_f1:'https://feeds.skynews.com/feeds/rss/f1.xml',
+  spo_theguardian_us:'https://www.theguardian.com/us/sport/rss',
+
+  gos_dailybeast:'https://www.thedailybeast.com/arc/outboundfeeds/rss/',
+  gos_screenrant:'https://screenrant.com/feed/reality-tv/',
+  gos_harpers:'https://www.harpersbazaar.com/rss/all.xml/',
+  gos_elle:'https://www.elle.com/rss/all.xml/',
+  gos_cosmo:'https://www.cosmopolitan.com/rss/all.xml/',
+  gos_metro:'https://metro.co.uk/entertainment/feed/',
+
   /* ── Regional ── */
   bbc_eu:'https://feeds.bbci.co.uk/news/world/europe/rss.xml',
   guardian_eu:'https://www.theguardian.com/world/europe-news/rss',
@@ -1359,19 +1486,19 @@ const FEEDS = {
 /* ── SECTION MAP ─────────────────────────────────────────────────────── */
 const SECTIONS = {
   front    : { label:'Front',     icon:'▚', tone:'c-red',   feeds:null },
-  us       : { label:'USA',       icon:'★', tone:'',        feeds:['npr','abc','cbs','cnn','nbc','ap','thehill','axios','vox','atlantic','fox','wapo','nyt','usatoday','pbs','propublica'] },
-  world    : { label:'World',     icon:'◍', tone:'c-cyan',  feeds:['bbc_world','guardian','aljazeera','dw','france24','sky','time','rfi','voa','nyt_world','ap_world','cfr','reuters_gnews'] },
-  wire     : { label:'Wire',      icon:'⌁', tone:'',        feeds:['ps_federalregister','ps_sec8k','ps_usgs','ps_fed','ps_bls','ps_nasa','ps_who','ps_un','ps_eu','ps_whitehouse','ps_courtlistener','ps_noaa'] },
-  politics : { label:'Politics',  icon:'⚖', tone:'c-mag',   feeds:['npr_pol','politico','thehill_pol','realclear','guardian_us','cnn_pol','abc_pol','fox_pol','wapo_pol','slate_pol','nyt_pol'] },
-  business : { label:'Business',  icon:'◈', tone:'c-green', feeds:['npr_biz','cnbc','marketwatch','fortune','wsj_mkt','economist','coindesk','fastco','inc','hbr','yahoo_fin','ap_biz'] },
-  tech     : { label:'Tech',      icon:'⌘', tone:'c-cyan',  feeds:['npr_tech','techcrunch','theverge','wired','ars','engadget','nine5mac','nine5google','macrumors','hackernews'] },
-  ai       : { label:'AI',        icon:'◉', tone:'c-mag',   feeds:['ai_techcrunch','ai_verge','ai_mit','ai_venturebeat','ai_wired','ai_decoder','ai_ars','ai_googleblog','ai_huggingface','ai_openai','ai_import'] },
-  gaming   : { label:'Gaming',    icon:'◘', tone:'c-green', feeds:['ign','kotaku','polygon','pcgamer','eurogamer','rps','destructoid','gamespot','ps_blog','xbox_wire','nintendolife','gamesradar'] },
-  movies   : { label:'Screen',    icon:'▶', tone:'c-red',   feeds:['variety','deadline','thr','screenrant','collider','slashfilm','indiewire','thewrap','ew'] },
-  music    : { label:'Music',     icon:'♪', tone:'c-mag',   feeds:['pitchfork','rollingstone_music','billboard','stereogum','consequence','nme','spin','loudwire','npr_music','brooklynvegan'] },
-  gossip   : { label:'Culture',   icon:'✦', tone:'c-mag',   feeds:['tmz','pagesix','people','usweekly','enews','justjared','hollywoodlife','dailymail_showbiz','vanityfair','thecut','vogue','etonline'] },
-  science  : { label:'Science',   icon:'⚛', tone:'c-green', feeds:['npr_sci','sciamer','newscientist','livescience','physorg','space_com','popsci','nature','sciencedaily','nyt_sci','nyt_health','statnews'] },
-  sports   : { label:'Sports',    icon:'◆', tone:'c-amber', feeds:['espn','bbc_sport','guardian_sport','sky_sport','yahoo_sport','cbs_sport','si','nyt_sport','ap_sport','theathletic'] },
+  us       : { label:'USA',       icon:'★', tone:'',        feeds:['npr','abc','cbs','cnn','nbc','ap','thehill','axios','vox','atlantic','fox','wapo','nyt','usatoday','pbs','propublica','us_latimes','us_nypost','us_newsweek','us_msnbc','us_dailybeast','us_chicagotribune','us_npr_national','us_cbs_us'] },
+  world    : { label:'World',     icon:'◍', tone:'c-cyan',  feeds:['bbc_world','guardian','aljazeera','dw','france24','sky','time','rfi','voa','nyt_world','ap_world','cfr','reuters_gnews','world_cbc','world_japantimes','world_scmp','world_timesofindia','world_straitstimes','world_euronews','world_npr_world','world_csmonitor'] },
+  wire     : { label:'Wire',      icon:'⌁', tone:'',        feeds:['ps_federalregister','ps_sec8k','ps_usgs','ps_fed','ps_bls','ps_nasa','ps_who','ps_un','ps_eu','ps_whitehouse','ps_courtlistener','ps_noaa','ps_cdc','ps_nih','ps_state','ps_defense','ps_justice','ps_ftc','ps_gao','ps_energy'] },
+  politics : { label:'Politics',  icon:'⚖', tone:'c-mag',   feeds:['npr_pol','politico','thehill_pol','realclear','guardian_us','cnn_pol','abc_pol','fox_pol','wapo_pol','slate_pol','nyt_pol','pol_ap','pol_guardian','pol_rollcall','pol_scotusblog','pol_lawfare','pol_nbc','pol_cbs'] },
+  business : { label:'Business',  icon:'◈', tone:'c-green', feeds:['npr_biz','cnbc','marketwatch','fortune','wsj_mkt','economist','coindesk','fastco','inc','hbr','yahoo_fin','ap_biz','biz_insider','biz_investing','biz_seekingalpha','biz_nyt','biz_bbc','biz_guardian','biz_cnbc_finance'] },
+  tech     : { label:'Tech',      icon:'⌘', tone:'c-cyan',  feeds:['npr_tech','techcrunch','theverge','wired','ars','engadget','nine5mac','nine5google','macrumors','hackernews','tech_zdnet','tech_techradar','tech_tomshardware','tech_bleeping','tech_register','tech_slashdot','tech_gizmodo','tech_bbc'] },
+  ai       : { label:'AI',        icon:'◉', tone:'c-mag',   feeds:['ai_techcrunch','ai_verge','ai_mit','ai_venturebeat','ai_wired','ai_decoder','ai_ars','ai_googleblog','ai_huggingface','ai_openai','ai_import','ai_marktechpost','ai_deepmind','ai_nvidia','ai_microsoft','ai_arxiv','ai_synced','ai_aibusiness','ai_bair'] },
+  gaming   : { label:'Gaming',    icon:'◘', tone:'c-green', feeds:['ign','kotaku','polygon','pcgamer','eurogamer','rps','destructoid','gamespot','ps_blog','xbox_wire','nintendolife','gamesradar','gam_vg247','gam_pushsquare','gam_purexbox','gam_gamedeveloper','gam_dexerto','gam_siliconera','gam_gamerant'] },
+  movies   : { label:'Screen',    icon:'▶', tone:'c-red',   feeds:['variety','deadline','thr','screenrant','collider','slashfilm','indiewire','thewrap','ew','mov_avclub','mov_vulture','mov_empire','mov_gamesradar','mov_looper','mov_cbr','mov_nyt'] },
+  music    : { label:'Music',     icon:'♪', tone:'c-mag',   feeds:['pitchfork','rollingstone_music','billboard','stereogum','consequence','nme','spin','loudwire','npr_music','brooklynvegan','mus_mbw','mus_ucr','mus_hiphopdx','mus_guardian','mus_variety','mus_edm'] },
+  gossip   : { label:'Culture',   icon:'✦', tone:'c-mag',   feeds:['tmz','pagesix','people','usweekly','enews','justjared','hollywoodlife','dailymail_showbiz','vanityfair','thecut','vogue','etonline','gos_dailybeast','gos_screenrant','gos_harpers','gos_elle','gos_cosmo','gos_metro'] },
+  science  : { label:'Science',   icon:'⚛', tone:'c-green', feeds:['npr_sci','sciamer','newscientist','livescience','physorg','space_com','popsci','nature','sciencedaily','nyt_sci','nyt_health','statnews','sci_quanta','sci_arstech','sci_sciencenews','sci_smithsonian','sci_nyt_climate','sci_bbc','sci_guardian','sci_eurekalert'] },
+  sports   : { label:'Sports',    icon:'◆', tone:'c-amber', feeds:['espn','bbc_sport','guardian_sport','sky_sport','yahoo_sport','cbs_sport','si','nyt_sport','ap_sport','theathletic','spo_bleacher','spo_bbc_football','spo_goal','spo_espn_nfl','spo_espn_nba','spo_espn_mlb','spo_skysports_f1','spo_theguardian_us'] },
   regional : { label:'Regional',  icon:'⊕', tone:'c-cyan',  feeds:null },
   follow   : { label:'Following', icon:'◎', tone:'c-mag',   feeds:null },
   archive  : { label:'Archive',   icon:'▤', tone:'c-slate', feeds:null },
@@ -1572,11 +1699,18 @@ const LS = {
 };
 const CACHE_TTL   = 20 * 60_000;      // in-memory freshness
 const PERSIST_TTL = 8 * 3_600_000;    // localStorage freshness
-const MAX_PER_FEED = 30;              // items persisted per feed
-const MAX_ARCHIVE  = 3000;            // hard cap on archive rows
+const MAX_PER_FEED = 40;              // items persisted per feed (ceiling)
+const MIN_PER_FEED = 8;               // floor before we start dropping feeds
+const MAX_ARCHIVE  = 4000;            // hard cap on archive rows
+/* localStorage is ~5 MB per origin. With 263 feeds a naive write blows it, and
+   a blown write means NOTHING persists — which is what made the original build
+   re-fetch every feed on every visit. Budget the two stores explicitly and
+   shrink to fit rather than discovering the ceiling by exception. */
+const BUDGET_CACHE   = 2_000_000;
+const BUDGET_ARCHIVE = 1_500_000;
 const ARCHIVE_DAYS = 45;
 
-const storeState = { quotaFail:false, bytes:0 };
+const storeState = { quotaFail:false, bytes:0, cacheDepth:MAX_PER_FEED, cacheFeeds:0, archiveRows:0 };
 
 /** Reduce an item to the fields we actually render. Drops `content`,
  *  which is the entire article body and the reason the quota blew. */
@@ -1588,10 +1722,11 @@ const slim = i => ({
   p : i.pubDate || '',
   n : (i.author||'').slice(0,80),
   s : i.section || '',
+  f : i.feed || '',
 });
 const fat = r => ({
   title:r.t, link:r.u, description:r.d, thumbnail:r.i,
-  pubDate:r.p, author:r.n, section:r.s, content:'',
+  pubDate:r.p, author:r.n, section:r.s, feed:r.f, content:'',
 });
 
 function lsRead(key){
@@ -1616,6 +1751,7 @@ function lsWrite(key, value){
 const cache        = {};   // feedKey -> {items,ts,status}
 const sectionItems = {};   // sectionKey -> normalised items
 const sectionClusters = {};
+const sectionGated = {};
 let   archive      = {};   // id -> slim row
 let   follows      = [];
 let   prefs        = { theme:'dark', fx:true };
@@ -1652,17 +1788,37 @@ function cacheLoad(){
     cache[k] = { items:(v.items||[]).map(fat), ts:v.ts, status:'cached' };
   }
 }
+/** Shrink depth until the serialised payload fits the budget, then write.
+ *  If even the floor depth is too large, drop the least-recently-updated feeds.
+ *  Returns the depth actually used, for telemetry. */
 function cacheSave(){
-  const out = {};
-  for(const [k,v] of Object.entries(cache)){
-    if(!v.items?.length) continue;
-    out[k] = { ts:v.ts, items:v.items.slice(0, MAX_PER_FEED).map(slim) };
+  const entries = Object.entries(cache)
+    .filter(([,v]) => v.items?.length)
+    .sort((a,b) => b[1].ts - a[1].ts);          // freshest first, dropped last
+
+  const build = (depth, keep = entries.length) => {
+    const out = {};
+    for(const [k,v] of entries.slice(0, keep)) out[k] = { ts:v.ts, items:v.items.slice(0, depth).map(slim) };
+    return out;
+  };
+
+  let depth = MAX_PER_FEED, payload = build(depth), size = JSON.stringify(payload).length;
+  while(size > BUDGET_CACHE && depth > MIN_PER_FEED){
+    depth = Math.max(MIN_PER_FEED, Math.floor(depth / 2));
+    payload = build(depth);
+    size = JSON.stringify(payload).length;
   }
-  if(!lsWrite(LS.CACHE, out)){
-    // Retry once at half depth before giving up — better a small cache than none.
-    const lean = {};
-    for(const [k,v] of Object.entries(out)) lean[k] = { ts:v.ts, items:v.items.slice(0,10) };
-    if(!lsWrite(LS.CACHE, lean)){
+  let keep = entries.length;
+  while(size > BUDGET_CACHE && keep > 10){
+    keep = Math.floor(keep * 0.75);
+    payload = build(depth, keep);
+    size = JSON.stringify(payload).length;
+  }
+
+  storeState.cacheDepth = depth;
+  storeState.cacheFeeds = Math.min(keep, entries.length);
+  if(!lsWrite(LS.CACHE, payload)){
+    if(!lsWrite(LS.CACHE, build(MIN_PER_FEED, Math.min(40, entries.length)))){
       try{ localStorage.removeItem(LS.CACHE); }catch{}
     }
   }
@@ -1683,9 +1839,16 @@ function archiveSave(){
     rows.sort((a,b) => (new Date(b[1].p) - new Date(a[1].p)) || 0);
     rows = rows.slice(0, MAX_ARCHIVE);
   }
+  // budget-bound the archive the same way, newest kept
+  let size = JSON.stringify(Object.fromEntries(rows)).length;
+  while(size > BUDGET_ARCHIVE && rows.length > 200){
+    rows = rows.slice(0, Math.floor(rows.length * 0.8));
+    size = JSON.stringify(Object.fromEntries(rows)).length;
+  }
   archive = Object.fromEntries(rows);
+  storeState.archiveRows = rows.length;
   if(!lsWrite(LS.ARC, archive)){
-    const trimmed = Object.fromEntries(rows.slice(0, Math.floor(MAX_ARCHIVE/3)));
+    const trimmed = Object.fromEntries(rows.slice(0, Math.floor(rows.length/3)));
     archive = trimmed;
     lsWrite(LS.ARC, trimmed);
   }
@@ -1931,39 +2094,122 @@ async function fetchBundle(force=false){
   return _bundleInflight;
 }
 
-async function fetchFeed(key){
+/* ══════════════════════════════════════════════════════════════════════════
+   PROXY STRATEGY — hedged requests, not a sequential chain
+   ──────────────────────────────────────────────────────────────────────────
+   The chain version tried each proxy in turn with an 8s timeout, so one
+   unresponsive relay cost 8s and a fully dead feed cost 32s. Batches then
+   waited on their slowest member, so 16 feeds took as long as the three
+   slowest — measured at 8.7s before a single headline appeared.
+
+   Hedging: start proxy 1 immediately, proxy 2 at 700ms, proxy 3 at 1400ms,
+   and so on, all racing. The first valid response wins and the rest are
+   aborted. Fast path costs one request; slow path degrades gracefully
+   instead of serialising. Latency becomes the FASTEST proxy, not the sum.
+   ══════════════════════════════════════════════════════════════════════════ */
+const PROXY_TIMEOUT = 6000;   // hard cap per attempt
+const HEDGE_DELAY   = 700;    // stagger before starting the next relay
+const FEED_DEADLINE = 9000;   // give up on one feed entirely
+const POOL_SIZE     = 8;      // concurrent feeds in flight
+
+/* Circuit breaker. A feed that just failed should not cost full latency on
+   every subsequent load — that is how one dead endpoint taxes every visit. */
+const breaker = {};
+const BREAK_AFTER = 2;
+const BREAK_FOR   = 10 * 60_000;
+function breakerOpen(key){
+  const b = breaker[key];
+  return !!(b && b.fails >= BREAK_AFTER && Date.now() < b.until);
+}
+function breakerTrip(key){
+  const b = breaker[key] || (breaker[key] = { fails:0, until:0 });
+  b.fails++;
+  if(b.fails >= BREAK_AFTER) b.until = Date.now() + BREAK_FOR;
+}
+function breakerReset(key){ delete breaker[key]; }
+
+async function decodeProxy(proxy, res){
+  if(proxy.kind === 'rss2json'){
+    const d = await res.json();
+    return d?.status === 'ok' ? normalizeRss2Json(d.items) : [];
+  }
+  if(proxy.kind === 'wrapped'){
+    const d = await res.json();
+    return parseFeed(d?.contents || '');
+  }
+  return parseFeed(await res.text());
+}
+
+/** Race the relays with a stagger. Resolves with the first usable response,
+ *  then cancels every hedge still pending or in flight — a won race must not
+ *  keep burning quota on relays whose answer is no longer wanted. */
+function hedgedFetch(url, outerSignal){
+  const timers = [], controllers = [];
+  let settled = false;
+  const cleanup = () => {
+    settled = true;
+    for(const t of timers) clearTimeout(t);
+    for(const c of controllers){ try{ c.abort(); }catch{} }
+  };
+
+  const attempt = (proxy, delay) => new Promise((resolve, reject) => {
+    const timer = setTimeout(async () => {
+      if(settled || outerSignal?.aborted) return reject(new Error('cancelled'));
+      const ac = new AbortController();
+      controllers.push(ac);
+      const kill = setTimeout(() => ac.abort(), PROXY_TIMEOUT);
+      try{
+        const res = await fetch(proxy.url(url), { signal: ac.signal });
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        const items = await decodeProxy(proxy, res);
+        if(!items.length) throw new Error('empty');
+        resolve({ items, proxy: proxy.name });
+      }catch(e){ reject(e); }
+      finally{ clearTimeout(kill); }
+    }, delay);
+    timers.push(timer);
+  });
+
+  const race = Promise.any(PROXIES.map((p,i) => attempt(p, i * HEDGE_DELAY)));
+  const cap  = new Promise((_, rej) => { timers.push(setTimeout(() => rej(new Error('deadline')), FEED_DEADLINE)); });
+
+  return Promise.race([race, cap]).finally(cleanup);
+}
+
+async function fetchFeed(key, opts = {}){
   const url = FEEDS[key];
   if(!url) return [];
   const hit = cache[key];
-  if(hit && Date.now() - hit.ts < CACHE_TTL && hit.items.length) return hit.items;
+  if(hit && Date.now() - hit.ts < CACHE_TTL && hit.items.length){
+    // Served from cache still counts as a working feed in the status readout —
+    // otherwise a fast warm load reports "0 feeds" while showing a full page.
+    if(!feedHealth[key]) feedHealth[key] = { status:'cached', count:hit.items.length, ms:0, proxy:'cache' };
+    return hit.items;
+  }
+  if(!opts.force && breakerOpen(key)) return hit?.items || [];
 
   const started = performance.now();
-  for(const proxy of PROXIES){
-    try{
-      const res = await fetch(proxy.url(url), { signal: AbortSignal.timeout(8000) });
-      if(!res.ok) continue;
-      let items = [];
-      if(proxy.kind === 'rss2json'){
-        const d = await res.json();
-        if(d?.status === 'ok') items = normalizeRss2Json(d.items);
-      }else if(proxy.kind === 'wrapped'){
-        const d = await res.json();
-        items = parseFeed(d?.contents || '');
-      }else{
-        items = parseFeed(await res.text());
-      }
-      if(items.length){
-        cache[key] = { items, ts: Date.now(), status:'ok' };
-        feedHealth[key] = { status:'ok', count:items.length, ms:Math.round(performance.now()-started), proxy:proxy.name };
-        return items;
-      }
-    }catch{ /* try next proxy */ }
+  try{
+    const { items, proxy } = await hedgedFetch(url, opts.signal);
+    for(const it of items) it.feed = key;      // provenance, for the topic gate
+    cache[key] = { items, ts: Date.now(), status:'ok' };
+    feedHealth[key] = { status:'ok', count:items.length, ms:Math.round(performance.now()-started), proxy };
+    breakerReset(key);
+    return items;
+  }catch{
+    breakerTrip(key);
+    feedHealth[key] = {
+      status: hit?.items?.length ? 'stale' : 'dead',
+      count : hit?.items?.length || 0,
+      ms    : Math.round(performance.now()-started),
+      proxy : '—',
+    };
+    return hit?.items || [];
   }
-  feedHealth[key] = { status: hit?.items?.length ? 'stale' : 'dead', count: hit?.items?.length || 0, ms:Math.round(performance.now()-started), proxy:'—' };
-  return hit?.items || [];
 }
 
-/** Dedupe + sort a set of feeds. */
+/** Dedupe by canonical URL and sort newest-first. Undated items sink rather
+ *  than floating to the top on an invalid date comparison. */
 function mergeItems(lists, limit=500){
   const seen = new Set(), out = [];
   for(const it of lists.flat()){
@@ -1983,29 +2229,102 @@ function mergeItems(lists, limit=500){
   return out.slice(0, limit);
 }
 
+/** Bounded worker pool. Unlike lockstep batching, a slow feed occupies one
+ *  worker instead of stalling five others behind a barrier. */
+async function pool(keys, size, worker, signal){
+  let i = 0;
+  const run = async () => {
+    while(i < keys.length){
+      if(signal?.aborted) return;
+      const key = keys[i++];
+      try{ await worker(key); }catch{}
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(size, keys.length) }, run));
+}
+
+/** Order feeds so the ones most likely to answer fast go first. Known-healthy
+ *  before untested, untested before stale, tripped breakers last. */
+function prioritise(keys){
+  const rank = k => {
+    if(breakerOpen(k)) return 3;
+    const h = feedHealth[k];
+    if(!h) return 1;
+    if(h.status === 'ok')   return 0;
+    if(h.status === 'stale') return 2;
+    return 3;
+  };
+  return [...keys].sort((a,b) => rank(a) - rank(b));
+}
+
+/** Streams results: `onProgress` fires as feeds land, throttled, so the page
+ *  paints its first story in about a second instead of waiting for all 16. */
+async function fetchMulti(keys, limit = 500, onProgress = null, opts = {}){
+  const lists = [];
+  let lastPaint = 0, painted = false;
+
+  const flush = (force = false) => {
+    if(!onProgress || !lists.length) return;
+    const now = Date.now();
+    if(!force && painted && now - lastPaint < 400) return;
+    lastPaint = now; painted = true;
+    onProgress(mergeItems(lists, limit));
+  };
+
+  await pool(prioritise(keys), opts.concurrency || POOL_SIZE, async key => {
+    const items = await fetchFeed(key, opts);
+    if(items.length){ lists.push(items); flush(); }
+  }, opts.signal);
+
+  flush(true);
+  cacheSave();
+  return mergeItems(lists, limit);
+}
+
 function cachedFor(keys, limit=500){
   return mergeItems(keys.map(k => cache[k]?.items || []), limit);
 }
 
-async function fetchMulti(keys, limit=500){
-  const CONC = 6;
-  const results = [];
-  for(let i=0;i<keys.length;i+=CONC){
-    const batch = await Promise.allSettled(keys.slice(i,i+CONC).map(k => fetchFeed(k)));
-    results.push(...batch.map(r => r.status==='fulfilled' ? r.value : []));
+/** One section from the Worker. /api/front only carries the landing sections
+ *  (Cloudflare caps subrequests per request), so everything else is pulled
+ *  on demand from this endpoint rather than falling back to the relays. */
+async function fetchSectionFromWorker(sec, limit){
+  if(!API.enabled) return null;
+  const key = 'bundle:' + sec;
+  const hit = cache[key];
+  if(hit && Date.now() - hit.ts < API.ttl && hit.items.length) return hit.items;
+  try{
+    const res = await fetch(`${API.base}/api/section/${encodeURIComponent(sec)}`, { signal: AbortSignal.timeout(9000) });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const rows = data?.sections?.[sec];
+    if(!rows?.length) return null;
+    const items = mergeItems([rows.map(fat)], limit);
+    cache[key] = { items, ts: Date.now(), status:'bundle' };
+    return items;
+  }catch(e){
+    console.warn('[NetWatch] section endpoint unavailable for %s, using relays:', sec, e.message);
+    return null;
   }
-  cacheSave();
-  return mergeItems(results, limit);
 }
 
 /** Section entry point — Worker first, proxy chain second. */
-async function fetchSection(sec, limit=500){
+async function fetchSection(sec, limit=500, onProgress=null, opts={}){
   const keys = SECTIONS[sec]?.feeds || REGIONS[sec]?.feeds || [];
+
   const bundle = await fetchBundle();
   const rows = bundle?.sections?.[sec];
-  if(rows?.length) return mergeItems([rows.map(fat)], limit);
+  if(rows?.length){
+    const items = mergeItems([rows.map(fat)], limit);
+    onProgress?.(items);
+    return items;
+  }
+
+  const viaWorker = await fetchSectionFromWorker(sec, limit);
+  if(viaWorker){ onProgress?.(viaWorker); return viaWorker; }
+
   if(!keys.length) return [];
-  return fetchMulti(keys, limit);
+  return fetchMulti(keys, limit, onProgress, opts);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -2033,15 +2352,45 @@ function allItems(){
    ══════════════════════════════════════════════════════════════════════════ */
 const hay = it => ' ' + ((it.title||'') + ' ' + (it.description||'')).toLowerCase() + ' ';
 
-function topicFilter(items, sec){
+/* The keyword gate used to run over EVERY article in a section. That is wrong:
+   a section's feeds were chosen because they cover the topic, so gating
+   TechCrunch on the word "tech" just discards on-topic articles whose headline
+   happens not to contain a listed keyword — silently, and by the majority.
+   The gate now applies only to genuinely broad feeds that sit inside a topical
+   section (a general culture site in Screen, a company blog covering three
+   beats in AI). Everything from a dedicated feed passes untouched. */
+const GATED_FEEDS = {
+  tech    : new Set(['hackernews','tech_slashdot','tech_gizmodo','npr_tech']),
+  ai      : new Set(['ai_mit','ai_wired','ai_ars','ai_nvidia','ai_microsoft','ai_venturebeat']),
+  gaming  : new Set(['gam_gamerant','gam_dexerto']),
+  movies  : new Set(['mov_avclub','mov_vulture','mov_cbr','mov_gamesradar','mov_looper','screenrant']),
+  music   : new Set(['mus_variety','consequence']),
+  science : new Set(['sci_smithsonian','npr_sci','nyt_health']),
+  sports  : new Set([]),
+  business: new Set(['biz_insider','fastco','inc','hbr','yahoo_fin']),
+  politics: new Set(['realclear','pol_newsweek']),
+  gossip  : new Set(['gos_dailybeast','gos_metro','thecut']),
+};
+
+/** @returns {{items:Array, gated:number}} */
+function topicFilterDetailed(items, sec){
   const kws = TOPIC_KW[sec];
-  if(!kws) return items;
-  const hits = items.filter(it => { const h = hay(it); return kws.some(k => h.includes(k)); });
-  // Keep the gate honest: if it strips almost everything the feeds are
-  // probably off-topic-labelled rather than empty, so fall back — but only
-  // when the yield is implausibly low, not merely small.
-  return hits.length >= Math.min(6, Math.ceil(items.length * 0.04)) ? hits : items;
+  const gate = GATED_FEEDS[sec];
+  if(!kws || !gate || !gate.size) return { items, gated:0 };
+
+  let gated = 0;
+  const kept = items.filter(it => {
+    if(!it.feed || !gate.has(it.feed)) return true;   // dedicated feed — trust it
+    const h = hay(it);
+    if(kws.some(k => h.includes(k))) return true;
+    gated++; return false;
+  });
+  // Never let the gate gut a section; if it removed most of what a broad feed
+  // supplied, the keyword list is the thing that is wrong, not the articles.
+  if(kept.length < items.length * 0.35) return { items, gated:0 };
+  return { items: kept, gated };
 }
+function topicFilter(items, sec){ return topicFilterDetailed(items, sec).items; }
 
 function platformFilter(items, sec, key){
   if(!key || key === 'all') return items;
@@ -2311,11 +2660,13 @@ const skeletonGrid = (n=6, cls='grid grid-3') => `<div class="${cls}">` +
   Array.from({length:n}, () => `<div class="skel-card"><div class="skel-media"></div><div class="skel-line w85"></div><div class="skel-line w60"></div><div class="skel-line w40"></div></div>`).join('') + `</div>`;
 
 /* ══ TIERED RENDERING WITH PAGINATION ════════════════════════════════════ */
-const PAGE = 21;
+const PAGE       = 24;    // stories per tier before "Load more"
+const PAGE_ALL   = 36;    // articles per tier in unclustered view
+const SECTION_TARGET = 300;   // working-set size a section aims to hold
 let _pageSeq = 0;
 const _pageStore = {};
 
-function tieredHtml(clusters, sec, gridCls='grid grid-3'){
+function tieredHtml(clusters, sec, gridCls='grid grid-3', pageSize = PAGE, noun = 'story'){
   const buckets = { breaking:[], recent:[], week:[], archive:[] };
   for(const c of clusters) buckets[ageOf(c.lead)].push(c);
 
@@ -2331,16 +2682,16 @@ function tieredHtml(clusters, sec, gridCls='grid grid-3'){
     const list = buckets[key];
     if(!list.length) continue;
     const uid = 'p' + (++_pageSeq);
-    const head = list.slice(0, PAGE), tail = list.slice(PAGE);
+    const head = list.slice(0, pageSize), tail = list.slice(pageSize);
     html += `<section class="tier">
       <div class="tier-head ${cls}">
         <span class="tier-name">${esc(label)}</span>
         <div class="rule"></div>
-        <span class="sec-meta">${list.length} ${list.length===1?'story':'stories'} · ${esc(note)}</span>
+        <span class="sec-meta">${list.length} ${list.length===1?esc(noun):esc(noun)+'s'} · ${esc(note)}</span>
       </div>
       <div class="${gridCls}" id="g-${uid}">${head.map(c => cardHtml(c.lead, sec, c)).join('')}</div>`;
     if(tail.length){
-      _pageStore[uid] = { list:tail, sec, gridCls };
+      _pageStore[uid] = { list:tail, sec, gridCls, pageSize };
       html += `<button class="more" onclick="NW.showMore('${uid}',this)">Load ${tail.length} more</button>`;
     }
     html += `</section>`;
@@ -2348,10 +2699,20 @@ function tieredHtml(clusters, sec, gridCls='grid grid-3'){
   return html || `<div class="state">No stories in this view yet. Hit <b>Sync</b> to pull the feeds.</div>`;
 }
 
+/** Wrap raw articles as single-member clusters. Lets the unclustered view
+ *  reuse the tiering, pagination and card rendering unchanged. */
+function asSingles(items){
+  return items.map(it => ({
+    lead:it, members:[it], sources:1, count:1, reports:1,
+    best:gradeOf(it).n, primary:isPrimary(it), ts:tsOf(it) || 0,
+  }));
+}
+
 function showMore(uid, btn){
   const d = _pageStore[uid];
   if(!d) return;
-  const head = d.list.slice(0, PAGE), tail = d.list.slice(PAGE);
+  const size = d.pageSize || PAGE;
+  const head = d.list.slice(0, size), tail = d.list.slice(size);
   document.getElementById('g-'+uid)?.insertAdjacentHTML('beforeend', head.map(c => cardHtml(c.lead, d.sec, c)).join(''));
   if(tail.length){ d.list = tail; btn.textContent = `Load ${tail.length} more`; }
   else { delete _pageStore[uid]; btn.remove(); }
@@ -2373,6 +2734,7 @@ let currentView    = 'front';
 let currentSection = 'us';
 let currentRegion  = 'europe';
 let currentTab     = 'all';
+let viewMode       = 'stories';   // 'stories' = clustered · 'all' = every article
 let pending        = null;
 
 function buildNav(){
@@ -2426,22 +2788,35 @@ async function go(key){
   tag.textContent = s.label;
 
   const body = document.getElementById('secBody');
-  const cached = cachedFor(s.feeds || [], 500);
+  const cached = cachedFor(s.feeds || [], SECTION_TARGET * 2);
   if(cached.length){
-    sectionItems[key] = topicFilter(cached, key);
+    const r0 = topicFilterDetailed(cached, key);
+    sectionItems[key] = r0.items; sectionGated[key] = r0.gated;
     paintSection(key);
   }else{
     document.getElementById('secTabs').innerHTML = '';
     body.innerHTML = skeletonGrid(9);
   }
 
-  const fresh = await fetchSection(key, 500);
+  const fresh = await fetchSection(key, SECTION_TARGET * 2, items => {
+    if(currentView !== 'section' || currentSection !== key) return;
+    const r = topicFilterDetailed(items, key);
+    sectionItems[key] = r.items; sectionGated[key] = r.gated;
+    paintSection(key);
+  });
   if(fresh.length){
-    sectionItems[key] = topicFilter(fresh, key);
+    const r = topicFilterDetailed(fresh, key);
+    sectionItems[key] = r.items; sectionGated[key] = r.gated;
     archiveAdd(sectionItems[key], key);
     updateNavCounts();
   }
   if(currentView === 'section' && currentSection === key) paintSection(key);
+}
+
+function setMode(mode){
+  viewMode = mode;
+  if(currentView === 'section') paintSection(currentSection);
+  else if(currentView === 'follow') renderFollow();
 }
 
 function paintSection(key){
@@ -2449,25 +2824,37 @@ function paintSection(key){
   const filtered = platformFilter(items, key, currentTab);
   sectionClusters[key] = clusterItems(filtered);
 
-  // tabs
+  const clusters = sectionClusters[key];
+
+  // mode switch — clustering is the default, but it must never be the reason
+  // a reader cannot reach the other 280 articles the section is holding
+  const modeSwitch = `<div class="modes">
+      <button class="mode" aria-pressed="${viewMode==='stories'}" onclick="NW.setMode('stories')">Stories<span class="n">${clusters.length}</span></button>
+      <button class="mode" aria-pressed="${viewMode==='all'}" onclick="NW.setMode('all')">All articles<span class="n">${filtered.length}</span></button>
+    </div>`;
+
   const groups = PLATFORM[key];
   const tabsEl = document.getElementById('secTabs');
-  if(groups){
-    const keys = ['all', ...Object.keys(groups)];
-    tabsEl.innerHTML = keys.map(k => {
+  const tabHtml = groups ? ['all', ...Object.keys(groups)].map(k => {
       const n = platformCount(items, key, k);
       const label = k === 'all' ? 'All' : k.replace(/^\w/, c => c.toUpperCase());
       return `<button class="tab" aria-pressed="${k===currentTab}" onclick="NW.setTab('${esc(key)}','${esc(k)}')">${esc(label)}<span class="n">${n}</span></button>`;
-    }).join('');
-  }else tabsEl.innerHTML = '';
+    }).join('') : '';
+  tabsEl.innerHTML = modeSwitch + tabHtml;
 
+  const feedCount = (SECTIONS[key].feeds||[]).length;
+  const live = (SECTIONS[key].feeds||[]).filter(f => cache[f]?.items?.length).length;
+  const gated = sectionGated[key] || 0;
   document.getElementById('secMeta').textContent =
-    `${filtered.length} articles · ${sectionClusters[key].length} stories · ${(SECTIONS[key].feeds||[]).length} feeds`;
+    `${filtered.length} articles · ${clusters.length} stories · ${live}/${feedCount} feeds returning`
+    + (gated ? ` · ${gated} off-topic filtered` : '');
 
   const body = document.getElementById('secBody');
-  body.innerHTML = filtered.length
-    ? tieredHtml(sectionClusters[key], key)
-    : `<div class="state">No articles match <b>${esc(currentTab)}</b> in this section yet. Try <b>All</b>, or hit Sync.</div>`;
+  body.innerHTML = !filtered.length
+    ? `<div class="state">No articles match <b>${esc(currentTab)}</b> in this section yet. Try <b>All</b>, or hit Sync.</div>`
+    : viewMode === 'all'
+      ? tieredHtml(asSingles(filtered), key, 'grid grid-3', PAGE_ALL, 'article')
+      : tieredHtml(clusters, key);
 }
 
 function setTab(sec, tab){
@@ -2479,11 +2866,18 @@ function setTab(sec, tab){
 async function loadFront(silent=false){
   const usKeys = SECTIONS.us.feeds;
   if(!silent){
-    const cached = cachedFor(usKeys, 400);
+    const cached = cachedFor(usKeys, SECTION_TARGET * 2);
     if(cached.length){ sectionItems.us = cached; renderFront(); }
     else document.getElementById('frontTiers').innerHTML = skeletonGrid(6, 'grid grid-2');
   }
-  const fresh = await fetchSection('us', 400);
+  const fresh = await fetchSection('us', SECTION_TARGET * 2, silent ? null : items => {
+    // Paint every time a feed lands rather than once at the end. The first
+    // headline now appears in roughly a second instead of after all 16 feeds.
+    sectionItems.us = items;
+    renderFront();
+    updateNavCounts();
+    updateFeedStatus();
+  });
   if(!fresh.length) return;
 
   if(silent){
@@ -2541,7 +2935,10 @@ async function loadRails(){
   const cachedP = cachedFor(SECTIONS.wire.feeds, 40);
   if(cachedP.length) wireEl.innerHTML = leads(cachedP, 9).map(wireHtml).join('');
 
-  const [world, wire] = await Promise.all([ fetchSection('world', 60), fetchSection('wire', 60) ]);
+  const [world, wire] = await Promise.all([
+    fetchSection('world', 60, live => { worldEl.innerHTML = leads(live, 9).map(i => railHtml(i,'world')).join(''); }, { concurrency:4 }),
+    fetchSection('wire',  60, live => { wireEl.innerHTML  = leads(live, 9).map(wireHtml).join(''); },                { concurrency:4 }),
+  ]);
   if(world.length){
     sectionItems.world = world; archiveAdd(world,'world');
     worldEl.innerHTML = leads(world, 9).map(i => railHtml(i,'world')).join('');
@@ -2573,11 +2970,13 @@ async function setRegion(key){
 async function renderRegional(){
   const body = document.getElementById('regionBody');
   const keys = REGIONS[currentRegion].feeds;
-  const cached = cachedFor(keys, 300);
+  const cached = cachedFor(keys, SECTION_TARGET * 2);
   if(cached.length) body.innerHTML = tieredHtml(clusterItems(cached), currentRegion);
   else body.innerHTML = skeletonGrid(6);
 
-  const fresh = await fetchSection(currentRegion, 300);
+  const fresh = await fetchSection(currentRegion, SECTION_TARGET * 2, live => {
+    if(currentView === 'regional' && live.length) body.innerHTML = tieredHtml(clusterItems(live), currentRegion);
+  });
   const items = fresh.length ? fresh : cached;
   if(fresh.length){ sectionItems[currentRegion] = fresh; archiveAdd(fresh, currentRegion); }
   document.getElementById('regMeta').textContent =
@@ -2623,7 +3022,7 @@ function renderFollow(){
   document.getElementById('followMeta').textContent =
     `${follows.length} tracked · ${matched.length} matching articles`;
   body.innerHTML = matched.length
-    ? tieredHtml(clusterItems(matched), 'us')
+    ? (viewMode === 'all' ? tieredHtml(asSingles(matched), 'us', 'grid grid-3', PAGE_ALL, 'article') : tieredHtml(clusterItems(matched), 'us'))
     : `<div class="state">No matches in what NetWatch currently holds. Visit a few sections to widen the pool, then check back.</div>`;
 }
 
@@ -2955,7 +3354,8 @@ async function runHealthCheck(){
   for(let i=0;i<keys.length;i+=CONC){
     await Promise.allSettled(keys.slice(i,i+CONC).map(async k => {
       delete cache[k];                      // force a live probe
-      await fetchFeed(k);
+      breakerReset(k);                      // and ignore any tripped breaker
+      await fetchFeed(k, { force:true });
       done++;
     }));
     paint();
@@ -2973,12 +3373,13 @@ function renderDiag(){
   const dead  = rows.filter(r => r.h?.status === 'dead');
   const stale = rows.filter(r => r.h?.status === 'stale');
   const ok    = rows.filter(r => r.h?.status === 'ok');
+  const cached = rows.filter(r => r.h?.status === 'cached');
   const untested = rows.filter(r => !r.h);
 
   const cell = r => {
     const st = r.h?.status || 'untested';
     const cls = st === 'dead' ? ' dead' : st === 'stale' ? ' stale' : '';
-    const dot = st === 'ok' ? 'ok' : st === 'stale' ? 'warn' : st === 'dead' ? '' : 'warn';
+    const dot = (st === 'ok' || st === 'cached') ? 'ok' : st === 'dead' ? '' : 'warn';
     return `<div class="diag${cls}">
       <span class="dot ${dot}"></span>
       <span class="nm">${esc(r.k)}</span>
@@ -2995,16 +3396,19 @@ function renderDiag(){
 
   const storeLine = `<div class="state" style="text-align:left;padding:var(--s4)">
     <b>Storage:</b> ${(storeState.bytes/1024).toFixed(0)} KB written ·
+    keeping ${storeState.cacheDepth} items from each of ${storeState.cacheFeeds} feeds ·
     ${Object.keys(archive).length} archived ·
-    ${storeState.quotaFail ? '<span style="color:var(--red)">quota exceeded — cache was trimmed</span>' : 'within quota'} ·
+    ${storeState.quotaFail ? '<span style="color:var(--red)">quota exceeded — trimmed</span>' : 'within budget'}<br>
     <b>Pipeline:</b> ${API.enabled ? 'Worker bundle' : 'browser proxy chain'} ·
-    <b>Feeds:</b> ${keys.length}
+    <b>Feeds configured:</b> ${keys.length} ·
+    <b>Working set:</b> ${allItems().length} headlines held
   </div>`;
 
   return storeLine +
     section('Dead — returned zero items', dead, 't-breaking') +
     section('Stale — served from cache only', stale, 't-recent') +
     section('Healthy', ok, 't-week') +
+    section('Served from cache this session', cached, 't-week') +
     section('Not yet probed', untested, 't-archive');
 }
 
@@ -3264,7 +3668,7 @@ function stampSync(label){
 }
 function updateFeedStatus(){
   const total = Object.keys(FEEDS).length;
-  const live  = Object.values(feedHealth).filter(h => h.status === 'ok').length;
+  const live  = Object.values(feedHealth).filter(h => h.status === 'ok' || h.status === 'cached').length;
   const dead  = Object.values(feedHealth).filter(h => h.status === 'dead').length;
   const dot   = document.getElementById('stFeedDot');
   document.getElementById('stFeeds').textContent = `FEEDS ${live}/${total}`;
@@ -3295,10 +3699,11 @@ async function syncLoop(){
 }
 async function refreshSectionSilently(sec){
   if(!SECTIONS[sec]?.feeds) return;
-  const fresh = await fetchSection(sec, 500);
+  const fresh = await fetchSection(sec, SECTION_TARGET * 2);
   if(!fresh.length) return;
   const prevTop = sectionItems[sec]?.[0]?.link;
-  sectionItems[sec] = topicFilter(fresh, sec);
+  const rr = topicFilterDetailed(fresh, sec);
+  sectionItems[sec] = rr.items; sectionGated[sec] = rr.gated;
   archiveAdd(sectionItems[sec], sec);
   if(fresh[0]?.link !== prevTop && currentView === 'section' && currentSection === sec){
     pending = null;
@@ -3312,6 +3717,7 @@ async function refresh(){
   const btn = document.getElementById('btnRefresh');
   btn.classList.add('spinning');
   for(const k of Object.keys(cache)) delete cache[k];
+  for(const k of Object.keys(breaker)) delete breaker[k];
   try{ localStorage.removeItem(LS.CACHE); }catch{}
   _bundle = null; _bundleAt = 0;
   await fetchBundle(true);
@@ -3379,15 +3785,19 @@ function boot(){
   wireKeys();
 
   // first paint from cache, then live
-  const cachedUS = cachedFor(SECTIONS.us.feeds, 400);
+  const cachedUS = cachedFor(SECTIONS.us.feeds, SECTION_TARGET * 2);
   if(cachedUS.length){ sectionItems.us = cachedUS; renderFront(); }
   else document.getElementById('frontTiers').innerHTML = skeletonGrid(6, 'grid grid-2');
 
-  loadStrip();
-  Promise.all([ loadFront(), loadRails() ]).then(() => {
+  // The front page owns the connection pool first. Rails and the data strip
+  // follow, so 41 feeds are not competing for the same rate-limited relays
+  // while the reader is staring at an empty page.
+  loadFront().then(() => {
     stampSync('SYNCED');
     updateFeedStatus();
     updateNavCounts();
+    loadRails().then(updateFeedStatus);
+    loadStrip();
   });
 
   setTimeout(() => { if(!chatOpen) document.getElementById('fabBadge').style.display = 'flex'; }, 6000);
@@ -3402,13 +3812,13 @@ function debounce(fn, ms){
 
 /* ══ PUBLIC SURFACE ══════════════════════════════════════════════════════ */
 const api = {
-  go, setTab, setRegion, setArc, showMore, toggleCluster,
+  go, setTab, setMode, setRegion, setArc, showMore, toggleCluster,
   refresh, toggleTheme, toggleFx, toggleChat, chip,
   addFollow, removeFollow, clearArchive,
   openSearch, closeSearch, applyPending,
   runHealthCheck, exportOpml, exportJson,
   // escape hatches for the console
-  _state:{ cache, sectionItems, archive, feedHealth, allItems, clusterItems, gradeOf },
+  _state:{ cache, sectionItems, archive, feedHealth, allItems, clusterItems, gradeOf, breaker },
 };
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
