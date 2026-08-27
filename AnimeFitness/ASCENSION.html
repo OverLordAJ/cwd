@@ -494,6 +494,194 @@ details.protocol summary{color:var(--gold)}
   .clash-row{gap:10px}
   .fighter .orb{width:50px;height:50px}
 }
+
+/* ============================================================================
+   BLUEPRINT v2 BUILD — styles for the systems added in this pass.
+   Grouped by the blueprint item that asked for them.
+   ========================================================================= */
+
+/* ---- P4 · TODAY view — the app now opens on today's work ---- */
+#todayWrap{max-width:1180px;margin:0 auto 26px}
+#todayCard{border:2px solid var(--gold);border-radius:14px;background:linear-gradient(180deg,rgba(255,213,74,.07),rgba(14,14,24,.9));
+  padding:18px 20px;box-shadow:0 0 40px rgba(255,213,74,.12)}
+#todayCard .thead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+#todayCard .tk{font-family:var(--font-display);font-size:1.5rem;letter-spacing:2px;color:var(--gold)}
+#todayCard .tarc{font-size:.9rem;font-weight:700;color:var(--ink);letter-spacing:1px}
+#todayCard .tday{margin-left:auto;font-family:var(--font-display);font-size:1.2rem;letter-spacing:2px;color:var(--t2)}
+#todayCard .tmeta{display:flex;gap:18px;flex-wrap:wrap;font-size:.85rem;color:var(--dim);font-weight:600;margin:8px 0 12px}
+#todayCard .tmeta b{color:var(--ink)}
+#todayCard .tacts{display:flex;gap:10px;flex-wrap:wrap}
+#todayCard .tacts .btn{width:auto;padding:9px 20px;font-size:.9rem;margin:0}
+#todayCard .tdl{margin-top:10px;padding:8px 12px;border:1px solid var(--t3);border-radius:8px;
+  background:rgba(255,56,96,.08);color:#ffb3c1;font-size:.84rem;font-weight:600}
+#todayCard .trest{margin-top:10px;font-size:.88rem;color:var(--t1);font-weight:700}
+
+/* ---- P0.1 · day selector — the split is now the interface, not a footnote ---- */
+.daybar{position:relative;z-index:2;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 4px}
+.daybar .dlbl{font-size:.74rem;letter-spacing:2px;color:var(--dim);font-weight:700;margin-right:2px}
+.daybtn{font-family:var(--font-display);letter-spacing:2px;font-size:.98rem;padding:7px 18px;cursor:pointer;
+  background:transparent;color:var(--dim);border:2px solid #33334f;border-radius:8px;transition:all .2s}
+.daybtn:hover{color:var(--ink);border-color:#55557a}
+.daybtn.on{color:#000;background:var(--gold);border-color:var(--gold);box-shadow:0 0 18px rgba(255,213,74,.35)}
+.daybtn .dc{font-family:var(--font-body);font-size:.72rem;opacity:.8;margin-left:6px}
+.daynote{position:relative;z-index:2;font-size:.82rem;color:var(--dim);margin:6px 0 2px;font-weight:600}
+.daynote b{color:var(--ink)}
+.skill.offday{display:none}
+.skillgrid.showall .skill.offday{display:block;opacity:.4}
+
+/* ---- P0.2 · session load meter ---- */
+.loadmeter{position:relative;z-index:2;display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+  margin:10px 0 4px;font-size:.82rem;font-weight:700;color:var(--dim);letter-spacing:.5px}
+.loadmeter span b{color:var(--ink)}
+.loadmeter .warn{color:var(--t3)}
+.loadmeter .good{color:var(--t1)}
+
+/* ---- P0.4 · grade criteria, stated on the card ---- */
+.gradekey{position:relative;z-index:2;margin:10px 0}
+.gradekey summary{cursor:pointer;font-size:.78rem;letter-spacing:1px;color:var(--dim);font-weight:700}
+.gradekey[open] summary{color:var(--ink)}
+.gradekey table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.82rem}
+.gradekey td{padding:5px 6px;border-bottom:1px dashed #22223a;color:var(--dim);vertical-align:top}
+.gradekey td:first-child{white-space:nowrap;font-weight:800;width:1%}
+.gradekey .g-clean{color:var(--t1)}.gradekey .g-grindy{color:var(--gold)}.gradekey .g-failed{color:var(--t3)}
+.skill .qualSel[data-q=clean]{color:var(--t1);border-color:var(--t1)}
+.skill .qualSel[data-q=grindy]{color:var(--gold);border-color:var(--gold)}
+.skill .qualSel[data-q=failed]{color:var(--t3);border-color:var(--t3)}
+
+/* ---- P1.1 / P4 · rest + work timer ---- */
+.skill .restline{margin-top:6px;font-size:.72rem;font-weight:700;color:#6f6f8c;letter-spacing:.4px;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.skill .restline b{color:var(--dim)}
+.timerbtn{background:transparent;border:1px solid #33334f;color:var(--dim);border-radius:6px;
+  font-family:var(--font-body);font-weight:700;font-size:.7rem;letter-spacing:.5px;padding:3px 9px;cursor:pointer}
+.timerbtn:hover{color:var(--ink);border-color:var(--gold)}
+#timerDock{position:fixed;right:16px;bottom:16px;z-index:190;display:none;min-width:190px;
+  background:var(--panel);border:2px solid var(--gold);border-radius:12px;padding:12px 14px;
+  box-shadow:0 0 40px rgba(255,213,74,.3);text-align:center}
+#timerDock.show{display:block}
+#timerDock .tlbl{font-size:.68rem;letter-spacing:2px;color:var(--dim);font-weight:700}
+#timerDock .tval{font-family:var(--font-display);font-size:2.4rem;letter-spacing:3px;color:var(--gold);line-height:1.1}
+#timerDock.done .tval{color:var(--t1)}
+#timerDock .trow{display:flex;gap:6px;margin-top:6px}
+#timerDock .trow button{flex:1;background:transparent;border:1px solid #33334f;color:var(--dim);
+  border-radius:6px;font-family:var(--font-body);font-weight:700;font-size:.72rem;padding:4px 0;cursor:pointer}
+#timerDock .trow button:hover{color:var(--ink);border-color:var(--gold)}
+@media(max-width:640px){#timerDock{right:10px;bottom:10px;min-width:150px}#timerDock .tval{font-size:1.9rem}}
+
+/* ---- P3.1 · deload banner variants + readiness ---- */
+.deloadchip{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:20px;font-size:.68rem;
+  letter-spacing:1px;font-weight:800;border:1px solid var(--t3);color:var(--t3);background:rgba(255,56,96,.1)}
+.deloadchip.reduced{border-color:var(--gold);color:var(--gold);background:rgba(255,213,74,.1)}
+.skill.deloaded .reps{color:var(--t3)}
+.skill .repsorig{font-size:.7rem;color:#5a5a76;text-decoration:line-through;margin-left:6px}
+.skill.hiddenplyo{display:none}
+
+/* ---- P1.3 / P3.5 · trials, placement test ---- */
+.trialbox{position:relative;z-index:2;margin:18px 0;border:2px solid var(--t2);border-radius:14px;
+  background:rgba(8,32,46,.6);padding:18px 20px}
+.trialbox h4{font-family:var(--font-display);font-size:1.25rem;letter-spacing:2px;color:var(--t2);margin-bottom:4px}
+.trialbox .tsubn{font-size:.85rem;color:var(--dim);margin-bottom:12px}
+.trialgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.trialgrid label{display:block;font-size:.72rem;letter-spacing:1px;color:var(--dim);font-weight:700;margin-bottom:4px}
+.trialgrid input{width:100%;background:#0a0a14;border:1px solid #33334f;color:var(--ink);
+  border-radius:8px;padding:9px 10px;font-family:var(--font-body);font-weight:700;font-size:1rem}
+.trialdelta{margin-top:12px;font-size:.86rem;color:var(--dim);line-height:1.7}
+.trialdelta .up{color:var(--t1);font-weight:800}
+.trialdelta .down{color:var(--t3);font-weight:800}
+.trialdelta .row{border-bottom:1px dashed #22223a;padding:4px 0}
+
+/* ---- P3.6 · charts ---- */
+.chartwrap{margin:16px 0}
+.chartwrap h4{font-family:var(--font-display);font-size:1.05rem;letter-spacing:2px;color:var(--gold);margin-bottom:2px}
+.chartwrap .csub{font-size:.78rem;color:var(--dim);margin-bottom:8px}
+.chartwrap svg{width:100%;height:auto;display:block;background:rgba(10,10,20,.6);
+  border:1px solid #22223a;border-radius:10px}
+.chartwrap .cempty{padding:22px;text-align:center;color:#4a4a63;font-style:italic;font-size:.86rem;
+  border:1px dashed #2a2a44;border-radius:10px}
+.chartpick{width:100%;background:#0a0a14;border:1px solid #33334f;color:var(--ink);border-radius:8px;
+  padding:8px 10px;font-family:var(--font-body);font-weight:700;margin-bottom:8px}
+
+/* ---- P2.6 · THE CUT ---- */
+#cutTool .cstep{border-top:1px dashed #2a2a44;padding-top:12px;margin-top:12px}
+#cutTool .cstep h4{font-size:.95rem;letter-spacing:1px;color:var(--gold);font-family:var(--font-body);
+  font-weight:800;margin-bottom:4px}
+#cutTool .cstep p{font-size:.85rem;color:var(--dim);line-height:1.6;margin-bottom:8px}
+#cutTool .cverdict{margin-top:8px;padding:9px 12px;border-radius:8px;font-size:.85rem;font-weight:700;line-height:1.6}
+#cutTool .cverdict.ok{border:1px solid var(--t1);background:rgba(57,255,106,.08);color:#9dffbc}
+#cutTool .cverdict.warn{border:1px solid var(--gold);background:rgba(255,213,74,.08);color:#ffe9a8}
+.headline{border:1px solid #33334f;border-radius:10px;padding:12px 14px;background:rgba(10,10,20,.6);
+  font-size:.9rem;color:var(--ink);line-height:1.65;font-weight:600}
+
+/* ---- P3.7 / P3.8 · substitutions + screening ---- */
+.subrow{margin-top:6px}
+.subsel{width:100%;background:#0a0a14;border:1px solid #2a2a44;color:var(--dim);border-radius:6px;
+  padding:4px 6px;font-family:var(--font-body);font-size:.72rem;font-weight:700}
+.subsel:focus{color:var(--ink);border-color:var(--gold);outline:none}
+.skill.substituted{border-style:dashed}
+.skill .subtag{display:inline-block;margin-left:6px;font-size:.62rem;letter-spacing:1px;
+  color:var(--t2);border:1px solid var(--t2);border-radius:20px;padding:1px 7px;font-weight:800}
+.flagchip{display:inline-block;margin:3px 4px 0 0;padding:2px 9px;border-radius:20px;font-size:.68rem;
+  letter-spacing:1px;font-weight:800;border:1px solid var(--t3);color:var(--t3);background:rgba(255,56,96,.08)}
+
+/* ---- P3.2 / P3.3 · loading variables + mobility ---- */
+.varsgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:10px}
+.varcard{border:1px solid #2a2a44;border-radius:10px;padding:11px 13px;background:rgba(10,10,20,.6)}
+.varcard .vh{font-weight:800;font-size:.86rem;color:var(--gold);letter-spacing:1px}
+.varcard .vb{font-size:.8rem;color:var(--dim);line-height:1.55;margin-top:3px}
+.varcard .vu{font-size:.68rem;letter-spacing:1px;font-weight:800;margin-top:6px}
+.varcard .vu.yes{color:var(--t1)}.varcard .vu.no{color:var(--t3)}
+.mobrow{padding:6px 0;border-bottom:1px dashed #22223a;font-size:.86rem;color:var(--dim)}
+.mobrow:last-child{border-bottom:none}
+.mobrow b{color:var(--ink)}
+.mobrow .why{color:#6f6f8c;font-size:.78rem;display:block;margin-top:2px}
+
+/* ---- P2 · steps, protein, weight average, recovery ---- */
+.mini{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.mini input{flex:1;min-width:90px;background:#0a0a14;border:1px solid #33334f;color:var(--ink);
+  border-radius:8px;padding:8px 10px;font-family:var(--font-body);font-weight:700}
+.mini .btn{width:auto;margin:0;padding:8px 16px;font-size:.85rem}
+.ringrow{display:flex;gap:14px;align-items:center;margin-top:10px}
+.ring{flex:0 0 auto}
+.rlabel{font-size:.82rem;color:var(--dim);line-height:1.6}
+.rlabel b{color:var(--ink);font-size:1.05rem}
+
+/* ---- P0.3 · week meter replaces the day streak ---- */
+#hud .streak{color:var(--gold)}
+.weekmeter{display:flex;gap:4px;align-items:center}
+.weekpip{width:11px;height:11px;border-radius:3px;border:1px solid #44446a;background:transparent}
+.weekpip.hit{background:var(--t1);border-color:var(--t1);box-shadow:0 0 8px rgba(57,255,106,.5)}
+.weekpip.deload{background:var(--gold);border-color:var(--gold)}
+
+/* ---- P3.9 · progress photos ---- */
+.photorow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.photorow figure{width:92px}
+.photorow img{width:92px;height:92px;object-fit:cover;border-radius:8px;border:1px solid #33334f;display:block}
+.photorow figcaption{font-size:.66rem;color:var(--dim);text-align:center;margin-top:3px}
+.photonote{font-size:.78rem;color:var(--dim);line-height:1.55;margin-top:8px}
+
+/* ---- P4 · onboarding ---- */
+.obstep{margin:10px 0}
+.obstep .btn{width:auto;padding:9px 20px;font-size:.9rem;margin:4px 6px 0 0}
+
+/* ============================================================================
+   P4 · REDUCED MOTION
+   The page is heavy on animation: the void canvas, scroll reveals, the domain
+   clash, screen shake. Anyone with vestibular sensitivity or motion-triggered
+   migraine gets a static page instead. The canvas also stops its rAF loop in JS.
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;scroll-behavior:auto !important}
+  body.shake{animation:none !important}
+  .reveal{opacity:1 !important;transform:none !important}
+  .fighter{opacity:1 !important;transform:none !important}
+  #voidCanvas{display:none}
+  .rift{animation:none;opacity:.2}
+  .rock{animation:none}
+}
+
 </style>
 </head>
 <body>
@@ -504,7 +692,9 @@ details.protocol summary{color:var(--gold)}
     <div class="xpbar"><div class="xpfill" id="hudXpFill"></div></div>
     <div class="xptext"><span id="hudXpText">0 / 25 XP</span></div>
   </div>
-  <div class="streak">🔥 <span id="hudStreak">0</span>-day streak</div>
+  <!-- P0.3 — was a consecutive-day streak, which every tier's rest-day
+       prescription made unearnable. Now: prescribed sessions hit this week. -->
+  <div class="streak" id="hudWeek" title="Prescribed sessions hit this week"></div>
   <div class="title-mini" id="hudTitle">ORIGIN ARC</div>
 </div>
 
@@ -543,7 +733,27 @@ details.protocol summary{color:var(--gold)}
 <section id="domains">
   <h2 class="section-title reveal" style="color:var(--gold)">DOMAIN DIMENSION PANELS</h2>
   <p class="section-sub reveal">Five realms. Five arcs. Clear every skill card in a session to claim its XP — progress when you finish with good form and only moderate fatigue, not by the calendar.</p>
+  <!-- P4 — the app used to open at the top and make you scroll five domains to
+       find your session. An advanced app opens on today's work. -->
+  <div id="todayWrap" class="reveal on"><div id="todayCard"></div></div>
   <div id="deloadBanner" class="reveal on"></div>
+
+  <!-- P1.3 — a measured outcome from day one. Saitama's Trial is a good
+       benchmark but it is gated behind 8+ weeks of the Legendary Arc, which left
+       a Tier I or II user with no number at all for three to six months. It also
+       only ever tested work capacity; there was no strength test anywhere. -->
+  <div class="trialbox reveal" id="originTrial">
+    <h4>📐 ORIGIN TRIAL — YOUR BASELINE</h4>
+    <div class="tsubn">Open from day one. Retest every 6 weeks. Four numbers, ten minutes, full rest between each — this is a measurement, not a workout.</div>
+    <div class="trialgrid">
+      <div><label>Max push-ups, strict</label><input type="number" id="trPush" min="0" max="999" placeholder="0"></div>
+      <div><label>Max rows, current rung</label><input type="number" id="trRow" min="0" max="999" placeholder="0"></div>
+      <div><label>Max squats in 2 min</label><input type="number" id="trSquat" min="0" max="999" placeholder="0"></div>
+      <div><label>Plank hold to form break (s)</label><input type="number" id="trPlank" min="0" max="9999" placeholder="0"></div>
+    </div>
+    <button class="btn" id="trSave" style="width:auto;padding:10px 24px">LOG THE TRIAL (+40 XP)</button>
+    <div class="trialdelta" id="trialDelta"></div>
+  </div>
 
   <!-- TIER I -->
   <div class="domain d1 reveal" id="tier1">
@@ -564,8 +774,8 @@ details.protocol summary{color:var(--gold)}
       <img src="data:image/jpeg;base64,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" alt="Deku sprinting into the sunrise" loading="lazy">
     </div>
     <span class="freq">3× / WEEK — FULL BODY</span>
-    <details class="prep protocol"><summary>📜 WEEKLY PROTOCOL — FULL BODY 3×/WK</summary><ul class="preplist"><li><b>Schedule:</b> e.g. Mon / Wed / Fri — always ≥1 rest day between sessions.</li><li><b>Each session:</b> clear all 7 cards, in any order (big moves first works best).</li><li><b>Zero equipment:</b> floor, wall and a sturdy chair. Nothing else is required at this tier.</li><li><b>Progression rule:</b> add 1–2 reps per session within a form; evolve (▲) after 3 quality clears.</li><li><b>Deload:</b> every 4th week — half the sets, easy pace, same movements.</li></ul></details>
-    <details class="prep"><summary>🔥 WARM-UP — 5 MIN, EVERY SESSION</summary><ul class="preplist"><li><label><input type="checkbox"> 2 min easy cardio — jumping jacks or march in place</label></li><li><label><input type="checkbox"> Arm circles ×10 each way · leg swings ×10/leg</label></li><li><label><input type="checkbox"> Hip circles ×8 · cat-cow ×8</label></li><li><label><input type="checkbox"> Hip hinge primer — 10 slow glute bridges</label></li><li><label><input type="checkbox"> 1 light half-set of your first two exercises</label></li></ul></details>
+    <details class="prep protocol"><summary>📜 WEEKLY PROTOCOL — FULL BODY 3×/WK</summary><ul class="preplist"><li><b>Schedule:</b> e.g. Mon / Wed / Fri — always ≥1 rest day between sessions.</li><li><b>Each session:</b> clear the cards shown for today, in any order (big moves first works best). The <b>TODAY</b> selector above the grid decides which cards those are.</li><li><b>Zero equipment:</b> floor, wall and a sturdy chair. Nothing else is required at this tier.</li><li><b>Progression rule:</b> hit the prescription with 1–3 reps still in reserve, grade it honestly, evolve (▲) after 3 <b>clean</b> clears. The cards handle progression — you do not need to add reps yourself.</li><li><b>Deload:</b> every 4th week — half the sets, easy pace, same movements.</li></ul></details>
+    <details class="prep"><summary>🔥 WARM-UP — 5 MIN, EVERY SESSION</summary><ul class="preplist"><li><label><input type="checkbox"> 2 min easy cardio — jumping jacks or march in place</label></li><li><label><input type="checkbox"> Arm circles ×10 each way · leg swings ×10/leg</label></li><li><label><input type="checkbox"> Hip circles ×8 · cat-cow ×8</label></li><li><label><input type="checkbox"> Scap prep — prone Y-T-W ×8 each</label></li><li><label><input type="checkbox"> Hip hinge primer — 10 slow glute bridges</label></li><li><label><input type="checkbox"> 1 light half-set of your first two exercises</label></li></ul></details>
     <div class="skillgrid" id="grid1"></div>
     <details class="prep cool"><summary>🧊 COOL-DOWN — 3 MIN</summary><ul class="preplist"><li><label><input type="checkbox"> 2 min easy walk — let the heart rate settle</label></li><li><label><input type="checkbox"> Stretch: quads · hamstrings · chest · lats — 30s each</label></li><li><label><input type="checkbox"> 5 slow nasal breaths — session closed</label></li></ul></details>
     <button class="session-btn" data-tier="1">⚡ COMPLETE SESSION (+50 XP)</button>
@@ -614,7 +824,7 @@ details.protocol summary{color:var(--gold)}
     </div>
     <span class="freq">4–5× / WEEK — FULL BODY</span>
     <details class="prep protocol"><summary>📜 WEEKLY PROTOCOL — FULL BODY 4–5×/WK</summary><ul class="preplist"><li><b>Alternate HEAVY and LIGHT days</b> — never two heavy days back to back.</li><li><b>HEAVY (Gravity Chamber):</b> plyometrics first while fresh, then max-leverage strength.</li><li><b>LIGHT (King Kai’s Planet):</b> same movements at a 3-second lowering tempo — this is your main overload lever now, not extra reps.</li><li><b>HEAVY, after the plyos:</b> the <b>Ki Hinge</b> card — leg curls and RDLs. Plyos and squats are all knee; this is the only card in the tier that loads the hamstrings.</li><li><b>Day 5 (optional):</b> Full Body Finisher (Saiyan Survival) — one conditioning block, not two.</li><li><b>Why this tier exists:</b> Tier II built volume. Tier III turns it into intensity through leverage and speed, so Tier IV’s near-max work does not break you.</li><li><b>Progression rule:</b> evolve (▲) after 3 quality clears — same engine as every domain.</li><li><b>Deload:</b> every 5th week — half sets, <b>no plyometrics at all</b>, LIGHT-day tempo work only. This is the highest joint-stress tier in the app; the deload is not optional here.</li><li><b>Pull is the bottleneck.</b> Floor and towel pulling works, but it caps out. A doorway bar (~$30), a park bar or a railing closes the gap faster than anything else here — run the <a href="#tier6" style="color:inherit">TOJI SIDE ARC</a> alongside this tier for the bar work. It is optional, never gated, and does not replace your tier.</li></ul></details>
-    <details class="prep"><summary>🔥 WARM-UP — 5 MIN, EVERY SESSION</summary><ul class="preplist"><li><label><input type="checkbox"> Jumping Jacks — 60 sec</label></li><li><label><input type="checkbox"> Arm Circles — 30 sec each direction</label></li><li><label><input type="checkbox"> Bodyweight Squats — 20 reps</label></li><li><label><input type="checkbox"> Push-Up to Downward Dog — 10 reps</label></li><li><label><input type="checkbox"> Wrist rocks &amp; prep — before the wall handstand / pike work</label></li><li><label><input type="checkbox"> High Knees — 45 sec</label></li></ul></details>
+    <details class="prep"><summary>🔥 WARM-UP — 5 MIN, EVERY SESSION</summary><ul class="preplist"><li><label><input type="checkbox"> Jumping Jacks — 60 sec</label></li><li><label><input type="checkbox"> Arm Circles — 30 sec each direction</label></li><li><label><input type="checkbox"> Bodyweight Squats — 20 reps</label></li><li><label><input type="checkbox"> Push-Up to Downward Dog — 10 reps</label></li><li><label><input type="checkbox"> Wrist rocks &amp; prep — before the wall handstand / pike work</label></li><li><label><input type="checkbox"> High Knees — 45 sec</label></li><li><label><input type="checkbox"> 1 light half-set of your first two exercises</label></li></ul></details>
     <div class="skillgrid" id="grid5"></div>
     <details class="prep cool"><summary>🧊 COOL-DOWN — 3 MIN</summary><ul class="preplist"><li><label><input type="checkbox"> 2 min easy walk — let the heart rate settle</label></li><li><label><input type="checkbox"> Stretch: quads · hamstrings · chest · lats — 30s each</label></li><li><label><input type="checkbox"> 5 slow nasal breaths — session closed</label></li></ul></details>
     <button class="session-btn" data-tier="5" id="sessBtn5">🐉 COMPLETE SESSION (+50 XP)</button>
@@ -642,6 +852,18 @@ details.protocol summary{color:var(--gold)}
     <button class="session-btn" data-tier="3">💥 COMPLETE SESSION (+50 XP)</button>
     <span class="session-count" id="count3"></span>
     <p class="quote">"100 push-ups. 100 sit-ups. 100 squats. 10km. Every single day." — Saitama</p>
+    <!-- P0.2 — the quote is this tier's identity, so it stays. What follows is the
+         part the tier used to leave out. -->
+    <div class="headline" style="margin:12px 0">
+      <b>Saitama's routine is fiction.</b> It is a joke in the source material — the punchline is that
+      an absurdly ordinary program produced an absurd result. Run as written, at 5–6 sessions a week,
+      this tier's ten cards are 37 working sets plus sprints: 100 V-ups and 75 burpees in a session,
+      with Nordic negatives stacked on top of that fatigue. That is not an advanced program, it is an
+      injury schedule — and the hamstring is where it lands first.<br><br>
+      This tier is therefore run as the <b>PUSH / PULL / LEGS split</b> the protocol always prescribed —
+      use the TODAY selector above the grid. Three or four cards a day, not ten. The sprints are
+      conditioning and sit outside the session. <b>"Every single day" is the story, not the dose.</b>
+    </div>
     <div class="bossbox" id="bossBox">
       <div class="bosshead">👊 BOSS BATTLE — SAITAMA'S TRIAL</div>
       <div class="bossreq">100 PUSH-UPS · 100 SIT-UPS · 100 SQUATS · 10KM — in a single day</div>
@@ -711,6 +933,25 @@ details.protocol summary{color:var(--gold)}
     <p class="inspired" style="font-size:.85rem;margin-top:10px">Movement selection adapted from Bodybuilding.com — “The Best Calisthenics Workout Plan and Exercises” (Heather Eastman, NSCA-CPT). Sets-to-failure replaced with rep ranges to match this app’s progression rule.</p>
   </div>
 
+  <!-- P3.2 — Tier V used to top out at planche lean 3×20s with no training
+       answer to "now what". Level 100 is XP, which the app itself calls a trophy. -->
+  <div class="trialbox reveal" id="endlessArc" style="border-color:var(--gold)">
+    <h4 style="color:var(--gold)">♾️ ENDLESS ARC — PAST THE MASTERY ARC</h4>
+    <div class="tsubn">Bodyweight training has exactly six ways to add load. The FORM ladder is one of them. Here are the other five, and what to do when the ladders run out.</div>
+    <div class="varsgrid" id="loadVars"></div>
+    <details class="prep" style="margin-top:14px"><summary>📐 TEMPO NOTATION — what 30X1 means</summary><ul class="preplist">
+      <li><b>First digit — lowering.</b> 3 = three seconds down, under control.</li>
+      <li><b>Second digit — pause at the bottom.</b> 0 = no pause. 2 = a two-second dead-stop, which removes every bit of stretch reflex.</li>
+      <li><b>Third — the lift.</b> X = explosive intent, as fast as you can move it. A number means that many seconds.</li>
+      <li><b>Fourth — pause at the top.</b> 1 = one second, no resting on locked joints.</li>
+      <li><b>So 30X1</b> = 3s down · no pause · explode up · 1s at the top. The Gravity Arc's "3s tempo" cards are 30X0.</li>
+    </ul></details>
+    <div class="cstep" style="border-top:1px dashed #2a2a44;padding-top:12px;margin-top:12px">
+      <button class="btn" id="endlessBtn" style="width:auto;padding:10px 24px">OPEN THE ENDLESS ARC</button>
+      <div id="endlessBody" style="margin-top:12px"></div>
+    </div>
+  </div>
+
   <div class="tiernote reveal">⚔️ <b>Progression rule:</b> move to the next tier when you can complete a full session with good form and only <b>moderate fatigue</b> at the end — not by the calendar.<br><br><b>Levels do not gate anything.</b> XP, the board below and the badges are a trophy case — no tier is ever locked behind a level, because grinding XP cannot give you the strength to hold a pistol squat. There is exactly <b>one</b> real lock in this app: the Mastery Arc opens on your first Saitama’s Trial clear — and even that can be overridden if you know what you are doing.</div>
 </section>
 
@@ -774,6 +1015,36 @@ details.protocol summary{color:var(--gold)}
   <div class="badges reveal" id="badgeGrid"></div>
 </section>
 
+<!-- P3.6 — the app collected real numbers from day one and plotted none of them.
+     Plain inline SVG, no dependencies, no storage cost. -->
+<section id="charts">
+  <h2 class="section-title reveal" style="color:var(--gold)">THE RECORD</h2>
+  <p class="section-sub reveal">Every set you have logged, drawn. The save already held all of this — it was just never shown to you.</p>
+  <div class="toolgrid reveal">
+    <div class="tool">
+      <h3>WEEKLY VOLUME</h3>
+      <div class="tsub">Working sets per week — shows accumulation, and whether your deloads actually happened</div>
+      <div class="chartwrap" id="chVolume"></div>
+    </div>
+    <div class="tool">
+      <h3>TOP SET PER CARD</h3>
+      <div class="tsub">The progression proof — pick a card you have logged</div>
+      <select class="chartpick" id="chCardPick"></select>
+      <div class="chartwrap" id="chCard"></div>
+    </div>
+    <div class="tool">
+      <h3>BODYWEIGHT — ROLLING AVERAGE</h3>
+      <div class="tsub">Daily readings are water and gut content. The line is the signal; the dots are the noise.</div>
+      <div class="chartwrap" id="chWeight"></div>
+    </div>
+    <div class="tool">
+      <h3>SESSION LOAD</h3>
+      <div class="tsub">RPE × minutes. Two weeks of rising load against flat performance is the earliest overtraining signal you can get without a lab.</div>
+      <div class="chartwrap" id="chLoad"></div>
+    </div>
+  </div>
+</section>
+
 <!-- NUTRITION / FASTING / TIMELINE -->
 <section id="tools">
   <h2 class="section-title reveal" style="color:var(--gold)">SUPPORT SYSTEMS</h2>
@@ -811,6 +1082,11 @@ details.protocol summary{color:var(--gold)}
       <div class="result" id="calcResult">
         <div class="stat-line"><span>Maintenance</span><span class="v" id="rMaint">—</span></div>
         <div class="stat-line"><span id="rTargetLbl">Target</span><span class="v" id="rCut">—</span></div>
+        <!-- P2 — the calculator computed macros but never stated a protein target
+             in the terms the evidence uses, or said how to spread it. This matters
+             more than the fasting window the app already, correctly, downplays. -->
+        <div class="stat-line"><span>Protein target — 0.7–1.0 g/lb</span><span class="v" id="rProt">—</span></div>
+        <div class="stat-line"><span>Max loss rate — 0.5–0.75% BW/wk</span><span class="v" id="rRate">—</span></div>
         <div class="macro-bars">
           <div class="macro m-p"><div class="ml"><span>PROTEIN — protects muscle</span><span id="mP">—</span></div><div class="mb"><div class="mf" style="width:35%"></div></div></div>
           <div class="macro m-c"><div class="ml"><span>CARBS — fuel around workouts</span><span id="mC">—</span></div><div class="mb"><div class="mf" style="width:40%"></div></div></div>
@@ -823,6 +1099,136 @@ details.protocol summary{color:var(--gold)}
           <b>Carbs:</b> don't cut to zero — keep some around workouts.<br>
           <b>Hydration:</b> affects both performance and how you feel in a deficit.
         </div>
+      </div>
+    </div>
+
+    <!-- P2.6 — the app had a calculator and a fasting tracker but nothing that
+         explained how fat loss actually works, which is the question most people
+         arrive with. The mechanism here is deliberately the honest one. -->
+    <div class="tool" id="cutTool">
+      <h3>⚖️ THE CUT</h3>
+      <div class="tsub">How fat loss actually works — and what training is really for</div>
+      <div class="headline">
+        A deficit decides <b>how much</b> you lose. Training decides <b>what</b> you lose.
+        Nothing here spot-reduces the gut — abdominal fat is usually the last to go, and that is normal.
+      </div>
+
+      <div class="cstep">
+        <h4>1 · LIQUID CALORIE AUDIT</h4>
+        <p>One day. Every drink with calories in it — juice, soda, the oat milk, the beers, the two sugared coffees. This is a screen, not a lecture: if it comes back near zero, you are done with this step forever.</p>
+        <div class="mini">
+          <input type="number" id="cutLiquid" min="0" max="5000" placeholder="kcal from drinks, 24h">
+          <button class="btn" id="cutLiquidBtn">AUDIT</button>
+        </div>
+        <div class="cverdict" id="cutLiquidOut" style="display:none"></div>
+      </div>
+
+      <div class="cstep">
+        <h4>2 · STEP TARGET — 8–10K/DAY</h4>
+        <p>The reason is <b>recovery cost</b>, not calorie burn: walking competes with your training for almost nothing, and running competes for a lot. If you work a physical job or shift work, you may already be over target — check before adding.</p>
+        <div class="mini">
+          <input type="number" id="cutSteps" min="0" max="100000" placeholder="steps today">
+          <button class="btn ghost" id="cutStepsBtn">LOG</button>
+        </div>
+        <div class="cverdict" id="cutStepsOut" style="display:none"></div>
+      </div>
+
+      <div class="cstep">
+        <h4>3 · RESISTANCE TRAINING</h4>
+        <p>You are already doing this — it is the rest of the app. <a href="#domains" style="color:var(--gold)">Go to your tier.</a></p>
+        <p><b>Why it works is worth getting right.</b> You will read that lifting burns fat because muscle
+        is metabolically active at rest. The mechanism is real and the magnitude is trivial: muscle runs about
+        6 kcal per pound per day against roughly 2 for fat, so five pounds of hard-won new muscle buys you
+        about <b>30 kcal a day</b>. That is a third of an apple.</p>
+        <p><b>The real reason:</b> the same deficit without training sheds a meaningful share of muscle along
+        with the fat. The same deficit with hard training preserves the muscle and takes the fat. That is the
+        entire case for lifting while cutting, and it is a far stronger one than the metabolism story.</p>
+        <div class="cverdict warn">
+          The retention signal depends on <b>proximity to failure</b>, not on how many sessions you log.
+          This is why the CLEAN / GRINDY / FAILED grade on every card matters — five sessions a week at an
+          effort level that never approaches failure sends no retention signal at all.
+        </div>
+      </div>
+
+      <div class="cstep">
+        <h4>RATE &amp; TARGETS</h4>
+        <div class="stat-line"><span>Loss rate cap</span><span class="v" id="cutRate">0.5–0.75% BW/wk</span></div>
+        <div class="stat-line"><span>Protein target</span><span class="v" id="cutProtein">run the calculator</span></div>
+        <div class="stat-line"><span>Weigh-in method</span><span class="v">weekly average</span></div>
+        <p style="margin-top:10px"><b>There is no fast way.</b> Rate is capped by how much fat you are carrying, and pushing past the cap trades away the muscle you are training for.</p>
+      </div>
+    </div>
+
+    <!-- P2 — recovery was absent entirely, and it is the largest variable here. -->
+    <div class="tool" id="recoveryTool">
+      <h3>RECOVERY &amp; RULES</h3>
+      <div class="tsub">The part that decides whether any of the training above works</div>
+      <details class="prep" open><summary>😴 SLEEP — the primary variable</summary><ul class="preplist">
+        <li><b>7+ hours.</b> Under 6, expect strength loss regardless of how good the programming is. There is no supplement, split or intensity technique that substitutes for this.</li>
+        <li><b>Soreness is not a progress metric.</b> Its absence is not a failed session, and its presence is not a good one — it mostly tracks novelty.</li>
+        <li><b>Two consecutive sessions of declining performance on the same card</b> means under-recovered. Deload early; the app will usually have flagged it first.</li>
+      </ul></details>
+      <details class="prep"><summary>🚑 INJURY &amp; REGRESSION RULES</summary><ul class="preplist">
+        <li><b>Sharp, localized or joint-line pain: stop the card.</b> Not "push through". This is the one rule in the app with no exceptions.</li>
+        <li><b>Fine:</b> muscle burn, general fatigue, delayed soreness for a day or two.</li>
+        <li><b>Not fine:</b> nerve symptoms (tingling, numbness, shooting pain), pinching at end range, and anything still there past 48 hours.</li>
+        <li><b>Regressing (▼) is a normal programming action</b>, not a failure and not an XP loss. Deliberately dropping a form to hold clean technique is the ladder working as designed.</li>
+        <li><b>Pain that persists:</b> see a professional. This app is a training tool, not a clinician.</li>
+      </ul></details>
+      <details class="prep"><summary>🏃 CARDIO — zones, and how much is too much</summary><ul class="preplist">
+        <li><b>Zone 2</b> — conversational pace, you could hold a sentence. Builds the aerobic base, low recovery cost. This is most of your cardio.</li>
+        <li><b>Intervals / sprints</b> — high cost, competes directly with lifting. Cap hard conditioning at <b>2 sessions per week</b> when you are lifting 4 or more.</li>
+        <li><b>Sprints go first</b> in a session, while you are fresh — never after burpees.</li>
+        <li><b>Plyometric cap:</b> ≤100 foot contacts per session, ≤2 plyometric sessions per week. The load meter above each grid counts them for you.</li>
+      </ul></details>
+      <details class="prep"><summary>🧰 SUBSTITUTIONS — when the program does not fit the room</summary><ul class="preplist">
+        <li><b>Every card has swaps</b> in the dropdown under it — tagged by the constraint they solve: apartment noise, shoulder, hamstring, no anchor, joint pain.</li>
+        <li id="travelNote"></li>
+        <li><b>A swap is not a step down the ladder.</b> Your form index and clean-clear count carry across untouched.</li>
+      </ul></details>
+      <details class="prep"><summary>🩺 TRAINING SCREEN</summary>
+        <div id="screenBody"></div>
+      </details>
+    </div>
+
+    <!-- P0.2 — the run used to sit inside the session grid, where it read as
+         required. It is now a weekly conditioning target with its own tracker.
+         P3.9 — grip, neck and asymmetry were trained nowhere. -->
+    <div class="tool" id="accessTool">
+      <h3>CONDITIONING &amp; ACCESSORIES</h3>
+      <div class="tsub">The work that sits outside the session — and the gaps the tiers never covered</div>
+
+      <div class="cstep" style="border-top:none;padding-top:0;margin-top:0">
+        <h4>WEEKLY CONDITIONING</h4>
+        <p>Steps are the default. Running is optional, and stays optional — the endurance identity of the Tanjiro and Saitama tiers is there for anyone who wants to chase it, without taxing everyone else's recovery.</p>
+        <div class="stat-line"><span>Step target — 8–10k/day</span><span class="v" id="condSteps">—</span></div>
+        <div class="stat-line"><span>Zone 2 this week</span><span class="v" id="condZ2">0</span></div>
+        <div class="stat-line"><span>Hard conditioning this week</span><span class="v" id="condHard">0 / 2</span></div>
+        <div class="mini">
+          <button class="btn ghost" id="condZ2Btn">+ ZONE 2</button>
+          <button class="btn ghost" id="condHardBtn">+ INTERVALS / SPRINTS</button>
+        </div>
+        <div class="cverdict" id="condOut" style="display:none"></div>
+      </div>
+
+      <div class="cstep">
+        <h4>DAILY ACCESSORIES — 5 MINUTES</h4>
+        <p>Grip is the limiter on every hanging progression, and dead hangs double as shoulder decompression. Neck work changes how a physique reads more than almost anything else per minute spent, and is near-universally skipped.</p>
+        <label class="chk"><input type="checkbox" class="xtick" data-k="hang"> <b>Dead hangs</b> — 3 × 30s (bar, beam, or a door frame edge)</label>
+        <label class="chk"><input type="checkbox" class="xtick" data-k="neck"> <b>Isometric neck holds</b> — 2×/week, 3 × 20s each direction, hand resistance only</label>
+        <label class="chk"><input type="checkbox" class="xtick" data-k="mob"> <b>Mobility block</b> — the 5-minute drills in your tier's domain panel</label>
+        <div class="privmeta" id="xtickMeta" style="margin-top:8px"></div>
+      </div>
+
+      <div class="cstep">
+        <h4>ASYMMETRY TEST</h4>
+        <p>Everything advanced here is unilateral — pistols, one-arm work, single-leg hinges. A side difference over 20% is how those get you hurt. Test on single-leg glute bridge or a pistol to a chair, max reps each side.</p>
+        <div class="mini">
+          <input type="number" id="asymL" min="0" max="999" placeholder="left reps">
+          <input type="number" id="asymR" min="0" max="999" placeholder="right reps">
+          <button class="btn ghost" id="asymBtn">CHECK</button>
+        </div>
+        <div class="cverdict" id="asymOut" style="display:none"></div>
       </div>
     </div>
 
@@ -852,6 +1258,18 @@ details.protocol summary{color:var(--gold)}
         <div><label>Note</label><input type="text" id="tNote" placeholder="Felt strong. New arc." maxlength="80"></div>
       </div>
       <button class="btn ghost" id="tAddBtn">LOG CHECKPOINT (+15 XP)</button>
+      <!-- P2 — a single reading invites the wrong conclusion; the average is the signal. -->
+      <div class="cverdict ok" id="tAvg" style="display:none;margin-top:10px"></div>
+      <!-- P3.9 — during a recomp the scale does not move. Photos are the only
+           honest feedback. Stored in their own localStorage key so the main save
+           and its export stay small. -->
+      <div class="cstep" style="border-top:1px dashed #2a2a44;padding-top:12px;margin-top:12px">
+        <h4 style="font-size:.95rem;letter-spacing:1px;color:var(--gold);font-family:var(--font-body);font-weight:800">PROGRESS PHOTOS</h4>
+        <input type="file" id="photoFile" accept="image/*" style="display:none">
+        <button class="btn ghost" id="photoBtn" style="width:auto;padding:8px 18px;font-size:.85rem">📷 ADD A PHOTO</button>
+        <div class="photorow" id="photoRow"></div>
+        <div class="photonote" id="photoNote"></div>
+      </div>
       <ul class="timeline" id="timelineList"></ul>
     </div>
 
@@ -867,7 +1285,7 @@ details.protocol summary{color:var(--gold)}
       <button class="btn danger" id="btnDelete" style="margin-top:10px">🗑 DELETE EVERYTHING</button>
       <input type="file" id="importFile" accept=".json,application/json" style="display:none">
       <div class="privmeta" id="privMeta"></div>
-      <details class="prep"><summary>📄 PRIVACY POLICY — PLAIN ENGLISH</summary><ul class="preplist"><li><b>What we collect:</b> nothing. There is no server, no account, no analytics, no ads, no cookies.</li><li><b>Where your data lives:</b> in your browser’s localStorage, on your device only.</li><li><b>External requests: zero.</b> The fonts are embedded in this page as data URIs — nothing is fetched from Google or anyone else. Load the page once and it works offline, forever, with no network traffic at all.</li><li><b>Your rights (GDPR / CCPA):</b> access &amp; portability = Export buttons above · erasure = Delete Everything. Both work instantly because the data was only ever yours.</li><li><b>Cloud sync:</b> a static site has no server to sync to — by design. Use the encrypted backup + any cloud drive for the same result.</li><li><b>Backups:</b> browsers can wipe localStorage (storage pressure, clearing site data, private tabs). Export regularly — the app will remind you.</li></ul></details>
+      <details class="prep"><summary>📄 PRIVACY POLICY — PLAIN ENGLISH</summary><ul class="preplist"><li><b>What we collect:</b> nothing. There is no server, no account, no analytics, no ads, no cookies.</li><li><b>Where your data lives:</b> in your browser’s localStorage, on your device only.</li><li><b>External requests: zero.</b> The fonts are embedded in this page as data URIs — nothing is fetched from Google or anyone else. Load the page once and it works offline, forever, with no network traffic at all.</li><li><b>Your rights (GDPR / CCPA):</b> access &amp; portability = Export buttons above · erasure = Delete Everything. Both work instantly because the data was only ever yours.</li><li><b>Cloud sync:</b> a static site has no server to sync to — by design. Use the encrypted backup + any cloud drive for the same result.</li><li><b>Backups:</b> browsers can wipe localStorage (storage pressure, clearing site data, private tabs). Export regularly — the app will remind you.</li><li><b>Offline:</b> this is a single self-contained file with every font and image embedded and a Content-Security-Policy of <code>default-src 'none'</code>. There is no service worker because there is nothing to cache and nothing to fetch — save the file and it works in a basement with no signal, permanently. Progress photos are stored in a separate slot so exports stay small.</li></ul></details>
     </div>
   </div>
   <p class="caveat">Honest caveat: fasting protocols are a tool, not magic. If you have any underlying health conditions or a history of disordered eating, check with a doctor before starting an aggressive cut or fasting schedule.</p>
@@ -879,6 +1297,16 @@ details.protocol summary{color:var(--gold)}
   <div class="big">ASCENSION COMPLETE</div>
   <div class="sub">ALL DOMAINS HAVE MERGED. THE NEXT ARC IS YOURS.</div>
   <button class="btn" style="width:auto;padding:12px 40px" onclick="document.getElementById('ascendOverlay').classList.remove('show')">CONTINUE THE STORY</button>
+</div>
+<!-- P1.1 + P4 — one component covers both jobs: rest between sets, and the
+     dozen timed prescriptions (planks, holds, climbers) the app never timed. -->
+<div id="timerDock">
+  <div class="tlbl" id="tkLbl">REST</div>
+  <div class="tval" id="tkVal">00:00</div>
+  <div class="trow">
+    <button id="tkAdd">+30s</button>
+    <button id="tkStop">STOP</button>
+  </div>
 </div>
 <div id="modal"><div class="modalbox" id="modalBody"></div></div>
 <div id="toast"></div>
@@ -901,8 +1329,10 @@ const store={
   }
 };
 const today=()=>new Date().toISOString().slice(0,10);
-const SAVE_VERSION=2;
+const SAVE_VERSION=3;
 const PREV1KEY=KEY+"_preV2_snapshot";
+const PREV2KEY=KEY+"_preV3_snapshot";
+const PHOTOKEY=KEY+"_photos";   /* P3.9 — photos live in their own key so the main save stays small */
 const DEFAULTS=()=>({
   saveVersion:SAVE_VERSION,
   xp:0, sessions:{1:0,2:0,3:0,4:0,5:0,6:0}, checks:{}, checkDate:today(),
@@ -911,7 +1341,30 @@ const DEFAULTS=()=>({
   prog:{}, evolves:0, boss:{clears:[]}, bossPrep:[false,false,false], bossOverride:null,
   masteryOverride:false,
   cardLog:{},
-  log:[], checkins:[], lastBackup:null, firstT3:null, deloadDismissed:null
+  log:[], checkins:[], lastBackup:null, firstT3:null, deloadDismissed:null,
+
+  /* ---- v3 additions, all blueprint-driven ---- */
+  day:{},            /* P0.1  tier -> index of the split day to show next */
+  tierSess:{},       /* P3.1  tier -> lifetime sessions, drives the week counter */
+  deloadAck:{},      /* P3.1  tier -> week number the user acknowledged the deload for */
+  deloadDone:[],     /* P3.1  ["tier:week"] completed deload weeks */
+  readiness:null,    /* P3.1  {d, mod:"full"|"reduced"|"deload"} for today */
+  sessRpe:[],        /* P3.1  [{d,tier,rpe,mins}] session load */
+  weekKey:null,      /* P0.3  ISO Monday of the week being counted */
+  weekHits:[],       /* P0.3  [{tier,day,d}] sessions completed this week */
+  perfectWeeks:0,    /* P0.3  consecutive perfect weeks */
+  weekHistory:[],    /* P0.3  [{w,hit,need,perfect}] */
+  trials:[],         /* P1.3  [{d,push,row,squat,plank}] Origin Trial attempts */
+  placement:null,    /* P3.5  {d,tier} */
+  screen:null,       /* P3.8  {shoulder,hamstring,cardio,preg,joint,none,d} */
+  subs:{},           /* P3.7  cardKey -> substitution label */
+  steps:{},          /* P2    date -> step count */
+  liquid:null,       /* P2.6  {d,kcal} */
+  proteinTarget:null,/* P2    g/day, written by the calculator */
+  extras:{},         /* P3.9  date -> {hang,neck,mob} accessory ticks */
+  endless:null,      /* P3.2  {d,block} Endless Arc state */
+  onboarded:false,   /* P4    first-run flow seen */
+  warm:{}            /* P2    date -> {gridId: [checked booleans]} warm-up persistence */
 });
 
 /* ---- SAVE MIGRATION ------------------------------------------------------
@@ -925,12 +1378,38 @@ function migrate(o){
   if(wasV1){
     try{ if(!localStorage.getItem(PREV1KEY)) localStorage.setItem(PREV1KEY,JSON.stringify(o)); }catch(e){}
   }
+  /* Same one-way-door protection for the v2 -> v3 jump. */
+  if(o && typeof o==="object" && o.saveVersion===2){
+    try{ if(!localStorage.getItem(PREV2KEY)) localStorage.setItem(PREV2KEY,JSON.stringify(o)); }catch(e){}
+  }
   const s=Object.assign(DEFAULTS(), o||{});
   if(!s.cardLog||typeof s.cardLog!=="object"||Array.isArray(s.cardLog)) s.cardLog={};
   if(!Array.isArray(s.bossPrep)||s.bossPrep.length!==3) s.bossPrep=[false,false,false];
   s.bossPrep=s.bossPrep.map(Boolean);
   s.masteryOverride=!!s.masteryOverride;
   if(!s.prog||typeof s.prog!=="object"||Array.isArray(s.prog)) s.prog={};
+  /* v3: object/array fields must survive a save written before they existed. */
+  ["day","tierSess","deloadAck","subs","steps","extras","warm"].forEach(k=>{
+    if(!s[k]||typeof s[k]!=="object"||Array.isArray(s[k])) s[k]={};
+  });
+  ["deloadDone","sessRpe","weekHits","weekHistory","trials"].forEach(k=>{
+    if(!Array.isArray(s[k])) s[k]=[];
+  });
+  if(typeof s.perfectWeeks!=="number") s.perfectWeeks=0;
+  s.onboarded=!!s.onboarded;
+  /* P1.2 — Tier I and Tier II card 2 changed movement family (prone Y-T-W raises
+     became a real horizontal row ladder). The old form index points at a rung on a
+     different ladder, so those two cards restart at form 1. Nothing else is touched;
+     the Y-T-W drills moved into the warm-up block where they belong. */
+  if(!s.v3PullReset){
+    ["1-2","2-2"].forEach(k=>{ if(s.prog[k]){ s.prog[k].n=0; s.prog[k].c=0; s.prog[k].d=null; } });
+    s.v3PullReset=true;
+  }
+  /* P0.3 — the day-streak badges are retired; their holders keep a badge. */
+  if(Array.isArray(s.badges)){
+    const bm={streak3:"perfect1", streak7:"perfect4", fast1:"fastuse"};
+    s.badges=[...new Set(s.badges.map(b=>bm[b]||b))];
+  }
   s.saveVersion=SAVE_VERSION;
   return s;
 }
@@ -956,13 +1435,267 @@ if(S.checkDate!==today()){ S.checks={}; S.checkDate=today(); }
 const save=()=>store.save(S);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-/* ================= DATA — PROGRESSION TREES ================= */
+/* ============================================================================
+   TIER IDENTITY — read this before touching anything tier-indexed.
+
+   The TREES keys are NOT the tier numbers shown in the UI. The Gravity Arc was
+   inserted as Tier III after the other tiers were already keyed, and the keys
+   were deliberately left alone so existing saves (S.prog is keyed "tree-index")
+   kept working. The mapping is:
+
+       TREES key 1 -> TIER I    ORIGIN ARC      (Midoriya)
+       TREES key 2 -> TIER II   TRAINING ARC    (Tanjiro)
+       TREES key 5 -> TIER III  GRAVITY ARC     (Goku)      <-- out of order
+       TREES key 3 -> TIER IV   LEGENDARY ARC   (Saitama)   <-- out of order
+       TREES key 4 -> TIER V    MASTERY ARC     (Rock Lee)  <-- out of order
+       TREES key 6 -> SIDE ARC  SORCERER KILLER (Toji)
+
+   Everything below keys off TREES keys. Use TIER_UI when showing a number to a
+   human, and TIER_ORDER when iterating in the order the user sees.
+   ========================================================================= */
+const TIER_UI   ={1:"I",2:"II",5:"III",3:"IV",4:"V",6:"SIDE"};
+const TIER_NAME ={1:"ORIGIN ARC",2:"TRAINING ARC",5:"GRAVITY ARC",3:"LEGENDARY ARC",4:"MASTERY ARC",6:"SORCERER KILLER"};
+const TIER_ORDER=[1,2,5,3,4,6];
+const TIER_GRID ={1:"grid1",2:"grid2",5:"grid5",3:"grid3",4:"grid4",6:"grid6"};
+/* Prescribed sessions per week — the unit the streak now counts (P0.3). */
+const TIER_FREQ ={1:3,2:4,5:4,3:5,4:3,6:3};
+/* Deload lands on this week of the tier's cycle (P3.1). */
+const TIER_CYCLE={1:4,2:5,5:5,3:5,4:5,6:5};
+
+/* ============================================================================
+   P0.1 — THE SPLIT IS NOW THE INTERFACE
+
+   The protocols always prescribed a split; the grid always showed every card at
+   once, so the obvious reading of the screen was "do all of them". SPLIT maps
+   each tier to its days and which card indices belong to each.
+
+   SPLIT[t].cond holds conditioning cards — runs and sprints. Per P0.2 these come OUT of
+   the session grid: they are a weekly target with their own tracker, not a card
+   that has to be cleared before the session counts. Nothing is deleted, so no
+   progress is lost.
+   ========================================================================= */
+const SPLIT={
+  1:{days:["FULL BODY"],           map:[[0,1,2,3,4,5,6]],                 cond:[]},
+  2:{days:["UPPER","LOWER"],       map:[[0,2,3,7],[1,4,5,8]],             cond:[6]},
+  5:{days:["HEAVY","LIGHT"],       map:[[2,0,1,4,7],[0,1,3,5]],           cond:[6]},
+  /* Burpees (index 3) sit on PUSH, not LEGS. Stacked with jump squats they put
+     the LEGS day at 135 foot contacts — over the 100/session cap — and landed
+     that impact on the same session as the Nordic negatives, which is precisely
+     where hamstrings tear. Split across days: LEGS 60, PUSH 75. */
+  3:{days:["PUSH","PULL","LEGS"],  map:[[0,4,3],[5,6,8],[1,9,2]],         cond:[7]},
+  4:{days:["SKILL","STRENGTH","ENGINE"], map:[[0,4],[1,2,5,7],[3,0]],     cond:[6]},
+  6:{days:["PUSH+PULL","LEGS+SHLD","CORE"], map:[[0,1],[2,3,4],[5,6]],    cond:[7]}
+};
+const dayName=(tier,d)=>SPLIT[tier].days[d]||SPLIT[tier].days[0];
+const dayCount=tier=>SPLIT[tier].days.length;
+const curDay=tier=>Math.min(S.day[tier]||0, dayCount(tier)-1);
+const isCond=(tier,i)=>SPLIT[tier].cond.indexOf(i)>-1;
+function dayCards(tier,d){ return SPLIT[tier].map[Math.min(d,dayCount(tier)-1)]||[]; }
+
+/* ============================================================================
+   P1.1 / P0.2 — CARD METADATA
+
+   Rest between sets is a primary training variable and the app never mentioned
+   it. Rather than hand-annotating fifty cards (and letting them drift), the
+   movement quality is derived from the card name, with an override table for
+   the handful the heuristic gets wrong.
+
+     skill  — max-leverage / balance work.  2–3 min. Fatigue ruins the rep.
+     hyper  — rep-range strength work.      60–90 s.
+     cond   — conditioning and plyometrics.  30–60 s (or as prescribed).
+   ========================================================================= */
+const RX_SKILL=/handstand|hspu|planche|frog stand|l-sit|v-sit|pistol|shrimp|one-arm|typewriter|nordic|dragon flag|lever|muscle-?up|negative pull|chin-?up|windshield/i;
+const RX_COND =/burpee|mountain climber|jumping jack|high knee|sprint|interval|run|jog|jump squat|plyo|tuck jump|broad jump|explosive|bear crawl|kick-?through|bouncing|wall sit|walk/i;
+const KIND_OVERRIDE={
+  "Wall Sit":"hyper", "Reverse Plank Hold":"hyper", "Superman Holds":"hyper",
+  "Prone Swimmers":"hyper", "Hollow Body Hold":"hyper", "Hollow-Body Hold":"hyper",
+  "Hollow Rocks":"hyper", "Hollow Body Rocks":"hyper", "Dead Hang":"skill"
+};
+function cardKind(name){
+  if(KIND_OVERRIDE[name]) return KIND_OVERRIDE[name];
+  if(RX_SKILL.test(name)) return "skill";
+  if(RX_COND.test(name))  return "cond";
+  return "hyper";
+}
+const REST_TXT={skill:"2–3 min",hyper:"60–90 s",cond:"30–60 s"};
+const REST_SEC={skill:150,hyper:75,cond:45};
+const REST_WHY={
+  skill:"strength &amp; skill — rest long, the rep is the point",
+  hyper:"rep-range work — enough to hold the target, not enough to go cold",
+  cond:"conditioning — short rests are the stimulus"
+};
+
+/* Parse "4 × 15–25", "3 × 60s", "3 × 8/leg", "100 for time".
+   Returns {sets,reps,secs,perSide} — nulls where the prescription is prose. */
+function parseRx(str){
+  const s=String(str||"");
+  const m=s.match(/^\s*(\d+)\s*[×x]\s*(.+)$/i);
+  if(!m) return {sets:null,reps:null,secs:null,perSide:false,raw:s};
+  const sets=+m[1], rest=m[2];
+  const sec=rest.match(/(\d+)\s*(?:–|-)?\s*(\d+)?\s*s\b/i);
+  if(sec) return {sets,reps:null,secs:+(sec[2]||sec[1]),perSide:false,raw:s};
+  const min=rest.match(/(\d+)\s*min/i);
+  if(min) return {sets,reps:null,secs:+min[1]*60,perSide:false,raw:s};
+  const rep=rest.match(/(\d+)/);
+  return {sets,reps:rep?+rep[1]:null,secs:null,perSide:/\/\s*(leg|side)/i.test(rest),raw:s};
+}
+/* P0.2 — plyometric foot contacts, capped per session and per week. */
+const RX_PLYO=/jump squat|plyo lunge|tuck jump|broad jump|burpee|box jump|bounding|bouncing lunge/i;
+function footContacts(name,rx){
+  if(!RX_PLYO.test(name)) return 0;
+  const p=parseRx(rx);
+  if(!p.sets||!p.reps) return 0;
+  return p.sets*p.reps*(p.perSide?2:1);
+}
+/* P0.2 — estimated minutes for one card: sets × (work + rest). */
+function cardMinutes(name,rx){
+  const p=parseRx(rx), k=cardKind(name);
+  if(!p.sets) return 4;
+  const work=p.secs!=null?p.secs:(p.reps?Math.min(90,p.reps*3*(p.perSide?2:1)):40);
+  return (p.sets*(work+REST_SEC[k]))/60;
+}
+/* P3.1 — deload prescription: halve the sets, in the string the user reads. */
+function halveRx(str){
+  return String(str||"").replace(/^(\s*)(\d+)(\s*[×x]\s*)/i,(m,a,n,b)=>a+Math.max(1,Math.floor(+n/2))+b);
+}
+/* P3.1 — REDUCED readiness: one set off each card. */
+function minusOneRx(str){
+  return String(str||"").replace(/^(\s*)(\d+)(\s*[×x]\s*)/i,(m,a,n,b)=>a+Math.max(1,+n-1)+b);
+}
+
+/* ============================================================================
+   P3.2 — THE SIX LOADING VARIABLES
+   Bodyweight training has exactly six ways to add load. The FORM ladder is one
+   of them. Naming the other five is what turns "I finished Tier V" from a dead
+   end into a program.
+   ========================================================================= */
+const LOAD_VARS=[
+  ["Leverage","Move the load further from the joint. Wall push-up → incline → flat → archer → one-arm.","yes","This is the FORM ladder — the app already runs on it."],
+  ["Tempo","Slow the lowering, pause at the bottom, explode up. 30X1 = 3s down, no pause, explosive up, 1s at the top.","part","Used informally in the Gravity Arc. Now notated properly on every card."],
+  ["Range of motion","Deficit push-ups off books. Pistol below parallel. Longer range, same movement.","no","Added in the Endless Arc."],
+  ["Unilateral","One limb at a time doubles the load with no equipment. Archer → one-arm.","part","Scattered through the ladders — now systematic."],
+  ["Density","Same work, less rest. The cheapest progression left when leverage runs out.","no","Added in the Endless Arc."],
+  ["External load","A backpack with books. The honest answer at the ceiling, and there is no shame in it.","no","Added in the Endless Arc."]
+];
+
+/* ============================================================================
+   P3.3 — MOBILITY LADDERS
+   Tier V asks for pistols, L-sits, planche leans and wall HSPU. For most people
+   the limiter on each is range, not strength — and the app trained none of it.
+   Each tier's drills target the NEXT tier's requirements, on rest days, ~5 min.
+   ========================================================================= */
+const MOBILITY={
+  1:[["Ankle rocks against a wall","3 × 20/side","Dorsiflexion is the real limiter on a pistol squat, two tiers from now."],
+     ["Cat-cow + open book","2 × 10","Thoracic rotation — everything overhead depends on it."],
+     ["Wrist rocks on the floor","3 × 15","Start now and the handstand tiers will not hurt."]],
+  2:[["Deep squat hold (heels down)","3 × 45s","Ankle and hip range together, under a little load."],
+     ["Wall slides","3 × 12","Shoulder flexion — the wall HSPU prerequisite."],
+     ["Hamstring floor slides","3 × 10/side","Hamstring length is half of an L-sit."]],
+  5:[["Wrist extension holds (fingers back)","3 × 30s","Planche lean is a wrist-tolerance problem before it is a strength one."],
+     ["Couch stretch","2 × 60s/side","Hip flexor length — what stops most pistols at the bottom."],
+     ["Thoracic extension over a rolled towel","2 × 60s","Buys the last 20° of overhead range."]],
+  3:[["Pancake / straddle sit","3 × 60s","Adductor range for the V-sit and shrimp squat."],
+     ["Loaded ankle dorsiflexion","3 × 20/side","Pistols at this tier are ankle-limited, not leg-limited."],
+     ["Wrist + finger prep, full circuit","5 min","Non-negotiable before handstand volume."]],
+  4:[["Full wrist circuit","5 min","Highest-volume hand-loading tier in the app."],
+     ["Straddle + pike compression","3 × 30s","Compression is what holds a V-sit up, not just hamstring length."],
+     ["Shoulder CARs","2 × 5/side","Keeps the joint healthy under freestanding work."]],
+  6:[["Dead hang, passive to active","3 × 30s","Doubles as grip work and shoulder decompression."],
+     ["Couch stretch","2 × 60s/side","Lunge volume here is high."],
+     ["Wrist prep","3 min","Before the handstand push-up card."]]
+};
+
+/* ============================================================================
+   P3.7 — SUBSTITUTION LIBRARY
+   The difference between a program someone runs for a year and one they drop the
+   first week something does not fit. Matched by movement pattern, not card id,
+   so new cards inherit swaps automatically.
+   ========================================================================= */
+const SUBS=[
+  [/jump squat|plyo lunge|tuck jump|broad jump|burpee/i,[
+    ["Tempo squats — 3s down, no jump","apartment","Same legs, zero downstairs neighbours."],
+    ["Step-ups onto a chair","apartment","Quiet, unilateral, and it scales by chair height."],
+    ["Split squats","apartment","No impact at all."],
+    ["Fast air squats — no leaving the floor","joint","Keeps the conditioning, drops the landing."]]],
+  [/handstand|hspu|pike push/i,[
+    ["Floor press — lie down, press a loaded bag","shoulder","Pressing without going overhead or inverting."],
+    ["Incline pike push-ups (hands on a chair)","shoulder","Much less shoulder flexion required."],
+    ["Wall walks, feet low only","joint","Builds the position without the load."]]],
+  [/nordic|leg curl|slider|rdl/i,[
+    ["Glute bridge march","hamstring","Posterior chain with no lengthened-position load."],
+    ["Single-leg glute bridge","hamstring","The rung below — safe while a strain settles."],
+    ["Good-morning with a broomstick","anchor","No furniture to hook your feet under."]]],
+  [/towel door row|inverted row|table row/i,[
+    ["Backpack bent-over rows","anchor","Books in a bag. Works anywhere."],
+    ["Prone Y-T-W + snow angels","anchor","Weakest option — use only if there is truly nothing to pull on."],
+    ["Doorway isometric row — 5 × 20s hard pulls","anchor","Frame in both hands, pull, hold."]]],
+  [/run|jog|sprint|interval/i,[
+    ["Brisk walk — same distance","joint","Nearly the same calories per mile, a fraction of the recovery cost."],
+    ["Cycling / stationary bike","joint","Zero impact, same Zone 2 effect."],
+    ["Step target only — skip the run","apartment","The default this app now recommends while cutting."]]],
+  [/push-?up/i,[
+    ["Incline push-ups (counter or wall)","shoulder","Drops the load without changing the movement."],
+    ["Floor press with a loaded backpack","shoulder","Pressing with the shoulder in a friendlier position."]]],
+  [/pistol|shrimp|bulgarian/i,[
+    ["Box squat to a chair","joint","Controls depth exactly."],
+    ["Split squat, short range","joint","Unilateral, no deep knee flexion."]]],
+  [/squat|lunge|step-up|wall sit/i,[
+    ["Box squat to a chair","joint","Controls depth exactly — the usual fix for knee pain."],
+    ["Tempo squats — 3s down","apartment","Quiet, and harder than it sounds."],
+    ["Split squats, short range","joint","Unilateral without deep knee flexion."],
+    ["Half the prescribed sets","travel","The 15-minute version."]]],
+  [/plank|hollow|v-up|sit-up|dead bug/i,[
+    ["Dead bug — slow, ribs down","joint","Trunk work with a neutral spine, no flexion load."],
+    ["Side plank","joint","Rotates the demand off the lumbar spine."]]]
+];
+const TRAVEL_NOTE="Travel / no space: run the day's first two cards only, 2 sets each, 15 minutes. That is the minimum effective dose — it holds what you have built.";
+/* Generic fallbacks so no card is left without options — squats, holds and the
+   odd one-off still need an apartment answer and a travel answer. */
+const SUBS_GENERIC={
+  cond:[["Half the prescribed sets, same effort","travel","Minimum effective dose — it holds what you have built."],
+        ["Brisk walk, 10 minutes","joint","Keeps the session going when the joints say no."]],
+  hyper:[["Half the prescribed sets, same effort","travel","15-minute version for travel or a bad day."],
+         ["Same movement, shorter range","joint","Cut the range to what is pain-free rather than skipping it."],
+         ["Slow tempo — 3s down, 2 fewer reps","joint","Less load, same stimulus, kinder joints."]],
+  skill:[["The rung below (tap ▼)","joint","The ladder already contains the regression."],
+         ["Half the prescribed sets, same effort","travel","Skill work responds badly to junk volume anyway."]]
+};
+function subsFor(name){
+  for(const [rx,list] of SUBS) if(rx.test(name)) return list;
+  return SUBS_GENERIC[cardKind(name)]||SUBS_GENERIC.hyper;
+}
+
+/* ============================================================================
+   P3.8 — SCREENING
+   The calorie side has a medical flag. The training side prescribes handstand
+   push-ups, Nordic negatives and high-volume plyometrics and asked nothing.
+   ========================================================================= */
+const SCREEN_Q=[
+  ["shoulder","Shoulder injury or impingement history","handstand push-ups, planche and pike work"],
+  ["hamstring","Hamstring strain history","Nordic negatives and RDLs — the highest-risk cards here"],
+  ["cardio","High blood pressure or a cardiac condition","inversions and all-out sprint work"],
+  ["preg","Pregnant or postpartum","inversions, deep flexion and high-impact work"],
+  ["joint","Current knee, back or wrist pain","plyometrics, deep squats and loaded wrist positions"]
+];
+const SCREEN_RX={
+  shoulder:/handstand|hspu|planche|pike push|one-arm push/i,
+  hamstring:/nordic|rdl|leg curl|slider/i,
+  cardio:/handstand|sprint|interval|burpee/i,
+  preg:/handstand|planche|v-up|sit-up|hollow|jump|burpee|sprint/i,
+  joint:/jump|plyo|burpee|pistol|shrimp|deep|handstand/i
+};
+
 const REQ=3;
 const TREES={
   /* ---- TIER I — ORIGIN ARC (Midoriya) — zero equipment ---- */
   1:[["Strength Stat",0,[["Wall-Supported Squats","3 × 8"],["Chair Squats (sit-to-stand)","3 × 10"],["Air Squats","3 × 12"],["Air Squats","3 × 20"],["Split Squats","3 × 10/leg"]]],
      ["Hero Training",0,[["Wall Push-Ups","3 × 12"],["Incline Push-Ups (counter/couch)","3 × 10"],["Knee Push-Ups","3 × 10"],["Push-Ups","3 × 8–10"],["Push-Ups","3 × 15"]]],
-     ["Pull Stat",0,[["Prone Y-T-W Raises","3 × 8 each"],["Reverse Snow Angels","3 × 15"],["Superman Holds","3 × 20s"],["Prone Swimmers","3 × 30s"]]],
+     /* P1.2 — was the prone Y-T-W ladder, which is a scapular warm-up drill with
+        near-zero load; using it as the tier's pull card meant a novice spent months
+        with no horizontal pulling at all while the push ladder had five real rungs.
+        Y-T-W moved to the warm-up block, where it belongs. Needs a sturdy table or
+        a broomstick across two chair backs — no purchase required. */
+     ["Pull Stat",0,[["High Table Rows (bar at chest height)","3 × 10"],["Table Rows (lower the bar)","3 × 10"],["Table Rows","3 × 15"],["Under-Table Rows (chest to edge)","3 × 10"],["Feet-Forward Table Rows","3 × 12"]]],
      ["Power Stat",0,[["Glute Bridges","3 × 12"],["Glute Bridges","3 × 20"],["Single-Leg Glute Bridges","3 × 8/leg"],["Single-Leg Glute Bridges","3 × 12/leg"]]],
      ["Agility Stat",0,[["Static Lunges","3 × 8/leg"],["Reverse Lunges","3 × 8/leg"],["Walking Lunges","3 × 10/leg"],["Walking Lunges","3 × 15/leg"]]],
      ["Endurance",0,[["Knee Plank","3 × 20s"],["Plank","3 × 20–30s"],["Plank","3 × 45s"],["Plank + Shoulder Taps","3 × 30s"]]],
@@ -970,7 +1703,9 @@ const TREES={
   /* ---- TIER II — TRAINING ARC (Tanjiro) — zero equipment ---- */
   2:[["Hero Training",0,[["Push-Ups","4 × 15–20"],["Wide Push-Ups","4 × 15"],["Diamond Push-Ups","4 × 12"],["Feet-Elevated Push-Ups","4 × 12"],["Archer Push-Ups","3 × 8/side"]]],
      ["Strength Stat",0,[["Air Squats","4 × 20"],["Jump Squats","4 × 12"],["Split Squats","4 × 12/leg"],["Bulgarian Split Squats (chair)","3 × 10/leg"],["Assisted Pistol Squats","3 × 5/leg"]]],
-     ["Pull Stat",0,[["Prone Y-T-W Raises","3 × 12 each"],["Reverse Snow Angels","3 × 20"],["Towel Door Rows","4 × 10"],["Towel Door Rows","4 × 15"],["Feet-Forward Towel Rows","4 × 12"]]],
+     /* P1.2 — starts where Tier I's row ladder ends instead of restarting at a
+        warm-up drill. Towel door rows stay as the no-furniture fallback. */
+     ["Pull Stat",0,[["Under-Table Rows","4 × 10"],["Under-Table Rows","4 × 15"],["Feet-Elevated Table Rows","4 × 10"],["Feet-Elevated Table Rows","4 × 15"],["Archer Table Rows","3 × 8/side"]]],
      ["Core Stat",0,[["Dead Bugs","4 × 10/side"],["Sit-Ups","4 × 15–20"],["V-Ups","3 × 12"],["Hollow Body Hold","3 × 30s"],["Hollow Body Rocks","3 × 20"]]],
      ["Ultimate Move",0,[["Burpees","3 × 10"],["Burpees","4 × 12"],["Burpee Broad Jumps","3 × 10"],["Burpees","5 × 15"]]],
      ["Speed Stat",0,[["Mountain Climbers","3 × 30s"],["Mountain Climbers","3 × 45s"],["Sprinter Climbers","4 × 30s"]]],
@@ -986,7 +1721,8 @@ const TREES={
      ["Power Stat",0,[["Wall Handstand Push-Ups","3 × 5–8"],["Wall Handstand Push-Ups","4 × 10"],["Wall Handstand Hold","3 × 60s"],["Freestanding Kick-Up Practice","5 min"]]],
      ["Pull Stat",0,[["Towel Door Rows","5 × 12–15"],["Feet-Elevated Towel Rows","4 × 12"],["Archer Towel Rows","3 × 8/side"],["One-Arm Towel Rows","4 × 8/side"]]],
      ["Pull Stat",0,[["Prone Y-T-W Raises","4 × 15 each"],["Reverse Snow Angels","4 × 20"],["Prone Swimmers","3 × 40s"],["Sliding Floor Pulldowns","4 × 10"],["Reverse Plank Hold","3 × 45s"]]],
-     ["Speed Stat",0,[["Sprints / Hill Sprints","All-out efforts"],["Hill Sprints","6 × 20s"],["Hill Sprints","8 × 25s"],["Hill Sprints","10 × 30s"]]],
+     /* P1.4 — "All-out efforts" was the only unprescribed card in the app. */
+     ["Speed Stat",0,[["Sprints / Hill Sprints","6 × 20–30s, full recovery"],["Hill Sprints","6 × 20s"],["Hill Sprints","8 × 25s"],["Hill Sprints","10 × 30s"]]],
      ["Endurance",0,[["Plank","3 × 90s+"],["Plank","3 × 2 min"],["Plank","3 × 3 min"],["Plank Body Saw","3 × 12"]]],
      /* P0.2 hinge — LEGS+CORE day, after the pistol path. Feet anchored under a couch. */
      ["Hinge Stat",0,[["Nordic Negative (feet anchored)","4 × 5, 5s lower"],["Nordic Negative","4 × 6, 6s lower"],["Nordic w/ Partial Concentric","3 × 3"],["Nordic w/ Partial Concentric","4 × 5"]]]],
@@ -1030,8 +1766,12 @@ const BADGES=[
   ["s1","\ud83c\udfac","EPISODE ONE","Complete 1 full session"],
   ["s10","\ud83d\udcfa","COUR ONE","Complete 10 sessions"],
   ["s25","\ud83c\udf9e\ufe0f","SEASON FINALE","Complete 25 sessions"],
-  ["streak3","\ud83d\udd25","3-DAY FLAME","3-day workout streak"],
-  ["streak7","\ud83c\udf0b","7-DAY INFERNO","7-day workout streak"],
+  /* P0.3 — the old 3- and 7-day streak badges could not be earned without
+     violating the tier's own rest-day prescription, and a correctly executed
+     deload week broke them. The unit is now prescribed sessions hit, and a
+     deload week counts at its reduced prescription. */
+  ["perfect1","\ud83d\udd25","PERFECT WEEK","Hit every prescribed session in a week — rest days included"],
+  ["perfect4","\ud83c\udf0b","FOUR PERFECT WEEKS","Four perfect weeks back to back"],
   ["alltiers","\ud83c\udf00","DOMAIN HOPPER","Complete a session in all 5 tiers"],
   ["lv10","\ud83e\udd49","LV 10 \u2014 RISING","Reach level 10"],
   ["lv20","\ud83e\udd48","LV 20 \u2014 TRAINING ARC","Reach level 20"],
@@ -1039,7 +1779,11 @@ const BADGES=[
   ["lv60","\ud83c\udfc5","LV 60 \u2014 LEGENDARY ARC","Reach level 60"],
   ["lv100","\ud83d\udc51","LV 100 \u2014 ASCENDANT","Reach level 100"],
   ["fuel","\ud83c\udf71","FUEL CALCULATED","Use the calorie calculator"],
-  ["fast1","\u23f3","WINDOW CLOSED","Complete a full fast"],
+  /* P0.3 — was WINDOW CLOSED, awarded for completing a fast. The app's own copy
+     correctly says fasting is "not magic" and that weekly balance matters more;
+     scoring it as training progress contradicted the education. Now a neutral
+     tool-use badge, same as FUEL CALCULATED. */
+  ["fastuse","\u23f3","WINDOW TRACKED","Try the fasting tracker — a tool, not a training result"],
   ["log1","\ud83d\udcf8","CHECKPOINT","Log a transformation entry"],
   ["evolve","\ud83e\uddec","SKILL EVOLVED","Advance a skill to its next form"],
   ["evolve5","\ud83c\udf1f","FIVE FORMS","Evolve skills 5 times"],
@@ -1050,7 +1794,20 @@ const BADGES=[
   ["backup","\ud83d\udcbe","SAVE POINT","Export your first backup"],
   ["toji","\ud83d\udde1\ufe0f","SORCERER KILLER","Complete a Toji Domain session"],
   ["logger","\ud83d\udcd3","THE RECORD","Log sets on 10 skill cards"],
-  ["hinge","\ud83c\udf09","POSTERIOR CHAIN","Evolve a hinge card"]
+  ["hinge","\ud83c\udf09","POSTERIOR CHAIN","Evolve a hinge card"],
+  /* ---- v3 badges ---- */
+  ["trial1","\ud83d\udcd0","FIRST MEASURE","Log an Origin Trial — a number to beat"],
+  ["trial2","\ud83d\udcc8","MEASURED PROGRESS","Beat a previous Origin Trial"],
+  ["placed","\ud83e\udded","KNOW THYSELF","Complete the placement test"],
+  ["deload1","\ud83d\udee1\ufe0f","TACTICAL RETREAT","Complete a deload week as prescribed"],
+  ["readycheck","\ud83e\udde0","HONEST INPUT","Run 10 readiness checks"],
+  ["grip","\ud83e\udd1c","IRON GRIP","Log dead hangs on 10 days"],
+  ["neck","\ud83d\uddff","THE COLUMN","Log neck work on 10 days"],
+  ["mobile","\ud83e\udd38","FULL RANGE","Log mobility work on 10 days"],
+  ["stepper","\ud83d\udc63","TEN THOUSAND","Hit your step target on 7 days"],
+  ["cut1","\u2696\ufe0f","THE AUDIT","Run the liquid calorie audit"],
+  ["photo1","\ud83d\udcf7","RECEIPTS","Add a progress photo — the scale lies during recomp"],
+  ["endless","\u267e\ufe0f","ENDLESS ARC","Open the Endless Arc past Tier V"]
 ];
 
 /* ================= XP / LEVEL ================= */
@@ -1063,7 +1820,10 @@ function toast(msg){
   t.textContent=msg; t.classList.add("show");
   clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2600);
 }
-function shake(){ document.body.classList.add("shake"); setTimeout(()=>document.body.classList.remove("shake"),1600); }
+function shake(){
+  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  document.body.classList.add("shake"); setTimeout(()=>document.body.classList.remove("shake"),1600);
+}
 function grantXp(n,reason){
   const before=level();
   S.xp=Math.max(0,S.xp+n);
@@ -1102,10 +1862,13 @@ function checkBadges(){
   const tot=S.sessions[1]+S.sessions[2]+S.sessions[3]+S.sessions[4]+(S.sessions[5]||0)+(S.sessions[6]||0), l=level();
   if(Object.keys(S.checks).length>0)award("first");
   if(tot>=1)award("s1"); if(tot>=10)award("s10"); if(tot>=25)award("s25");
-  if(S.streak>=3)award("streak3"); if(S.streak>=7)award("streak7");
+  /* P0.3 — perfect weeks, not consecutive days. A deload week counts at its
+     reduced prescription, so executing the program correctly can never break it. */
+  if(S.perfectWeeks>=1||weekHit()>=weekNeed())award("perfect1");
+  if(S.perfectWeeks>=4)award("perfect4");
   if(S.sessions[1]>0&&S.sessions[2]>0&&S.sessions[5]>0&&S.sessions[3]>0&&S.sessions[4]>0)award("alltiers");
   if(l>=10)award("lv10"); if(l>=20)award("lv20"); if(l>=40)award("lv40"); if(l>=60)award("lv60"); if(l>=80)award("lv80"); if(l>=100)award("lv100");
-  if(S.calcDone)award("fuel"); if(S.fastsDone>0)award("fast1"); if(S.timeline.length>0)award("log1");
+  if(S.calcDone)award("fuel"); if(S.fastsDone>0||S.fastStart)award("fastuse"); if(S.timeline.length>0)award("log1");
   if(S.evolves>=1)award("evolve"); if(S.evolves>=5)award("evolve5");
   if(anyMaxed())award("maxform");
   if(S.boss.clears.length>0)award("boss1");
@@ -1114,6 +1877,18 @@ function checkBadges(){
   if(S.sessions[6]>0)award("toji");
   if(loggedCardCount()>=10)award("logger");
   if(hingeEvolved())award("hinge");
+  /* ---- v3 badges ---- */
+  if(S.trials.length>=1)award("trial1");
+  if(S.placement)award("placed");
+  if(S.deloadDone.length>=1)award("deload1");
+  if((S.readyCount||0)>=10)award("readycheck");
+  const xd=k=>Object.keys(S.extras).filter(d=>S.extras[d]&&S.extras[d][k]).length;
+  if(xd("hang")>=10)award("grip");
+  if(xd("neck")>=10)award("neck");
+  if(xd("mob")>=10)award("mobile");
+  if(Object.keys(S.steps).filter(d=>S.steps[d]>=8000).length>=7)award("stepper");
+  if(S.liquid)award("cut1");
+  if(S.endless)award("endless");
   renderBadges();
 }
 function renderBadges(){
@@ -1189,13 +1964,243 @@ function hingeEvolved(){
   }
   return false;
 }
+/* ============================================================================
+   P0.3 — THE WEEK IS THE UNIT, NOT THE CALENDAR DAY
+
+   The old streak counted consecutive calendar days, which every tier's own
+   protocol forbids: Tier I prescribes a rest day between sessions, so a Tier I
+   user could not earn a 3-day streak without breaking their program, and could
+   never earn the 7-day one at all. A correctly executed deload broke both.
+
+   The unit is now "prescribed sessions hit this week". A deload week counts at
+   its reduced prescription, so doing the right thing never costs you progress.
+   ========================================================================= */
+function weekMonday(d){
+  const t=d?new Date(d):new Date();
+  const day=(t.getDay()+6)%7;                 /* Monday = 0 */
+  t.setDate(t.getDate()-day);
+  return t.toISOString().slice(0,10);
+}
+/* Weekly target = the prescribed frequency of whichever tier you actually trained,
+   defaulting to the tier you trained last. Training two tiers in a week counts
+   against the larger of the two, so cross-training is never punished. */
+function weekNeed(){
+  const t=S.weekHits.map(x=>x.tier);
+  if(!t.length){
+    /* Nothing logged this week yet: fall back to the tier last trained, then to
+       the placement result, then to Tier I. Showing a Tier III user a Tier I
+       target would quietly under-count their week. */
+    const last=S.log.length?S.log[S.log.length-1].t
+             :(S.placement&&S.placement.tier?S.placement.tier:1);
+    return TIER_FREQ[last]||3;
+  }
+  return Math.max(...t.map(x=>TIER_FREQ[x]||3));
+}
+function rollWeek(){
+  const wk=weekMonday();
+  if(S.weekKey===wk) return;
+  if(S.weekKey){
+    const hit=S.weekHits.length, need=weekNeed(), perfect=hit>=need;
+    S.weekHistory.push({w:S.weekKey,hit,need,perfect});
+    if(S.weekHistory.length>104) S.weekHistory.shift();
+    S.perfectWeeks=perfect?S.perfectWeeks+1:0;
+  }
+  S.weekKey=wk; S.weekHits=[];
+}
+const weekHit=()=>S.weekHits.length;
+
+/* ============================================================================
+   P3.1 — FATIGUE MANAGEMENT
+
+   deloadState() answers "is this tier on a deload right now, and why".
+   Two independent triggers:
+     scheduled — a week counter driven by sessions completed, not by the calendar,
+                 so someone training twice a week does not deload every fortnight.
+     reactive  — the existing check-in signals (RPE, sleep, pain, long gap).
+   ========================================================================= */
+function tierWeek(tier){ return Math.floor((S.tierSess[tier]||0)/(TIER_FREQ[tier]||3))+1; }
+function reactiveDeload(){
+  const last3=S.checkins.slice(-3);
+  const rpeHigh=last3.length===3 && last3.reduce((a,c)=>a+c.rpe,0)/3>=8.5;
+  const badSleep=last3.length===3 && last3.every(c=>c.sleep);
+  const pain=S.checkins.slice(-2).some(c=>c.pain);
+  const gap=S.lastWorkout && (Date.now()-new Date(S.lastWorkout).getTime())/864e5>10;
+  return pain?"pain reported":rpeHigh?"3 sessions at RPE ≥8.5":badSleep?"3 sessions on under 6h sleep":gap?"10+ days away":null;
+}
+function deloadState(tier){
+  const wk=tierWeek(tier), cyc=TIER_CYCLE[tier]||5;
+  const cycleWeek=((wk-1)%cyc)+1;
+  const scheduled=cycleWeek===cyc;
+  const react=reactiveDeload();
+  const dismissed=S.deloadDismissed && (Date.now()-new Date(S.deloadDismissed).getTime())/864e5<7;
+  return {
+    week:wk, cycleWeek:cycleWeek, cycle:cyc,
+    scheduled:scheduled,
+    reactive:(react&&!dismissed)?react:null,
+    active:scheduled||(!!react&&!dismissed),
+    reason:scheduled?("scheduled — week "+cycleWeek+" of "+cyc):(react||null)
+  };
+}
+/* P3.1 — three taps before a session. The difference between a program that
+   adapts and one that grinds people into a hole. */
+function readinessToday(){
+  return (S.readiness && S.readiness.d===today()) ? S.readiness.mod : null;
+}
+function readinessLabel(m){
+  return m==="deload"?"DELOAD TODAY":m==="reduced"?"REDUCED":m==="full"?"FULL":"";
+}
+function openReadiness(tier,then){
+  openModal(`<h3>🧠 READINESS CHECK</h3>
+    <p>Three taps. The session adjusts itself to the answers — this is the same
+       idea as the Trial's readiness gate, applied to every session.</p>
+    <label>Sleep last night</label>
+    <select id="rdSleep">
+      <option value="2">Under 5 hours</option>
+      <option value="1">5–6 hours</option>
+      <option value="0" selected>7+ hours</option>
+    </select>
+    <label>Soreness from last session</label>
+    <select id="rdSore">
+      <option value="0" selected>None to mild</option>
+      <option value="1">Noticeable</option>
+      <option value="2">Still sore — it limits me</option>
+    </select>
+    <label>Energy right now</label>
+    <select id="rdEnergy">
+      <option value="0" selected>Good</option>
+      <option value="1">Flat</option>
+      <option value="2">Running on empty</option>
+    </select>
+    <button class="btn" id="rdGo">SET TODAY'S SESSION</button>
+    <button class="btn ghost" id="rdSkip">SKIP — RUN IT FULL</button>`);
+  const apply=mod=>{
+    S.readiness={d:today(),mod:mod};
+    S.readyCount=(S.readyCount||0)+1;
+    save(); closeModal(); rerenderAll();
+    toast(mod==="deload"?"Deload today — sets halved, plyos off. That is the right call."
+         :mod==="reduced"?"Reduced — one set off each card. Still counts as a full session."
+         :"Full session. Go.");
+    if(then) then();
+  };
+  document.getElementById("rdSkip").onclick=()=>apply("full");
+  document.getElementById("rdGo").onclick=()=>{
+    const n=(+document.getElementById("rdSleep").value)
+           +(+document.getElementById("rdSore").value)
+           +(+document.getElementById("rdEnergy").value);
+    apply(n>=4?"deload":n>=2?"reduced":"full");
+  };
+}
+/* The prescription the user actually reads, after deload and readiness. */
+function effectiveRx(tier,rx){
+  const d=deloadState(tier), r=readinessToday();
+  let out=rx, mod=null;
+  if(d.active||r==="deload"){ out=halveRx(rx); mod="deload"; }
+  else if(r==="reduced"){ out=minusOneRx(rx); mod="reduced"; }
+  /* Prose prescriptions ("2–3 km", "All-out efforts") have no set count to halve.
+     Reporting them as modified would show a strikethrough against an identical
+     string, which reads like a bug because it is one. */
+  if(out===rx) mod=null;
+  return {rx:out,mod:mod};
+}
+/* P0.2 — plyometrics are capped by foot contacts, and hidden entirely on a
+   deload. The Gravity Arc protocol already said "no plyometrics at all" on a
+   deload week; nothing enforced it. */
+function plyoHidden(tier){
+  const d=deloadState(tier);
+  return d.active||readinessToday()==="deload";
+}
+/* P3.9 — objective check against the self-reported grade. Every 4th session in a
+   tier, one card is flagged AMRAP; beating the top of the range by 5+ forces the
+   evolution prompt whatever the user selected in the dropdown. */
+function amrapIndex(tier,day){
+  const n=S.tierSess[tier]||0;
+  if(n===0||n%4!==3) return -1;
+  const cards=dayCards(tier,day);
+  return cards.length?cards[n%cards.length]:-1;
+}
+
+/* P3.7 — the movement actually shown, once a substitution is chosen. */
+function shownMove(k,name){
+  const s=S.subs[k];
+  return s?{name:s,sub:true}:{name:name,sub:false};
+}
+/* P3.8 — cards this user's screening flagged. */
+function screenFlags(name){
+  if(!S.screen) return [];
+  return SCREEN_Q.filter(([id])=>S.screen[id]&&SCREEN_RX[id]&&SCREEN_RX[id].test(name)).map(q=>q[0]);
+}
+
+/* ---- panel plumbing: keep the day bar / meters as siblings of the grid ---- */
+function panelBefore(grid,id,cls){
+  let el=document.getElementById(id);
+  if(!el){ el=document.createElement("div"); el.id=id; el.className=cls; grid.parentNode.insertBefore(el,grid); }
+  return el;
+}
+function panelAfter(grid,id,cls){
+  let el=document.getElementById(id);
+  if(!el){ el=document.createElement("div"); el.id=id; el.className=cls; grid.parentNode.insertBefore(el,grid.nextSibling); }
+  return el;
+}
+
 function renderGrids(){
   const LAST=buildLastMap();
-  for(const tier of [1,2,3,4,5,6]){
-    document.getElementById("grid"+tier).innerHTML=TREES[tier].map((tr,i)=>{
+  for(const tier of TIER_ORDER){
+    const grid=document.getElementById(TIER_GRID[tier]);
+    const day=curDay(tier), cards=dayCards(tier,day), dl=deloadState(tier), rmod=readinessToday();
+    const amrap=amrapIndex(tier,day);
+
+    /* ---- P0.1 day selector ------------------------------------------------ */
+    const bar=panelBefore(grid,"daybar"+tier,"daybar");
+    bar.innerHTML=dayCount(tier)>1
+      ? `<span class="dlbl">TODAY</span>`+SPLIT[tier].days.map((nm,d)=>
+          `<button class="daybtn ${d===day?"on":""}" data-tier="${tier}" data-day="${d}">${nm}<span class="dc">${dayCards(tier,d).length}</span></button>`
+        ).join("")
+      : `<span class="dlbl">TODAY</span><button class="daybtn on" data-tier="${tier}" data-day="0">FULL BODY<span class="dc">${cards.length}</span></button>`;
+
+    /* ---- P0.2 load meter: time, sets and foot contacts, before you start --- */
+    let mins=0, sets=0, contacts=0;
+    cards.forEach(i=>{
+      const nd=TREES[tier][i][2][Math.min(P(tier+"-"+i,tier,i).n,TREES[tier][i][2].length-1)];
+      if(RX_PLYO.test(nd[0])&&plyoHidden(tier)) return;
+      const rx=effectiveRx(tier,nd[1]).rx;
+      mins+=cardMinutes(nd[0],rx); sets+=(parseRx(rx).sets||0); contacts+=footContacts(nd[0],rx);
+    });
+    mins=Math.round(mins+6);                 /* +5 warm-up, +3 cool-down, rounded */
+    const meter=panelBefore(grid,"load"+tier,"loadmeter");
+    meter.innerHTML=
+      `<span>≈ <b class="${mins>60?"warn":"good"}">${mins} min</b> session${mins>60?" — over the 60-min line, trim a card":""}</span>`+
+      `<span><b>${cards.length}</b> cards · <b>${sets}</b> working sets</span>`+
+      (contacts?`<span class="${contacts>100?"warn":""}">${contacts} foot contacts${contacts>100?" — over the 100/session cap":""}</span>`:"")+
+      (dl.active?`<span class="deloadchip">DELOAD · WK ${dl.cycleWeek}/${dl.cycle}</span>`:"")+
+      (rmod&&rmod!=="full"?`<span class="deloadchip ${rmod==="reduced"?"reduced":""}">${readinessLabel(rmod)}</span>`:"");
+
+    /* ---- P0.4 the grade key, on the card grid, not in a help page ---------- */
+    const gk=panelBefore(grid,"gk"+tier,"gradekeywrap");
+    if(!gk.innerHTML) gk.innerHTML=
+      `<details class="gradekey"><summary>❓ WHAT COUNTS AS A CLEAN CLEAR</summary>
+        <table>
+          <tr><td class="g-clean">CLEAN</td><td>All sets at target reps, form held, and <b>1–3 reps still in reserve on every set</b>. Only a clean clear moves you toward the next form.</td></tr>
+          <tr><td class="g-grindy">GRINDY</td><td>You hit the target but the last set was a fight, or form degraded. Counts as training — holds your position on the ladder.</td></tr>
+          <tr><td class="g-failed">FAILED</td><td>Missed the target reps on any set. Two in a row and the card suggests stepping back a form.</td></tr>
+        </table>
+        <table><tr><td>▼</td><td><b>Stepping back is a normal programming action, not a loss.</b> No XP is taken for it. Deliberately regressing to hold form is what the ladder is for.</td></tr></table>
+      </details>`;
+
+    grid.innerHTML=TREES[tier].map((tr,i)=>{
       const k=tier+"-"+i, nodes=tr[2], p=P(k,tier,i);
       p.n=Math.min(p.n,nodes.length-1);
       const node=nodes[p.n], done=!!S.checks[k];
+      /* P0.1 — cards outside today's split are hidden, not deleted. P0.2 — runs
+         and sprints sit in the conditioning block below, never blocking a session. */
+      const inDay=cards.indexOf(i)>-1, cond=isCond(tier,i);
+      const off=!inDay&&!cond;
+      /* P3.1 — a deload hides plyometrics outright rather than asking nicely. */
+      const hidePlyo=RX_PLYO.test(node[0])&&plyoHidden(tier);
+      const eff=effectiveRx(tier,node[1]);
+      const kind=cardKind(node[0]);
+      const mv=shownMove(k,node[0]);
+      const flags=screenFlags(node[0]);
+      const isAmrap=(i===amrap)&&!done;
       const maxed=p.n>=nodes.length-1, ready=!maxed&&p.c>=REQ;
       const pips=`<span>${"\u25c6".repeat(p.n+1)}</span><span class="off">${"\u25c7".repeat(nodes.length-1-p.n)}</span>`;
       const need=REQ-p.c;
@@ -1204,10 +2209,24 @@ function renderGrids(){
         :maxed
         ?`<div class="evolveNote max">\ud83d\udc09 FINAL FORM</div>`
         :`<div class="evolveNote dim">${need} more clean clear${need===1?"":"s"} to evolve</div>`;
+      /* P1.1 — rest guidance and a timer, on every card. */
+      const restRow=`<div class="restline"><b>REST</b> ${REST_TXT[kind]} <span style="opacity:.7">— ${REST_WHY[kind]}</span>
+        <button class="timerbtn tRest" data-sec="${REST_SEC[kind]}">⏱ REST</button>`+
+        (parseRx(eff.rx).secs?`<button class="timerbtn tWork" data-sec="${parseRx(eff.rx).secs}">⏱ WORK ${parseRx(eff.rx).secs}s</button>`:"")+
+        `</div>`;
+      /* P3.7 — swaps for the constraints the app used to ignore. */
+      const swaps=subsFor(node[0]);
+      const subRow=swaps.length?`<div class="subrow"><select class="subsel" aria-label="Substitute this movement">
+          <option value=""${!S.subs[k]?" selected":""}>as prescribed — ${esc(node[0])}</option>`+
+          swaps.map(([lab,tag,why])=>`<option value="${esc(lab)}"${S.subs[k]===lab?" selected":""}>${esc(tag)} — ${esc(lab)}</option>`).join("")+
+        `</select></div>`:"";
       /* P0.1 \u2014 what you did last time, and when */
       const lg=loggedToday(k), dr=draft[k], last=LAST[k];
       const sv=dr?dr.s:(lg?fmtSets(lg.sets):"");
-      const qv=dr&&dr.q?dr.q:(lg?lg.quality:"clean");
+      /* P0.4 DEFAULT — GRINDY, deliberately. CLEAN is what advances the ladder,
+         so it has to be a choice the user makes, not the one they fall into. A
+         card already logged today keeps whatever grade it was given. */
+      const qv=dr&&dr.q?dr.q:(lg?lg.quality:"grindy");
       const ph=last?`Last time: ${fmtSets(last.sets)}`:"sets \u2014 e.g. 12 10 9";
       const lastNote=last
         ? `<div class="lastnote"><b>Last:</b> ${fmtSets(last.sets)} \u00b7 ${last.quality||"clean"} \u00b7 ${last.d}</div>`
@@ -1221,11 +2240,13 @@ function renderGrids(){
             <option value="failed"${qv==="failed"?" selected":""}>failed</option>
           </select>
         </div>`;
-      return `<div class="skill ${done?"done":""}" data-k="${k}" data-tier="${tier}" data-i="${i}">
+      return `<div class="skill ${done?"done":""}${off?" offday":""}${hidePlyo?" hiddenplyo":""}${eff.mod?" deloaded":""}${mv.sub?" substituted":""}" data-k="${k}" data-tier="${tier}" data-i="${i}">
         <span class="xp">+${cardXp(p.n)} XP</span>
-        <span class="stat">[ ${tr[0]} ]</span>
-        <div class="name">${node[0]}</div>
-        <div class="reps">${node[1]}</div>
+        <span class="stat">[ ${tr[0]} ]${cond?' <span class="subtag">CONDITIONING</span>':""}</span>
+        <div class="name">${esc(mv.name)}${mv.sub?' <span class="subtag">SWAP</span>':""}${isAmrap?' <span class="subtag" style="border-color:var(--gold);color:var(--gold)">AMRAP SET</span>':""}</div>
+        <div class="reps">${esc(eff.rx)}${eff.mod?`<span class="repsorig">${esc(node[1])}</span>`:""}</div>
+        ${flags.length?`<div>${flags.map(f=>`<span class="flagchip">⚠ ${esc(f)} flagged — consider a swap</span>`).join("")}</div>`:""}
+        ${isAmrap?`<div class="evolveNote">🎯 AMRAP CHECK — last set to technical failure. Beat the top of the range by 5+ and the app will push you up a form whatever you grade it.</div>`:""}
         <div class="prog">
           <span class="ntag">FORM ${p.n+1}/${nodes.length}</span>
           <span class="pips">${pips}</span>
@@ -1236,14 +2257,48 @@ function renderGrids(){
         </div>
         ${note}
         ${logRow}
+        ${restRow}
+        ${subRow}
         ${lastNote}
         <div class="check">${done?"CLEARED TODAY":"CLICK WHEN DONE"}</div>
       </div>`;
     }).join("");
+
+    /* ---- P0.1 / P0.2 — what today is, and where the run went -------------- */
+    const dn=panelBefore(grid,"dn"+tier,"daynote");
+    const condNames=SPLIT[tier].cond.map(i=>{
+      const nn=TREES[tier][i][2]; const pp=P(tier+"-"+i,tier,i);
+      return nn[Math.min(pp.n,nn.length-1)][0];
+    });
+    dn.innerHTML=
+      `Showing <b>${dayName(tier,day)}</b> — ${cards.length} card${cards.length===1?"":"s"}. `+
+      (dayCount(tier)>1?`The other ${dayCount(tier)-1} day${dayCount(tier)>2?"s are":" is"} hidden until ${dayCount(tier)>2?"their":"its"} turn. `:"")+
+      (condNames.length?`<b>${esc(condNames.join(" · "))}</b> is conditioning — tracked weekly below, and it never blocks a session.`:"");
   }
   bindGrids();
 }
 function bindGrids(){
+  /* P0.1 — the day selector. Picking a day filters the grid; it does not
+     complete anything. */
+  document.querySelectorAll(".daybtn").forEach(b=>b.onclick=()=>{
+    S.day[+b.dataset.tier]=+b.dataset.day; save(); renderGrids(); renderToday();
+  });
+  /* P3.7 — substitutions. */
+  document.querySelectorAll(".subsel").forEach(sel=>{
+    sel.onclick=e=>e.stopPropagation();
+    sel.onchange=e=>{
+      e.stopPropagation();
+      const k=sel.closest(".skill").dataset.k;
+      if(sel.value) S.subs[k]=sel.value; else delete S.subs[k];
+      save(); renderGrids();
+      toast(sel.value?"Swapped — the prescription still applies.":"Back to the prescribed movement.");
+    };
+  });
+  /* P1.1 / P4 — rest and work timers. */
+  document.querySelectorAll(".timerbtn").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    startTimer(+b.dataset.sec, b.classList.contains("tWork")?"WORK":"REST");
+  });
   document.querySelectorAll(".skill").forEach(el=>{
     const k=el.dataset.k, tier=+el.dataset.tier, i=+el.dataset.i;
     const setsEl=el.querySelector(".setsInput"), qualEl=el.querySelector(".qualSel");
@@ -1282,11 +2337,31 @@ function bindGrids(){
         grantXp(-back);
       }else{
         const xp=cardXp(p.n);
-        const sets=parseSets(draft[k]?draft[k].s:""), q=(draft[k]&&draft[k].q)||"clean";
+        /* P0.4 — the default is now GRINDY. In a self-reported system the default
+           IS the answer for most users, and defaulting to the passing grade meant
+           every card evolved every third session regardless of what happened. */
+        const sets=parseSets(draft[k]?draft[k].s:""), q=(draft[k]&&draft[k].q)||"grindy";
         S.checks[k]=xp;
         logCard(k,tier,sets,q);
         if(q==="clean"&&p.d!==today()){ p.c++; p.d=today(); }
         grantXp(xp,q==="clean"?"skill cleared":"logged \u2014 "+q+", no clear banked");
+        /* P3.9 — objective check on the self-report. If this was the AMRAP card and
+           the top set beat the prescription by 5+, the ladder moves whatever the
+           dropdown said. */
+        const nodes2=TREES[tier][i][2], nd=nodes2[Math.min(p.n,nodes2.length-1)];
+        if(i===amrapIndex(tier,curDay(tier)) && sets.length){
+          const nums=(nd[1].match(/\d+/g)||[]).slice(1).map(Number);
+          const top=nums.length?Math.max.apply(null,nums):0;
+          if(top && Math.max.apply(null,sets)>=top+5 && p.n<nodes2.length-1){
+            p.c=REQ; p.d=today();
+            toast("AMRAP beat the range by 5+ \u2014 evolution unlocked. Tap \u25b2.");
+          }
+        }
+        /* P0.4 — two failures in a row is the app's cue to suggest a step back. */
+        if(q==="failed"){
+          p.f=(p.f||0)+1;
+          if(p.f>=2) toast("Two failed sessions on this card \u2014 tap \u25bc. Regressing is programming, not defeat.");
+        } else p.f=0;
       }
       renderGrids();
     };
@@ -1303,12 +2378,46 @@ function bindGrids(){
       e.stopPropagation();
       const p=P(k,tier,i);
       if(p.n===0) return;
-      p.n--; p.c=0; p.d=null;
-      toast("Stepped back a form \u2014 smart pacing, hero.");
+      p.n--; p.c=0; p.d=null; p.f=0;
+      /* P0.4 — the XP system made regression read as a loss. It costs nothing. */
+      toast("Stepped back a form \u2014 normal programming, no XP lost.");
       save(); renderGrids();
     };
   });
 }
+
+/* ============================================================================
+   P1.1 + P4 — REST AND WORK TIMER
+   The app was full of timed prescriptions (plank 90s, handstand hold 60s,
+   mountain climbers 30s) and shipped no way to time them, and rest between sets
+   went unmentioned entirely. One component, two jobs.
+   ========================================================================= */
+let tkInt=null, tkLeft=0;
+function tkPaint(){
+  const m=Math.floor(Math.abs(tkLeft)/60), s=Math.abs(tkLeft)%60;
+  document.getElementById("tkVal").textContent=
+    (tkLeft<0?"+":"")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  document.getElementById("timerDock").classList.toggle("done",tkLeft<=0);
+}
+function startTimer(sec,label){
+  clearInterval(tkInt);
+  tkLeft=sec;
+  document.getElementById("tkLbl").textContent=label||"REST";
+  document.getElementById("timerDock").classList.add("show");
+  tkPaint();
+  tkInt=setInterval(()=>{
+    tkLeft--;
+    tkPaint();
+    if(tkLeft===0){
+      toast((label||"REST")+" done \u2014 next set.");
+      /* Keep counting up so an overrun is visible rather than silently ignored. */
+    }
+    if(tkLeft<-120) stopTimer();
+  },1000);
+}
+function stopTimer(){ clearInterval(tkInt); tkInt=null; document.getElementById("timerDock").classList.remove("show"); }
+document.getElementById("tkStop").onclick=stopTimer;
+document.getElementById("tkAdd").onclick=()=>{ tkLeft+=30; tkPaint(); };
 
 /* ================= BOSS BATTLE — MULTI-LAYER GATE ================= */
 function bossGate(){
@@ -1347,11 +2456,27 @@ function renderBoss(){
   const btn=document.getElementById("sessBtn4"), lock=document.getElementById("masteryLock");
   btn.disabled=!open;
   btn.textContent=open?"\ud83e\udd4b COMPLETE SESSION (+60 XP)":"\ud83d\udd12 SEALED \u2014 CLEAR SAITAMA'S TRIAL";
+  /* P1.5 — the Trial is a 100/100/100/10 km capacity test; the Mastery Arc is
+     skill and leverage work. Passing a 10 km run says nothing about readiness for
+     a planche lean. The Trial stays as the narrative gate; these are the real
+     prerequisites, stated plainly so nobody walks into a tier they cannot hold. */
+  const SKILL_PREREQS=
+    `<div style="margin-top:10px;font-size:.85rem;line-height:1.65;color:var(--dim);text-align:left">
+       <b style="color:var(--ink)">The Trial is the story gate. These are the real ones:</b><br>
+       ◆ 60 s wall handstand hold, controlled<br>
+       ◆ One clean pistol squat to a chair, each leg<br>
+       ◆ 30 s tuck L-sit off the floor<br>
+       ◆ Wrists that tolerate a 60 s planche lean without pain<br>
+       <span style="color:#6f6f8c">You can clear the Trial and still be physically unable to perform this tier's cards —
+       for most people the limiter is range and wrist tolerance, not strength. The mobility block in each
+       domain trains exactly these.</span>
+     </div>`;
   lock.innerHTML=open
-    ?(S.masteryOverride&&!n
+    ?((S.masteryOverride&&!n
       ?"\ud83d\udd13 THE GATES ARE OPEN \u2014 unlocked manually, not earned. The Trial is still the honest benchmark."
-      :"\ud83d\udd13 THE GATES ARE OPEN \u2014 train the Mastery Arc.")
+      :"\ud83d\udd13 THE GATES ARE OPEN \u2014 train the Mastery Arc.")+SKILL_PREREQS)
     :"\ud83d\udd12 SEALED \u2014 clear SAITAMA'S TRIAL (Legendary Arc boss) to open the Gates. Cards below stay open for practice."+
+     SKILL_PREREQS+
      `<br><button class="btn ghost" id="masteryOverrideBtn" style="margin-top:10px">I know what I'm doing \u2014 unlock anyway</button>`;
   lock.classList.toggle("open",open);
   const mo=document.getElementById("masteryOverrideBtn");
@@ -1412,53 +2537,86 @@ document.getElementById("bossBtn").onclick=()=>{
 };
 
 /* ================= SESSIONS / STREAK / CHECK-IN ================= */
+/* P0.1 — completes TODAY'S DAY, not the whole tier, and rotates the default day
+   forward so the app opens on the right one next time.
+   P3.1 — drives the per-tier week counter.
+   P0.3 — banks the session against this week's prescription. */
 function completeSession(tier){
+  rollWeek();
+  const day=curDay(tier), dl=deloadState(tier);
   S.sessions[tier]++;
-  S.log.push({d:today(),t:tier}); if(S.log.length>500)S.log.shift();
+  S.tierSess[tier]=(S.tierSess[tier]||0)+1;
+  S.log.push({d:today(),t:tier,day:day}); if(S.log.length>500)S.log.shift();
   if(tier===3&&!S.firstT3)S.firstT3=today();
-  const t=today();
-  if(S.lastWorkout!==t){
-    const y=new Date(Date.now()-864e5).toISOString().slice(0,10);
-    S.streak=(S.lastWorkout===y)?S.streak+1:1;
-    S.lastWorkout=t;
+  S.lastWorkout=today();
+  /* A deload session counts in full. If it cost progress on screen, users skip it
+     — which is exactly the behaviour the deload exists to prevent. */
+  S.weekHits.push({tier:tier,day:day,d:today(),deload:dl.active});
+  if(dl.active){
+    const tag=tier+":"+dl.week;
+    if(S.deloadDone.indexOf(tag)<0) S.deloadDone.push(tag);
   }
-  grantXp(tier===4?60:50,`${["","Tier I","Tier II","Tier IV","Tier V","Tier III","Side Arc"][tier]} session complete`);
-  updateCounts(); renderBoss();
-  setTimeout(openCheckin,1200);
+  /* Rotate to the next day in the split. */
+  if(dayCount(tier)>1) S.day[tier]=(day+1)%dayCount(tier);
+  grantXp(tier===4?60:50,
+    `${TIER_NAME[tier]} — ${dayName(tier,day)} complete${dl.active?" (deload)":""}`);
+  updateCounts(); renderBoss(); renderToday(); renderCharts();
+  setTimeout(()=>openCheckin(tier),1200);
 }
-function openCheckin(){
+function openCheckin(tier){
   openModal(`<h3>\ud83d\udcdd POST-SESSION CHECK-IN</h3>
     <p>20 seconds of honesty \u2014 this drives the auto-deload system.</p>
     <label>Effort (RPE 1\u201310)</label>
     <select id="ciRpe">${[1,2,3,4,5,6,7,8,9,10].map(v=>`<option ${v===7?"selected":""}>${v}</option>`).join("")}</select>
     <label class="chk"><input type="checkbox" id="ciSleep"> Slept under 6 hours last night</label>
     <label class="chk"><input type="checkbox" id="ciPain"> Felt pain (not normal muscle soreness)</label>
+    <label>Session length (minutes)</label>
+    <input type="number" id="ciMins" min="5" max="240" placeholder="45" style="width:100%;background:#0a0a14;border:1px solid #33334f;color:var(--ink);border-radius:8px;padding:9px 10px;font-family:var(--font-body);font-weight:700">
     <button class="btn" id="ciSave">SAVE CHECK-IN</button>
     <button class="btn ghost" id="ciSkip">SKIP</button>`);
   document.getElementById("ciSkip").onclick=closeModal;
   document.getElementById("ciSave").onclick=()=>{
-    S.checkins.push({d:today(),rpe:+document.getElementById("ciRpe").value,
+    const rpe=+document.getElementById("ciRpe").value;
+    const mins=+document.getElementById("ciMins").value||0;
+    S.checkins.push({d:today(),rpe:rpe,
       sleep:document.getElementById("ciSleep").checked,pain:document.getElementById("ciPain").checked});
     if(S.checkins.length>30)S.checkins.shift();
-    save(); closeModal(); assessDeload(); toast("Check-in saved.");
+    /* P3.1 — session load = RPE × minutes. Two weeks of rising load against flat
+       performance is the earliest overtraining signal available without a lab. */
+    S.sessRpe.push({d:today(),tier:tier||null,rpe:rpe,mins:mins,load:rpe*mins});
+    if(S.sessRpe.length>120)S.sessRpe.shift();
+    save(); closeModal(); assessDeload(); renderCharts(); checkBadges();
+    toast("Check-in saved.");
   };
 }
+/* P3.1 — the banner now reports BOTH triggers, and says what the app has already
+   done to the prescriptions rather than asking the user to do the maths.
+   Before this, "halve your sets" was advice printed next to unchanged cards. */
 function assessDeload(){
   const b=document.getElementById("deloadBanner");
-  const last3=S.checkins.slice(-3);
-  const rpeHigh=last3.length===3 && last3.reduce((a,c)=>a+c.rpe,0)/3>=8.5;
-  const badSleep=last3.length===3 && last3.every(c=>c.sleep);
+  const react=reactiveDeload();
+  const dismissed=S.deloadDismissed && (Date.now()-new Date(S.deloadDismissed).getTime())/864e5<7;
+  const sched=TIER_ORDER.filter(t=>deloadState(t).scheduled && (S.tierSess[t]||0)>0);
   const pain=S.checkins.slice(-2).some(c=>c.pain);
   const gap=S.lastWorkout && (Date.now()-new Date(S.lastWorkout).getTime())/864e5>10;
-  const dismissed=S.deloadDismissed && (Date.now()-new Date(S.deloadDismissed).getTime())/864e5<7;
-  const reason=pain?"pain reported":rpeHigh?"3 sessions at RPE \u22658.5":badSleep?"3 sessions on under 6h sleep":gap?"10+ days away":null;
-  if(!reason||dismissed){ b.style.display="none"; return; }
-  b.innerHTML=`\ud83d\uded1 <b>DELOAD PROTOCOL TRIGGERED</b> \u2014 ${reason}. This week: halve your sets, tap \u25bc to step back a form on your hardest cards, walk, and sleep. `+
-    (pain?`<b>Pain is not soreness</b> \u2014 skip that movement, and see a professional if it persists. `:"")+
-    (gap?`Welcome back \u2014 restart one form lower than where you left off. `:"")+
-    `<br><button class="btn ghost" id="deloadOk">GOT IT \u2014 DELOAD WEEK</button>`;
+  if((!react||dismissed) && !sched.length){ b.style.display="none"; return; }
+  let html="";
+  if(sched.length){
+    const t=sched[0], d=deloadState(t);
+    html+=`\ud83d\uded1 <b>DELOAD WEEK — ${TIER_NAME[t]}</b> — week ${d.cycleWeek} of ${d.cycle}. `+
+      `Sets on every card are already halved, plyometrics and sprints are hidden, and the effort standard drops to 4–5 reps in reserve. `+
+      `<b>This still counts as a full week</b> toward your streak and badges. `;
+  }
+  if(react&&!dismissed){
+    html+=(html?"<br><br>":"")+`\u26a0 <b>READINESS FLAG</b> — ${react}. Halve the sets, step back a form on your hardest cards, walk, and sleep. `+
+      (pain?`<b>Pain is not soreness</b> — skip that movement, and see a professional if it persists. `:"")+
+      (gap?`Welcome back — restart one form lower than where you left off. `:"")+
+      `<br><button class="btn ghost" id="deloadOk">GOT IT — DELOAD WEEK</button>`;
+  }
+  b.innerHTML=html;
   b.style.display="block";
-  document.getElementById("deloadOk").onclick=()=>{ S.deloadDismissed=today(); save(); b.style.display="none"; };
+  const ok=document.getElementById("deloadOk");
+  if(ok) ok.onclick=()=>{ S.deloadDismissed=today(); save(); assessDeload(); rerenderAll(); };
 }
 function updateCounts(){
   for(const t of [1,2,3,4,5,6])
@@ -1473,7 +2631,16 @@ function refresh(){
   document.getElementById("hudLevel").textContent=l;
   document.getElementById("hudXpFill").style.width=pct+"%";
   document.getElementById("hudXpText").textContent=l>=100?`${S.xp} XP \u2014 MAX`:`${inLvl} / ${XP_PER_LEVEL} XP \u00b7 ${S.xp} total`;
-  document.getElementById("hudStreak").textContent=S.streak;
+  /* P0.3 — prescribed sessions hit this week, with a pip per session. */
+  rollWeek();
+  const need=weekNeed(), hit=weekHit();
+  const pips=[...Array(Math.max(need,hit))].map((_,i)=>{
+    const e=S.weekHits[i];
+    return `<span class="weekpip ${i<hit?(e&&e.deload?"deload hit":"hit"):""}"></span>`;
+  }).join("");
+  document.getElementById("hudWeek").innerHTML=
+    `<span class="weekmeter" style="gap:6px">${pips}</span>`+
+    `<span style="margin-left:8px">${hit}/${need} this week${S.perfectWeeks?` · ${S.perfectWeeks}★`:""}</span>`;
   document.getElementById("hudTitle").textContent=arcTitle(l);
   document.getElementById("bigXpFill").style.width=Math.min(100,S.xp/(XP_PER_LEVEL*99)*100)+"%";
   document.getElementById("bigXpText").textContent=S.xp+" XP";
@@ -1533,6 +2700,17 @@ document.getElementById("calcBtn").onclick=()=>{
   document.getElementById("rMaint").textContent=maint+" kcal";
   document.getElementById("rTargetLbl").textContent="Target \u2014 "+GOALS[goal][0];
   document.getElementById("rCut").textContent=target+" kcal";
+  /* P2 — the calculator computed macros but never stated a protein target in the
+     terms the evidence actually uses, or how to spread it. One-field change with
+     more impact than the fasting tracker it sits next to. */
+  const pLo=Math.round(lb*0.7), pHi=Math.round(lb*1.0);
+  const rateLo=(lb*0.005).toFixed(1), rateHi=(lb*0.0075).toFixed(1);
+  document.getElementById("rProt").textContent=pLo+"–"+pHi+" g · 3–4 feedings";
+  document.getElementById("rRate").textContent=rateLo+"–"+rateHi+" lb/wk";
+  S.proteinTarget=pLo; S.calcDeficit=Math.abs(Math.min(0,adj))||500; S.calcWeight=lb;
+  const cp=document.getElementById("cutProtein"), cr=document.getElementById("cutRate");
+  if(cp) cp.textContent=pLo+"–"+pHi+" g/day";
+  if(cr) cr.textContent=rateLo+"–"+rateHi+" lb/wk";
   document.getElementById("mP").textContent=pG+" g";
   document.getElementById("mC").textContent=cG+" g";
   document.getElementById("mF").textContent=fG+" g";
@@ -1702,8 +2880,13 @@ function backupReminder(){
   if(days>=14) setTimeout(()=>toast("\ud83d\udcbe Backup reminder \u2014 export your save (Privacy & Data panel)."),2500);
 }
 
+/* P4 — CSS alone cannot stop a requestAnimationFrame loop or a canvas repaint.
+   Anyone who has asked their OS for reduced motion gets a still page. */
+const REDUCED=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 /* ================= HERO VOID CANVAS ================= */
 (function(){
+  if(REDUCED) return;
   const c=document.getElementById("voidCanvas"),x=c.getContext("2d");
   let W,H,P=[];
   function size(){ W=c.width=c.offsetWidth; H=c.height=c.offsetHeight; }
@@ -1739,7 +2922,7 @@ const clashObs=new IntersectionObserver(es=>es.forEach(e=>{
     /* v1 fired ASCENSION COMPLETE at every visitor who merely scrolled this far,
        including a brand-new LV 1 save. The clash is now just the animation; the
        overlay belongs to an actual level-100 ascension. */
-    if(!clashDone){ clashDone=true; shake(); if(S.ascended||level()>=100) setTimeout(showAscension,1200); }
+    if(!clashDone){ clashDone=true; if(!REDUCED) shake(); if(S.ascended||level()>=100) setTimeout(showAscension,1200); }
   },2400);
   clashObs.disconnect();
 }),{threshold:.35});
@@ -1763,12 +2946,610 @@ document.getElementById("resetBtn").onclick=()=>{
   toast("\u27f2 NEW GAME \u2014 back to Episode 1. LV 1, Origin Arc.");
 };
 
+
+/* ============================================================================
+   P4 — THE TODAY CARD
+   Current tier, current split day, readiness, estimated duration, one button.
+   ========================================================================= */
+const TIER_DOM={1:"tier1",2:"tier2",5:"tierGoku",3:"tier3",4:"tier4",6:"tier6"};
+function activeTier(){
+  if(S.placement && S.placement.tier) {
+    const recent=S.log.slice(-1)[0];
+    if(!recent) return S.placement.tier;
+  }
+  const recent=S.log.slice(-8).map(e=>e.t);
+  if(!recent.length) return S.placement?S.placement.tier:1;
+  const tally={};
+  recent.forEach(t=>tally[t]=(tally[t]||0)+1);
+  return +Object.keys(tally).sort((a,b)=>tally[b]-tally[a])[0];
+}
+function sessionMinutes(tier,day){
+  let mins=0;
+  dayCards(tier,day).forEach(i=>{
+    const nn=TREES[tier][i][2], pp=P(tier+"-"+i,tier,i);
+    const nd=nn[Math.min(pp.n,nn.length-1)];
+    if(RX_PLYO.test(nd[0])&&plyoHidden(tier)) return;
+    mins+=cardMinutes(nd[0],effectiveRx(tier,nd[1]).rx);
+  });
+  return Math.round(mins+6);
+}
+function renderToday(){
+  const el=document.getElementById("todayCard");
+  if(!el) return;
+  rollWeek();
+  const tier=activeTier(), day=curDay(tier), dl=deloadState(tier), rmod=readinessToday();
+  const need=weekNeed(), hit=weekHit();
+  const trainedToday=S.log.some(e=>e.d===today());
+  const mins=sessionMinutes(tier,day);
+  /* Rest-day guidance: the protocols prescribe rest, so the app should say so
+     rather than quietly implying more is better. */
+  const restAdvised=hit>=need;
+  el.innerHTML=
+    '<div class="thead">'+
+      '<span class="tk">TIER '+TIER_UI[tier]+'</span>'+
+      '<span class="tarc">'+TIER_NAME[tier]+'</span>'+
+      '<span class="tday">'+dayName(tier,day)+'</span>'+
+    '</div>'+
+    '<div class="tmeta">'+
+      '<span>≈ <b>'+mins+' min</b></span>'+
+      '<span><b>'+dayCards(tier,day).length+'</b> cards</span>'+
+      '<span>Week <b>'+hit+'/'+need+'</b> prescribed sessions</span>'+
+      '<span>Readiness: <b>'+(rmod?readinessLabel(rmod):"not checked")+'</b></span>'+
+      (S.perfectWeeks?'<span><b>'+S.perfectWeeks+'</b> perfect week'+(S.perfectWeeks===1?"":"s")+' running</span>':"")+
+    '</div>'+
+    (dl.active?'<div class="tdl">🛑 DELOAD — '+dl.reason+'. Sets are already halved and plyometrics are hidden. This still counts as a full session.</div>':"")+
+    (trainedToday?'<div class="trest">✅ Session logged today — the next one is '+dayName(tier,curDay(tier))+'.</div>':"")+
+    (restAdvised&&!trainedToday?'<div class="trest">🌙 You have hit this week\'s prescription. A rest day is the training now — extra sessions do not earn extra credit here.</div>':"")+
+    '<div class="tacts">'+
+      '<button class="btn" id="tdGo">GO TO '+dayName(tier,day)+'</button>'+
+      '<button class="btn ghost" id="tdReady">'+(rmod?"RE-CHECK READINESS":"READINESS CHECK")+'</button>'+
+      (dayCount(tier)>1?'<button class="btn ghost" id="tdSkip">NEXT DAY →</button>':"")+
+    '</div>';
+  document.getElementById("tdGo").onclick=()=>{
+    const d=document.getElementById(TIER_DOM[tier]);
+    if(d) d.scrollIntoView({behavior:"smooth",block:"start"});
+  };
+  document.getElementById("tdReady").onclick=()=>openReadiness(tier);
+  const sk=document.getElementById("tdSkip");
+  if(sk) sk.onclick=()=>{ S.day[tier]=(day+1)%dayCount(tier); save(); renderGrids(); renderToday(); };
+}
+
+/* ============================================================================
+   P1.3 — ORIGIN TRIAL
+   Four numbers, from day one, retested every six weeks. Same UI pattern as the
+   Boss Battle, no gate.
+   ========================================================================= */
+const TRIAL_FIELDS=[["push","Push-ups"],["row","Rows"],["squat","Squats / 2 min"],["plank","Plank (s)"]];
+function renderTrial(){
+  const box=document.getElementById("trialDelta");
+  if(!box) return;
+  if(!S.trials.length){
+    box.innerHTML='<div class="row">No trial logged yet. Do it before your next session, not after — this is a measurement and it needs you fresh.</div>';
+    return;
+  }
+  const last=S.trials[S.trials.length-1], first=S.trials[0];
+  const wks=S.trials.length>1?((new Date(last.d)-new Date(first.d))/(864e5*7)).toFixed(0):0;
+  const due=(Date.now()-new Date(last.d).getTime())/864e5>=42;
+  box.innerHTML=
+    TRIAL_FIELDS.map(([k,lab])=>{
+      const a=first[k]||0, b=last[k]||0, d=b-a;
+      const cls=d>0?"up":d<0?"down":"";
+      return '<div class="row">'+lab+': <b>'+a+' → '+b+'</b> '+
+        (S.trials.length>1?'<span class="'+cls+'">('+(d>0?"+":"")+d+')</span>'+(wks>0?' over '+wks+' weeks':""):"(baseline)")+
+        '</div>';
+    }).join("")+
+    '<div class="row" style="border:none;margin-top:6px">'+
+      (due?'⏰ <b>Retest due</b> — it has been 6+ weeks.':'Next retest: '+new Date(new Date(last.d).getTime()+42*864e5).toISOString().slice(0,10))+
+    '</div>';
+}
+(function(){
+  const b=document.getElementById("trSave");
+  if(!b) return;
+  b.onclick=()=>{
+    const g=id=>+document.getElementById(id).value||0;
+    const e={d:today(),push:g("trPush"),row:g("trRow"),squat:g("trSquat"),plank:g("trPlank")};
+    if(!e.push&&!e.row&&!e.squat&&!e.plank){ toast("Enter at least one number, hero."); return; }
+    const prev=S.trials[S.trials.length-1];
+    S.trials.push(e);
+    if(S.trials.length>40) S.trials.shift();
+    ["trPush","trRow","trSquat","trPlank"].forEach(id=>document.getElementById(id).value="");
+    if(prev && TRIAL_FIELDS.some(([k])=>(e[k]||0)>(prev[k]||0))) award("trial2");
+    grantXp(40,"Origin Trial logged");
+    renderTrial(); renderCharts();
+  };
+})();
+
+/* ============================================================================
+   P3.6 — CHARTS
+   Plain inline SVG. No library, no external request, no storage cost — the data
+   was already in the save.
+   ========================================================================= */
+const CH_W=560, CH_H=180, CH_PAD=30;
+function chartFrame(inner,yLab){
+  return '<svg viewBox="0 0 '+CH_W+' '+CH_H+'" preserveAspectRatio="none" role="img" aria-label="'+esc(yLab||"chart")+'">'+
+    '<line x1="'+CH_PAD+'" y1="'+(CH_H-20)+'" x2="'+(CH_W-8)+'" y2="'+(CH_H-20)+'" stroke="#33334f" stroke-width="1"/>'+
+    inner+'</svg>';
+}
+function empty(msg){ return '<div class="cempty">'+esc(msg)+'</div>'; }
+function scaleY(v,min,max){
+  if(max===min) return CH_H/2;
+  return (CH_H-24)-((v-min)/(max-min))*(CH_H-46);
+}
+function drawBars(data,color){
+  if(!data.length) return "";
+  const max=Math.max.apply(null,data.map(d=>d.y)), min=0;
+  const bw=Math.max(2,(CH_W-CH_PAD-12)/data.length-3);
+  return data.map((d,i)=>{
+    const x=CH_PAD+i*((CH_W-CH_PAD-12)/data.length);
+    const y=scaleY(d.y,min,max), hgt=(CH_H-20)-y;
+    return '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,hgt).toFixed(1)+
+      '" fill="'+(d.c||color)+'" opacity="'+(d.c?"1":".8")+'"><title>'+esc(d.x+": "+d.y)+'</title></rect>';
+  }).join("")+
+  '<text x="'+CH_PAD+'" y="12" fill="#8a8aa0" font-size="10">max '+max+'</text>';
+}
+function drawLine(data,color,dots){
+  if(!data.length) return "";
+  const ys=data.map(d=>d.y);
+  const max=Math.max.apply(null,ys), min=Math.min.apply(null,ys);
+  const step=data.length>1?(CH_W-CH_PAD-12)/(data.length-1):0;
+  const pts=data.map((d,i)=>(CH_PAD+i*step).toFixed(1)+","+scaleY(d.y,min,max).toFixed(1));
+  return '<polyline points="'+pts.join(" ")+'" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-linejoin="round"/>'+
+    (dots?data.map((d,i)=>'<circle cx="'+(CH_PAD+i*step).toFixed(1)+'" cy="'+scaleY(d.y,min,max).toFixed(1)+
+      '" r="2.5" fill="'+color+'"><title>'+esc(d.x+": "+d.y)+'</title></circle>').join(""):"")+
+    '<text x="'+CH_PAD+'" y="12" fill="#8a8aa0" font-size="10">'+max+'</text>'+
+    '<text x="'+CH_PAD+'" y="'+(CH_H-24)+'" fill="#8a8aa0" font-size="10">'+min+'</text>';
+}
+/* Weekly working sets, from the per-card log the app already keeps. */
+function volumeByWeek(){
+  const wk={};
+  Object.keys(S.cardLog).sort().forEach(d=>{
+    const w=weekMonday(d), c=(S.cardLog[d]||{}).cards||{};
+    let n=0;
+    for(const k in c) if(c[k]&&Array.isArray(c[k].sets)) n+=c[k].sets.length;
+    wk[w]=(wk[w]||0)+n;
+  });
+  return Object.keys(wk).sort().slice(-16).map(w=>({x:w,y:wk[w]}));
+}
+function cardKeysLogged(){
+  const seen={};
+  for(const d in S.cardLog){
+    const c=(S.cardLog[d]||{}).cards||{};
+    for(const k in c) if(c[k]&&c[k].sets&&c[k].sets.length) seen[k]=(seen[k]||0)+1;
+  }
+  return Object.keys(seen).filter(k=>seen[k]>=2).sort((a,b)=>seen[b]-seen[a]);
+}
+function cardLabel(k){
+  const [t,i]=k.split("-").map(Number);
+  if(!TREES[t]||!TREES[t][i]) return k;
+  const nn=TREES[t][i][2], p=S.prog[k];
+  return "T"+TIER_UI[t]+" · "+nn[Math.min(p?p.n:0,nn.length-1)][0];
+}
+function topSetSeries(k){
+  return Object.keys(S.cardLog).sort().map(d=>{
+    const c=(S.cardLog[d]||{}).cards||{};
+    if(!c[k]||!c[k].sets||!c[k].sets.length) return null;
+    return {x:d,y:Math.max.apply(null,c[k].sets)};
+  }).filter(Boolean).slice(-24);
+}
+/* P2 — rolling average, with the raw points behind it, so the noise-vs-trend
+   point is visible rather than merely explained. */
+function weightSeries(){
+  const pts=S.timeline.filter(e=>e.w&&!isNaN(parseFloat(e.w)))
+    .map(e=>({d:e.d,w:parseFloat(e.w)})).sort((a,b)=>a.d<b.d?-1:1);
+  const avg=pts.map((p,i)=>{
+    const win=pts.slice(Math.max(0,i-6),i+1);
+    return {x:p.d,y:+(win.reduce((a,c)=>a+c.w,0)/win.length).toFixed(1)};
+  });
+  return {raw:pts.map(p=>({x:p.d,y:p.w})),avg:avg};
+}
+function renderCharts(){
+  const v=document.getElementById("chVolume");
+  if(!v) return;
+  const vol=volumeByWeek();
+  v.innerHTML=vol.length
+    ? chartFrame(drawBars(vol.map(d=>({x:d.x,y:d.y,c:d.y===0?"#33334f":null})),"#39ff6a"),"weekly working sets")+
+      '<div class="csub">'+vol.length+' weeks · latest '+vol[vol.length-1].y+' sets. A short bar in a deload week is the system working.</div>'
+    : empty("Log sets on a few cards and this fills in.");
+
+  const pick=document.getElementById("chCardPick"), box=document.getElementById("chCard");
+  const keys=cardKeysLogged();
+  if(!keys.length){ pick.style.display="none"; box.innerHTML=empty("Log the same card twice and its progression appears here."); }
+  else{
+    pick.style.display="";
+    const cur=S.chartCard&&keys.indexOf(S.chartCard)>-1?S.chartCard:keys[0];
+    pick.innerHTML=keys.map(k=>'<option value="'+esc(k)+'"'+(k===cur?" selected":"")+'>'+esc(cardLabel(k))+'</option>').join("");
+    const s=topSetSeries(cur);
+    box.innerHTML=s.length>1
+      ? chartFrame(drawLine(s,"#38b6ff",true),"top set over time")+'<div class="csub">Best set per session · '+s.length+' sessions</div>'
+      : empty("One data point so far — log it again next session.");
+    pick.onchange=()=>{ S.chartCard=pick.value; save(); renderCharts(); };
+  }
+
+  const w=document.getElementById("chWeight");
+  const ws=weightSeries();
+  w.innerHTML=ws.avg.length>1
+    ? chartFrame(drawLine(ws.raw,"#33334f",true)+drawLine(ws.avg,"#ffd54a",false),"bodyweight rolling average")+
+      '<div class="csub">Grey = individual weigh-ins. Gold = 7-reading rolling average. Judge progress on the gold line only.</div>'
+    : empty("Log two or more weights in the timeline below.");
+
+  const l=document.getElementById("chLoad");
+  const ld=S.sessRpe.filter(e=>e.load).slice(-20).map(e=>({x:e.d,y:e.load}));
+  l.innerHTML=ld.length>1
+    ? chartFrame(drawBars(ld,"#ff3860"),"session load")+
+      '<div class="csub">RPE × minutes, last '+ld.length+' sessions.</div>'
+    : empty("Fill in the session length on your check-in and this starts tracking.");
+}
+
+/* ============================================================================
+   P2.6 — THE CUT: liquid audit + step target
+   ========================================================================= */
+(function(){
+  const b=document.getElementById("cutLiquidBtn");
+  if(!b) return;
+  b.onclick=()=>{
+    const kcal=+document.getElementById("cutLiquid").value||0;
+    S.liquid={d:today(),kcal:kcal};
+    const out=document.getElementById("cutLiquidOut");
+    out.style.display="block";
+    if(kcal<80){
+      out.className="cverdict ok";
+      out.innerHTML="<b>Near zero — you are done with this step.</b> This was a screen, not a lecture. Move to the step target.";
+    }else{
+      const def=S.calcDeficit||500;
+      const pct=Math.round(kcal/def*100);
+      out.className="cverdict warn";
+      out.innerHTML="<b>"+kcal+" kcal/day from drinks.</b> That is roughly "+
+        Math.round(kcal/9)+" minutes of running to erase, every day — or about <b>"+pct+
+        "% of your prescribed deficit</b> removed at zero cost to your training and zero cost to your meals. "+
+        "This is the cheapest change available to you and it is not close.";
+    }
+    award("cut1"); save(); checkBadges();
+  };
+  const sb=document.getElementById("cutStepsBtn");
+  sb.onclick=()=>{
+    const n=+document.getElementById("cutSteps").value||0;
+    if(!n){ toast("Enter a step count."); return; }
+    S.steps[today()]=n;
+    const days=Object.keys(S.steps).sort().slice(-7);
+    const avg=Math.round(days.reduce((a,d)=>a+S.steps[d],0)/days.length);
+    const out=document.getElementById("cutStepsOut");
+    out.style.display="block";
+    out.className=avg>=8000?"cverdict ok":"cverdict warn";
+    out.innerHTML=avg>=8000
+      ? "<b>"+n.toLocaleString()+" today · "+avg.toLocaleString()+" avg over "+days.length+" day"+(days.length===1?"":"s")+".</b> On target. Nothing to add here."
+      : "<b>"+n.toLocaleString()+" today · "+avg.toLocaleString()+" avg.</b> Target is 8–10k. The gap is about "+
+        Math.round((8000-avg)/120)+" minutes of walking — recovery cost close to zero, unlike adding a run.";
+    document.getElementById("cutSteps").value="";
+    save(); checkBadges();
+  };
+})();
+
+/* ============================================================================
+   P3.8 — SCREENING
+   The training side prescribes handstand push-ups, Nordic negatives and
+   high-volume plyometrics, and used to ask nothing at all.
+   ========================================================================= */
+function renderScreen(){
+  const el=document.getElementById("screenBody");
+  if(!el) return;
+  const s=S.screen||{};
+  el.innerHTML=
+    '<p style="font-size:.85rem;color:var(--dim);line-height:1.6;margin:8px 0">'+
+    'Tick anything that applies. Flagged cards get a warning and a suggested swap — nothing is blocked, '+
+    'because this is your body and your call. This is not medical advice and it does not replace a clinician.</p>'+
+    SCREEN_Q.map(([id,label,affects])=>
+      '<label class="chk"><input type="checkbox" class="scq" data-id="'+id+'"'+(s[id]?" checked":"")+'> '+
+      esc(label)+' <span style="color:#6f6f8c">— flags '+esc(affects)+'</span></label>').join("")+
+    '<button class="btn ghost" id="scSave" style="width:auto;padding:8px 18px;font-size:.85rem;margin-top:10px">SAVE SCREEN</button>'+
+    (S.screen?'<div style="font-size:.78rem;color:var(--dim);margin-top:8px">Last updated '+esc(S.screen.d||"—")+'</div>':"");
+  document.getElementById("scSave").onclick=()=>{
+    const o={d:today()};
+    document.querySelectorAll(".scq").forEach(c=>o[c.dataset.id]=c.checked);
+    S.screen=o; save(); renderGrids(); renderScreen();
+    const n=SCREEN_Q.filter(([id])=>o[id]).length;
+    toast(n?n+" flag"+(n===1?"":"s")+" saved — affected cards now carry a warning.":"Screen saved — no flags.");
+  };
+}
+
+/* ============================================================================
+   P3.3 — MOBILITY LADDERS, injected into each domain
+   Trained on rest days, targeting the NEXT tier's requirements. Zero recovery cost.
+   ========================================================================= */
+function injectMobility(){
+  TIER_ORDER.forEach(t=>{
+    const dom=document.getElementById(TIER_DOM[t]);
+    if(!dom||dom.querySelector(".mobblock")) return;
+    const cool=dom.querySelector("details.prep.cool");
+    if(!cool) return;
+    const d=document.createElement("details");
+    d.className="prep mobblock";
+    d.innerHTML='<summary>🤸 MOBILITY — 5 MIN, ON REST DAYS</summary>'+
+      '<ul class="preplist"><li style="color:var(--dim)">These target what the <b>next</b> tier will ask of you. '+
+      'For most people the limiter on a pistol squat is ankle range, not leg strength — and on a planche lean it is '+
+      'wrist tolerance. None of it was trained anywhere in this app before now.</li>'+
+      (MOBILITY[t]||[]).map(([n,rx,why])=>
+        '<li><label><input type="checkbox"> <b>'+esc(n)+'</b> — '+esc(rx)+'</label>'+
+        '<span class="why">'+esc(why)+'</span></li>').join("")+
+      '</ul>';
+    cool.parentNode.insertBefore(d,cool.nextSibling);
+  });
+}
+
+/* ============================================================================
+   P3.2 — THE SIX LOADING VARIABLES + THE ENDLESS ARC
+   ========================================================================= */
+function renderLoadVars(){
+  const el=document.getElementById("loadVars");
+  if(!el) return;
+  el.innerHTML=LOAD_VARS.map(([name,body,used,note])=>
+    '<div class="varcard"><div class="vh">'+esc(name)+'</div><div class="vb">'+esc(body)+'</div>'+
+    '<div class="vu '+(used==="yes"?"yes":used==="no"?"no":"")+'">'+
+    (used==="yes"?"◆ IN USE":used==="part"?"◈ PARTLY USED":"◇ WAS UNUSED")+'</div>'+
+    '<div class="vb" style="font-size:.74rem;margin-top:4px;color:#6f6f8c">'+esc(note)+'</div></div>').join("");
+}
+const ENDLESS_BLOCKS=[
+  ["BLOCK A — DENSITY","Take your Tier V prescriptions and cut the rest by 15 seconds each week for four weeks. Same sets, same reps, same forms. When you can hold the whole session at 60s rest, add a set instead.","The cheapest progression left, and the one nobody uses."],
+  ["BLOCK B — RANGE","Deficit push-ups with hands on books. Pistols to a lower target, then below parallel. L-sit with the hips higher than the shoulders. Four weeks.","Longer range at the same leverage is a real load increase."],
+  ["BLOCK C — EXTERNAL LOAD","A backpack with books, 10% of bodyweight to start. Pull-ups, pistols, push-ups, dips. Add 5 lb when a session goes clean at every card.","The honest answer at the ceiling. There is no purity points system in strength."]
+];
+(function(){
+  const b=document.getElementById("endlessBtn");
+  if(!b) return;
+  const render=()=>{
+    const body=document.getElementById("endlessBody");
+    if(!S.endless){ body.innerHTML=""; b.style.display=""; return; }
+    b.style.display="none";
+    body.innerHTML=ENDLESS_BLOCKS.map(([n,d,w],i)=>
+      '<div class="varcard" style="margin-bottom:8px'+(i===S.endless.block?';border-color:var(--gold)':"")+'">'+
+      '<div class="vh">'+esc(n)+(i===S.endless.block?' <span class="subtag" style="border-color:var(--gold);color:var(--gold)">CURRENT</span>':"")+'</div>'+
+      '<div class="vb">'+esc(d)+'</div><div class="vb" style="color:#6f6f8c;font-size:.74rem;margin-top:4px">'+esc(w)+'</div></div>').join("")+
+      '<button class="btn ghost" id="endlessNext" style="width:auto;padding:8px 18px;font-size:.85rem">ADVANCE TO NEXT BLOCK →</button>'+
+      '<div style="font-size:.78rem;color:var(--dim);margin-top:8px">Four weeks per block, then rotate. This cycles indefinitely — that is the point of the name.</div>';
+    document.getElementById("endlessNext").onclick=()=>{
+      S.endless.block=(S.endless.block+1)%ENDLESS_BLOCKS.length; save(); render();
+      toast("Endless Arc — "+ENDLESS_BLOCKS[S.endless.block][0]);
+    };
+  };
+  b.onclick=()=>{
+    S.endless={d:today(),block:0};
+    award("endless"); grantXp(25,"Endless Arc opened"); save(); render(); checkBadges();
+  };
+  render();
+})();
+
+/* ============================================================================
+   P3.5 — PLACEMENT TEST
+   The tier rule is good for advancing and useless for entering. Guessing high is
+   the common error, and it is the one that hurts.
+   ========================================================================= */
+function openPlacement(){
+  openModal('<h3>🧭 PLACEMENT TEST</h3>'+
+    '<p>Five minutes. Full rest between each — this decides where you start, and starting too high is the '+
+    'single most common way people get hurt with a program like this.</p>'+
+    '<label>Max strict push-ups</label><input type="number" id="plPush" min="0" max="500" placeholder="0" style="width:100%;background:#0a0a14;border:1px solid #33334f;color:var(--ink);border-radius:8px;padding:9px 10px;font-family:var(--font-body);font-weight:700">'+
+    '<label>Max rows (table edge or towel)</label><input type="number" id="plRow" min="0" max="500" placeholder="0" style="width:100%;background:#0a0a14;border:1px solid #33334f;color:var(--ink);border-radius:8px;padding:9px 10px;font-family:var(--font-body);font-weight:700">'+
+    '<label>Max bodyweight squats (2 min)</label><input type="number" id="plSquat" min="0" max="500" placeholder="0" style="width:100%;background:#0a0a14;border:1px solid #33334f;color:var(--ink);border-radius:8px;padding:9px 10px;font-family:var(--font-body);font-weight:700">'+
+    '<label>Plank hold, seconds, to form break</label><input type="number" id="plPlank" min="0" max="900" placeholder="0" style="width:100%;background:#0a0a14;border:1px solid #33334f;color:var(--ink);border-radius:8px;padding:9px 10px;font-family:var(--font-body);font-weight:700">'+
+    '<button class="btn" id="plGo">PLACE ME</button>'+
+    '<button class="btn ghost" id="plSkip">SKIP — I\'LL PICK MYSELF</button>');
+  document.getElementById("plSkip").onclick=()=>{ S.onboarded=true; save(); closeModal(); };
+  document.getElementById("plGo").onclick=()=>{
+    const g=id=>+document.getElementById(id).value||0;
+    const push=g("plPush"), row=g("plRow"), squat=g("plSquat"), plank=g("plPlank");
+    /* Deliberately conservative. The cost of placing someone one tier low is a
+       few easy weeks; the cost of placing them one tier high is an injury. */
+    let tier=1;
+    if(push>=10&&row>=8&&squat>=30&&plank>=45) tier=2;
+    if(push>=25&&row>=15&&squat>=50&&plank>=90) tier=5;
+    if(push>=40&&row>=25&&squat>=70&&plank>=150) tier=3;
+    S.placement={d:today(),tier:tier,push:push,row:row,squat:squat,plank:plank};
+    /* The placement doubles as the first Origin Trial — same four numbers. */
+    if(!S.trials.length) S.trials.push({d:today(),push:push,row:row,squat:squat,plank:plank});
+    S.onboarded=true;
+    award("placed");
+    save(); closeModal(); rerenderAll();
+    grantXp(30,"placement test complete");
+    toast("Placed: TIER "+TIER_UI[tier]+" — "+TIER_NAME[tier]+". Nothing is locked; move up when a full session leaves only moderate fatigue.");
+    const d=document.getElementById(TIER_DOM[tier]);
+    if(d) setTimeout(()=>d.scrollIntoView({behavior:"smooth",block:"start"}),400);
+  };
+}
+
+/* ============================================================================
+   P4 — FIRST-RUN ONBOARDING
+   Five domains, a boss battle, a skill tree and 25 badges is a lot to land on.
+   ========================================================================= */
+function openOnboarding(){
+  openModal('<h3>👋 START HERE</h3>'+
+    '<p>This is a bodyweight program wearing an anime costume. Three things before you scroll:</p>'+
+    '<div class="obstep"><b style="color:var(--gold)">1 · Levels gate nothing.</b><br>'+
+    '<span style="color:var(--dim);font-size:.9rem">XP and badges are a trophy case. Grinding XP cannot give you the strength to hold a pistol squat, so no tier is locked behind a level. There is exactly one real lock in the app.</span></div>'+
+    '<div class="obstep"><b style="color:var(--gold)">2 · The app decides your day, not you.</b><br>'+
+    '<span style="color:var(--dim);font-size:.9rem">Each tier is a split. The TODAY card at the top tells you which day you are on and which cards belong to it. You are never meant to do every card at once.</span></div>'+
+    '<div class="obstep"><b style="color:var(--gold)">3 · Grade yourself honestly.</b><br>'+
+    '<span style="color:var(--dim);font-size:.9rem">CLEAN means you finished with 1–3 reps still in the tank on every set. It defaults to GRINDY on purpose — CLEAN is a deliberate choice, because it is the thing that moves you up the ladder.</span></div>'+
+    '<div class="obstep">'+
+    '<button class="btn" id="obPlace">RUN THE PLACEMENT TEST</button>'+
+    '<button class="btn ghost" id="obScreen">TRAINING SCREEN FIRST</button>'+
+    '<button class="btn ghost" id="obSkip">SKIP — I KNOW WHAT I\'M DOING</button></div>');
+  document.getElementById("obPlace").onclick=()=>{ closeModal(); setTimeout(openPlacement,180); };
+  document.getElementById("obSkip").onclick=()=>{ S.onboarded=true; save(); closeModal(); };
+  document.getElementById("obScreen").onclick=()=>{
+    S.onboarded=true; save(); closeModal();
+    const t=document.getElementById("recoveryTool");
+    if(t){ t.scrollIntoView({behavior:"smooth",block:"center"}); const d=t.querySelectorAll("details.prep"); if(d.length) d[d.length-1].open=true; }
+  };
+}
+
+/* ============================================================================
+   P3.9 — PROGRESS PHOTOS
+   Stored in a separate localStorage key: even downscaled these dwarf the ~2 KB
+   main save, and the export has to stay small and portable.
+   ========================================================================= */
+function loadPhotos(){ try{ return JSON.parse(localStorage.getItem(PHOTOKEY))||[] }catch(e){ return [] } }
+function savePhotos(a){ try{ localStorage.setItem(PHOTOKEY,JSON.stringify(a)); return true }catch(e){ toast("⚠ Photo storage full — delete an older one."); return false } }
+function renderPhotos(){
+  const row=document.getElementById("photoRow");
+  if(!row) return;
+  const ph=loadPhotos();
+  row.innerHTML=ph.map((p,i)=>
+    '<figure><img src="'+p.img+'" alt="Progress photo '+esc(p.d)+'"><figcaption>'+esc(p.d)+
+    ' · <a href="#" class="phDel" data-i="'+i+'" style="color:var(--t3)">delete</a></figcaption></figure>').join("");
+  document.getElementById("photoNote").innerHTML=ph.length
+    ? ph.length+" photo"+(ph.length===1?"":"s")+" · stored separately from your main save, so exports stay small. Never uploaded anywhere."
+    : "During a recomp the scale will not move for weeks. Photos are the only honest feedback in that window. Kept on this device only, in their own storage slot.";
+  row.querySelectorAll(".phDel").forEach(a=>a.onclick=e=>{
+    e.preventDefault();
+    const arr=loadPhotos(); arr.splice(+a.dataset.i,1); savePhotos(arr); renderPhotos();
+  });
+}
+(function(){
+  const b=document.getElementById("photoBtn"), f=document.getElementById("photoFile");
+  if(!b) return;
+  b.onclick=()=>f.click();
+  f.onchange=e=>{
+    const file=e.target.files[0]; e.target.value=""; if(!file) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        /* Downscale hard — this is a visual reference, not an archive. */
+        const max=420, sc=Math.min(1,max/Math.max(img.width,img.height));
+        const c=document.createElement("canvas");
+        c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
+        c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+        const arr=loadPhotos();
+        arr.push({d:today(),img:c.toDataURL("image/jpeg",.72)});
+        while(arr.length>12) arr.shift();
+        if(savePhotos(arr)){ renderPhotos(); award("photo1"); checkBadges(); toast("📷 Photo added — device only."); }
+      };
+      img.src=r.result;
+    };
+    r.readAsDataURL(file);
+  };
+})();
+
+/* ============================================================================
+   WARM-UP / COOL-DOWN / MOBILITY CHECKBOX PERSISTENCE
+   These were plain unbound inputs with no id and no JS — they reset on every
+   render and on every reload. The boss-prep ticks already did this correctly;
+   this is the same pattern applied to the rest of the app.
+   ========================================================================= */
+function bindChecklists(){
+  const t=today();
+  if(!S.warm[t]) S.warm[t]={};
+  Object.keys(S.warm).sort().slice(0,-14).forEach(d=>delete S.warm[d]);
+  document.querySelectorAll(".domain").forEach(dom=>{
+    dom.querySelectorAll(".preplist input[type=checkbox]").forEach((c,i)=>{
+      if(c.classList.contains("prepTick")||c.classList.contains("bc")) return;
+      const key=dom.id+":"+i;
+      c.checked=!!S.warm[t][key];
+      c.onchange=()=>{ S.warm[t][key]=c.checked; save(); };
+    });
+  });
+}
+
+/* ============================================================================
+   P2 — weekly rolling average shown next to the timeline
+   ========================================================================= */
+function renderWeightAvg(){
+  const el=document.getElementById("tAvg");
+  if(!el) return;
+  const ws=weightSeries();
+  if(ws.avg.length<2){ el.style.display="none"; return; }
+  const i0=Math.max(0,ws.avg.length-8);
+  const cur=ws.avg[ws.avg.length-1].y, prev=ws.avg[i0].y;
+  const d=+(cur-prev).toFixed(1);
+  /* The cap is expressed per WEEK, so the rate has to be per week too — comparing
+     a six-week span against a weekly cap would flag every healthy cut as reckless. */
+  const days=Math.max(1,(new Date(ws.avg[ws.avg.length-1].x)-new Date(ws.avg[i0].x))/864e5);
+  const wks=Math.max(0.5,days/7);
+  const pctWk=prev?Math.abs(d/prev*100)/wks:0;
+  const rate=pctWk.toFixed(2);
+  el.style.display="block";
+  el.className=(d>=0||pctWk<=0.75)?"cverdict ok":"cverdict warn";
+  el.innerHTML="<b>Rolling average: "+cur+" lb</b> ("+(d>0?"+":"")+d+" lb over "+wks.toFixed(1)+" weeks). "+
+    (d<0?(pctWk>0.75
+        ? "That is <b>"+rate+"% of bodyweight per week</b> — over the 0.5–0.75% cap. Faster than the cap comes out of muscle, which is the thing you are training to keep. Eat a little more."
+        : "That is "+rate+"% of bodyweight per week — inside the 0.5–0.75% cap. This is the right speed.")
+       :d>0?"Trending up. If that is deliberate, fine; if not, the deficit is not where you think it is."
+       :"Flat. If you are training hard and eating enough protein, that can still be a recomp — check the photos, not the scale.")+
+    " Judge this number, never a single morning's weigh-in.";
+}
+
+/* ============================================================================
+   P0.2 / P3.9 — conditioning target, accessories, asymmetry
+   ========================================================================= */
+function condWeek(){
+  const wk=weekMonday();
+  if(!S.cond||S.cond.w!==wk) S.cond={w:wk,z2:0,hard:0};
+  return S.cond;
+}
+function renderAccessories(){
+  const el=document.getElementById("condSteps");
+  if(!el) return;
+  const c=condWeek();
+  const days=Object.keys(S.steps).sort().slice(-7);
+  const avg=days.length?Math.round(days.reduce((a,d)=>a+S.steps[d],0)/days.length):0;
+  el.textContent=avg?avg.toLocaleString()+" avg":"not logged";
+  document.getElementById("condZ2").textContent=c.z2;
+  document.getElementById("condHard").textContent=c.hard+" / 2";
+  const out=document.getElementById("condOut");
+  out.style.display="block";
+  if(c.hard>2){
+    out.className="cverdict warn";
+    out.innerHTML="<b>"+c.hard+" hard conditioning sessions this week.</b> The cap is 2 when you are lifting 4+ times a week — beyond that it competes directly with the training it is supposed to support.";
+  }else{
+    out.className="cverdict ok";
+    out.innerHTML="Within the cap. Zone 2 is nearly free; intervals are not. Sprints go first in a session, never after burpees.";
+  }
+  const t=today();
+  if(!S.extras[t]) S.extras[t]={};
+  document.querySelectorAll(".xtick").forEach(c2=>{
+    c2.checked=!!S.extras[t][c2.dataset.k];
+    c2.onchange=()=>{ S.extras[t][c2.dataset.k]=c2.checked; save(); renderAccessories(); checkBadges(); };
+  });
+  const cnt=k=>Object.keys(S.extras).filter(d=>S.extras[d]&&S.extras[d][k]).length;
+  document.getElementById("xtickMeta").textContent=
+    "Dead hangs: "+cnt("hang")+" days · Neck: "+cnt("neck")+" days · Mobility: "+cnt("mob")+" days";
+}
+(function(){
+  const z=document.getElementById("condZ2Btn");
+  if(!z) return;
+  z.onclick=()=>{ condWeek().z2++; save(); renderAccessories(); toast("Zone 2 logged — low cost, keep it."); };
+  document.getElementById("condHardBtn").onclick=()=>{
+    const c=condWeek(); c.hard++; save(); renderAccessories();
+    toast(c.hard>2?"That is over the weekly cap — it will show up in your recovery.":"Hard session logged.");
+  };
+  document.getElementById("asymBtn").onclick=()=>{
+    const l=+document.getElementById("asymL").value||0, r=+document.getElementById("asymR").value||0;
+    if(!l||!r){ toast("Enter both sides."); return; }
+    const hi=Math.max(l,r), lo=Math.min(l,r), gap=Math.round((hi-lo)/hi*100);
+    const out=document.getElementById("asymOut");
+    out.style.display="block";
+    out.className=gap>20?"cverdict warn":"cverdict ok";
+    out.innerHTML=gap>20
+      ? "<b>"+gap+"% difference — "+(l<r?"left":"right")+" side is weaker.</b> Add one extra set on the weak side every session, and start unilateral cards with that side, until this is under 20%. Do not add load to the strong side to compensate."
+      : "<b>"+gap+"% difference.</b> Within normal range — carry on, and retest in six weeks.";
+    save();
+  };
+})();
+
 /* ================= INIT ================= */
 function rerenderAll(){
+  rollWeek();
   renderGrids(); updateCounts(); renderTimeline(); renderBadges(); checkBadges();
   refresh(); fastTick(); renderBoss(); renderPrivacy(); assessDeload();
+  renderToday(); renderTrial(); renderCharts(); renderScreen(); renderLoadVars();
+  renderPhotos(); renderWeightAvg(); renderAccessories(); bindChecklists();
+  const tn=document.getElementById("travelNote");
+  if(tn) tn.innerHTML="<b>"+esc(TRAVEL_NOTE.split(":")[0])+":</b>"+esc(TRAVEL_NOTE.split(":").slice(1).join(":"));
 }
+injectMobility();
 rerenderAll(); backupReminder(); save();
+/* P4 — first run lands on an explanation and a placement test, not on five
+   domains, a boss battle, a skill tree and twenty-five badges. */
+if(!S.onboarded && S.xp===0 && !S.log.length) setTimeout(openOnboarding,700);
 </script>
 
 </body>
