@@ -285,7 +285,8 @@ img{max-width:100%}
    its own row; 2 columns capped to the same track width keeps every gallery in
    the app on an identical 2-row grid with identically sized photos. */
 @media(min-width:920px){
-  .d2 .gallery,.d3 .gallery{grid-template-columns:repeat(2,1fr);max-width:calc(200%/3 - 4.667px)}
+  .d2 .gallery,.d3 .gallery{grid-template-columns:repeat(2,1fr);max-width:calc(200%/3 - 4.667px);
+    margin-left:auto;margin-right:auto}
 }
 .d1 .gallery img{border-color:rgba(57,255,106,.45)}
 .d2 .gallery img{border-color:rgba(56,182,255,.45)}
