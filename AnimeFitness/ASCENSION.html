@@ -707,6 +707,89 @@ details.protocol summary{color:var(--gold)}
   .rock{animation:none}
 }
 
+/* ===================== PASTE BLOCK 1 of 3 — CSS ===================== */
+/* ============ FLEXIBILITY ARC (mobility) ============ */
+:root{ --t5:#4ad9c4; --t5-dark:#062622; }
+
+.d5{border-color:var(--t5);box-shadow:0 0 50px rgba(74,217,196,.12)}
+.d5::before{background:
+  radial-gradient(1px 90px at 22% 12%, var(--t5), transparent),
+  radial-gradient(1px 70px at 68% 6%, var(--t5), transparent),
+  radial-gradient(circle at 90% 88%, var(--t5), transparent 32%)}
+.d5 .stamp{color:var(--t5);border-color:var(--t5)}
+.d5 h2{color:var(--t5);text-shadow:0 0 24px rgba(74,217,196,.45)}
+.d5 .arcname{color:var(--t5)}
+.d5 .freq{color:var(--t5);border-color:var(--t5)}
+
+/* weekly volume dashboard */
+.mobweek{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;
+  position:relative;z-index:2;margin:0 0 26px}
+.mobweek .wcard{background:rgba(10,10,20,.8);border:1px solid #2a2a44;border-radius:10px;padding:14px}
+.mobweek .wname{font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.mobweek .wgate{font-size:.78rem;color:var(--dim);margin-top:2px;font-style:italic}
+.mobweek .wbar{height:8px;background:#1a1a2c;border:1px solid #333350;border-radius:6px;overflow:hidden;margin-top:9px}
+.mobweek .wfill{height:100%;width:0%;background:linear-gradient(90deg,var(--t5),var(--t2));transition:width .5s ease}
+.mobweek .wnum{display:flex;justify-content:space-between;font-size:.78rem;color:var(--dim);font-weight:700;margin-top:5px}
+.mobweek .wcard.done{border-color:var(--t5);box-shadow:0 0 18px rgba(74,217,196,.2)}
+.mobweek .wcard.done .wnum{color:var(--t5)}
+
+/* drill cards */
+.mobgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:16px;position:relative;z-index:2}
+.drill{background:rgba(10,10,20,.8);border:1px solid #2a2a44;border-radius:10px;padding:16px;
+  transition:transform .18s,border-color .18s,box-shadow .18s;position:relative;display:flex;flex-direction:column}
+.drill:hover{transform:translateY(-4px)}
+.drill.running{border-color:var(--t5);box-shadow:0 0 24px rgba(74,217,196,.28)}
+.drill .tag{font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;
+  border-radius:4px;display:inline-block;align-self:flex-start;margin-bottom:8px;background:var(--t5-dark);color:var(--t5)}
+.drill .tag.load{background:#2e2205;color:var(--gold)}
+.drill .dname{font-family:var(--font-display);font-size:1.25rem;letter-spacing:1px;line-height:1.15}
+.drill .dpx{color:var(--t5);font-weight:700;font-size:.9rem;margin-top:4px}
+.drill .dcue{color:var(--dim);font-size:.87rem;margin-top:8px;line-height:1.45;flex:1}
+.drill .dcue b{color:var(--ink);font-weight:700}
+
+/* timer */
+.dtimer{display:flex;align-items:center;gap:10px;margin-top:14px}
+.dtimer .clock{font-family:var(--font-display);font-size:1.9rem;letter-spacing:2px;color:var(--ink);
+  min-width:86px;text-align:center;font-variant-numeric:tabular-nums}
+.drill.running .clock{color:var(--t5)}
+.dtimer .tbtn{flex:1;padding:9px;font-family:var(--font-display);font-size:.95rem;letter-spacing:2px;
+  background:transparent;color:var(--t5);border:2px solid var(--t5);border-radius:8px;cursor:pointer;
+  transition:transform .15s,background .15s}
+.dtimer .tbtn:hover{transform:scale(1.03)}
+.dtimer .tbtn.stop{color:var(--t3);border-color:var(--t3)}
+.dtimer .side{padding:9px 11px;font-family:var(--font-body);font-weight:700;font-size:.8rem;
+  background:#12121f;color:var(--dim);border:1px solid #33334f;border-radius:8px;cursor:pointer}
+.dtimer .side.on{color:var(--t5);border-color:var(--t5)}
+.drill .dlog{font-size:.78rem;color:var(--dim);margin-top:9px;text-align:center;min-height:1.1em}
+.drill .dlog b{color:var(--t5)}
+
+/* active-range toggle */
+.mobtoggle{display:flex;align-items:center;gap:12px;background:rgba(10,10,20,.8);border:1px solid #2a2a44;
+  border-radius:10px;padding:14px 16px;margin:0 0 22px;position:relative;z-index:2;flex-wrap:wrap}
+.mobtoggle .mtlabel{font-family:var(--font-display);font-size:1.05rem;letter-spacing:2px;color:var(--gold)}
+.mobtoggle .mtdesc{color:var(--dim);font-size:.85rem;flex:1;min-width:200px}
+.mobtoggle button{padding:8px 16px;font-family:var(--font-display);font-size:.9rem;letter-spacing:2px;
+  background:transparent;color:var(--dim);border:2px solid #33334f;border-radius:8px;cursor:pointer}
+.mobtoggle button.on{color:var(--t5);border-color:var(--t5)}
+
+/* notes */
+.mobnote{background:rgba(10,10,20,.6);border-left:3px solid var(--t5);border-radius:0 8px 8px 0;
+  padding:14px 18px;margin:26px 0 0;position:relative;z-index:2;color:var(--dim);font-size:.92rem;line-height:1.55}
+.mobnote.warn{border-left-color:var(--t3)}
+.mobnote b{color:var(--ink)}
+.mobnote + .mobnote{margin-top:12px}
+.mobfoot{margin-top:22px;position:relative;z-index:2}
+
+@media(max-width:640px){
+  .mobgrid{grid-template-columns:1fr;gap:12px}
+  .mobweek{grid-template-columns:1fr 1fr;gap:10px}
+  .dtimer .clock{font-size:1.6rem;min-width:72px}
+}
+@media(prefers-reduced-motion:reduce){
+  .drill,.drill:hover,.mobtoggle button,.dtimer .tbtn,.dtimer .tbtn:hover{transition:none;transform:none}
+  .mobweek .wfill{transition:none}
+}
+/* =================== END PASTE BLOCK 1 of 3 ======================== */
 </style>
 </head>
 <body>
@@ -1025,6 +1108,55 @@ details.protocol summary{color:var(--gold)}
 
   <div class="tiernote reveal">⚔️ <b>Progression rule:</b> move to the next tier when you can complete a full session with good form and only <b>moderate fatigue</b> at the end — not by the calendar.<br><br><b>Levels do not gate anything.</b> XP, the board below and the badges are a trophy case — no tier is ever locked behind a level, because grinding XP cannot give you the strength to hold a pistol squat. There is exactly <b>one</b> real lock in this app: the Mastery Arc opens on your first Saitama’s Trial clear — and even that can be overridden if you know what you are doing.</div>
 </section>
+
+<!-- ===================== PASTE BLOCK 2 of 3 — HTML ===================== -->
+<section id="mobility">
+  <h2 class="section-title">FLEXIBILITY ARC</h2>
+  <p class="section-sub">Range is a prerequisite, not a bonus. Half the Mastery Arc is gated by
+    mobility, not strength — train it on rest days, where it costs you nothing.</p>
+
+  <div class="domain d5 reveal" id="tierMob">
+    <div class="stamp">SUPPORT</div>
+    <div class="arcname">Flexibility Arc — Prerequisite Work</div>
+    <h2>RANGE DOMAIN</h2>
+    <p class="inspired">Unlocks: pistol squats · L-sit · planche lean · handstand push-ups</p>
+    <span class="freq">3× / WEEK — REST DAYS · ~10 MIN</span>
+
+    <div class="mobweek" id="mobWeek"></div>
+
+    <div class="mobtoggle">
+      <span class="mtlabel">ACTIVE RANGE</span>
+      <span class="mtdesc">Adds a 10s isometric push at end range to every hold. Passive range you
+        can't control doesn't transfer — this is what converts it into usable range.</span>
+      <button id="mobActiveBtn" type="button">OFF</button>
+    </div>
+
+    <div class="mobgrid" id="mobGrid"></div>
+
+    <div class="mobnote">
+      <b>Dose:</b> roughly 5 minutes per muscle group per week is where the evidence lands. Total
+      weekly volume matters more than how you slice it — 2×60s three times a week gets you there.
+      Moderate discomfort, never pain; pushing harder does not speed this up.
+    </div>
+    <div class="mobnote">
+      <b>Most of your early progress is stretch tolerance, not tissue length.</b> Your nervous system
+      stops guarding the range. That's why it feels neurological, and why it reverses if you stop.
+      Expect 4–8 weeks for meaningful change. Nothing useful happens in a week.
+    </div>
+    <div class="mobnote warn">
+      <b>Two things stretching won't fix.</b> Bony restriction — hip socket depth and femur angle cap
+      squat depth for some people, and bone doesn't stretch. A hard block or a pinch at the
+      <b>front</b> of the hip is structural; stop chasing it. And nerve tension — if a hamstring
+      stretch reads as tingling or a line running down the leg, that isn't a short muscle, and
+      aggressive stretching makes it worse.
+    </div>
+
+    <div class="mobfoot">
+      <button class="btn ghost" id="mobResetBtn" type="button">⟲ RESET THIS WEEK</button>
+    </div>
+  </div>
+</section>
+<!-- =================== END PASTE BLOCK 2 of 3 ======================== -->
 
 <!-- ULTIMATE DOMAIN CLASH -->
 <section>
@@ -1403,7 +1535,22 @@ const today=()=>new Date().toISOString().slice(0,10);
 const SAVE_VERSION=3;
 const PREV1KEY=KEY+"_preV2_snapshot";
 const PREV2KEY=KEY+"_preV3_snapshot";
-const PHOTOKEY=KEY+"_photos";   /* P3.9 — photos live in their own key so the main save stays small */
+const PHOTOKEY=KEY+"_photos";
+/* The Flexibility Arc keeps its own key so it can never corrupt the main save.
+   These two helpers fold it into backup / restore so an export round-trips it. */
+const MOBKEY="afa_mobility_v1";
+function exportPayload(){
+  const o=Object.assign({},S);
+  try{ const m=localStorage.getItem(MOBKEY); if(m) o.mobility=JSON.parse(m); }catch(e){}
+  return o;
+}
+function absorbSideKeys(obj){
+  if(obj&&obj.mobility){
+    try{ localStorage.setItem(MOBKEY,JSON.stringify(obj.mobility)); }catch(e){}
+    delete obj.mobility;              /* keep it out of S */
+  }
+  if(typeof window.mobilityReload==="function") window.mobilityReload();
+}   /* P3.9 — photos live in their own key so the main save stays small */
 const DEFAULTS=()=>({
   saveVersion:SAVE_VERSION,
   xp:0, sessions:{1:0,2:0,3:0,4:0,5:0,6:0}, checks:{}, checkDate:today(),
@@ -2865,7 +3012,7 @@ async function deriveKey(pass,salt,iterations){
     {name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
 }
 document.getElementById("btnExport").onclick=()=>{
-  dl(`ascension-backup-${today()}.json`,JSON.stringify(S,null,2));
+  dl(`ascension-backup-${today()}.json`,JSON.stringify(exportPayload(),null,2));
   markBackup(); toast("\ud83d\udcbe Save exported \u2014 store it somewhere safe.");
 };
 document.getElementById("btnEnc").onclick=async()=>{
@@ -2877,7 +3024,7 @@ document.getElementById("btnEnc").onclick=async()=>{
   toast("\ud83d\udd10 Deriving key \u2014 this takes a second on purpose.");
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
   const key=await deriveKey(p1,salt,KDF_ITERATIONS);
-  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(JSON.stringify(S)));
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(JSON.stringify(exportPayload())));
   dl(`ascension-encrypted-${today()}.json`,JSON.stringify({
     afx:2, kdf:"PBKDF2-SHA256", it:KDF_ITERATIONS, cipher:"AES-GCM-256",
     salt:b64e(salt), iv:b64e(iv), ct:b64e(ct)}));
@@ -2902,6 +3049,7 @@ document.getElementById("importFile").onchange=async e=>{
     obj.timeline=(Array.isArray(obj.timeline)?obj.timeline:[]).map(t=>({
       d:String(t.d||"").slice(0,10), w:String(t.w||"").replace(/[^0-9.]/g,""), n:String(t.n||"").replace(/[<>]/g,"").slice(0,80)}));
     const wasV1=!obj.saveVersion;
+    absorbSideKeys(obj);              /* restores the Flexibility Arc week */
     S=migrate(obj);                       /* v1 imports are upgraded, not rejected */
     save(); rerenderAll();
     toast(wasV1?"\ud83d\udce5 v1 save imported and upgraded to v2 \u2014 welcome back, hero."
@@ -2924,6 +3072,8 @@ document.getElementById("btnDelete").onclick=()=>{
     return;
   }
   try{ localStorage.removeItem(KEY); }catch(e){}
+  try{ localStorage.removeItem(MOBKEY); }catch(e){}
+  if(typeof window.mobilityReload==="function") window.mobilityReload();
   S=DEFAULTS(); mem={};
   document.getElementById("btnDelete").textContent="\ud83d\udda9 DELETE EVERYTHING";
   rerenderAll();
@@ -3621,6 +3771,293 @@ rerenderAll(); backupReminder(); save();
 /* P4 — first run lands on an explanation and a placement test, not on five
    domains, a boss battle, a skill tree and twenty-five badges. */
 if(!S.onboarded && S.xp===0 && !S.log.length) setTimeout(openOnboarding,700);
+</script>
+
+<script>
+/* ===================== PASTE BLOCK 3 of 3 — JS ===================== */
+/* ============ FLEXIBILITY ARC (mobility) ============ */
+(function(){
+  'use strict';
+
+  var STORE     = 'afa_mobility_v1';
+  var WEEK_GOAL = 300;          // seconds per group per week (5 min)
+  var ISO_CONTRACT = 10;        // isometric push, seconds, when Active Range is on
+
+  /* ---- data ---------------------------------------------------- */
+  var GROUPS = [
+    { id:'ankle',    name:'Ankle',              gate:'gates the pistol squat' },
+    { id:'hiphams',  name:'Hip & Hamstring',    gate:'gates the L-sit' },
+    { id:'wrist',    name:'Wrist',              gate:'gates planche & handstand' },
+    { id:'shoulder', name:'Shoulder & T-Spine', gate:'gates the handstand push-up' }
+  ];
+
+  var DRILLS = [
+    { g:'ankle', name:'Knee-to-Wall', px:'2 × 60s per side', secs:60, sides:true,
+      cue:'Foot a few inches from the wall, drive the knee forward over the toes. <b>The heel does not leave the floor.</b> Slide back until it barely stays down — that is your working distance.' },
+    { g:'ankle', name:'Deep Squat Hold', px:'2 × 60s', secs:60, sides:false,
+      cue:'Hold a doorframe and sink to the bottom. Heels down, chest up, knees pushed out. Pull gently on the frame to sit deeper.' },
+    { g:'ankle', name:'Heel-Elevated Squat Hold', px:'3 × 30s', secs:30, sides:false, loaded:true,
+      cue:'Same bottom position, heels on a book, no hand support. <b>Loaded range — this is the one that transfers to the pistol.</b>' },
+
+    { g:'hiphams', name:'Couch Stretch', px:'2 × 60s per side', secs:60, sides:true,
+      cue:'Back shin up a wall or couch, front foot planted. <b>Squeeze the back glute and tuck the ribs down</b> — without that you are arching your low back, not stretching the hip.' },
+    { g:'hiphams', name:'Elevated Pike Hold', px:'2 × 60s', secs:60, sides:false,
+      cue:'Hands on a chair, hinge at the hip, flat back. Bend the knees if the low back rounds — a rounded back is spine flexion, not hamstring length.' },
+    { g:'hiphams', name:'Active Straight Leg Raise', px:'2 × 10 per side', secs:45, sides:true, loaded:true,
+      cue:'Flat on your back, lift one straight leg as high as it goes under its own power. <b>This is hip flexor strength at short length, not a stretch.</b> The L-sit needs both.' },
+
+    { g:'wrist', name:'Palms-Down Rocking', px:'2 × 45s', secs:45, sides:false,
+      cue:'On all fours, palms flat, fingers forward. Rock slowly forward and back. <b>The heel of the hand stays down.</b>' },
+    { g:'wrist', name:'Palms-Up Rocking', px:'2 × 45s', secs:45, sides:false,
+      cue:'Same position, hands rotated so fingers point back at your knees. Rock gently. <b>Back off hard if anything pinches</b> — wrists respond slowly and complain loudly.' },
+    { g:'wrist', name:'Fingertip Press', px:'2 × 30s', secs:30, sides:false, loaded:true,
+      cue:'Fingertips on the floor, press down and hold a slight dome. Builds the grip and finger strength every hand-balance eventually demands.' },
+
+    { g:'shoulder', name:'Thoracic Extension', px:'2 × 60s', secs:60, sides:false,
+      cue:'Roller across the mid-back, hands behind the head, extend over it. <b>Ribs down, do not arch the low back</b> — that is the whole mistake with this drill.' },
+    { g:'shoulder', name:'Overhead Wall Slide', px:'2 × 10 slow', secs:45, sides:false,
+      cue:'Back to the wall, low back flat, arms slide overhead keeping wrists in contact. Stop where contact breaks. That point is your real overhead range.' },
+    { g:'shoulder', name:'Doorway Pec Stretch', px:'2 × 60s per side', secs:60, sides:true,
+      cue:'Forearm on the frame at shoulder height, step through and rotate away. Most "tight shoulders" is a stiff upper back and short pecs, not the shoulder itself.' }
+  ];
+
+  /* ---- state --------------------------------------------------- */
+  function weekKey(d){
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var day = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - day);
+    var y0 = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    var wk = Math.ceil(((d - y0) / 86400000 + 1) / 7);
+    return d.getUTCFullYear() + '-W' + (wk < 10 ? '0' + wk : wk);
+  }
+
+  function blank(){
+    var s = { week: weekKey(new Date()), active:false, groups:{} };
+    GROUPS.forEach(function(g){ s.groups[g.id] = 0; });
+    return s;
+  }
+
+  var state;
+  try {
+    state = JSON.parse(localStorage.getItem(STORE)) || blank();
+    if (!state.groups || state.week !== weekKey(new Date())) {
+      var keepActive = !!state.active;
+      state = blank();
+      state.active = keepActive;              // preference survives the week roll
+    }
+  } catch(e){ state = blank(); }
+
+  function save(){
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch(e){}
+  }
+
+  /* ---- optional integration with the main app ------------------ */
+  function say(msg){
+    if (typeof window.toast === 'function') { window.toast(msg); return; }
+    var el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(say._t);
+    say._t = setTimeout(function(){ el.classList.remove('show'); }, 2600);
+  }
+  function grantXP(n, reason){
+    /* host app exposes grantXp(n, reason) and toasts the reason itself */
+    if (typeof window.grantXp === 'function') { window.grantXp(n, reason); return true; }
+    if (typeof window.addXP === 'function') { window.addXP(n); return false; }
+    return false;
+  }
+
+  /* ---- render -------------------------------------------------- */
+  var weekEl = document.getElementById('mobWeek');
+  var gridEl = document.getElementById('mobGrid');
+  var actBtn = document.getElementById('mobActiveBtn');
+
+  function fmt(s){
+    var m = Math.floor(s / 60), r = s % 60;
+    return m + ':' + (r < 10 ? '0' + r : r);
+  }
+
+  function drawWeek(){
+    weekEl.innerHTML = GROUPS.map(function(g){
+      var got  = state.groups[g.id] || 0;
+      var pct  = Math.min(100, Math.round(got / WEEK_GOAL * 100));
+      var done = got >= WEEK_GOAL;
+      return '<div class="wcard' + (done ? ' done' : '') + '">' +
+               '<div class="wname">' + g.name + '</div>' +
+               '<div class="wgate">' + g.gate + '</div>' +
+               '<div class="wbar"><div class="wfill" style="width:' + pct + '%"></div></div>' +
+               '<div class="wnum"><span>' + fmt(got) + ' / ' + fmt(WEEK_GOAL) + '</span>' +
+               '<span>' + (done ? 'MET' : pct + '%') + '</span></div>' +
+             '</div>';
+    }).join('');
+  }
+
+  function drawGrid(){
+    gridEl.innerHTML = DRILLS.map(function(d, i){
+      var secs = d.secs + (state.active ? ISO_CONTRACT : 0);
+      return '<div class="drill" data-i="' + i + '">' +
+               '<span class="tag' + (d.loaded ? ' load' : '') + '">' +
+                 (d.loaded ? 'Loaded Range' : groupName(d.g)) + '</span>' +
+               '<div class="dname">' + d.name + '</div>' +
+               '<div class="dpx">' + d.px + '</div>' +
+               '<div class="dcue">' + d.cue + '</div>' +
+               '<div class="dtimer">' +
+                 '<span class="clock">' + fmt(secs) + '</span>' +
+                 '<button class="tbtn" type="button" data-act="go">START</button>' +
+                 (d.sides ? '<button class="side" type="button" data-act="side">L</button>' : '') +
+               '</div>' +
+               '<div class="dlog"></div>' +
+             '</div>';
+    }).join('');
+  }
+
+  function groupName(id){
+    for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].id === id) return GROUPS[i].name;
+    return id;
+  }
+
+  /* ---- timers -------------------------------------------------- */
+  var timers = {};   // index -> { left, iv }
+
+  function stop(i, credited){
+    var t = timers[i];
+    if (!t) return;
+    clearInterval(t.iv);
+    delete timers[i];
+    var card = gridEl.querySelector('[data-i="' + i + '"]');
+    if (!card) return;
+    card.classList.remove('running');
+    var btn = card.querySelector('[data-act="go"]');
+    btn.textContent = 'START';
+    btn.classList.remove('stop');
+    var d = DRILLS[i];
+    card.querySelector('.clock').textContent = fmt(d.secs + (state.active ? ISO_CONTRACT : 0));
+    if (!credited) card.querySelector('.dlog').textContent = 'stopped — nothing logged';
+  }
+
+  function complete(i){
+    var d = DRILLS[i];
+    var earned = d.secs;                     // credit the hold, not the isometric push
+    state.groups[d.g] = (state.groups[d.g] || 0) + earned;
+    save();
+    stop(i, true);
+    drawWeek();
+
+    var card = gridEl.querySelector('[data-i="' + i + '"]');
+    var got  = state.groups[d.g];
+    card.querySelector('.dlog').innerHTML =
+      '<b>+' + earned + 's</b> logged · ' + groupName(d.g) + ' at ' + fmt(got) + ' / ' + fmt(WEEK_GOAL);
+
+    if (got >= WEEK_GOAL && got - earned < WEEK_GOAL) {
+      var msg = groupName(d.g) + ' weekly target met';
+      if (!grantXP(10, msg)) say(msg + '.');   /* avoid double-toasting */
+    }
+  }
+
+  function start(i){
+    if (timers[i]) { stop(i, false); return; }
+    var d    = DRILLS[i];
+    var card = gridEl.querySelector('[data-i="' + i + '"]');
+    var clk  = card.querySelector('.clock');
+    var btn  = card.querySelector('[data-act="go"]');
+    var log  = card.querySelector('.dlog');
+
+    var total = d.secs + (state.active ? ISO_CONTRACT : 0);
+    timers[i] = { left: total, iv: null };
+
+    card.classList.add('running');
+    btn.textContent = 'STOP';
+    btn.classList.add('stop');
+    clk.textContent = fmt(total);
+    log.textContent = state.active
+      ? 'sink in — push at 30% for the last ' + ISO_CONTRACT + 's'
+      : 'holding';
+
+    timers[i].iv = setInterval(function(){
+      var t = timers[i];
+      if (!t) return;
+      t.left--;
+      clk.textContent = fmt(Math.max(0, t.left));
+      if (state.active && t.left === ISO_CONTRACT) {
+        log.textContent = 'PUSH — 30% effort into the stretch';
+      }
+      if (t.left <= 0) complete(i);
+    }, 1000);
+  }
+
+  /* ---- events -------------------------------------------------- */
+  gridEl.addEventListener('click', function(e){
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    var card = e.target.closest('.drill');
+    if (!card) return;
+    var i = parseInt(card.getAttribute('data-i'), 10);
+
+    if (btn.getAttribute('data-act') === 'go') { start(i); return; }
+
+    if (btn.getAttribute('data-act') === 'side') {
+      var isL = btn.textContent.trim() === 'L';
+      btn.textContent = isL ? 'R' : 'L';
+      btn.classList.toggle('on', isL);
+      card.querySelector('.dlog').textContent = 'now working the ' +
+        (isL ? 'right' : 'left') + ' side';
+    }
+  });
+
+  actBtn.addEventListener('click', function(){
+    state.active = !state.active;
+    save();
+    actBtn.textContent = state.active ? 'ON' : 'OFF';
+    actBtn.classList.toggle('on', state.active);
+    Object.keys(timers).forEach(function(k){ stop(parseInt(k, 10), false); });
+    drawGrid();
+    say(state.active
+      ? 'Active Range on — ' + ISO_CONTRACT + 's isometric push added to every hold.'
+      : 'Active Range off — passive holds only.');
+  });
+
+  document.getElementById('mobResetBtn').addEventListener('click', function(){
+    if (!confirm('Clear this week\u2019s mobility volume? Drill history is not stored, so this only resets the four bars.')) return;
+    Object.keys(timers).forEach(function(k){ stop(parseInt(k, 10), false); });
+    GROUPS.forEach(function(g){ state.groups[g.id] = 0; });
+    save();
+    drawWeek();
+    say('Week reset.');
+  });
+
+  /* ---- boot ---------------------------------------------------- */
+  function boot(){
+    Object.keys(timers).forEach(function(k){ stop(parseInt(k, 10), false); });
+    actBtn.textContent = state.active ? 'ON' : 'OFF';
+    actBtn.classList.toggle('on', state.active);
+    drawWeek();
+    drawGrid();
+  }
+  boot();
+
+  /* Re-read storage and redraw. The host calls this after IMPORT SAVE and after
+     DELETE EVERYTHING, which write this module's key from outside the closure. */
+  window.mobilityReload = function(){
+    try {
+      var s = JSON.parse(localStorage.getItem(STORE));
+      if (s && s.groups) {
+        if (s.week === weekKey(new Date())) { state = s; }
+        else { var b = blank(); b.active = !!s.active; state = b; }
+      } else { state = blank(); }
+    } catch(e){ state = blank(); }
+    boot();
+  };
+
+  /* ---- optional: fold into your existing export/import ----------
+     This module stores under its own key so it cannot corrupt the
+     main save. To include it in EXPORT SAVE, add to your export
+     object:   mobility: JSON.parse(localStorage.getItem('afa_mobility_v1'))
+     and on import:  localStorage.setItem('afa_mobility_v1', JSON.stringify(data.mobility))
+     Also add 'afa_mobility_v1' to DELETE EVERYTHING.
+  ---------------------------------------------------------------- */
+})();
+/* =================== END PASTE BLOCK 3 of 3 ======================== */
 </script>
 
 </body>
