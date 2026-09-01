@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+ned rotation,
+  the paper-and-shadow treatment — are my creative choices; the
+  assistant helped me write and organize the CSS that carries
+  them out. Everything is commented so I can explain any line.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ransom Note — Save File</title>
+
+<style>
+ 
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4vh 4vw;
+    box-sizing: border-box;
+    background-color: #2b2118;
+    background-image:
+      radial-gradient(ellipse at 50% 35%, rgba(255,229,180,.22), rgba(0,0,0,.55) 70%),
+      repeating-linear-gradient(92deg, rgba(0,0,0,.14) 0 3px, rgba(255,255,255,.02) 3px 9px);
+  }
+
+  /* ---------------------------------------------------------
+     THE SHEET OF PAPER
+     Rotated slightly so it reads as dropped on a desk rather
+     than laid out in a design tool. The two box-shadows do
+     different jobs: the first drops the sheet onto the desk,
+     the second is a soft inner shadow that keeps the paper
+     from looking like a flat white rectangle.
+     --------------------------------------------------------- */
+  .note {
+    background: #efe7d6;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.02) 0 1px, transparent 1px 4px);
+    width: 100%;
+    max-width: 820px;
+    padding: 48px 36px 52px;
+    box-sizing: border-box;
+    transform: rotate(-1.1deg);
+    box-shadow:
+      0 22px 45px rgba(0,0,0,.55),
+      inset 0 0 90px rgba(120,95,60,.20);
+  }
+
+  /* ---------------------------------------------------------
+     WORD WRAPPER: .w
+     My first draft let lines break in the middle of a word —
+     "YOUR S / AVE" — because each letter was its own inline-
+     block and the browser treated every one as a legal break
+     point. Wrapping each word in an inline-block with
+     white-space:nowrap fixes it: the browser can still wrap
+     BETWEEN words, but never inside one.
+     --------------------------------------------------------- */
+  .w { display: inline-block; white-space: nowrap; }
+
+  /* ---------------------------------------------------------
+     BASE LETTER: .l
+     inline-block is the single most important property in this
+     file — it lets a <span> accept padding, sizing, and a
+     transform, all of which a normal inline element ignores.
+     The box-shadow is what sells "glued on top of the paper"
+     instead of "printed on it."
+     Per-letter variation (font, color, size, angle) lives in
+     the inline style attributes below, as the exercise asks.
+     --------------------------------------------------------- */
+  .l {
+    display: inline-block;
+    padding: 2px 7px;
+    margin: 4px 1px;
+    line-height: 1.05;
+    box-shadow: 2px 3px 5px rgba(0,0,0,.38);
+    background: #fdfcf7;   /* default white paper edge */
+    color: #14110d;
+  }
+
+  /* Torn edge: an uneven polygon instead of a clean scissor
+     cut. Used sparingly — if every letter is torn, none of
+     them read as torn. Clipping also eats the drop shadow,
+     which conveniently makes these sit flatter, like they came
+     off thinner newsprint. */
+  .torn {
+    clip-path: polygon(0 6%, 12% 0, 34% 7%, 58% 0, 80% 6%, 100% 2%,
+                       97% 46%, 100% 94%, 76% 100%, 52% 93%,
+                       28% 100%, 6% 95%, 2% 50%);
+  }
+
+  /* Word spacer. Typed whitespace between inline-block elements
+     collapses unpredictably, so I control the gap with a real
+     element rather than hoping the browser behaves. */
+  .sp { display: inline-block; width: 20px; }
+
+  /* Line 2 runs smaller so the note has a hierarchy: the
+     demand first, the instructions after. */
+  .line2 { margin-top: 24px; }
+  .line2 .l { font-size: .60em; }
+
+  /* Signature stamp — the "who" of the note. */
+  .sig {
+    margin-top: 32px;
+    text-align: right;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 15px;
+    letter-spacing: .18em;
+    color: #7a2018;
+    transform: rotate(1.6deg);
+    opacity: .85;
+  }
+
+  /* Small screens: shrink the type so the note still fits on a
+     phone, since this gets submitted as a public URL and I
+     can't control what it gets opened on. */
+  @media (max-width: 700px) {
+    .note p { font-size: 34px !important; }
+    .note { padding: 28px 18px 34px; }
+  }
+</style>
+</head>
+
+<body>
+<div class="note">
+
+  <!-- =========================================================
+       LINE 1 — THE DEMAND
+       "WE HAVE YOUR SAVE FILE. NO BACKUPS."
+       Reading pass: the words carrying the threat ("HAVE",
+       "NO BACKUPS") get the heaviest, highest-contrast
+       clippings; the connective words go quieter. The note has
+       a rhythm before you even read it.
+       ========================================================= -->
+  <p style="margin:0; font-size:50px; text-align:center;">
+
+    <!-- WE — Impact headline stock, the loudest thing here -->
+    <span class="w"><span class="l" style="font-family:Impact,'Arial Black',sans-serif; transform:rotate(-4deg); background:#141210; color:#f5f0e2;">W</span><span class="l torn" style="font-family:Georgia,serif; font-weight:bold; transform:rotate(3deg); background:#d8362a; color:#fff;">E</span></span>
+
+    <span class="sp"></span>
+
+    <!-- HAVE — the verb doing the work, so every letter comes
+         from a different source: headline, photo cutout, book
+         page, highlighted notebook -->
+    <span class="w"><span class="l" style="font-family:'Arial Black',sans-serif; font-size:1.15em; transform:rotate(2.5deg); background:#f2c53d; color:#191308;">H</span><span class="l" style="font-family:'Times New Roman',serif; font-style:italic; transform:rotate(-6deg) translateY(-4px); background:#101010; color:#f7f7f2;">A</span><span class="l torn" style="font-family:'Courier New',monospace; font-weight:bold; transform:rotate(4deg); background:#fdfcf7; color:#1a1a1a; text-decoration:underline;">V</span><span class="l" style="font-family:Verdana,sans-serif; font-size:.85em; transform:rotate(-2deg) translateY(3px); background:#4f7fd4; color:#fffdf0;">E</span></span>
+
+    <span class="sp"></span>
+
+    <!-- YOUR — pointed at the reader, so these tilt mostly to
+         the right, like the note is leaning in -->
+    <span class="w"><span class="l" style="font-family:Georgia,serif; font-weight:bold; transform:rotate(6deg); background:#fdfcf7; color:#8e1b12;">Y</span><span class="l" style="font-family:'Trebuchet MS',sans-serif; font-size:1.1em; transform:rotate(-3deg); background:#1d1b17; color:#e9c94a;">O</span><span class="l torn" style="font-family:'Palatino Linotype',Palatino,serif; transform:rotate(5deg) translateY(-3px); background:#e7e2d2; color:#111;">U</span><span class="l" style="font-family:'Courier New',monospace; transform:rotate(-5deg); background:#fdfcf7; color:#111; text-decoration:line-through;">R</span></span>
+
+    <span class="sp"></span>
+
+    <!-- SAVE — the hostage. Widest size range on the line, so
+         it visually wobbles more than the words around it. -->
+    <span class="w"><span class="l" style="font-family:Impact,sans-serif; font-size:1.25em; transform:rotate(-7deg); background:#22733f; color:#fdfcf7;">S</span><span class="l" style="font-family:Georgia,serif; font-size:.8em; transform:rotate(4deg) translateY(6px); background:#fdfcf7; color:#111;">A</span><span class="l torn" style="font-family:'Arial Black',sans-serif; font-size:1.2em; transform:rotate(-2deg); background:#f2f0e6; color:#c2342a;">V</span><span class="l" style="font-family:'Brush Script MT',cursive; font-size:1.35em; transform:rotate(7deg); background:#fdfcf7; color:#1b3a6b;">E</span></span>
+
+    <span class="sp"></span>
+
+    <!-- FILE. — flatter and more clerical on purpose. This is
+         the noun the joke rests on, so it reads like it was
+         clipped from a menu screen or a form. The green-on-
+         black F is a deliberate console-text steal. -->
+    <span class="w"><span class="l" style="font-family:'Courier New',monospace; font-weight:bold; transform:rotate(3deg); background:#101010; color:#59e07a;">F</span><span class="l" style="font-family:Georgia,serif; font-style:italic; transform:rotate(-4deg); background:#fdfcf7; color:#111;">I</span><span class="l" style="font-family:Verdana,sans-serif; font-weight:bold; transform:rotate(2deg); background:#e0dbc8; color:#2a2a2a;">L</span><span class="l torn" style="font-family:Impact,sans-serif; transform:rotate(-6deg); background:#d8362a; color:#fff;">E</span><span class="l" style="font-family:Georgia,serif; font-size:.9em; transform:rotate(1deg); background:#fdfcf7; color:#111;">.</span></span>
+
+    <span class="sp"></span>
+
+    <!-- NO BACKUPS. — the punchline, so it gets the biggest and
+         darkest clippings. The reader should land here hardest. -->
+    <span class="w"><span class="l" style="font-family:'Arial Black',sans-serif; font-size:1.2em; transform:rotate(-3deg); background:#141210; color:#f2c53d;">N</span><span class="l" style="font-family:'Times New Roman',serif; font-weight:bold; font-size:1.1em; transform:rotate(5deg); background:#fdfcf7; color:#111;">O</span></span>
+
+    <span class="sp"></span>
+
+    <span class="w"><span class="l" style="font-family:Impact,sans-serif; font-size:1.3em; transform:rotate(4deg); background:#8e1b12; color:#fff;">B</span><span class="l torn" style="font-family:Georgia,serif; font-weight:bold; transform:rotate(-5deg) translateY(-4px); background:#fdfcf7; color:#111;">A</span><span class="l" style="font-family:'Courier New',monospace; font-size:.9em; transform:rotate(6deg); background:#4f7fd4; color:#fff;">C</span><span class="l" style="font-family:'Trebuchet MS',sans-serif; font-weight:bold; transform:rotate(-2deg); background:#e0dbc8; color:#1a1a1a;">K</span><span class="l" style="font-family:'Arial Black',sans-serif; font-size:1.15em; transform:rotate(3deg); background:#141210; color:#fdfcf7;">U</span><span class="l torn" style="font-family:Georgia,serif; font-style:italic; font-size:1.05em; transform:rotate(-6deg); background:#f2c53d; color:#191308;">P</span><span class="l" style="font-family:Impact,sans-serif; transform:rotate(2deg); background:#fdfcf7; color:#d8362a;">S</span><span class="l" style="font-family:'Courier New',monospace; transform:rotate(-3deg); background:#fdfcf7; color:#111;">.</span></span>
+  </p>
+
+  <!-- =========================================================
+       LINE 2 — THE INSTRUCTIONS
+       Every ransom note has the "and don't call the police"
+       line. Mine is the gamer equivalent. Set smaller (see
+       .line2 in the CSS) so it reads as a footnote to the
+       threat instead of competing with it.
+       ========================================================= -->
+  <p class="line2" style="margin:0; font-size:50px; text-align:center;">
+
+    <span class="w"><span class="l" style="font-family:'Courier New',monospace; font-weight:bold; transform:rotate(3deg); background:#101010; color:#f5f0e2;">D</span><span class="l" style="font-family:Georgia,serif; transform:rotate(-4deg); background:#fdfcf7; color:#111;">O</span></span>
+
+    <span class="sp"></span>
+
+    <span class="w"><span class="l" style="font-family:Verdana,sans-serif; transform:rotate(5deg); background:#e0dbc8; color:#222;">N</span><span class="l" style="font-family:Georgia,serif; transform:rotate(-2deg); background:#fdfcf7; color:#111;">O</span><span class="l torn" style="font-family:Impact,sans-serif; transform:rotate(4deg); background:#d8362a; color:#fff;">T</span></span>
+
+    <span class="sp"></span>
+
+    <span class="w"><span class="l" style="font-family:'Arial Black',sans-serif; transform:rotate(-5deg); background:#141210; color:#59e07a;">A</span><span class="l" style="font-family:'Times New Roman',serif; font-style:italic; transform:rotate(3deg); background:#fdfcf7; color:#111;">L</span><span class="l" style="font-family:'Courier New',monospace; font-weight:bold; transform:rotate(-3deg); background:#f2c53d; color:#191308;">T</span></span>
+
+    <span class="sp"></span>
+
+    <span class="w"><span class="l" style="font-family:Verdana,sans-serif; transform:rotate(6deg); background:#fdfcf7; color:#8e1b12;">+</span></span>
+
+    <span class="sp"></span>
+
+    <span class="w"><span class="l" style="font-family:Impact,sans-serif; transform:rotate(-4deg); background:#4f7fd4; color:#fff;">F</span><span class="l torn" style="font-family:Georgia,serif; font-weight:bold; transform:rotate(5deg); background:#fdfcf7; color:#111;">4</span></span>
+
+    <span class="sp"></span>
+
+    <!-- "or" stays lowercase and handwritten — the one place
+         the sender's own hand slips through the disguise. -->
+    <span class="w"><span class="l" style="font-family:'Brush Script MT',cursive; font-size:1.3em; transform:rotate(-6deg); background:#fdfcf7; color:#1b3a6b;">o</span><span class="l" style="font-family:'Courier New',monospace; transform:rotate(2deg); background:#e0dbc8; color:#222;">r</span></span>
+
+    <span class="sp"></span>
+
+    <span class="w"><span class="l" style="font-family:'Arial Black',sans-serif; transform:rotate(4deg); background:#141210; color:#fdfcf7;">E</span><span class="l" style="font-family:Georgia,serif; font-style:italic; transform:rotate(-3deg); background:#fdfcf7; color:#111;">L</span><span class="l" style="font-family:'Trebuchet MS',sans-serif; font-weight:bold; transform:rotate(5deg); background:#f2c53d; color:#191308;">S</span><span class="l torn" style="font-family:Impact,sans-serif; transform:rotate(-2deg); background:#8e1b12; color:#fff;">E</span><span class="l" style="font-family:'Courier New',monospace; transform:rotate(3deg); background:#fdfcf7; color:#111;">.</span></span>
+  </p>
+
+  <!-- Signature: typed, not cut out. The one piece of the note
+       the sender got careless about — exactly the kind of
+       detail Holmes would build a whole deduction on. -->
+  <p class="sig">— A FRIEND WITH CLOUD SYNC DISABLED</p>
+
+</div>
+</body>
+</html>
