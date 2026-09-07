@@ -886,3 +886,1569 @@ NX.version="remediation-1.0";
 </script>
 
 </body></html>
+
+<!-- ============================================================================
+     LIVING NEXUS v2 — INLINE BUILD  (modules 01-04)
+     Paste this ENTIRE block immediately before </body>, AFTER the main app
+     script and AFTER the remediation patch script. Nothing else changes.
+
+     Four separate <script> tags on purpose: if one module throws, the other
+     three still load - exactly the isolation the four-file install has.
+     Order is load-bearing: 02 uses 01's confidence pills, 03 uses 02's
+     Nightfarer read, 04 positions its dossier tab relative to 03's Compare.
+     ========================================================================= -->
+
+<!-- ---- LIVING NEXUS 01 · PATCH CENTER / TARNISHED PACK / BUILD IMPACT / DATA CONFIDENCE ---- -->
+<script>
+/* ============================================================================
+   ANIME RING NEXUS — LIVING NEXUS MODULE 01
+   PATCH CENTER · TARNISHED PACK · BUILD IMPACT · DATA CONFIDENCE
+   Blueprint refs: §27 DLC/Patch Center · §28 Build Patch Impact
+                   §29 Changelog Intelligence · §60 Source Transparency
+                   §61 Data Confidence
+   ----------------------------------------------------------------------------
+   Load AFTER the main app script and AFTER the remediation patch:
+       <script src="nexus-living/nx2-01-patch-center.js"><\/script>
+   Extends globals only. Never re-runs applyLoreGear() or the stat engine.
+   ========================================================================== */
+(function(){
+"use strict";
+if(typeof CHARACTERS==="undefined"||!Array.isArray(CHARACTERS)){
+  console.error("[NX2/01] Load this after the main Nexus script."); return;
+}
+const NX2 = window.NX2 = window.NX2 || {};
+const E = (typeof esc==="function") ? esc : (t=>String(t));
+
+/* ==========================================================================
+   §61 — DATA CONFIDENCE
+   Every fact the site states gets a provenance marker. The Tarnished Pack
+   entries below are the first real test of it: the item NAMES are verified
+   against the official patch notes, but per-weapon scaling, requirements and
+   affinity are not, so they must not be presented at the same confidence as
+   the wiki-sourced base game index.
+   ========================================================================== */
+const CONF = {
+  verified:  {k:"verified",  i:"🟢", l:"Verified",           d:"Confirmed against official patch notes or a primary source."},
+  community: {k:"community", i:"🟡", l:"Community-derived",  d:"From community wikis (Fextralife / Fandom)."},
+  nexus:     {k:"nexus",     i:"🔵", l:"Nexus interpretation",d:"This site's conversion analysis, not a claim about either source work."},
+  pending:   {k:"pending",   i:"🟣", l:"Pending verification",d:"Name confirmed; in-game stats not yet checked against the live build."},
+  seeded:    {k:"seeded",    i:"⚪", l:"Seeded placeholder",  d:"Deterministic placeholder until real data exists."}
+};
+NX2.CONF = CONF;
+NX2.confPill = function(key,extra){
+  const c=CONF[key]; if(!c) return "";
+  return `<span class="pill" title="${E(c.d)}" style="background:rgba(148,163,184,.12);color:var(--txt-dim);border:1px solid var(--line);font-size:9px;padding:1px 7px">${c.i} ${E(c.l)}${extra?" · "+E(extra):""}</span>`;
+};
+
+/* ==========================================================================
+   PATCH 1.17 / TARNISHED PACK — 27 August 2026
+   Names verified against Bandai Namco's official 1.17 notes and the
+   Tarnished Edition content guide. Weapon CLASS is deliberately not asserted
+   per item; the whole pack lives in its own index category and is marked
+   pending until you can confirm each one in game.
+   ========================================================================== */
+const PACK_WEAPONS = [
+  {n:"Reverse-Bladed Sword", note:"A sakabatō. The blade is on the wrong side on purpose — it subdues rather than kills."},
+  {n:"Reed Great Katana",    note:"Land of Reeds great katana. The obvious upgrade for every ronin-silhouette build on the site."},
+  {n:"Idus Sword",           note:"Carried by the Idus Knight starting class."},
+  {n:"Leontiel's Greatsword",note:"Dropped by the Knight Leontiel invasion in Caelid's Wailing Dunes."},
+  {n:"Hefty Scimitar",       note:"A heavier take on the curved sword."},
+  {n:"Golden Order Flail",   note:"A flail carrying Golden Order iconography — a genuinely new shape for faith builds."},
+  {n:"Silver Grooved Shield",note:"Paired with the Silver Grooved (Idus Knight) armour set."},
+  {n:"Ritual Thrusting Shield",note:"Thrusting shield — the SotE shield-as-weapon class gains a fourth entry."}
+];
+const PACK_ARMOR = [
+  ["Silver Grooved Set",4,"Sold by the Nomadic Merchant north of Bellum Church. The Idus Knight kit."],
+  ["Steel Set",4,"Sold at the Isolated Merchant's Shack, Weeping Peninsula. The Heavy Knight kit."],
+  ["Leontiel's Set",4,"From the Knight Leontiel invasion, Caelid — Wailing Dunes."],
+  ["Broken Gold Mask Set",4,"From the Leyndell invasion triggered by casting Law of Regression at the Radagon statue."]
+];
+const PACK_CLASSES = [
+  ["Idus Knight","A knight of Idus — the Silver Grooved kit and the Idus Sword."],
+  ["Heavy Knight","Steel plate and weight. The heaviest opening loadout the game has offered."]
+];
+const PACK_ATTIRE = [
+  ["Regalia: Tree Sentinel","Stormveil Castle — throne room."],
+  ["Regalia: Carian Silver","Ranni's Rise."],
+  ["Regalia: Funereal Night","Altus Plateau clifftop."]
+];
+const PACK_INVASIONS = [
+  ["Knight Leontiel","Caelid — Wailing Dunes, north of the site of grace.","Drops Leontiel's Set and Leontiel's Greatsword."],
+  ["Broken Gold Mask","Leyndell, Royal Capital — cast Law of Regression before the Radagon statue.","Drops the Broken Gold Mask Set."]
+];
+
+/* ---- Balance changes. `items` are matched literally against build strings. --- */
+const PATCH_CHANGES = [
+  {v:"1.17", item:"Carian Retaliation",        kind:"buff", scope:"both", what:"Power increased.",
+   why:"This is Gojo's Infinity. The single most thematically loaded ash on the site just got better at the thing it was chosen for."},
+  {v:"1.17", item:"Rellana's Twin Blades",     kind:"buff", scope:"both", what:"Power / functionality increased."},
+  {v:"1.17", item:"Founding Rain of Stars",    kind:"buff", scope:"both", what:"Power increased."},
+  {v:"1.17", item:"Meteorite of Astel",        kind:"buff", scope:"both", what:"Casting time reduced (Meteorite sorceries).",
+   why:"Madara's Tengai Shinsei lands faster — the war-entrance build is measurably stronger."},
+  {v:"1.17", item:"Smithscript Dagger",        kind:"buff", scope:"both", what:"Power / functionality increased."},
+  {v:"1.17", item:"Golem Fist",                kind:"buff", scope:"both", what:"Power / functionality increased."},
+  {v:"1.17", item:"Feather of the Divine Bird",kind:"buff", scope:"both", what:"Power increased."},
+  {v:"1.17", item:"Rain of Fire",              kind:"buff", scope:"both", what:"Power increased."},
+  {v:"1.17", item:"O, Flame!",                 kind:"buff", scope:"both", what:"Attack range expanded."},
+  {v:"1.17", item:"Storm Wall",                kind:"buff", scope:"both", what:"No longer consumes FP."},
+  {v:"1.17", item:"Rakshasa's Great Katana",   kind:"nerf", scope:"pvp",  what:"Damage penalty applied in PvP.",
+   why:"Every PvP variant carrying this weapon needs its duel notes revisited."}
+];
+/* Systemic changes — no single item to match against, so they are listed but
+   never used to flag a build. Saying so is the point of the honesty layer. */
+const PATCH_SYSTEMIC = [
+  ["Parry","Improved performance and reduced post-activation cooldown. Counter-timing archetypes benefit across the board."],
+  ["Greatshields","Improved guard boost and reduced weight."],
+  ["Select incantations","Weakened against players (PvP only)."]
+];
+const PATCH_META = {
+  version:"1.17", date:"2026-08-27",
+  dlc:"Shadow of the Erdtree + Tarnished Pack",
+  audited:"September 2026",
+  source:"https://www.bandainamcoent.com/news/elden-ring-patch-notes-version-1-17"
+};
+NX2.PATCH_META = PATCH_META;
+
+/* ==========================================================================
+   INTEGRATION — push the new items into the live databases
+   WEAPON_INDEX / WEAPON_CAT / WEAPON_LIST / ARMOR_BASE / ARMOR_LOOKUP are all
+   `const` bindings holding mutable arrays and objects, so they are extended in
+   place. Nothing is reassigned.
+   ========================================================================== */
+const PACK_CAT = "Tarnished Pack [1.17]";
+function integrate(){
+  if(typeof WEAPON_INDEX!=="undefined" && !WEAPON_INDEX.some(r=>r[0]===PACK_CAT)){
+    WEAPON_INDEX.push([PACK_CAT, PACK_WEAPONS.map(w=>w.n).join(", ")]);
+  }
+  if(typeof WEAPON_LIST!=="undefined" && typeof WEAPON_CAT!=="undefined"){
+    PACK_WEAPONS.forEach(w=>{
+      if(!WEAPON_LIST.some(x=>x.name===w.n)){ WEAPON_LIST.push({name:w.n, dlc:false, pack:true}); }
+      WEAPON_CAT[w.n]=PACK_CAT;
+    });
+    WEAPON_LIST.sort((a,b)=>b.name.length-a.name.length);
+  }
+  if(typeof ARMOR_BASE!=="undefined"){
+    PACK_ARMOR.forEach(([n,pc])=>{ if(!ARMOR_BASE.some(a=>a[0]===n)) ARMOR_BASE.push([n,pc]); });
+    ARMOR_BASE.sort((a,b)=>a[0].localeCompare(b[0]));
+  }
+  if(typeof ARMOR_LOOKUP!=="undefined"){
+    PACK_ARMOR.forEach(([n,pc])=>{ if(!ARMOR_LOOKUP.some(a=>a.n===n)) ARMOR_LOOKUP.push({n,pc,dlc:false,pack:true}); });
+    ARMOR_LOOKUP.sort((a,b)=>b.n.length-a.n.length);
+  }
+}
+integrate();
+NX2.newWeaponTotal = (typeof WEAPON_INDEX!=="undefined")
+  ? WEAPON_INDEX.reduce((n,r)=>n+widxItems(r).length,0) : 0;
+NX2.newArmorTotal  = (typeof ARMOR_BASE!=="undefined"&&typeof ARMOR_DLC!=="undefined")
+  ? ARMOR_BASE.length+ARMOR_DLC.length : 0;
+
+/* ==========================================================================
+   GEAR REASSIGNMENT — targeted, never global
+   Re-running applyLoreGear() would re-roll every character's loadout and throw
+   away the hand-authored overrides. These are the characters where a 1.17 item
+   is unambiguously a better answer than what the engine picked.
+   ========================================================================== */
+const PACK_FITS = [
+  ["kenshin","Reverse-Bladed Sword",
+   "The sakabatō exists now. The build's house rule — 'no critical hits on downed enemies, the sakabatō does not execute' — stops being a house rule and becomes the weapon."],
+  ["himurakenshin","Reverse-Bladed Sword","As above, if the id resolved differently."],
+  ["musashimiyamoto","Reed Great Katana","A great katana for the man the great katana moveset is about."],
+  ["kojirosasaki","Reed Great Katana","Monohoshizao wants length and a two-handed draw."],
+  ["sasakikojirovagabond","Reed Great Katana","As above."],
+  ["hijikatatoshizo","Reed Great Katana","Shinsengumi steel, upsized."],
+  ["shimazutoyohisa","Reed Great Katana","Satsuma charge, appropriate blade."],
+  ["brothercorhyn","Golden Order Flail","A Golden Order weapon for the Golden Order's own scholar."],
+  ["goldmask","Golden Order Flail","The heretic finally gets Order-marked steel."],
+  ["gantetsusaitamiya","Hefty Scimitar","An oversized curved blade for an oversized boast."]
+];
+function applyPackFits(){
+  const log=[];
+  PACK_FITS.forEach(([id,wep,why])=>{
+    const c=CHARACTERS.find(x=>x.id===id); if(!c) return;
+    const b=(c.builds||[]).find(x=>x.primary)||(c.builds||[])[0]; if(!b) return;
+    if(String(b.weapons[0]||"").indexOf(wep)===0) return;
+    b.weapons=[wep].concat(b.weapons.slice(1));
+    b.packNote=why;
+    if(typeof GEAR_OVERRIDE!=="undefined"){
+      GEAR_OVERRIDE[id]=Object.assign({},GEAR_OVERRIDE[id]||{},{w:wep});
+    }
+    log.push(c.name+" → "+wep);
+  });
+  return log;
+}
+NX2.packFitLog = applyPackFits();
+
+/* ==========================================================================
+   §28 — BUILD PATCH IMPACT
+   Scan every build for items the patch touched. This is the mechanism the site
+   was missing: a hardcoded "1.16" in the footer could never age.
+   ========================================================================== */
+function scanImpact(){
+  const byBuild={}, byChar={}, byItem={};
+  CHARACTERS.forEach(c=>(c.builds||[]).forEach((b,i)=>{
+    const hay=[].concat(b.weapons||[],b.talismans||[],b.spells||[],[b.summon||""]).join(" | ");
+    const isPvP=/PvP/i.test(b.type||"");
+    PATCH_CHANGES.forEach(ch=>{
+      if(hay.indexOf(ch.item)<0) return;
+      if(ch.scope==="pvp" && !isPvP) return;
+      const key=c.id+"__"+i;
+      (byBuild[key]=byBuild[key]||[]).push(ch);
+      (byChar[c.id]=byChar[c.id]||new Set()).add(ch.item);
+      (byItem[ch.item]=byItem[ch.item]||[]).push({c,b,i});
+    });
+  }));
+  return {byBuild,byChar,byItem};
+}
+const IMPACT = scanImpact();
+NX2.IMPACT = IMPACT;
+NX2.impactFor = (cid,idx)=> IMPACT.byBuild[cid+"__"+idx] || null;
+
+/* ==========================================================================
+   §29 — CHANGELOG INTELLIGENCE
+   Not "a patch happened" — what it did to THIS site.
+   ========================================================================== */
+NX2.changelogStats = function(){
+  return {
+    charactersAffected: Object.keys(IMPACT.byChar).length,
+    buildsAffected:     Object.keys(IMPACT.byBuild).length,
+    itemsChanged:       PATCH_CHANGES.length,
+    itemsAdded:         PACK_WEAPONS.length+PACK_ARMOR.length+PACK_CLASSES.length+PACK_ATTIRE.length,
+    buffs:              PATCH_CHANGES.filter(c=>c.kind==="buff").length,
+    nerfs:              PATCH_CHANGES.filter(c=>c.kind==="nerf").length,
+    gearReassigned:     NX2.packFitLog.length
+  };
+};
+
+/* ==========================================================================
+   VIEW — ⚡ UPDATES (Patch Center)
+   ========================================================================== */
+function ensureView(){
+  if(document.getElementById("view-nx2patch")) return;
+  const main=document.querySelector("main"); if(!main) return;
+  const sec=document.createElement("section");
+  sec.className="view"; sec.id="view-nx2patch";
+  sec.innerHTML=`<div class="sec-title">ELDEN RING UPDATE CENTER</div>
+    <div class="sec-sub">Game version, database audit date, and exactly what the last patch did to the builds on this site. Version currency stops living in the footer.</div>
+    <div id="nx2PatchBody"></div>`;
+  main.appendChild(sec);
+  const nav=document.getElementById("mainNav");
+  if(nav && !nav.querySelector('[data-view="nx2patch"]')){
+    const btn=document.createElement("button");
+    btn.dataset.view="nx2patch"; btn.textContent="⚡ Updates";
+    const anchor=nav.querySelector('[data-view="database"]');
+    anchor ? nav.insertBefore(btn,anchor) : nav.appendChild(btn);
+  }
+}
+function kindPill(k){
+  return k==="buff" ? `<span class="pill weak">▲ buff</span>`
+       : k==="nerf" ? `<span class="pill resist">▼ nerf</span>`
+       : `<span class="pill gold">＋ new</span>`;
+}
+NX2.renderPatchCenter = function(){
+  ensureView();
+  const el=document.getElementById("nx2PatchBody"); if(!el) return;
+  const s=NX2.changelogStats();
+  el.innerHTML=`
+  <div class="hero" style="text-align:left;padding:26px 24px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="pill gold">GAME VERSION ${E(PATCH_META.version)}</span>
+      <span class="pill weak">${E(PATCH_META.dlc)}</span>
+      <span class="pill">DATABASE AUDITED ${E(PATCH_META.audited)}</span>
+    </div>
+    <h2 style="font-size:clamp(20px,3.2vw,30px)">PATCH <em>${E(PATCH_META.version)}</em> — TARNISHED PACK</h2>
+    <p style="margin:10px 0 0;max-width:none;text-align:left">Released ${E(PATCH_META.date)}. The Nexus was built against 1.16; everything below is the delta, and every build the delta touches is flagged in place.</p>
+  </div>
+
+  <div class="dash-grid">
+    <div class="stat-card"><div class="num">${s.itemsAdded}</div><div class="lbl">Items Added</div></div>
+    <div class="stat-card"><div class="num">${s.itemsChanged}</div><div class="lbl">Items Rebalanced</div></div>
+    <div class="stat-card"><div class="num">${s.buildsAffected}</div><div class="lbl">Builds Affected</div></div>
+    <div class="stat-card"><div class="num">${s.charactersAffected}</div><div class="lbl">Characters Affected</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--green)">${s.buffs}</div><div class="lbl">Buffs</div></div>
+    <div class="stat-card"><div class="num" style="color:#fca5a5">${s.nerfs}</div><div class="lbl">Nerfs</div></div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px"><h3>＋ NEW CONTENT — TARNISHED PACK</h3>
+    <p style="font-size:12px;color:var(--txt-dim);margin:6px 0 12px">Item names verified against the official notes. ${NX2.confPill("verified","names")} ${NX2.confPill("pending","scaling, requirements, affinity")} — per-weapon stats are not asserted until you confirm them in game, and the index files them under their own category rather than guessing a weapon class.</p>
+    <h3 style="font-size:13px;margin-top:6px">Weapons (${PACK_WEAPONS.length})</h3>
+    ${PACK_WEAPONS.map(w=>`<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px"><b>${E(w.n)}</b> <span class="pill gold" style="font-size:9px">1.17</span><div style="color:var(--txt-dim);font-size:11px">${E(w.note)}</div></div>`).join("")}
+    <h3 style="font-size:13px;margin-top:14px">Armor Sets (${PACK_ARMOR.length})</h3>
+    ${PACK_ARMOR.map(([n,pc,loc])=>`<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px"><b>${E(n)}</b> <small style="color:var(--txt-dim)">· ${pc}pc</small><div style="color:var(--txt-dim);font-size:11px">${E(loc)}</div></div>`).join("")}
+    <h3 style="font-size:13px;margin-top:14px">Starting Classes (${PACK_CLASSES.length})</h3>
+    ${PACK_CLASSES.map(([n,d])=>`<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px"><b>${E(n)}</b><div style="color:var(--txt-dim);font-size:11px">${E(d)}</div></div>`).join("")}
+    <h3 style="font-size:13px;margin-top:14px">Spectral Steed Attire (${PACK_ATTIRE.length})</h3>
+    <div style="line-height:2.1">${PACK_ATTIRE.map(([n,l])=>`<span class="pill gold" title="${E(l)}" style="margin:2px 3px">${E(n)}</span>`).join("")}</div>
+    <h3 style="font-size:13px;margin-top:14px">NPC Invasions (${PACK_INVASIONS.length})</h3>
+    ${PACK_INVASIONS.map(([n,l,d])=>`<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px"><b>${E(n)}</b><div style="color:var(--txt-dim);font-size:11px">${E(l)} — ${E(d)}</div></div>`).join("")}
+  </div>
+
+  <div class="panel" style="margin-bottom:18px"><h3>⚖ BALANCE CHANGES — AND WHO THEY HIT</h3>
+    <div style="overflow-x:auto"><table><thead><tr><th>Item</th><th>Change</th><th>What changed</th><th>Builds on this site</th></tr></thead><tbody>
+    ${PATCH_CHANGES.map(ch=>{
+      const hits=IMPACT.byItem[ch.item]||[];
+      return `<tr>
+        <td><b>${E(ch.item)}</b>${ch.scope==="pvp"?' <span class="pill resist" style="font-size:9px">PvP only</span>':""}</td>
+        <td>${kindPill(ch.kind)}</td>
+        <td style="color:var(--txt-dim)">${E(ch.what)}${ch.why?`<div style="color:#a5f3fc;font-size:11px;margin-top:4px">${E(ch.why)}</div>`:""}</td>
+        <td>${hits.length? hits.slice(0,6).map(h=>`<span class="pill gold" style="cursor:pointer;font-size:9px;margin:1px 2px" onclick="openChar('${h.c.id}')">${E(h.c.name.split(" ")[0])}</span>`).join("")+(hits.length>6?`<small style="color:var(--txt-dim)"> +${hits.length-6}</small>`:"") : `<small style="color:var(--txt-dim)">none</small>`}</td>
+      </tr>`;}).join("")}
+    </tbody></table></div>
+    <h3 style="font-size:13px;margin-top:16px">Systemic changes — noted, never auto-flagged</h3>
+    <p style="font-size:11px;color:var(--txt-dim);margin-bottom:8px">These have no single item to match against, so no build is marked as affected. Pretending otherwise would be a fabricated flag.</p>
+    ${PATCH_SYSTEMIC.map(([n,d])=>`<div style="padding:5px 0;font-size:12px"><b>${E(n)}</b> <span style="color:var(--txt-dim)">— ${E(d)}</span></div>`).join("")}
+  </div>
+
+  ${NX2.packFitLog.length?`<div class="panel" style="margin-bottom:18px;border-color:var(--gold-dim)"><h3>🔁 GEAR REASSIGNED BY THIS PATCH</h3>
+    <p style="font-size:12px;color:var(--txt-dim);margin:6px 0 10px">Targeted only. The lore-derived gear engine was not re-run — re-rolling every loadout to pick up eight new items would have destroyed the hand-authored overrides.</p>
+    ${PACK_FITS.filter(([id])=>CHARACTERS.some(c=>c.id===id)).map(([id,wep,why])=>{
+      const c=CHARACTERS.find(x=>x.id===id);
+      return `<div style="padding:7px 0;border-bottom:1px solid var(--line);font-size:12.5px"><b style="cursor:pointer" onclick="openChar('${id}')">${E(c.name)}</b> → <span style="color:var(--gold2)">${E(wep)}</span><div style="color:var(--txt-dim);font-size:11px">${E(why)}</div></div>`;
+    }).join("")}</div>`:""}
+
+  <div class="panel" style="margin-bottom:18px"><h3>🟢 DATA CONFIDENCE KEY</h3>
+    <p style="font-size:12px;color:var(--txt-dim);margin:6px 0 10px">Blueprint §61. Every claim on the site should be traceable to how strongly it is known.</p>
+    ${Object.values(CONF).map(c=>`<div style="padding:5px 0;font-size:12px"><span style="margin-right:6px">${c.i}</span><b>${E(c.l)}</b> <span style="color:var(--txt-dim)">— ${E(c.d)}</span></div>`).join("")}
+  </div>
+
+  <div style="text-align:center;font-size:11px;color:var(--txt-dim);line-height:1.9;padding:6px 0 20px">
+    Patch data verified against <a href="${PATCH_META.source}" target="_blank" rel="noopener">Bandai Namco's official 1.17 notes</a>.<br>
+    Add the next patch by appending to <code style="color:var(--gold2)">PATCH_CHANGES</code> — the impact scan, the badges and these counters all follow automatically.
+  </div>`;
+};
+
+/* ==========================================================================
+   BADGE INJECTION — the flag lands on the build itself, not just a report
+   ========================================================================== */
+if(typeof buildBlock==="function"){
+  const _bb = buildBlock;
+  buildBlock = function(b,cid,idx){
+    let html=_bb(b,cid,idx);
+    if(cid===undefined||idx===undefined) return html;
+    const hits=NX2.impactFor(cid,idx);
+    if(!hits||!hits.length) return html;
+    const buffs=hits.filter(h=>h.kind==="buff"), nerfs=hits.filter(h=>h.kind==="nerf");
+    const banner=`<div class="build-note" style="border-color:${nerfs.length?"rgba(239,68,68,.4)":"rgba(52,211,153,.4)"};background:${nerfs.length?"rgba(239,68,68,.07)":"rgba(52,211,153,.06)"};color:${nerfs.length?"#fecaca":"#a7f3d0"};margin-bottom:10px">
+      ⚡ <b>CHANGED IN PATCH ${E(PATCH_META.version)}</b> (${E(PATCH_META.date)}) —
+      ${hits.map(h=>`<b>${E(h.item)}</b>: ${E(h.what)}${h.scope==="pvp"?" <i>(PvP only)</i>":""}`).join(" · ")}
+      ${buffs.length&&!nerfs.length?" This build got stronger.":""}${nerfs.length?" Revisit this build's duel notes.":""}
+    </div>`;
+    return banner+html;
+  };
+}
+
+/* ==========================================================================
+   HOST CORRECTIONS — stale counters and the hardcoded footer version
+   WEAPON_TOTAL / ARMOR_TOTAL are const numbers and cannot be reassigned, so
+   the rendered values are corrected after the host writes them.
+   ========================================================================== */
+function fixCounters(){
+  document.querySelectorAll("#dashGrid .stat-card").forEach(card=>{
+    const lbl=card.querySelector(".lbl"), num=card.querySelector(".num");
+    if(!lbl||!num) return;
+    if(/Weapons Indexed/i.test(lbl.textContent)) num.textContent=NX2.newWeaponTotal;
+    if(/Armor Sets/i.test(lbl.textContent))      num.textContent=NX2.newArmorTotal;
+  });
+  const wc=document.getElementById("wepCount");
+  if(wc) wc.textContent=NX2.newWeaponTotal+" weapons · "+WEAPON_INDEX.length+" categories · including "+PACK_WEAPONS.length+" from the Tarnished Pack (1.17)";
+  const ac=document.getElementById("armorCount");
+  if(ac) ac.textContent=NX2.newArmorTotal+" sets · including "+PACK_ARMOR.length+" from the Tarnished Pack (1.17)";
+}
+function fixFooter(){
+  const f=document.querySelector("footer"); if(!f||f.dataset.nx2==="1") return;
+  f.dataset.nx2="1";
+  f.innerHTML=f.innerHTML.replace(/patch\s*1\.16/i,
+    `patch ${PATCH_META.version} · <a href="#" onclick="go('nx2patch');return false;">Update Center</a>`);
+}
+if(typeof renderHome==="function"){
+  const _rh=renderHome;
+  renderHome=function(){ _rh(); fixCounters(); fixFooter(); };
+}
+if(typeof renderWeapons==="function"){ const _rw=renderWeapons; renderWeapons=function(){ _rw(); fixCounters(); }; }
+if(typeof renderTalismans==="function"){ const _rt=renderTalismans; renderTalismans=function(){ _rt(); fixCounters(); }; }
+
+/* ==========================================================================
+   BOOT
+   ========================================================================== */
+function boot(){
+  ensureView();
+  NX2.renderPatchCenter();
+  try{ if(typeof renderHome==="function") renderHome(); }catch(e){}
+  try{ if(typeof renderWeapons==="function") renderWeapons(); }catch(e){}
+  try{ if(typeof renderTalismans==="function") renderTalismans(); }catch(e){}
+  try{ if(typeof renderBuildViewer==="function") renderBuildViewer(); }catch(e){}
+  const s=NX2.changelogStats();
+  console.log("%c[NX2/01] Patch Center active — Elden Ring "+PATCH_META.version,"color:#d4af37;font-weight:bold",s);
+}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
+
+NX2.PATCH_CHANGES=PATCH_CHANGES;
+NX2.PACK={weapons:PACK_WEAPONS,armor:PACK_ARMOR,classes:PACK_CLASSES,attire:PACK_ATTIRE,invasions:PACK_INVASIONS};
+})();
+</script>
+
+<!-- ---- LIVING NEXUS 02 · NIGHTREIGN CONVERSION LAYER ---- -->
+<script>
+/* ============================================================================
+   ANIME RING NEXUS — LIVING NEXUS MODULE 02
+   NIGHTREIGN CONVERSION LAYER
+   ----------------------------------------------------------------------------
+   A second conversion target. The base game asks "what is this character's
+   eight-attribute spread at RL150" — a question that gets dishonest fast at
+   Power Tier 5 and 6. Nightreign asks "which fixed class is this character",
+   which is answerable for everyone, including Saitama.
+
+   HONESTY NOTE, and it matters:
+     · The ten Nightfarer NAMES are verified against Bandai Namco's official
+       hero page. Scholar and Undertaker's descriptions are quoted from it.
+     · Everything in `role`, `lean` and `match` for the other eight is NEXUS
+       INTERPRETATION, flagged as such in the UI. Fill `kit` in from the game
+       and flip `conf` to "verified" — the matcher improves automatically.
+   Load after module 01.
+   ========================================================================== */
+(function(){
+"use strict";
+if(typeof CHARACTERS==="undefined"||!Array.isArray(CHARACTERS)){
+  console.error("[NX2/02] Load this after the main Nexus script."); return;
+}
+const NX2 = window.NX2 = window.NX2 || {};
+const E = (typeof esc==="function") ? esc : (t=>String(t));
+const H = (typeof hashN==="function") ? hashN : (s=>s.length);
+
+/* ==========================================================================
+   THE NIGHTFARERS
+   conf: "verified" = description quoted from the official source
+         "nexus"    = this site's reading, pending in-game confirmation
+   ========================================================================== */
+const NIGHTFARERS = [
+ {id:"wylder",    name:"Wylder",    icon:"🗡", conf:"nexus", dlc:false, generalist:true,
+  role:"All-rounder vanguard", lean:["STR","DEX","VIG"],
+  read:"The default face of Nightreign and the class every roster needs one of: honest weapon work, no gimmick to hide behind. Scored on balance rather than keywords — a character with no dominant specialism IS a Wylder, and that is the whole point of the class.",
+  match:/quality|vanguard|mercenar|all.?round|straightforward|honest|veteran|balanced|adaptable/i},
+ {id:"guardian",  name:"Guardian",  icon:"🛡", conf:"nexus", dlc:false,
+  role:"Protector / frontline wall", lean:["VIG","END","STR"],
+  read:"Holds the line so the other two can work. The class for characters whose defining act is standing in front of someone.",
+  match:/guard|shield|protect|wall|bulwark|tank|defend|unmov|immov|fortress|loyal|sworn|bodyguard/i},
+ {id:"ironeye",   name:"Ironeye",   icon:"🏹", conf:"nexus", dlc:false,
+  role:"Ranged marksman", lean:["DEX"],
+  read:"Ends the fight before it arrives. Snipers, gunners, archers and anyone whose signature is a single placed shot.",
+  match:/bow|arrow|snipe|marksman|gun|rifle|shot|crossbow|ranged|precision|volley|aim/i},
+ {id:"duchess",   name:"Duchess",   icon:"🎭", conf:"nexus", dlc:false,
+  role:"Trickster / evasive skirmisher", lean:["DEX","MND"],
+  read:"Speed, misdirection and openings manufactured rather than waited for. Assassins and illusionists land here.",
+  match:/assassin|stealth|illusion|trick|deceiv|shadow|evasi|nimble|swift|blink|phantom|mask|elusive|dagger/i},
+ {id:"raider",    name:"Raider",    icon:"🪓", conf:"nexus", dlc:false,
+  role:"Heavy bruiser", lean:["STR","VIG","END"],
+  read:"Overwhelming physical force with no interest in subtlety. Berserkers, brawlers and colossal-weapon users.",
+  match:/berserk|rage|fury|brute|rampage|savage|raid|reckless|bloodlust|frenzied charge|unrestrained/i},
+ {id:"recluse",   name:"Recluse",   icon:"🔮", conf:"nexus", dlc:false,
+  role:"Spellcaster / elemental control", lean:["INT","MND"],
+  read:"Battlefield control at range. Sorcerers, elementalists and anyone whose power system is a school rather than a style.",
+  match:/sorcer|magic|spell|glintstone|arcane|elemental|witch|mage|wizard|cast|hex|rune|conjur/i},
+ {id:"executor",  name:"Executor",  icon:"⚔", conf:"nexus", dlc:false,
+  role:"Duelist / counter-striker", lean:["DEX","STR"],
+  read:"Punishes rather than initiates. Katana duelists, parry specialists and iaijutsu draws.",
+  match:/katana|iai|duel|counter|parry|riposte|draw|swordsman|samurai|blade saint|execut|precise/i},
+ {id:"revenant",  name:"Revenant",  icon:"👻", conf:"nexus", dlc:false,
+  role:"Summoner / spirit commander", lean:["MND","FTH"],
+  read:"Fights through others. Summoners, shikigami users, necromancers and anyone who arrives with an army.",
+  match:/summon|spirit|familiar|shikigami|puppet|legion|army|undead|necro|ghost|revenant|command|raise/i},
+ {id:"scholar",   name:"Scholar",   icon:"📖", conf:"verified", dlc:true,
+  role:"Arcane academic", lean:["INT","ARC","MND"],
+  read:"Officially: an academic with high arcane stats who \"gains incredible advantages through battlefield observation.\" The class for characters who win by knowing.",
+  match:/scholar|study|research|analy|observ|intellect|genius|tactic|strateg|knowledge|academic|professor|sage|read/i},
+ {id:"undertaker",name:"Undertaker",icon:"⚰", conf:"verified", dlc:true,
+  role:"Strength-faith abbess", lean:["STR","FTH"],
+  read:"Officially: an abbess with impressive strength and faith who \"sends enemies to the afterlife with ruthless efficiency.\" Holy force, not holy mercy.",
+  match:/holy|faith|divine|sacred|priest|abbess|nun|creed|death|funeral|grave|reaper|judgment|zealot|conviction/i}
+];
+NX2.NIGHTFARERS = NIGHTFARERS;
+
+const NR_META = {
+  game:"ELDEN RING NIGHTREIGN",
+  dlc:"The Forsaken Hollows",
+  dlcDate:"2025-12-04",
+  dlcAdds:"2 Nightfarers (Scholar, Undertaker) · 2 bosses · 1 new Shifting Earth",
+  region:"The Great Hollow — a subterranean area beneath Limveld where cursed crystals emanate a malevolent aura and the ruins of the old folk stand silent.",
+  enemy:"Abominations — described as a threat distinct from the Nightlords.",
+  roadmap:"Further Nightreign DLC is confirmed for 2026 across all platforms.",
+  src:"https://en.bandainamcoent.eu/elden-ring/elden-ring-nightreign/characters"
+};
+NX2.NR_META = NR_META;
+
+/* ==========================================================================
+   MATCHER — reuses gearTheme() and the existing archetype/tier fields, so the
+   Nightfarer read stays consistent with the rest of the site's conversion.
+   ========================================================================== */
+function themeOf(c){
+  if(c._nx2th) return c._nx2th;
+  let t={};
+  try{ if(typeof gearTheme==="function") t=gearTheme(c)||{}; }catch(e){ t={}; }
+  c._nx2th=t; return t;
+}
+function corpus(c){
+  if(c._nx2corp) return c._nx2corp;
+  c._nx2corp = ((c.powerSystem||"")+" "+(c.techniques||[]).join(" ")+" "+
+                (c.bio||"")+" "+(c.combat||"")+" "+(c.archetype||"")+" "+
+                (c.personality||"")).toLowerCase();
+  return c._nx2corp;
+}
+function nfScore(c,nf){
+  const txt=corpus(c), th=themeOf(c);
+  const b=(c.builds||[]).find(x=>x.primary)||(c.builds||[])[0];
+  const st=b?b.stats:{VIG:20,MND:20,END:20,STR:20,DEX:20,INT:20,FTH:20,ARC:20};
+  let s=0;
+  const keys=["VIG","MND","END","STR","DEX","INT","FTH","ARC"];
+  const total=keys.reduce((n,k)=>n+(st[k]||0),0)||1;
+  /* 1. language match against the class read — weighted ABOVE the stat lean,
+     because the spread was itself derived from this same text and letting it
+     dominate would just be double-counting. */
+  const hits=(txt.match(new RegExp(nf.match.source,"gi"))||[]).length;
+  s += Math.min(46, hits*11);
+  /* 2. stat lean agreement */
+  nf.lean.forEach((k,i)=>{ s += ((st[k]||0)/total) * (72/(i+1)); });
+  /* 3. Wylder is the generalist: it scores on the ABSENCE of a specialism.
+     Measured as low spread across the five offensive attributes. */
+  if(nf.generalist){
+    const off=["STR","DEX","INT","FTH","ARC"].map(k=>(st[k]||0)/total);
+    const mean=off.reduce((a,b)=>a+b,0)/off.length;
+    const varc=off.reduce((a,b)=>a+(b-mean)*(b-mean),0)/off.length;
+    s += Math.max(0, 34 - Math.sqrt(varc)*430);
+  }
+  /* 4. archetype family agreement */
+  const a=c.archetype||"";
+  const fam={
+    wylder:/Quality|Greatsword|Colossal|Brawler|Stand/i, guardian:/Guardian|Tank|Sacred$/i,
+    ironeye:/Ranged|Archer/i, duchess:/Assassin|Speed|Backhand/i,
+    guardian:/Guardian|Tank|Immovable|Shield|Polearm Duelist/i,
+    raider:/Colossal|Brawler|Martial/i, recluse:/Int Caster|Gravity|Spellblade|Frost/i,
+    executor:/Katana|Iaijutsu|Dual-Wield|Polearm/i, revenant:/Legion|Death Sorcery|Summons/i,
+    scholar:/Death Sorcery|Toxin|Legion/i, undertaker:/Faith|Sacred|Fire Faith|Paladin/i
+  }[nf.id];
+  if(fam && fam.test(a)) s+=16;
+  /* 5. status / element steer */
+  if(nf.id==="undertaker" && th.element==="Sacred") s+=10;
+  if(nf.id==="recluse"    && (th.element==="Magic"||th.element==="Cold")) s+=10;
+  if(nf.id==="revenant"   && th.undead) s+=10;
+  if(nf.id==="raider"     && th.heavy) s+=8;
+  if(nf.id==="duchess"    && th.light) s+=8;
+  if(nf.id==="scholar"    && th.scholar) s+=16;
+  if(nf.id==="scholar"    && /observ|analy|deduc|calculat|strateg|intellect|knowledge|study|research|tactic|genius|scholar|professor|read/.test(txt)) s+=18;
+  if(nf.id==="scholar"    && c.category==="Mentor") s+=10;
+  if(nf.id==="guardian"   && /Guardian|Tank|Immovable/i.test(a)) s+=12;
+  if(nf.id==="guardian"   && /protect|shield|guard|endure|withstand|hold the line|bodyguard|sworn/.test(txt)) s+=12;
+  if(nf.id==="wylder"     && /Quality/i.test(a)) s+=12;
+  /* 6. deterministic tail-break so ties are stable across reloads */
+  s += (H(c.id+"::nf::"+nf.id)%9)/3;
+  return s;
+}
+NX2.nightfarersFor = function(c){
+  return NIGHTFARERS.map(nf=>({nf, score:nfScore(c,nf)}))
+    .sort((a,b)=>b.score-a.score);
+};
+NX2.nightfarerOf = function(c){
+  const r=NX2.nightfarersFor(c);
+  const top=r[0], second=r[1];
+  const spread=top.score-(second?second.score:0);
+  return {primary:top.nf, secondary:second?second.nf:null,
+          confidence: spread>14?"clear" : spread>6?"leaning" : "split",
+          ranked:r};
+};
+/* Cache one read per character so views and badges stay consistent. */
+function nfOf(c){ if(!c._nx2nf) c._nx2nf=NX2.nightfarerOf(c); return c._nx2nf; }
+NX2.nfOf = nfOf;
+
+/* ==========================================================================
+   DOSSIER BADGE
+   ========================================================================== */
+if(typeof openChar==="function"){
+  const _oc=openChar;
+  openChar=function(id){
+    _oc(id);
+    const c=CHARACTERS.find(x=>x.id===id); if(!c) return;
+    const grid=document.querySelector("#ctab-combat .info-grid");
+    if(!grid||grid.querySelector(".nx2-nfbox")) return;
+    const r=nfOf(c);
+    const conf={clear:"Clear read",leaning:"Leaning",split:"Split — could go either way"}[r.confidence];
+    const box=document.createElement("div");
+    box.className="info-box nx2-nfbox";
+    box.style.borderColor="rgba(139,92,246,.45)";
+    box.innerHTML=`<h5 style="color:#c4b5fd">🌒 Nightreign — Nightfarer Read</h5>
+      <p style="font-size:13px;line-height:1.7"><span style="font-size:18px">${r.primary.icon}</span>
+        <b style="font-family:var(--font-display);font-size:15px;color:var(--gold2)">${E(r.primary.name)}</b>
+        <span class="pill gold" style="font-size:9px">${E(conf)}</span><br>
+        <small style="color:var(--txt-dim)">${E(r.primary.role)}</small></p>
+      <p style="font-size:12px;color:var(--txt-dim);margin-top:6px">${E(r.primary.read)}</p>
+      ${r.secondary?`<p style="font-size:11.5px;margin-top:8px">Second read: <b>${r.secondary.icon} ${E(r.secondary.name)}</b> <small style="color:var(--txt-dim)">— ${E(r.secondary.role)}</small></p>`:""}
+      <p style="font-size:10.5px;color:var(--txt-dim);margin-top:8px">${NX2.confPill?NX2.confPill("nexus"):""} Class kits are not yet filled in from the game — this read is archetype-based.</p>
+      <div style="margin-top:8px"><button class="btn" style="padding:5px 12px;font-size:11px" onclick="closeModal();go('nx2night');NX2.focusNightfarer('${r.primary.id}')">Open ${E(r.primary.name)} →</button></div>`;
+    grid.appendChild(box);
+  };
+}
+
+/* ==========================================================================
+   VIEW — 🌒 NIGHTREIGN
+   ========================================================================== */
+function ensureView(){
+  if(document.getElementById("view-nx2night")) return;
+  const main=document.querySelector("main"); if(!main) return;
+  const sec=document.createElement("section");
+  sec.className="view"; sec.id="view-nx2night";
+  sec.innerHTML=`<div class="sec-title">NIGHTREIGN — THE SECOND CONVERSION</div>
+    <div class="sec-sub">Ten fixed classes instead of eight free attributes. Where the base game forces a narrative-adjustment disclaimer at Tier 6, a Nightfarer read stays honest — "which class is Saitama" has an answer.</div>
+    <div id="nx2NightBody"></div>`;
+  main.appendChild(sec);
+  const nav=document.getElementById("mainNav");
+  if(nav && !nav.querySelector('[data-view="nx2night"]')){
+    const btn=document.createElement("button");
+    btn.dataset.view="nx2night"; btn.textContent="🌒 Nightreign";
+    const anchor=nav.querySelector('[data-view="database"]');
+    anchor ? nav.insertBefore(btn,anchor) : nav.appendChild(btn);
+  }
+}
+NX2.focusNightfarer=function(id){
+  const el=document.getElementById("nx2nf_"+id);
+  if(el){ el.open=true; if(el.scrollIntoView) el.scrollIntoView({behavior:"smooth",block:"center"}); }
+};
+NX2.renderNightreign=function(){
+  ensureView();
+  const el=document.getElementById("nx2NightBody"); if(!el) return;
+  /* assign every character to their top Nightfarer once */
+  const roster={}; NIGHTFARERS.forEach(nf=>roster[nf.id]=[]);
+  CHARACTERS.forEach(c=>{ const r=nfOf(c); roster[r.primary.id].push({c,score:r.ranked[0].score,conf:r.confidence}); });
+  Object.keys(roster).forEach(k=>roster[k].sort((a,b)=>b.score-a.score));
+  const max=Math.max(...Object.values(roster).map(a=>a.length),1);
+
+  el.innerHTML=`
+  <div class="panel" style="margin-bottom:18px;border-color:rgba(139,92,246,.4)">
+    <h3>🌒 ${E(NR_META.game)}</h3>
+    <p style="font-size:12.5px;color:var(--txt-dim);line-height:1.75;margin:6px 0 10px">
+      <b style="color:var(--gold2)">${E(NR_META.dlc)}</b> (${E(NR_META.dlcDate)}) — ${E(NR_META.dlcAdds)}.<br>
+      <b>New region:</b> ${E(NR_META.region)}<br>
+      <b>New enemy type:</b> ${E(NR_META.enemy)}<br>
+      ${E(NR_META.roadmap)}
+    </p>
+    <div class="build-note" style="border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.07);color:#ddd6fe">
+      🧬 <b>Why this layer exists.</b> The Conversion Framework already concedes that Tier 6 characters break the base game's maths, and the site prints a disclaimer saying so. Nightreign's classes are bounded kits, not stat budgets — so a Tier 6 read is a genuine answer rather than an apology. This is the same conversion thesis pointed at a target it actually fits.
+    </div>
+    <p style="font-size:11px;color:var(--txt-dim);margin-top:10px">
+      ${NX2.confPill?NX2.confPill("verified","the ten names, and the Scholar / Undertaker descriptions"):""}
+      ${NX2.confPill?NX2.confPill("nexus","every role, stat lean and match rule below"):""}
+      Fill each class's real kit into <code style="color:var(--gold2)">NIGHTFARERS[].kit</code> and flip <code style="color:var(--gold2)">conf</code> to "verified" — the matcher sharpens on its own.
+    </p>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px"><h3>📊 ROSTER DISTRIBUTION — ${CHARACTERS.length.toLocaleString()} CHARACTERS ACROSS 10 CLASSES</h3>
+    <div class="bar-chart" style="margin-top:10px">
+    ${NIGHTFARERS.map(nf=>`<div class="bar-row">
+      <div class="bl" style="cursor:pointer" onclick="NX2.focusNightfarer('${nf.id}')">${nf.icon} ${E(nf.name)}</div>
+      <div class="btrack"><div class="bfill" style="width:${Math.max(4,Math.round(roster[nf.id].length/max*100))}%;background:linear-gradient(90deg,#8b5cf688,#8b5cf6)">${roster[nf.id].length}</div></div>
+    </div>`).join("")}
+    </div>
+  </div>
+
+  ${NIGHTFARERS.map(nf=>{
+    const list=roster[nf.id];
+    return `<details id="nx2nf_${nf.id}" class="panel" style="margin-bottom:12px">
+      <summary style="cursor:pointer;list-style:none">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:24px">${nf.icon}</span>
+          <div style="flex:1;min-width:160px">
+            <b style="font-family:var(--font-display);font-size:16px;color:var(--gold2);letter-spacing:1px">${E(nf.name).toUpperCase()}</b>
+            ${nf.dlc?'<span class="pill gold" style="font-size:9px;margin-left:6px">Forsaken Hollows</span>':""}
+            ${nf.conf==="verified"?'<span class="pill weak" style="font-size:9px;margin-left:4px">🟢 official description</span>':'<span class="pill" style="font-size:9px;margin-left:4px;background:rgba(148,163,184,.12);color:var(--txt-dim);border:1px solid var(--line)">🔵 Nexus read</span>'}
+            <div style="font-size:11.5px;color:var(--txt-dim)">${E(nf.role)} · leans ${nf.lean.join(" / ")}</div>
+          </div>
+          <span class="pill gold">${list.length} characters</span>
+        </div>
+      </summary>
+      <p style="font-size:12.5px;line-height:1.7;margin:12px 0 10px;color:var(--txt)">${E(nf.read)}</p>
+      <div style="line-height:2.2">
+        ${list.slice(0,40).map(x=>`<span class="pill ${x.conf==="clear"?"gold":""}" style="cursor:pointer;margin:2px 3px;${x.conf==="clear"?"":"background:var(--bg3);color:var(--txt);border:1px solid var(--line)"}" onclick="openChar('${x.c.id}')">${E(x.c.name)}</span>`).join("")}
+        ${list.length>40?`<div style="font-size:11px;color:var(--txt-dim);margin-top:6px">…and ${list.length-40} more. Solid gold = a clear read; grey = the character sits close to a second class.</div>`:""}
+      </div>
+    </details>`;
+  }).join("")}
+
+  <div style="text-align:center;font-size:11px;color:var(--txt-dim);line-height:1.9;padding:6px 0 20px">
+    Nightfarer roster verified against <a href="${NR_META.src}" target="_blank" rel="noopener">the official Nightreign hero page</a>.<br>
+    Nightlord names are deliberately absent — they are not verified here, and inventing them would violate the site's own no-fabricated-canon rule.
+  </div>`;
+};
+
+let nrDrawn=false;
+NX2.ensureNightreign=function(){ if(nrDrawn) return; nrDrawn=true; NX2.renderNightreign(); };
+if(typeof go==="function"){
+  const _go=go;
+  go=function(v){ _go(v); if(v==="nx2night") NX2.ensureNightreign(); };
+}
+function boot(){
+  ensureView();
+  console.log("%c[NX2/02] Nightreign layer active — view renders on first visit","color:#8b5cf6;font-weight:bold",
+    {nightfarers:NIGHTFARERS.length});
+}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
+})();
+</script>
+
+<!-- ---- LIVING NEXUS 03 · BUILD SCORECARD / BUILD DNA / BUILD COMPARE ---- -->
+<script>
+/* ============================================================================
+   ANIME RING NEXUS — LIVING NEXUS MODULE 03
+   BUILD SCORECARD · BUILD DNA · BUILD COMPARE
+   Blueprint refs: §4 Build Scorecard · §24 Build DNA · §20 Build Compare
+                   §33 Meta / Lore / Hybrid mode
+   ----------------------------------------------------------------------------
+   Every number here is DERIVED from data the site already holds — stats, gear,
+   affinities, boss weakness rows, roster-wide rarity. None of it is seeded and
+   none of it is random, so two people looking at the same build get the same
+   scorecard and can argue with the formula instead of the dice.
+
+   One deliberate departure from the blueprint: there is no "Fun Factor".
+   Fun is not computable and a fabricated number would undermine every honest
+   one next to it. It is replaced by EXPRESSION — how distinctive this loadout
+   is across the whole roster — which is both computable and actually useful.
+   Load after module 02.
+   ========================================================================== */
+(function(){
+"use strict";
+if(typeof CHARACTERS==="undefined"||!Array.isArray(CHARACTERS)){
+  console.error("[NX2/03] Load this after the main Nexus script."); return;
+}
+const NX2 = window.NX2 = window.NX2 || {};
+const E = (typeof esc==="function") ? esc : (t=>String(t));
+const KEYS=["VIG","MND","END","STR","DEX","INT","FTH","ARC"];
+const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+
+function themeOf(c){
+  if(c._nx2th) return c._nx2th;
+  let t={}; try{ if(typeof gearTheme==="function") t=gearTheme(c)||{}; }catch(e){}
+  c._nx2th=t; return t;
+}
+function corpus(c){
+  if(c._nx2corp) return c._nx2corp;
+  c._nx2corp=((c.powerSystem||"")+" "+(c.techniques||[]).join(" ")+" "+(c.bio||"")+" "+
+              (c.combat||"")+" "+(c.archetype||"")).toLowerCase();
+  return c._nx2corp;
+}
+function gearText(b){ return [].concat(b.weapons||[],b.armor||[],b.talismans||[],b.spells||[],[b.summon||""]).join(" | "); }
+function mainStat(st){ return KEYS.filter(k=>!["VIG","MND","END"].includes(k)).reduce((a,k)=>st[k]>st[a]?k:a,"STR"); }
+
+/* ==========================================================================
+   ROSTER-WIDE RARITY INDEX — powers the Expression metric
+   ========================================================================== */
+let RARITY_IDX=null;
+function rarityIndex(){
+  if(RARITY_IDX) return RARITY_IDX;
+  const wep={},tal={},sum={};
+  CHARACTERS.forEach(c=>(c.builds||[]).forEach(b=>{
+    const w=String((b.weapons||[])[0]||"").split(" (")[0].split(" — ")[0].trim();
+    if(w) wep[w]=(wep[w]||0)+1;
+    (b.talismans||[]).forEach(t=>{ const k=String(t).split(" — ")[0]; tal[k]=(tal[k]||0)+1; });
+    const s=String(b.summon||"").split(" — ")[0]; if(s&&s!=="—") sum[s]=(sum[s]||0)+1;
+  }));
+  const totalBuilds=CHARACTERS.reduce((n,c)=>n+(c.builds||[]).length,0)||1;
+  RARITY_IDX={wep,tal,sum,totalBuilds};
+  return RARITY_IDX;
+}
+
+/* ==========================================================================
+   METRICS
+   ========================================================================== */
+/* 1. LORE ACCURACY — does the kit read as this character? */
+function mLore(c,b){
+  const txt=corpus(c), th=themeOf(c), g=gearText(b).toLowerCase();
+  let s=46;
+  if(/Lore|Canon/i.test(b.name)||/Lore/i.test(b.type)) s+=20;
+  else if(/PvP/i.test(b.type)) s-=10;
+  /* signature technique words surfacing in the gear or notes */
+  (c.techniques||[]).slice(0,3).forEach(t=>{
+    const words=String(t).toLowerCase().split(/[^a-z]+/).filter(w=>w.length>4);
+    if(words.some(w=>g.indexOf(w)>=0 || String(b.notes||"").toLowerCase().indexOf(w)>=0)) s+=7;
+  });
+  /* declared element / status actually present in the loadout */
+  if(th.element){
+    const el={Fire:/flame|fire|magma|ignit/,Lightning:/lightning|bolt|thunder|gransax/,
+              Sacred:/sacred|holy|erdtree|golden|blessing/,Magic:/magic|glintstone|carian|moon|comet|staff/,
+              Cold:/cold|frost|ice|freez/,Occult:/occult|black flame|death|ghostflame/}[th.element];
+    if(el&&el.test(g)) s+=11;
+  }
+  if(th.status){
+    const stt={Blood:/blood|bleed/,Poison:/poison|venom/,Rot:/rot|occult|scarlet/,
+               Cold:/cold|frost/,Madness:/frenz|madness/,Sleep:/sleep|trina/}[th.status];
+    if(stt&&stt.test(g)) s+=9;
+  }
+  if(String(b.notes||"").length>140) s+=5;   /* hand-reasoned builds explain themselves */
+  if(b.packNote) s+=6;                        /* a 1.17 item chosen for this character */
+  return clamp(Math.round(s),25,99);
+}
+/* 2. STAT EFFICIENCY — soft caps, not raw totals */
+function mStat(b){
+  const st=b.stats, m=mainStat(st);
+  let s=42;
+  if(st.VIG>=40) s+=18; else s+=Math.round(st.VIG/40*18);
+  if(st.VIG>60) s-=Math.min(8,(st.VIG-60)/3);          /* past the softer cap */
+  if(st[m]>=50) s+=16; else s+=Math.round(st[m]/50*16);
+  if(st[m]>80) s-=Math.min(8,(st[m]-80)/2);
+  if(st.END>=25&&st.END<=45) s+=10; else s+=4;
+  const dump=KEYS.filter(k=>k!=="VIG"&&k!=="END"&&k!==m&&st[k]>=25&&st[k]<40).length;
+  s-=dump*4;                                            /* stranded mid-range stats */
+  const budget=b.level+79, spent=KEYS.reduce((n,k)=>n+st[k],0);
+  if(spent<budget-8) s-=Math.min(10,(budget-spent)/6);  /* unspent levels */
+  return clamp(Math.round(s),20,99);
+}
+/* 3. EQUIPMENT SYNERGY — does the gear agree with the stats? */
+function mGear(c,b){
+  const st=b.stats, m=mainStat(st), g=gearText(b), th=themeOf(c);
+  let s=48;
+  const aff=(g.match(/\((Heavy|Keen|Quality|Fire|Flame Art|Lightning|Sacred|Magic|Cold|Poison|Blood|Occult)/)||[])[1];
+  const want={STR:"Heavy",DEX:"Keen",INT:"Magic",FTH:"Sacred",ARC:"Occult"}[m];
+  if(aff){ if(aff===want||aff==="Quality") s+=14; else if(th.element&&aff.indexOf(th.element)>=0) s+=12; else s+=4; }
+  const caster=/Staff|Seal|Scepter/i.test(g);
+  const hasSpells=(b.spells||[]).some(x=>x&&x!=="—"&&!/no magic/i.test(x));
+  if(caster&&hasSpells) s+=14;
+  if(caster&&!hasSpells) s-=16;                          /* a catalyst with nothing to cast */
+  if(!caster&&hasSpells&&(st.INT>=20||st.FTH>=20||st.ARC>=20)) s+=7;
+  if(!caster&&hasSpells&&st.INT<15&&st.FTH<15&&st.ARC<15) s-=12;
+  if(/Shard of Alexander/.test(g)&&/\((Heavy|Keen|Quality)/.test(g)) s+=5;
+  if(th.status==="Blood"&&/Lord of Blood/.test(g)) s+=9;
+  if(th.status==="Rot"&&/Kindred of Rot/.test(g)) s+=9;
+  if(/Scorpion Charm/.test(g)&&th.element) s+=6;
+  if((b.talismans||[]).length>=4) s+=4;
+  return clamp(Math.round(s),20,99);
+}
+/* 4. BOSS PERFORMANCE — averaged fit against the real weakness rows */
+function mBoss(c,b){
+  if(typeof BOSSES==="undefined"||!BOSSES.length) return 60;
+  const th=themeOf(c), g=gearText(b), st=b.stats;
+  let total=0;
+  BOSSES.forEach(boss=>{
+    const weak=(boss.weak||[]).join(" ").toLowerCase(), res=(boss.resist||[]).join(" ").toLowerCase();
+    let v=52;
+    if(/bleed|blood/.test(weak)&&th.status==="Blood") v+=16;
+    if(/frost|cold/.test(weak)&&(th.status==="Cold"||th.element==="Cold")) v+=16;
+    if(/rot|poison/.test(weak)&&(th.status==="Rot"||th.status==="Poison")) v+=16;
+    if(/stance|poise|stagger/.test(weak)&&th.heavy) v+=14;
+    if(/physical|slash|strike|pierce/.test(weak)&&!th.element) v+=10;
+    if(/summon/.test(weak)&&/Tiche|Mimic|Ashes|\+10/.test(g)) v+=10;
+    if(/holy/.test(res)&&th.element==="Sacred") v-=20;
+    if(/fire/.test(res)&&th.element==="Fire") v-=18;
+    if(/magic/.test(res)&&th.element==="Magic") v-=14;
+    if(/status/.test(res)&&th.status) v-=14;
+    if(st.VIG>=50) v+=6; else if(st.VIG<35) v-=8;
+    total+=clamp(v,15,98);
+  });
+  return clamp(Math.round(total/BOSSES.length),20,99);
+}
+/* 5. PVP VIABILITY */
+function mPvP(c,b){
+  const st=b.stats, g=gearText(b), th=themeOf(c);
+  let s=40;
+  if(st.VIG>=50) s+=18; else if(st.VIG>=40) s+=10; else s-=10;
+  if(/PvP/i.test(b.type)) s+=10;
+  if(b.level>=120&&b.level<=150) s+=8;                   /* live duel brackets */
+  else if(b.level>250) s-=10;
+  if(th.status==="Blood") s+=10;
+  if(th.light) s+=7;
+  if(/Bull-Goat/.test(g)) s+=6;
+  if(/Erdtree's Favor/.test(g)) s+=4;
+  if(th.heavy&&st.END<30) s-=6;
+  if(/Comet Azur|Wrath of Gold|fully.?charged/i.test(g+" "+(b.notes||""))) s-=10; /* telegraphed */
+  return clamp(Math.round(s),15,99);
+}
+/* 6. VIABILITY — general "does this actually work" */
+function mViab(c,b){
+  let s=Math.round((c.rating/10)*58)+18;
+  s+=(3-(c.difficulty||3))*4;
+  if(b.stats.VIG<30) s-=12;
+  if(/Challenge/i.test(b.type)) s-=16;                   /* by design */
+  return clamp(s,15,99);
+}
+/* 7. EXPRESSION — how distinctive this loadout is across the roster.
+   Replaces the blueprint's "Fun Factor", which is not computable. */
+function mExpr(b){
+  const R=rarityIndex();
+  const w=String((b.weapons||[])[0]||"").split(" (")[0].split(" — ")[0].trim();
+  const wn=R.wep[w]||1;
+  let s=30+clamp(Math.round(38-Math.log2(wn)*9),0,38);
+  const talRare=(b.talismans||[]).reduce((n,t)=>{
+    const k=String(t).split(" — ")[0]; return n+((R.tal[k]||1)<40?1:0);
+  },0);
+  s+=talRare*5;
+  const sm=String(b.summon||"").split(" — ")[0];
+  if(sm&&sm!=="—"&&(R.sum[sm]||1)<25) s+=8;
+  if(/Challenge|Lore/i.test(b.type)) s+=6;
+  return clamp(Math.round(s),15,99);
+}
+
+const WEIGHTS={lore:.20, stat:.14, gear:.16, boss:.18, pvp:.10, viab:.14, expr:.08};
+NX2.scorecard=function(c,b){
+  if(!c||!b) return null;
+  if(b._nx2card) return b._nx2card;
+  const m={lore:mLore(c,b), stat:mStat(b), gear:mGear(c,b), boss:mBoss(c,b),
+           pvp:mPvP(c,b), viab:mViab(c,b), expr:mExpr(b)};
+  m.difficulty=c.difficulty||3;
+  m.nexus=Math.round(Object.keys(WEIGHTS).reduce((n,k)=>n+m[k]*WEIGHTS[k],0)*10)/10;
+  b._nx2card=m; return m;
+};
+NX2.METRIC_LABELS={lore:"Lore Accuracy",stat:"Stat Efficiency",gear:"Equipment Synergy",
+  boss:"Boss Performance",pvp:"PvP Viability",viab:"Gameplay Viability",expr:"Expression"};
+
+/* §33 — the three readings a build can be judged under */
+NX2.modeScore=function(m,mode){
+  if(mode==="lore")   return Math.round((m.lore*.55+m.gear*.20+m.expr*.15+m.viab*.10)*10)/10;
+  if(mode==="meta")   return Math.round((m.boss*.30+m.pvp*.25+m.stat*.25+m.viab*.20)*10)/10;
+  return m.nexus;
+};
+
+/* ==========================================================================
+   RENDERERS
+   ========================================================================== */
+function bar(label,v,col){
+  return `<div class="bar-row"><div class="bl">${E(label)}</div>
+    <div class="btrack"><div class="bfill" style="width:${Math.max(5,v)}%;background:linear-gradient(90deg,${col}88,${col})">${v}</div></div></div>`;
+}
+function scoreCol(v){ return v>=85?"#34d399" : v>=70?"#d4af37" : v>=55?"#38bdf8" : "#f87171"; }
+
+NX2.renderScorecard=function(c,b){
+  const m=NX2.scorecard(c,b); if(!m) return "";
+  return `<div class="panel" style="margin-top:12px;background:var(--bg3)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h3 style="font-size:14px;margin:0">📊 BUILD SCORECARD</h3>
+      <span style="font-family:var(--font-display);font-size:26px;color:${scoreCol(m.nexus)}">${m.nexus}<small style="font-size:10px;color:var(--txt-dim);letter-spacing:1px"> NEXUS SCORE</small></span>
+    </div>
+    <p style="font-size:11px;color:var(--txt-dim);margin:6px 0 10px">Derived from this build's own stats, gear and the boss weakness tables — not seeded, not random. Same build, same numbers, every time. ${NX2.confPill?NX2.confPill("nexus"):""}</p>
+    <div class="bar-chart">
+      ${Object.keys(NX2.METRIC_LABELS).map(k=>bar(NX2.METRIC_LABELS[k],m[k],scoreCol(m[k]))).join("")}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:11.5px">
+      <span class="pill gold">📜 Lore mode: ${NX2.modeScore(m,"lore")}</span>
+      <span class="pill weak">⚔ Meta mode: ${NX2.modeScore(m,"meta")}</span>
+      <span class="pill">⚖ Hybrid: ${m.nexus}</span>
+      <span class="pill resist">Difficulty ${"★".repeat(m.difficulty)}${"☆".repeat(5-m.difficulty)}</span>
+    </div>
+    <p style="font-size:10.5px;color:var(--txt-dim);margin-top:8px">There is deliberately no "fun factor" — fun is not computable, and a made-up number here would make the six real ones less trustworthy. <b>Expression</b> measures how rare this loadout is across all ${rarityIndex().totalBuilds.toLocaleString()} builds instead.</p>
+  </div>`;
+};
+
+NX2.combatDNA=function(c,b){
+  const st=b.stats, th=themeOf(c), g=gearText(b);
+  const tot=KEYS.reduce((n,k)=>n+st[k],0)||1;
+  const phys=Math.round((st.STR+st.DEX)/tot*190);
+  const mag=Math.round(st.INT/tot*230), fth=Math.round(st.FTH/tot*230), arc=Math.round(st.ARC/tot*230);
+  return {
+    Physical:clamp(phys,2,99),
+    Magic:clamp(mag,1,99),
+    Faith:clamp(fth,1,99),
+    Status:clamp(Math.round(arc*1.3+(th.status?26:0)),1,99),
+    Mobility:clamp(Math.round((st.DEX/tot*150)+(th.light?24:0)-(th.heavy?14:0)+18),3,99),
+    Hyperarmor:clamp(Math.round((st.STR/tot*140)+(th.heavy?26:0)+(/Bull-Goat/.test(g)?12:0)),3,99),
+    Burst:clamp(Math.round((Math.max(st.STR,st.DEX,st.INT,st.FTH,st.ARC)/tot*175)+(/Godfrey Icon|Shard of Alexander/.test(g)?10:0)),3,99),
+    Sustain:clamp(Math.round((st.VIG/tot*150)+(/Crimson Seed|Blessed Dew|Taker's Cameo|Godskin Swaddling/.test(g)?16:0)),3,99)
+  };
+};
+NX2.renderDNA=function(c,b){
+  const dna=NX2.combatDNA(c,b), st=b.stats;
+  const maxStat=Math.max(...KEYS.map(k=>st[k]))||99;
+  const blocks=v=>{ const n=Math.round(v/maxStat*10); return "█".repeat(Math.max(1,n))+"░".repeat(Math.max(0,10-n)); };
+  return `<div class="panel" style="margin-top:12px;background:var(--bg3)">
+    <h3 style="font-size:14px">🧬 BUILD DNA</h3>
+    <div style="font-family:ui-monospace,monospace;font-size:12.5px;line-height:1.85;margin:10px 0;color:var(--gold2)">
+      ${KEYS.map(k=>`<div><span style="display:inline-block;width:34px;color:var(--txt-dim)">${k}</span> ${blocks(st[k])} <span style="color:var(--txt)">${st[k]}</span></div>`).join("")}
+    </div>
+    <div class="bar-chart" style="margin-top:8px">
+      ${Object.keys(dna).map(k=>bar(k,dna[k],"#22d3ee")).join("")}
+    </div>
+  </div>`;
+};
+
+/* Inject both into every build block */
+if(typeof buildBlock==="function"){
+  const _bb=buildBlock;
+  buildBlock=function(b,cid,idx){
+    const base=_bb(b,cid,idx);
+    if(cid===undefined||idx===undefined) return base;
+    const c=CHARACTERS.find(x=>x.id===cid); if(!c) return base;
+    return base+`<div style="margin-top:10px">
+      <button class="stat-btn" style="width:auto;padding:6px 14px;font-size:11.5px;border-color:var(--gold-dim);color:var(--gold2)" onclick="NX2.toggleCard('${cid}',${idx})">📊 Scorecard &amp; Build DNA</button>
+      <div id="nx2card_${cid}_${idx}" data-open="0"></div></div>`;
+  };
+}
+NX2.toggleCard=function(cid,idx){
+  const host=document.getElementById("nx2card_"+cid+"_"+idx); if(!host) return;
+  if(host.dataset.open==="1"){ host.innerHTML=""; host.dataset.open="0"; return; }
+  host.dataset.open="1";
+  const c=CHARACTERS.find(x=>x.id===cid); const b=c&&c.builds[idx]; if(!b) return;
+  host.innerHTML=NX2.renderScorecard(c,b)+NX2.renderDNA(c,b);
+};
+
+/* ==========================================================================
+   §20 — BUILD COMPARE
+   ========================================================================== */
+NX2.cmp={a:null,b:null,ai:0,bi:0};
+/* Building 1,200+ <option> nodes twice per render was the single most
+   expensive thing these modules did. Built once, marked with a placeholder,
+   and the selection is applied to the live <select> instead of restringing. */
+let OPT_CACHE=null;
+function optionsHTML(){
+  if(OPT_CACHE) return OPT_CACHE;
+  const groups={};
+  CHARACTERS.forEach(c=>{ (groups[c.franchise]=groups[c.franchise]||[]).push(c); });
+  OPT_CACHE=Object.keys(groups).sort().map(f=>`<optgroup label="${E(f)}">`+
+    groups[f].map(c=>`<option value="${c.id}">${E(c.name)}</option>`).join("")+
+    `</optgroup>`).join("");
+  return OPT_CACHE;
+}
+NX2.setCmp=function(side,id){
+  NX2.cmp[side]=id; NX2.cmp[side+"i"]=0; NX2.renderCompare();
+};
+NX2.setCmpBuild=function(side,i){ NX2.cmp[side+"i"]=parseInt(i,10)||0; NX2.renderCompare(); };
+function ensureCmpView(){
+  if(document.getElementById("view-nx2cmp")) return;
+  const main=document.querySelector("main"); if(!main) return;
+  const sec=document.createElement("section");
+  sec.className="view"; sec.id="view-nx2cmp";
+  sec.innerHTML=`<div class="sec-title">BUILD COMPARE</div>
+    <div class="sec-sub">Two builds, side by side, scored on the same seven axes. The site refuses to print a universal winner — it shows you which one wins on which axis and lets you decide what you were optimising for.</div>
+    <div id="nx2CmpBody"></div>`;
+  main.appendChild(sec);
+  const nav=document.getElementById("mainNav");
+  if(nav && !nav.querySelector('[data-view="nx2cmp"]')){
+    const btn=document.createElement("button");
+    btn.dataset.view="nx2cmp"; btn.textContent="⚖ Compare";
+    const anchor=nav.querySelector('[data-view="rankings"]');
+    anchor ? nav.insertBefore(btn,anchor) : nav.appendChild(btn);
+  }
+}
+NX2.renderCompare=function(){
+  ensureCmpView();
+  const el=document.getElementById("nx2CmpBody"); if(!el) return;
+  if(!NX2.cmp.a) NX2.cmp.a=(CHARACTERS.find(c=>c.id==="guts")||CHARACTERS[0]).id;
+  if(!NX2.cmp.b) NX2.cmp.b=(CHARACTERS.find(c=>c.id==="naruto")||CHARACTERS[1]||CHARACTERS[0]).id;
+  const A=CHARACTERS.find(c=>c.id===NX2.cmp.a), B=CHARACTERS.find(c=>c.id===NX2.cmp.b);
+  const ab=A.builds[Math.min(NX2.cmp.ai,A.builds.length-1)], bb=B.builds[Math.min(NX2.cmp.bi,B.builds.length-1)];
+  const ma=NX2.scorecard(A,ab), mb=NX2.scorecard(B,bb);
+  const dnaA=NX2.combatDNA(A,ab), dnaB=NX2.combatDNA(B,bb);
+  const row=(label,va,vb,suffix)=>{
+    const na=parseFloat(va), nb=parseFloat(vb);
+    const aw=!isNaN(na)&&!isNaN(nb)&&na>nb, bw=!isNaN(na)&&!isNaN(nb)&&nb>na;
+    return `<tr><td style="color:var(--txt-dim)">${E(label)}</td>
+      <td style="${aw?"color:var(--gold2);font-weight:700":""}">${E(String(va))}${suffix||""}</td>
+      <td style="${bw?"color:var(--gold2);font-weight:700":""}">${E(String(vb))}${suffix||""}</td></tr>`;
+  };
+  const wins=Object.keys(NX2.METRIC_LABELS).filter(k=>ma[k]>mb[k]).length;
+  const losses=Object.keys(NX2.METRIC_LABELS).filter(k=>mb[k]>ma[k]).length;
+  el.innerHTML=`
+  <div class="panel" style="margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label style="font-size:10px;letter-spacing:1px;color:var(--txt-dim);font-weight:700">SIDE A</label>
+        <select id="nx2CmpA" class="searchbar" style="margin:4px 0 6px;cursor:pointer" onchange="NX2.setCmp('a',this.value)">${optionsHTML()}</select>
+        <select class="searchbar" style="margin:0;cursor:pointer" onchange="NX2.setCmpBuild('a',this.value)">
+          ${A.builds.map((x,i)=>`<option value="${i}" ${i===NX2.cmp.ai?"selected":""}>${E(x.name)}</option>`).join("")}</select></div>
+      <div><label style="font-size:10px;letter-spacing:1px;color:var(--txt-dim);font-weight:700">SIDE B</label>
+        <select id="nx2CmpB" class="searchbar" style="margin:4px 0 6px;cursor:pointer" onchange="NX2.setCmp('b',this.value)">${optionsHTML()}</select>
+        <select class="searchbar" style="margin:0;cursor:pointer" onchange="NX2.setCmpBuild('b',this.value)">
+          ${B.builds.map((x,i)=>`<option value="${i}" ${i===NX2.cmp.bi?"selected":""}>${E(x.name)}</option>`).join("")}</select></div>
+    </div>
+  </div>
+  <div class="panel" style="overflow-x:auto">
+    <table><thead><tr><th></th>
+      <th>${E(A.name)}<div style="font-weight:400;color:var(--txt-dim);font-size:10px">${E(ab.name)}</div></th>
+      <th>${E(B.name)}<div style="font-weight:400;color:var(--txt-dim);font-size:10px">${E(bb.name)}</div></th></tr></thead>
+    <tbody>
+      <tr><td colspan="3" style="color:var(--gold);font-family:var(--font-display);font-size:11px;letter-spacing:1.5px;padding-top:12px">ATTRIBUTES</td></tr>
+      ${KEYS.map(k=>row(k,ab.stats[k],bb.stats[k])).join("")}
+      ${row("Rune Level",ab.level,bb.level)}
+      <tr><td colspan="3" style="color:var(--gold);font-family:var(--font-display);font-size:11px;letter-spacing:1.5px;padding-top:12px">SCORECARD</td></tr>
+      ${Object.keys(NX2.METRIC_LABELS).map(k=>row(NX2.METRIC_LABELS[k],ma[k],mb[k])).join("")}
+      ${row("NEXUS SCORE",ma.nexus,mb.nexus)}
+      <tr><td colspan="3" style="color:var(--gold);font-family:var(--font-display);font-size:11px;letter-spacing:1.5px;padding-top:12px">COMBAT DNA</td></tr>
+      ${Object.keys(dnaA).map(k=>row(k,dnaA[k],dnaB[k])).join("")}
+      <tr><td colspan="3" style="color:var(--gold);font-family:var(--font-display);font-size:11px;letter-spacing:1.5px;padding-top:12px">KIT</td></tr>
+      <tr><td style="color:var(--txt-dim)">Weapon</td><td>${E(String(ab.weapons[0]||"—"))}</td><td>${E(String(bb.weapons[0]||"—"))}</td></tr>
+      <tr><td style="color:var(--txt-dim)">Summon</td><td>${E(String(ab.summon||"—"))}</td><td>${E(String(bb.summon||"—"))}</td></tr>
+      ${typeof NX2.nfOf==="function"?`<tr><td style="color:var(--txt-dim)">Nightfarer read</td><td>${NX2.nfOf(A).primary.icon} ${E(NX2.nfOf(A).primary.name)}</td><td>${NX2.nfOf(B).primary.icon} ${E(NX2.nfOf(B).primary.name)}</td></tr>`:""}
+    </tbody></table>
+  </div>
+  <div class="build-note" style="margin-top:14px">
+    ⚖ <b>${E(A.name)} wins ${wins} of 7 axes; ${E(B.name)} wins ${losses}.</b>
+    ${wins===losses?" A genuine split — this comes down to which axis you were optimising for."
+      : (wins>losses?E(A.name):E(B.name))+" leads on more axes, but that is not the same as being better: a Lore-mode reader and a Meta-mode reader should reach different conclusions here, and the site is not going to pick for them."}
+    <div style="margin-top:6px;font-size:11px;color:var(--txt-dim)">Lore mode — ${E(A.name)} ${NX2.modeScore(ma,"lore")} vs ${E(B.name)} ${NX2.modeScore(mb,"lore")} · Meta mode — ${NX2.modeScore(ma,"meta")} vs ${NX2.modeScore(mb,"meta")}</div>
+  </div>`;
+  const sa=document.getElementById("nx2CmpA"), sb=document.getElementById("nx2CmpB");
+  if(sa) sa.value=NX2.cmp.a;
+  if(sb) sb.value=NX2.cmp.b;
+};
+NX2.compareWith=function(id){
+  NX2.cmp.b=id; NX2.cmp.bi=0; cmpDrawn=true;
+  if(typeof closeModal==="function") closeModal();
+  if(typeof go==="function") go("nx2cmp");
+  NX2.renderCompare();
+};
+
+/* "Compare" button inside the dossier */
+if(typeof openChar==="function"){
+  const _oc=openChar;
+  openChar=function(id){
+    _oc(id);
+    const tabs=document.querySelector("#modalBox .mtabs");
+    if(!tabs||tabs.querySelector(".nx2-cmpbtn")) return;
+    const btn=document.createElement("div");
+    btn.className="mtab nx2-cmpbtn";
+    btn.style.borderColor="var(--cyan)"; btn.style.color="#a5f3fc";
+    btn.textContent="⚖ Compare";
+    btn.onclick=function(){ NX2.compareWith(id); };
+    tabs.appendChild(btn);
+  };
+}
+
+let cmpDrawn=false;
+NX2.ensureCompare=function(){ if(cmpDrawn) return; cmpDrawn=true; NX2.renderCompare(); };
+if(typeof go==="function"){
+  const _go=go;
+  go=function(v){ _go(v); if(v==="nx2cmp") NX2.ensureCompare(); };
+}
+function boot(){
+  ensureCmpView();
+  try{ if(typeof renderBuildViewer==="function") renderBuildViewer(); }catch(e){}
+  const sample=CHARACTERS.find(c=>c.id==="guts")||CHARACTERS[0];
+  console.log("%c[NX2/03] Scorecard · DNA · Compare active","color:#22d3ee;font-weight:bold",
+    {sample:sample.name, card:NX2.scorecard(sample,sample.builds[0])});
+}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
+})();
+</script>
+
+<!-- ---- LIVING NEXUS 04 · CHARACTER ARCS / FRANCHISE PAGES / MY NEXUS / DAILY SEED ---- -->
+<script>
+/* ============================================================================
+   ANIME RING NEXUS — LIVING NEXUS MODULE 04
+   CHARACTER ARCS · FRANCHISE PAGES · MY NEXUS · DAILY SEED
+   Blueprint refs: §2 Arc/Version system · §14 Franchise Pages
+                   §41 Daily Seed · §42 Discovery · §50 My Nexus
+   ----------------------------------------------------------------------------
+   §2 is the blueprint's biggest idea: one character becomes several build
+   identities. It is also the most content-hungry, so this ships the ENGINE
+   plus hand-authored arcs for 16 flagship characters rather than a
+   procedurally invented arc for all 1,000 — inventing arcs would break the
+   site's own no-fabricated-canon rule. Everyone else falls back to their real
+   build variants, and the UI says which they are looking at.
+   Load after module 03.
+   ========================================================================== */
+(function(){
+"use strict";
+if(typeof CHARACTERS==="undefined"||!Array.isArray(CHARACTERS)){
+  console.error("[NX2/04] Load this after the main Nexus script."); return;
+}
+const NX2 = window.NX2 = window.NX2 || {};
+const E = (typeof esc==="function") ? esc : (t=>String(t));
+const H = (typeof hashN==="function") ? hashN : (s=>s.length);
+const KEYS=["VIG","MND","END","STR","DEX","INT","FTH","ARC"];
+
+/* ==========================================================================
+   §2 — ARCS.  [arc name, power tier, rune level, what changes mechanically]
+   ========================================================================== */
+const ARCS={
+ naruto:[["Academy Student",1,25,"No jutsu worth the name. Clones that fall over. Pure stubbornness."],
+   ["Genin — Team 7",2,60,"One technique, learned badly, thrown at problems until it works."],
+   ["Sage Mode",3,120,"Natural energy. Buffs before engagement rather than during."],
+   ["Kurama Chakra Mode",4,150,"The cloak. Sustained damage buff, permanent aggression."],
+   ["Six Paths Sage",5,200,"Flight, truth-seeking orbs, and a scale the base game struggles with."],
+   ["Baryon Mode",5,200,"Burns life for damage. The Red-Feathered Branchsword build, taken literally."]],
+ sasuke:[["Academy Prodigy",1,30,"Fireball and a superiority complex."],
+   ["Curse Mark",2,90,"Speed bought with defence. Glass, entirely."],
+   ["Mangekyō",4,150,"Amaterasu. Black flame that does not go out."],
+   ["Rinnegan",5,200,"Space itself becomes negotiable."]],
+ guts:[["Golden Age Mercenary",2,80,"A reasonable sword and a reason to live."],
+   ["The Black Swordsman",3,150,"The slab. No summons, no shield, no help."],
+   ["Conviction",3,170,"The arm cannon and the repeater. Tools, because will alone stopped being enough."],
+   ["Berserker Armor",4,196,"Damage taken becomes damage dealt. The body pays later."]],
+ ichigo:[["Substitute Soul Reaper",2,70,"An oversized cleaver and no idea what he is doing."],
+   ["Bankai",3,150,"Smaller blade, more speed. The trade the whole character rests on."],
+   ["Hollow Mask",4,150,"Burst windows bought against himself."],
+   ["Final Getsuga",5,180,"One fight. Everything spent. Nothing kept."]],
+ luffy:[["East Blue",1,40,"A hat, a promise, and a punch."],
+   ["Gear Second",3,110,"Speed at the cost of lifespan."],
+   ["Gear Fourth",4,150,"Bounce-tank. Hyperarmor as a playstyle."],
+   ["Gear Fifth",5,200,"The rules stop applying and he finds that funny."]],
+ eren:[["Cadet",2,80,"ODM gear and rage with nowhere to go."],
+   ["Attack Titan",3,150,"Giant Hunt from a colossal blade. The thesis in one input."],
+   ["Founding Titan",5,200,"Walk forward. Nothing survives ahead, nothing is forgiven behind."]],
+ tanjiro:[["Final Selection",2,70,"Water Breathing. Frost mist, patience, survival."],
+   ["Hinokami Kagura",3,150,"Fire arcs replace the flowing forms."],
+   ["Demon Slayer Mark",4,160,"Everything faster, everything costlier."],
+   ["Sunbreathing — Thirteenth Form",4,180,"Twelve forms chained without being hit. Dawn is coming."]],
+ goku:[["Kame House Student",1,50,"Charged heavies and a turtle shell."],
+   ["Super Saiyan",3,120,"The first ceiling broken. Buff-window gameplay."],
+   ["Super Saiyan Blue",4,150,"God ki. Relentless, controlled pressure."],
+   ["Ultra Instinct",6,200,"Dodging stops being a decision. The game has no honest analogue."]],
+ vegeta:[["Saiyan Invader",2,100,"Bombard from range, monologue, finish with fists."],
+   ["Majin Vegeta",3,125,"Pride unchained. Trade recklessly, win anyway."],
+   ["Ultra Ego",5,150,"Stronger as the damage lands. Red-Feathered Branchsword, permanently."]],
+ gojo:[["Young Gojo",3,90,"Strong, and still mortal. The fight that changes it is coming."],
+   ["Six Eyes + Limitless",5,150,"Infinity. Nothing reaches him and their own attacks kill them."],
+   ["Unlimited Void",6,200,"Too much information, all at once. Off the game's scale."]],
+ jinwoo:[["E-Rank Hunter",1,30,"The world's weakest. Every death is a lesson."],
+   ["Second Awakening",3,120,"Dagger speed and the first shadow."],
+   ["Shadow Monarch",4,150,"Arise. The army does the work now."],
+   ["Monarch's Domain",5,200,"Tibia's Summons is not a metaphor here."]],
+ yusukeurameshi:[["Spirit Detective",2,60,"One Spirit Gun a day. Fistfight everything else."],
+   ["Spirit Wave",3,150,"Genkai's inheritance, paid for with her life."],
+   ["Mazoku",4,180,"Demon blood. Trading becomes a strategy, not a mistake."],
+   ["Demon King's Heir",5,200,"Makai tournament scale."]],
+ levi:[["Underground Thug",2,60,"Knife-work learned in the dark, for survival."],
+   ["Humanity's Strongest",3,150,"Backhand blades. The highest skill ceiling on the site."],
+   ["Beast Titan Charge",4,168,"One window, taken perfectly, never stopping once begun."]],
+ zoro:[["Roronoa the Hunter",2,70,"One sword and a grudge against a wall."],
+   ["Santōryū",3,150,"Three blades. Powerstance rhythm."],
+   ["King of Hell",4,180,"Enma drains him and rewards mastery. Asura on request."]],
+ thorfinn:[["Boy on the Deck",1,40,"Two daggers and revenge instead of a personality."],
+   ["Askeladd's Band",2,90,"Competent, hollow, undefeated in duels that mean nothing."],
+   ["Slave / The Farm",1,25,"No weapon at all. The hardest build on the site to actually play."],
+   ["A True Warrior",3,150,"Refuses to kill. Disarms, endures, wins anyway."]],
+ frieren:[["Hero Party Mage",4,150,"Zoltraak, and ten years she did not notice passing."],
+   ["Mana Suppression",5,180,"Hiding power is the deepest spell Flamme taught."],
+   ["Millennium Archive",5,200,"A thousand years of spellcraft, most of it collected for fun."]]
+};
+NX2.ARCS=ARCS;
+NX2.hasArcs = id => !!ARCS[id];
+
+/* Project the character's primary build onto an arc's rune level. Reuses the
+   host's own scaledStat() so arc stats agree with the RL dragger everywhere else. */
+NX2.arcSpec=function(c,arc){
+  const b=(c.builds||[]).find(x=>x.primary)||(c.builds||[])[0];
+  if(!b) return null;
+  const [name,tier,rl,note]=arc;
+  const st={};
+  KEYS.forEach(k=>{
+    st[k]=(typeof scaledStat==="function") ? scaledStat(b.stats[k],b.level,rl) : b.stats[k];
+  });
+  /* fit to the arc's legal budget so the projection stays spendable */
+  const budget=rl+79; let sum=KEYS.reduce((n,k)=>n+st[k],0), guard=0;
+  while(sum>budget&&guard++<900){
+    const k=KEYS.filter(k=>k!=="VIG").sort((x,y)=>st[y]-st[x])[0]||"VIG";
+    if(st[k]<=7) break; st[k]--; sum--;
+  }
+  return {name,tier,rl,note,stats:st,base:b};
+};
+function tierCol(t){ return (typeof POWER_TIERS!=="undefined"&&(POWER_TIERS.find(x=>x.t===t)||{}).col)||"#d4af37"; }
+
+NX2.renderArcs=function(c){
+  const arcs=ARCS[c.id];
+  if(!arcs){
+    return `<div class="info-box"><h5>Arc Progression</h5>
+      <p style="font-size:12.5px;line-height:1.7">No hand-authored arc ladder for ${E(c.name)} yet. Arcs are written by hand, never generated — inventing a character's progression would be exactly the fabricated canon this site refuses elsewhere.</p>
+      <p style="font-size:12px;color:var(--txt-dim);margin-top:8px">What exists instead: <b>${c.builds.length} real build variants</b> — ${c.builds.map(b=>E(b.name.split("—")[0].trim())).join(" · ")}. Add ${E(c.name)} to <code style="color:var(--gold2)">ARCS</code> in module 04 and the ladder below builds itself.</p></div>`;
+  }
+  const myLevel=(typeof S!=="undefined"&&S.myLevel)||1;
+  return `<div class="info-box" style="grid-column:1/-1;border-color:var(--gold-dim)">
+    <h5>⛰ ARC PROGRESSION — ${arcs.length} VERSIONS</h5>
+    <p style="font-size:12px;color:var(--txt-dim);margin-bottom:12px">One character, several build identities. Stats are projected from the canon build onto each arc's rune level and trimmed to a legal budget — so every rung below is actually spendable, not decorative.</p>
+    <div class="ver-line">
+    ${arcs.map((a,i)=>{
+      const spec=NX2.arcSpec(c,a); if(!spec) return "";
+      const reached=myLevel>=spec.rl;
+      const top=KEYS.slice().sort((x,y)=>spec.stats[y]-spec.stats[x]).slice(0,4);
+      return `<div class="ver-item">
+        <h5 style="color:${reached?"var(--green)":"var(--gold2)"}">${reached?"✔ ":""}${E(spec.name)}
+          <span class="pill" style="font-size:9px;background:${tierCol(spec.tier)}22;color:${tierCol(spec.tier)};border:1px solid ${tierCol(spec.tier)}66">T${spec.tier}</span>
+          <span class="pill gold" style="font-size:9px">RL ${spec.rl}</span></h5>
+        <small>${reached?"within your current RL "+myLevel:(spec.rl-myLevel)+" levels away"}</small>
+        <p>${E(spec.note)}</p>
+        <div style="font-family:ui-monospace,monospace;font-size:11px;color:var(--txt-dim);margin-top:4px">
+          ${top.map(k=>`<span style="margin-right:10px">${k} <b style="color:var(--gold2)">${spec.stats[k]}</b></span>`).join("")}
+        </div>
+      </div>`;}).join("")}
+    </div>
+    <p style="font-size:11px;color:var(--txt-dim);margin-top:6px">${NX2.confPill?NX2.confPill("nexus"):""} Arc names and beats are read from the source work; the stat projection is this site's conversion.</p>
+  </div>`;
+};
+
+/* Arcs tab in the dossier */
+if(typeof openChar==="function"){
+  const _oc=openChar;
+  openChar=function(id){
+    _oc(id);
+    const c=CHARACTERS.find(x=>x.id===id); if(!c) return;
+    const tabs=document.querySelector("#modalBox .mtabs"), body=document.querySelector(".modal-body");
+    if(!tabs||!body||tabs.querySelector(".nx2-arctab")) return;
+    const pane=document.createElement("div");
+    pane.id="ctab-nx2arcs"; pane.style.display="none";
+    pane.innerHTML=`<div class="info-grid">${NX2.renderArcs(c)}</div>`;
+    const anchor=document.getElementById("ctab-builds");
+    anchor ? body.insertBefore(pane,anchor.nextSibling) : body.appendChild(pane);
+    const tab=document.createElement("div");
+    tab.className="mtab nx2-arctab";
+    tab.textContent="⛰ Arcs"+(ARCS[id]?" ("+ARCS[id].length+")":"");
+    tab.onclick=function(){
+      tabs.querySelectorAll(".mtab").forEach(t=>t.classList.remove("active"));
+      tab.classList.add("active");
+      ["profile","combat","rels","builds","nx2arcs"].forEach(t=>{
+        const el=document.getElementById("ctab-"+t); if(el) el.style.display = (t==="nx2arcs")?"block":"none";
+      });
+    };
+    /* keep the host tabs working now that a fifth pane exists */
+    tabs.querySelectorAll(".mtab").forEach(t=>{
+      if(t===tab||t.classList.contains("nx2-cmpbtn")) return;
+      const prev=t.onclick;
+      t.onclick=function(ev){ const p=document.getElementById("ctab-nx2arcs"); if(p) p.style.display="none"; if(prev) prev.call(this,ev); };
+    });
+    const insertBefore=tabs.querySelector(".nx2-cmpbtn");
+    insertBefore ? tabs.insertBefore(tab,insertBefore) : tabs.appendChild(tab);
+  };
+}
+
+/* ==========================================================================
+   §14 — FRANCHISE PAGES
+   ========================================================================== */
+NX2.franchise=null;
+NX2.openFranchise=function(f){
+  NX2.franchise=f; frDrawn=true;
+  if(typeof closeModal==="function") closeModal();
+  if(typeof go==="function") go("nx2fr");
+  NX2.renderFranchise();
+};
+function ensureFrView(){
+  if(document.getElementById("view-nx2fr")) return;
+  const main=document.querySelector("main"); if(!main) return;
+  const sec=document.createElement("section");
+  sec.className="view"; sec.id="view-nx2fr";
+  sec.innerHTML=`<div class="sec-title">FRANCHISE PAGES</div>
+    <div class="sec-sub">A franchise is not just a filter on the character grid. Each one gets its roster, its archetype fingerprint, its collection state and its place in the conversion.</div>
+    <select id="nx2FrSel" class="searchbar" style="max-width:420px;cursor:pointer" onchange="NX2.openFranchise(this.value)"></select>
+    <div id="nx2FrBody"></div>`;
+  main.appendChild(sec);
+  const nav=document.getElementById("mainNav");
+  if(nav && !nav.querySelector('[data-view="nx2fr"]')){
+    const btn=document.createElement("button");
+    btn.dataset.view="nx2fr"; btn.textContent="🎬 Franchises";
+    const anchor=nav.querySelector('[data-view="characters"]');
+    anchor ? nav.insertBefore(btn,anchor.nextSibling) : nav.appendChild(btn);
+  }
+}
+NX2.renderFranchise=function(){
+  ensureFrView();
+  const list=(typeof FRANCHISES!=="undefined"?FRANCHISES:[]).filter(f=>f!=="All");
+  if(!NX2.franchise) NX2.franchise=list.includes("Berserk")?"Berserk":list[0];
+  const sel=document.getElementById("nx2FrSel");
+  if(sel) sel.innerHTML=list.map(f=>`<option value="${E(f)}" ${f===NX2.franchise?"selected":""}>${E(f)}</option>`).join("");
+  const el=document.getElementById("nx2FrBody"); if(!el) return;
+  const f=NX2.franchise, roster=CHARACTERS.filter(c=>c.franchise===f);
+  if(!roster.length){ el.innerHTML=`<div class="empty">No roster for that franchise.</div>`; return; }
+  const col=(typeof FRANCHISE_COLORS!=="undefined"&&FRANCHISE_COLORS[f])||["#8b5cf6","#0f172a"];
+  const uni=(typeof FRANCHISE_UNIVERSE!=="undefined"&&FRANCHISE_UNIVERSE[f])||["—","—"];
+  const builds=roster.reduce((n,c)=>n+c.builds.length,0);
+  const collected=(typeof S!=="undefined"&&S.viewedChars)||[];
+  const got=roster.filter(c=>collected.includes(c.id)).length;
+  const pct=Math.round(got/roster.length*100);
+  const arch={}; roster.forEach(c=>arch[c.archetype]=(arch[c.archetype]||0)+1);
+  const archTop=Object.entries(arch).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const maxA=archTop.length?archTop[0][1]:1;
+  const tiers={}; roster.forEach(c=>{ const t=(typeof powerTier==="function")?powerTier(c):3; tiers[t]=(tiers[t]||0)+1; });
+  const rels=(typeof RELS!=="undefined"?RELS:[]).filter(r=>{
+    const a=CHARACTERS.find(x=>x.id===r[0]), b=CHARACTERS.find(x=>x.id===r[1]);
+    return a&&b&&a.franchise===f&&b.franchise===f;
+  });
+  const sets=(typeof SETS!=="undefined"?SETS:[]).filter(s=>s.fr===f);
+  const arcChars=roster.filter(c=>ARCS[c.id]);
+  const wep={}; roster.forEach(c=>{ const w=String(c.builds[0].weapons[0]||"").split(" (")[0].trim(); if(w) wep[w]=(wep[w]||0)+1; });
+  const wepTop=Object.entries(wep).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  el.innerHTML=`
+  <div class="hero" style="text-align:left;padding:26px 24px;background:linear-gradient(120deg,${col[0]}33,${col[1]}55)">
+    <h2 style="font-size:clamp(20px,3.4vw,32px)">${E(f).toUpperCase()}</h2>
+    <p style="margin:8px 0 0;text-align:left;max-width:none">${E(uni[0])} · ${E(uni[1])}</p>
+  </div>
+  <div class="dash-grid">
+    <div class="stat-card"><div class="num">${roster.length}</div><div class="lbl">Characters</div></div>
+    <div class="stat-card"><div class="num">${builds}</div><div class="lbl">Builds</div></div>
+    <div class="stat-card"><div class="num">${rels.length}</div><div class="lbl">Canon Bonds</div></div>
+    <div class="stat-card"><div class="num">${sets.length}</div><div class="lbl">Collection Sets</div></div>
+    <div class="stat-card"><div class="num">${arcChars.length}</div><div class="lbl">Arc Ladders</div></div>
+    <div class="stat-card"><div class="num">${pct}%</div><div class="lbl">Collected</div></div>
+  </div>
+  <div class="two-col">
+    <div class="panel"><h3>ARCHETYPE FINGERPRINT</h3>
+      <p style="font-size:11px;color:var(--txt-dim);margin-bottom:8px">What this franchise turns into, mechanically.</p>
+      <div class="bar-chart">${archTop.map(([a,n])=>`<div class="bar-row"><div class="bl">${E(a)}</div>
+        <div class="btrack"><div class="bfill" style="width:${Math.max(6,Math.round(n/maxA*100))}%;background:linear-gradient(90deg,${col[0]}88,${col[0]})">${n}</div></div></div>`).join("")}</div>
+      <h3 style="margin-top:14px">MOST-USED ARMAMENTS</h3>
+      <div style="line-height:2.1">${wepTop.map(([w,n])=>`<span class="pill gold" style="margin:2px 3px">${E(w)} · ${n}</span>`).join("")}</div>
+    </div>
+    <div class="panel"><h3>POWER TIER SPREAD</h3>
+      ${(typeof POWER_TIERS!=="undefined"?POWER_TIERS:[]).filter(t=>tiers[t.t]).map(t=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12px">
+          <span class="pill" style="background:${t.col}22;color:${t.col};border:1px solid ${t.col}66;min-width:32px;text-align:center">T${t.t}</span>
+          <span style="flex:1">${E(t.label)}</span><b style="color:var(--gold2)">${tiers[t.t]}</b></div>`).join("")}
+      ${sets.length?`<h3 style="margin-top:14px">COLLECTION SETS</h3>${sets.map(s=>`<div style="font-size:12px;padding:4px 0"><b>${E(s.name)}</b> <small style="color:var(--txt-dim)">· ${s.members.length} members</small></div>`).join("")}`:""}
+    </div>
+  </div>
+  ${arcChars.length?`<div class="panel" style="margin-top:18px"><h3>⛰ ARC LADDERS IN THIS FRANCHISE</h3>
+    <div style="line-height:2.2">${arcChars.map(c=>`<span class="pill gold" style="cursor:pointer;margin:2px 3px" onclick="openChar('${c.id}')">${E(c.name)} · ${ARCS[c.id].length} versions</span>`).join("")}</div></div>`:""}
+  <div class="panel" style="margin-top:18px"><h3>ROSTER — ${roster.length}</h3>
+    <div class="char-grid" style="margin-top:10px">
+    ${roster.sort((a,b)=>b.rating-a.rating).map(c=>`
+      <div class="char-card" onclick="openChar('${c.id}')">
+        <div class="char-banner" style="background:linear-gradient(120deg,${c.banner[0]},${c.banner[1]})"><div class="char-emblem">${E(c.name[0])}</div></div>
+        <div class="char-body"><h4>${E(c.name)}</h4><div class="anime">${E(c.archetype)}</div>
+          <div class="char-meta"><span>Rating <b>${c.rating}</b></span>${collected.includes(c.id)?'<span style="color:var(--green)">✔ collected</span>':'<span style="color:var(--txt-dim)">uncollected</span>'}</div>
+        </div></div>`).join("")}
+    </div></div>`;
+};
+
+/* ==========================================================================
+   §41 — DAILY SEED  (deterministic by date, identical for every visitor)
+   ========================================================================== */
+function today(){ return new Date().toISOString().slice(0,10); }
+NX2.daily=function(){
+  const d=today(), h=H(d);
+  const c=CHARACTERS[h%CHARACTERS.length];
+  const c2=CHARACTERS[(h*7+13)%CHARACTERS.length];
+  const boss=(typeof BOSSES!=="undefined"&&BOSSES.length)?BOSSES[(h*3)%BOSSES.length]:null;
+  const wepRow=(typeof WEAPON_INDEX!=="undefined")?WEAPON_INDEX[(h*5)%WEAPON_INDEX.length]:null;
+  const wepList=wepRow?widxItems(wepRow):[];
+  const wep=wepList.length?wepList[(h*11)%wepList.length]:null;
+  const challenges=["Clear it without a spirit summon.","No flask above 50% HP.","Charged attacks only.",
+    "Never roll — block, strafe or jump.","Two-hand the weapon for the whole fight.","No healing after phase two begins."];
+  return {date:d, character:c, fusionWith:c2, boss, weapon:wep, challenge:challenges[h%challenges.length]};
+};
+function mountDaily(){
+  const home=document.getElementById("view-home"); if(!home) return;
+  let panel=document.getElementById("nx2Daily");
+  const d=NX2.daily();
+  const html=`<h3>🌅 TODAY ON THE NEXUS — ${E(d.date)}</h3>
+    <p style="font-size:11px;color:var(--txt-dim);margin-bottom:12px">Seeded from the date, so it is the same for everyone and changes at midnight. The answer to "1,000 characters and I don't know where to start."</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+      <div class="info-box" style="cursor:pointer" onclick="openChar('${d.character.id}')"><h5>Character of the Day</h5>
+        <p><b style="color:var(--gold2)">${E(d.character.name)}</b><br><small style="color:var(--txt-dim)">${E(d.character.franchise)} · ${E(d.character.archetype)}</small></p></div>
+      ${d.boss?`<div class="info-box" style="cursor:pointer" onclick="go('database')"><h5>Boss of the Day</h5>
+        <p><b style="color:var(--gold2)">${E(d.boss.name)}</b><br><small style="color:var(--txt-dim)">${E(d.boss.loc)}</small></p></div>`:""}
+      <div class="info-box" style="cursor:pointer" onclick="loadFusion('${d.character.id}','${d.fusionWith.id}')"><h5>Fusion of the Day</h5>
+        <p><b style="color:var(--gold2)">${E(d.character.name.split(" ")[0])} × ${E(d.fusionWith.name.split(" ")[0])}</b><br><small style="color:var(--txt-dim)">open in the lab</small></p></div>
+      ${d.weapon?`<div class="info-box"><h5>Armament of the Day</h5>
+        <p><b style="color:var(--gold2)">${E(d.weapon.name)}</b><br><small style="color:var(--txt-dim)">${E(d.challenge)}</small></p></div>`:""}
+    </div>`;
+  if(panel){ panel.innerHTML=html; return; }
+  panel=document.createElement("div");
+  panel.className="panel"; panel.id="nx2Daily"; panel.style.marginBottom="24px";
+  panel.innerHTML=html;
+  const anchor=document.getElementById("nxFunnel")||document.querySelector("#view-home .home-cols");
+  anchor ? anchor.parentNode.insertBefore(panel,anchor.nextSibling) : home.appendChild(panel);
+}
+
+/* ==========================================================================
+   §50 — MY NEXUS
+   ========================================================================== */
+function ensureMyView(){
+  if(document.getElementById("view-nx2me")) return;
+  const main=document.querySelector("main"); if(!main) return;
+  const sec=document.createElement("section");
+  sec.className="view"; sec.id="view-nx2me";
+  sec.innerHTML=`<div class="sec-title">MY NEXUS</div>
+    <div class="sec-sub">Everything this browser knows about your run, on one page. All of it lives in local storage — export it from the Tracker before you clear site data.</div>
+    <div id="nx2MeBody"></div>`;
+  main.appendChild(sec);
+  const nav=document.getElementById("mainNav");
+  if(nav && !nav.querySelector('[data-view="nx2me"]')){
+    const btn=document.createElement("button");
+    btn.dataset.view="nx2me"; btn.textContent="👤 My Nexus";
+    nav.appendChild(btn);
+  }
+}
+NX2.renderMyNexus=function(){
+  ensureMyView();
+  const el=document.getElementById("nx2MeBody"); if(!el||typeof S==="undefined") return;
+  const collected=(S.viewedChars||[]).filter(id=>CHARACTERS.some(c=>c.id===id));
+  const rank=(typeof careerRank==="function")?careerRank():{name:"—",runes:S.runes||0};
+  const totalBosses=(typeof BOSSES!=="undefined")?BOSSES.length:1;
+  const totalSets=(typeof SETS!=="undefined")?SETS.length:1;
+  const totalAch=(typeof ACHIEVEMENTS!=="undefined")?ACHIEVEMENTS.length:1;
+  /* favourites, computed from what has actually been opened */
+  const frCount={},archCount={},uniCount={};
+  collected.forEach(id=>{ const c=CHARACTERS.find(x=>x.id===id); if(!c) return;
+    frCount[c.franchise]=(frCount[c.franchise]||0)+1;
+    archCount[c.archetype]=(archCount[c.archetype]||0)+1;
+    const u=(typeof FRANCHISE_UNIVERSE!=="undefined"&&FRANCHISE_UNIVERSE[c.franchise]||["—"])[0];
+    uniCount[u]=(uniCount[u]||0)+1; });
+  const top=o=>{ const e=Object.entries(o).sort((a,b)=>b[1]-a[1])[0]; return e?e[0]+" ("+e[1]+")":"—"; };
+  const tracked=Object.keys(S.tracked||{}).length;
+  const stat=(n,l,c)=>`<div class="stat-card"><div class="num"${c?` style="color:${c}"`:""}>${n}</div><div class="lbl">${l}</div></div>`;
+  el.innerHTML=`
+  <div class="panel" style="border-color:var(--gold);margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div class="logo-ring" style="width:56px;height:56px;font-size:24px">⚜</div>
+      <div style="flex:1;min-width:200px">
+        <b style="font-family:var(--font-display);font-size:22px;color:var(--gold2);letter-spacing:1px">${E(rank.name).toUpperCase()}</b>
+        <div style="font-size:12px;color:var(--txt-dim)">Rune Level ${S.myLevel||1} · ${(S.runes||0).toLocaleString()} runes earned</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn" style="padding:7px 14px;font-size:11px" onclick="go('career')">Career →</button>
+        <button class="btn alt" style="padding:7px 14px;font-size:11px" onclick="exportProgress()">💾 Export</button>
+      </div>
+    </div>
+  </div>
+  <div class="dash-grid">
+    ${stat(collected.length+" / "+CHARACTERS.length,"Characters Collected")}
+    ${stat(Math.round(collected.length/CHARACTERS.length*100)+"%","Dex Completion")}
+    ${stat((S.bosses||[]).length+" / "+totalBosses,"Bosses Felled")}
+    ${stat((S.setsDone||[]).length+" / "+totalSets,"Collection Sets")}
+    ${stat((S.unlocked||[]).length+" / "+totalAch,"Achievements")}
+    ${stat(S.fusions||0,"Fusions Created")}
+    ${stat(tracked,"Builds Pinned")}
+    ${stat((S.guildFavs||[]).length,"Guilds Joined")}
+  </div>
+  <div class="two-col" style="margin-top:18px">
+    <div class="panel"><h3>YOUR SIGNATURE</h3>
+      <p style="font-size:11px;color:var(--txt-dim);margin-bottom:10px">Computed from what you have actually opened — not from a questionnaire.</p>
+      <div style="font-size:13px;line-height:2.2">
+        <div>Favourite franchise — <b style="color:var(--gold2)">${E(top(frCount))}</b></div>
+        <div>Favourite archetype — <b style="color:var(--gold2)">${E(top(archCount))}</b></div>
+        <div>Home universe — <b style="color:var(--gold2)">${E(top(uniCount))}</b></div>
+        <div>Champions crowned — <b style="color:var(--gold2)">${Object.keys(S.champions||{}).length}</b></div>
+      </div>
+    </div>
+    <div class="panel"><h3>PINNED BUILDS</h3>
+      ${tracked?Object.keys(S.tracked).slice(0,10).map(k=>{
+        const [cid,idx]=k.split("__"); const c=CHARACTERS.find(x=>x.id===cid);
+        if(!c||!c.builds[+idx]) return "";
+        return `<div style="font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--line);cursor:pointer" onclick="openChar('${cid}')"><b>${E(c.name)}</b> <small style="color:var(--txt-dim)">— ${E(c.builds[+idx].name)}</small></div>`;
+      }).join(""):`<div class="empty" style="padding:16px">Nothing pinned yet — open any build and press 📌 Track.</div>`}
+    </div>
+  </div>`;
+};
+
+/* ==========================================================================
+   BOOT
+   ========================================================================== */
+if(typeof renderHome==="function"){ const _rh=renderHome; renderHome=function(){ _rh(); mountDaily(); }; }
+if(typeof renderCareer==="function"){ const _rc=renderCareer; renderCareer=function(){ _rc(); NX2.renderMyNexus(); }; }
+/* Franchise chips on the character grid open the franchise page */
+if(typeof renderCharFilters==="function"){
+  const _rcf=renderCharFilters;
+  renderCharFilters=function(){
+    _rcf();
+    const row=document.getElementById("charFranchises"); if(!row||row.dataset.nx2==="1") return;
+    row.dataset.nx2="1";
+    const btn=document.createElement("div");
+    btn.className="chip"; btn.style.borderColor="rgba(212,175,55,.5)";
+    btn.textContent="🎬 Open franchise page";
+    btn.onclick=function(){ NX2.openFranchise((typeof charFranchise!=="undefined"&&charFranchise!=="All")?charFranchise:"Berserk"); };
+    row.appendChild(btn);
+  };
+}
+let frDrawn=false;
+NX2.ensureFranchise=function(){ if(frDrawn) return; frDrawn=true; NX2.renderFranchise(); };
+if(typeof go==="function"){
+  const _go=go;
+  go=function(v){ _go(v); if(v==="nx2fr") NX2.ensureFranchise(); if(v==="nx2me") NX2.renderMyNexus(); };
+}
+function boot(){
+  ensureFrView(); ensureMyView();
+  NX2.renderMyNexus(); mountDaily();
+  try{ if(typeof renderCharFilters==="function") renderCharFilters(); }catch(e){}
+  const arcTotal=Object.values(ARCS).reduce((n,a)=>n+a.length,0);
+  console.log("%c[NX2/04] Arcs · Franchise Pages · My Nexus · Daily Seed active","color:#34d399;font-weight:bold",
+    {arcCharacters:Object.keys(ARCS).length, arcVersions:arcTotal, daily:NX2.daily().character.name});
+}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
+})();
+</script>
