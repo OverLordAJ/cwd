@@ -4360,8 +4360,18 @@ const REDUCED=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: red
 })();
 
 /* ================= SCROLL REVEALS + CLASH ================= */
-const rev=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add("on")}),{threshold:.12});
-document.querySelectorAll(".reveal").forEach(el=>rev.observe(el));
+/* Reveal when a panel's top edge scrolls into the lower part of the screen.
+   The old rule waited for 12% of the panel to be visible at once, which a tall
+   panel on a phone can never reach: stacked into one column, the Hanma domain is
+   ~8,000px tall and a phone screen shows under 10% of it, so it never appeared.
+   threshold 0 + a bottom margin fires on the top edge, whatever the height.
+   No IntersectionObserver (very old browsers): show everything immediately. */
+if("IntersectionObserver" in window){
+  const rev=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add("on"); rev.unobserve(e.target); }
+  }),{threshold:0,rootMargin:"0px 0px -10% 0px"});
+  document.querySelectorAll(".reveal").forEach(el=>rev.observe(el));
+}else document.querySelectorAll(".reveal").forEach(el=>el.classList.add("on"));
 let clashDone=false;
 const clashObs=new IntersectionObserver(es=>es.forEach(e=>{
   if(!e.isIntersecting)return;
