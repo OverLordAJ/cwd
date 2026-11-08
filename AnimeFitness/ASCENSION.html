@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; manifest-src 'self'; worker-src 'self'">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#07070d">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" type="image/png" href="./icon-192.png">
 <title>ANIME FITNESS ASCENSION</title>
 <style>
 /* ============ SELF-HOSTED FONTS ============
@@ -933,6 +933,113 @@ details.protocol summary{color:var(--gold)}
 .skill .rhist div{padding:2px 0;border-bottom:1px dashed #22223a}
 @media(max-width:640px){ .hbtns .btn{width:100%} .mindform{grid-template-columns:1fr 1fr} }
 
+
+/* ===== ASCENSION DEEPENED — navigation + guided session ===== */
+#hero{overflow:hidden}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+#deepNav{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:180;display:flex;gap:4px;padding:6px;background:rgba(10,10,20,.94);border:1px solid #383852;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.48);backdrop-filter:blur(14px);width:max-content;max-width:calc(100% - 24px)}
+#deepNav button{min-width:104px;min-height:48px;border:0;border-radius:11px;background:transparent;color:#b9b9ca;font-family:var(--font-body);font-size:.8rem;font-weight:800;letter-spacing:1.1px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background-color .15s,color .15s,transform .15s}
+#deepNav button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#deepNav button:hover{background:#1b1b2c;color:var(--ink)}
+#deepNav button:active{transform:scale(.98)}
+#deepNav button.primary{background:var(--gold);color:#171204}
+#deepNav button.primary:hover{background:#ffe58e}
+#deepNav button:focus-visible,.guided-launch:focus-visible,#guidedApp button:focus-visible,#guidedApp input:focus-visible,#guidedApp select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+#deepNav .resume-dot{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+.guided-launch{width:100%;margin:14px 0 8px;background:var(--gold);color:#171204;border-color:var(--gold)}
+.guided-launch:hover{background:#ffe58e;color:#171204}
+#guidedApp{position:fixed;inset:0;z-index:240;display:none;background:rgba(5,5,12,.97);color:var(--ink);overflow-y:auto;overscroll-behavior:contain}
+#guidedApp.show{display:block}
+.gw-shell{width:min(880px,100%);min-height:100dvh;margin:0 auto;padding:20px 24px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
+.gw-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:16px;border-bottom:1px solid #2b2b42}
+.gw-brand{font-family:var(--font-display);font-size:1.15rem;letter-spacing:1.6px;color:var(--gold)}
+.gw-topmeta{font-size:.78rem;color:#b9b9ca;font-weight:800;letter-spacing:1px;margin-top:3px}
+.gw-exit{min-height:44px;padding:8px 14px;background:transparent;border:1px solid #44445e;border-radius:9px;color:var(--ink);font-family:var(--font-body);font-weight:800;cursor:pointer}
+.gw-exit:hover{border-color:var(--gold);color:var(--gold)}
+.gw-progress{display:flex;gap:5px;margin:20px 0 28px}
+.gw-progress span{height:4px;flex:1;background:#28283c;border-radius:4px;overflow:hidden}
+.gw-progress span.done{background:var(--t1)}
+.gw-progress span.current{background:var(--gold);box-shadow:0 0 12px rgba(255,213,74,.4)}
+.gw-progress span.skipped{background:#5a5a70}
+.gw-main{width:min(680px,100%);margin:0 auto;flex:1}
+.gw-kicker{color:var(--gold);font-size:.76rem;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+.gw-name{font-family:var(--font-display);font-size:clamp(2.5rem,8vw,4.8rem);line-height:1.02;letter-spacing:1px;margin:8px 0 12px;text-wrap:balance}
+.gw-rx{font-size:1.35rem;color:var(--ink);font-weight:800;margin-bottom:8px}
+.gw-last{font-size:.9rem;color:#b9b9ca;margin-bottom:20px}
+.gw-flag{padding:10px 12px;border-left:2px solid var(--t3);background:rgba(255,56,96,.08);font-size:.9rem;margin:12px 0}
+.gw-cues{margin:20px 0;padding:16px 0;border-top:1px solid #2b2b42;border-bottom:1px solid #2b2b42}
+.gw-cues summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-family:var(--font-display);font-size:1.15rem;letter-spacing:1.4px;color:var(--gold)}
+.gw-cues .cuebody{color:#d0d0dc;font-size:1rem;line-height:1.65;padding:4px 0 8px}
+.gw-cues .cuebody ul{padding-left:20px}
+.gw-sub{margin:14px 0 22px}
+.gw-sub label{display:block;font-size:.75rem;letter-spacing:1.4px;color:#b9b9ca;font-weight:900;margin-bottom:7px}
+.gw-sub select{width:100%;min-height:46px;background:#10101d;color:var(--ink);border:1px solid #3a3a54;border-radius:9px;padding:9px 12px;font-family:var(--font-body);font-weight:700}
+.gw-sethead{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:24px 0 12px}
+.gw-settitle{font-family:var(--font-display);font-size:1.8rem;letter-spacing:1px}
+.gw-setcount{font-variant-numeric:tabular-nums;color:#b9b9ca;font-weight:800}
+.gw-setpips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.gw-setpip{min-width:54px;padding:7px 10px;border:1px solid #34344c;border-radius:8px;text-align:center;color:#8f8fa3;font-size:.8rem;font-weight:800}
+.gw-setpip.hit{border-color:var(--t1);color:var(--t1);background:rgba(57,255,106,.06)}
+.gw-setpip.now{border-color:var(--gold);color:var(--gold)}
+.gw-entry{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.gw-inputwrap label{display:block;font-size:.78rem;color:#c2c2d1;font-weight:800;margin-bottom:7px}
+.gw-inputwrap input{width:100%;min-height:54px;background:#0c0c17;border:1px solid #44445e;border-radius:10px;color:var(--ink);padding:12px 14px;font:800 1.25rem var(--font-body);font-variant-numeric:tabular-nums}
+.gw-log{min-height:54px;min-width:142px;margin:0;background:var(--gold);color:#171204;border-color:var(--gold)}
+.gw-log:hover{background:#ffe58e;color:#171204}
+.gw-error{min-height:24px;color:#ff8ba2;font-size:.88rem;font-weight:700;padding-top:6px}
+.gw-quality{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 20px}
+.gw-quality button{min-height:48px;border:1px solid #3b3b54;border-radius:9px;background:#11111e;color:#b9b9ca;font:900 .78rem var(--font-body);letter-spacing:1px;cursor:pointer;transition:background-color .15s,border-color .15s,transform .15s}
+.gw-quality button:active{transform:scale(.98)}
+.gw-quality button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);background:rgba(255,213,74,.09)}
+.gw-quality button[data-q="clean"][aria-pressed="true"]{border-color:var(--t1);color:var(--t1);background:rgba(57,255,106,.07)}
+.gw-quality button[data-q="failed"][aria-pressed="true"]{border-color:var(--t3);color:#ff8ba2;background:rgba(255,56,96,.07)}
+.gw-secondary{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.gw-secondary .btn{width:auto;margin:0;min-height:44px;padding:9px 16px}
+.gw-foot{display:flex;justify-content:space-between;gap:12px;margin-top:28px;padding-top:18px;border-top:1px solid #2b2b42}
+.gw-foot .btn{width:auto;margin:0;min-height:46px}
+.gw-complete{padding:36px 0;text-align:center}
+.gw-complete-mark{font-family:var(--font-display);font-size:clamp(3rem,12vw,6rem);line-height:1;color:var(--t1);text-shadow:0 0 30px rgba(57,255,106,.25)}
+.gw-complete h2{font-family:var(--font-display);font-size:2.4rem;letter-spacing:1px;margin:10px 0}
+.gw-complete p{color:#c2c2d1;font-size:1.05rem;line-height:1.65;max-width:54ch;margin:0 auto 22px}
+.gw-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#33334a;border:1px solid #33334a;border-radius:12px;overflow:hidden;margin:26px 0}
+.gw-summary div{background:#0d0d18;padding:18px 10px;text-align:center}
+.gw-summary b{display:block;font-family:var(--font-display);font-size:2rem;color:var(--gold);font-variant-numeric:tabular-nums}
+.gw-summary span{font-size:.72rem;color:#b9b9ca;letter-spacing:1px;font-weight:800}
+.gw-rest{position:fixed;inset:0;z-index:250;display:none;place-items:center;background:rgba(5,5,12,.96);padding:24px;text-align:center}
+.gw-rest.show{display:grid}
+.gw-restbox{width:min(420px,100%)}
+.gw-restlabel{font-family:var(--font-display);font-size:1.4rem;letter-spacing:3px;color:var(--gold)}
+.gw-ring{--rest-pct:0deg;width:min(260px,68vw);aspect-ratio:1;border-radius:50%;margin:26px auto;display:grid;place-items:center;background:conic-gradient(var(--gold) var(--rest-pct),#252538 0);position:relative;box-shadow:0 0 50px rgba(255,213,74,.1)}
+.gw-ring::before{content:"";position:absolute;inset:10px;border-radius:50%;background:#080811}
+.gw-time{position:relative;font-family:var(--font-display);font-size:clamp(4rem,18vw,6.5rem);letter-spacing:3px;font-variant-numeric:tabular-nums}
+.gw-restnext{color:#b9b9ca;line-height:1.6;min-height:48px}
+.gw-restactions{display:flex;justify-content:center;gap:10px;margin-top:22px}
+.gw-restactions .btn{width:auto;margin:0;min-height:48px}
+body.guided-open{overflow:hidden;padding-bottom:0}
+body.guided-open #deepNav{display:none}
+body.guided-open #timerDock{z-index:270;bottom:calc(16px + env(safe-area-inset-bottom))}
+@media(max-width:640px){
+  body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+  #deepNav{bottom:0;left:0;right:0;transform:none;max-width:none;width:100%;border-radius:14px 14px 0 0;border-left:0;border-right:0;border-bottom:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));gap:2px}
+  #deepNav button{min-width:0;flex:1;min-height:50px;flex-direction:column;gap:3px;font-size:.66rem;letter-spacing:.8px}
+  #deepNav button svg{width:17px;height:17px}
+  .gw-shell{padding:14px 16px calc(30px + env(safe-area-inset-bottom))}
+  .gw-top{gap:10px}
+  .gw-brand{font-size:1rem}
+  .gw-exit{font-size:.78rem;padding:7px 10px}
+  .gw-progress{margin:16px 0 24px}
+  .gw-name{font-size:clamp(2.5rem,13vw,4rem)}
+  .gw-rx{font-size:1.15rem}
+  .gw-entry{grid-template-columns:1fr}
+  .gw-log{width:100%}
+  .gw-secondary{display:grid;grid-template-columns:1fr 1fr}
+  .gw-secondary .btn{width:100%}
+  .gw-foot .btn{padding:10px 12px;font-size:.88rem}
+  .gw-summary b{font-size:1.6rem}
+  .gw-summary span{font-size:.62rem}
+}
+@media(prefers-reduced-motion:reduce){#deepNav button,.gw-quality button{transition:none}.gw-ring{box-shadow:none}}
+
 </style>
 </head>
 <body>
@@ -1726,6 +1833,35 @@ details.protocol summary{color:var(--gold)}
 </div>
 <div id="modal" role="dialog" aria-modal="true" aria-label="Dialog"><div class="modalbox" id="modalBody"></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
+
+
+<nav id="deepNav" aria-label="Quick navigation">
+  <button type="button" data-nav="today"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v15H4zM8 3v4M16 3v4M4 10h16"/></svg><span>TODAY</span></button>
+  <button type="button" data-nav="train" class="primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span>TRAIN</span></button>
+  <button type="button" data-nav="records"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>RECORDS</span></button>
+  <button type="button" data-nav="support"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg><span>SUPPORT</span></button>
+</nav>
+<div id="guidedApp" role="dialog" aria-modal="true" aria-labelledby="gwTitle" hidden>
+  <div class="gw-shell">
+    <div class="gw-top">
+      <div><div class="gw-brand">GUIDED SESSION</div><div class="gw-topmeta" id="gwMeta"></div></div>
+      <button type="button" class="gw-exit" id="gwExit">SAVE &amp; EXIT</button>
+    </div>
+    <div class="gw-progress" id="gwProgress" aria-label="Workout progress"></div>
+    <main class="gw-main" id="gwMain"></main>
+  </div>
+</div>
+<div class="gw-rest" id="gwRest" role="dialog" aria-modal="true" aria-label="Rest timer">
+  <div class="gw-restbox">
+    <div class="gw-restlabel">RECOVER. THEN RETURN.</div>
+    <div class="gw-ring" id="gwRing"><div class="gw-time" id="gwTime" role="timer">00:00</div></div>
+    <div class="gw-restnext" id="gwRestNext"></div>
+    <div class="gw-restactions">
+      <button type="button" class="btn ghost" id="gwRestAdd">+30s</button>
+      <button type="button" class="btn" id="gwRestSkip">SKIP REST</button>
+    </div>
+  </div>
+</div>
 
 <script>
 "use strict";
@@ -4552,11 +4688,13 @@ function renderToday(){
     (trainedToday?'<div class="trest">✅ Session logged today — the next one is '+dayName(tier,curDay(tier))+'.</div>':"")+
     (restAdvised&&!trainedToday?'<div class="trest">🌙 You have hit this week\'s prescription. A rest day is the training now — extra sessions do not earn extra credit here.</div>':"")+
     '<div class="tacts">'+
-      '<button class="btn" id="tdGo">GO TO '+dayName(tier,day)+'</button>'+
+      '<button class="btn" id="tdGo">START GUIDED WORKOUT</button>'+
+      '<button class="btn ghost" id="tdView">VIEW '+dayName(tier,day)+' CARDS</button>'+
       '<button class="btn ghost" id="tdReady">'+(rmod?"RE-CHECK READINESS":"READINESS CHECK")+'</button>'+
       (dayCount(tier)>1?'<button class="btn ghost" id="tdSkip">NEXT DAY →</button>':"")+
     '</div>';
-  document.getElementById("tdGo").onclick=()=>{
+  document.getElementById("tdGo").onclick=()=>{ if(readinessToday()) startGuided(tier,true); else openReadiness(tier,()=>startGuided(tier,true)); };
+  document.getElementById("tdView").onclick=()=>{
     const d=document.getElementById(tier===7&&hanmaDayId(day)==="MIND"?"hanmaMind":TIER_DOM[tier]);
     if(d) d.scrollIntoView({behavior:"smooth",block:"start"});
   };
@@ -5148,6 +5286,250 @@ rerenderAll(); backupReminder(); save(); iosNudge();
 /* P4 — first run lands on an explanation and a placement test, not on five
    domains, a boss battle, a skill tree and twenty-five badges. */
 if(!S.onboarded && S.xp===0 && !S.log.length) setTimeout(openOnboarding,700);
+
+/* ===== ASCENSION DEEPENED — resumable guided workout ===== */
+const GW={restInt:null,returnFocus:null};
+const guidedState=()=>S.guided||null;
+function guidedCards(g){
+  return (g.cards||[]).map(i=>({i:i,k:g.tier+"-"+i})).filter(x=>TREES[g.tier]&&TREES[g.tier][x.i]);
+}
+function guidedResult(g,k){
+  if(!g.results[k]) g.results[k]={sets:[],quality:"grindy",done:false,skipped:false,xp:0};
+  if(!Array.isArray(g.results[k].sets)) g.results[k].sets=[];
+  return g.results[k];
+}
+function updateGuidedNav(){
+  const b=document.querySelector('#deepNav [data-nav="train"]');
+  if(!b) return;
+  const g=guidedState();
+  b.querySelector("span").textContent=g?"RESUME":"TRAIN";
+  let dot=b.querySelector(".resume-dot");
+  if(g&&!dot){ dot=document.createElement("i"); dot.className="resume-dot"; dot.setAttribute("aria-hidden","true"); b.appendChild(dot); }
+  if(!g&&dot) dot.remove();
+}
+function startGuided(tier,forceNew){
+  stopGuidedRest();
+  const old=guidedState();
+  if(old&&!forceNew){ openGuided(); return; }
+  if(old&&forceNew&&!confirm("Replace the saved guided session with this workout?")) return;
+  if(tier===7) syncHanmaSplit();
+  const day=curDay(tier), cards=dayCards(tier,day).filter(i=>{
+    const tr=TREES[tier][i], p=P(tier+"-"+i,tier,i), nd=tr[2][Math.min(p.n,tr[2].length-1)];
+    return !(RX_PLYO.test(nd[0])&&plyoHidden(tier));
+  });
+  if(!cards.length){ toast("This day uses its benchmark panel instead of exercise cards."); return; }
+  S.guided={tier:tier,day:day,cards:cards,idx:0,results:{},started:Date.now(),restEnd:0,restTotal:0,xpEarned:0};
+  save(); openGuided();
+}
+function openGuided(){
+  const g=guidedState(); if(!g){ const t=activeTier(); if(readinessToday()) startGuided(t); else openReadiness(t,()=>startGuided(t)); return; }
+  GW.returnFocus=document.activeElement;
+  const app=document.getElementById("guidedApp");
+  app.hidden=false; app.classList.add("show"); document.body.classList.add("guided-open");
+  document.getElementById("gwExit").focus(); renderGuided();
+}
+function closeGuided(){
+  stopGuidedRest(); save();
+  const app=document.getElementById("guidedApp");
+  app.classList.remove("show"); app.hidden=true; document.body.classList.remove("guided-open");
+  document.getElementById("gwRest").classList.remove("show");
+  updateGuidedNav();
+  if(GW.returnFocus&&document.contains(GW.returnFocus)) GW.returnFocus.focus();
+}
+function guidedCurrent(){
+  const g=guidedState(); if(!g) return null;
+  const cards=guidedCards(g), c=cards[g.idx]; if(!c) return null;
+  const tr=TREES[g.tier][c.i], p=P(c.k,g.tier,c.i), node=tr[2][Math.min(p.n,tr[2].length-1)];
+  const eff=effectiveRx(g.tier,node[1]), pr=parseRx(eff.rx), rest=restFor(g.tier,c.i,node[0]);
+  return {g:g,c:c,tier:g.tier,i:c.i,k:c.k,tr:tr,p:p,node:node,eff:eff,pr:pr,rest:rest,required:pr.sets||1,mv:shownMove(c.k,node[0])};
+}
+function commitGuidedCard(cur){
+  const g=cur.g, r=guidedResult(g,cur.k);
+  if(r.committed) return;
+  draft[cur.k]=Object.assign(draft[cur.k]||{},{s:fmtSets(r.sets),q:r.quality});
+  const already=!!S.checks[cur.k];
+  if(already){
+    logCard(cur.k,cur.tier,r.sets,r.quality,logExtra(cur.k,cur.tier,cur.i));
+    r.committed=true; save(); return;
+  }
+  const xp=cardXp(cur.p.n);
+  S.checks[cur.k]=xp;
+  logCard(cur.k,cur.tier,r.sets,r.quality,logExtra(cur.k,cur.tier,cur.i));
+  if(r.quality==="clean"&&cur.p.d!==today()){ cur.p.c++; cur.p.d=today(); }
+  if(r.quality==="failed") cur.p.f=(cur.p.f||0)+1; else cur.p.f=0;
+  r.xp=xp; r.committed=true; g.xpEarned=(g.xpEarned||0)+xp;
+  grantXp(xp,r.quality==="clean"?"guided card cleared":"guided card logged — "+r.quality);
+}
+function guidedSetQuality(q){
+  const cur=guidedCurrent(); if(!cur) return;
+  const r=guidedResult(cur.g,cur.k); r.quality=q;
+  if(r.committed){
+    draft[cur.k]=Object.assign(draft[cur.k]||{},{s:fmtSets(r.sets),q:q});
+    logCard(cur.k,cur.tier,r.sets,q,logExtra(cur.k,cur.tier,cur.i));
+  }
+  save(); renderGuided();
+}
+function guidedLogSet(){
+  const cur=guidedCurrent(); if(!cur) return;
+  const r=guidedResult(cur.g,cur.k), input=document.getElementById("gwSetInput"), err=document.getElementById("gwError");
+  const value=Number(input.value);
+  if(!input.value||!Number.isFinite(value)||value<=0||value>=100000){
+    err.textContent="Enter a positive result for this set."; input.focus(); return;
+  }
+  r.sets.push(value); r.done=r.sets.length>=cur.required;
+  cur.g.restEnd=0; cur.g.restTotal=0;
+  if(r.done) commitGuidedCard(cur);
+  else { cur.g.restTotal=cur.rest.sec||60; cur.g.restEnd=Date.now()+cur.g.restTotal*1000; }
+  save(); renderGuided();
+}
+function guidedMove(delta){
+  const g=guidedState(); if(!g) return;
+  stopGuidedRest(); g.restEnd=0; g.restTotal=0;
+  g.idx=Math.max(0,Math.min(guidedCards(g).length,g.idx+delta)); save(); renderGuided();
+}
+function guidedSkip(){
+  const cur=guidedCurrent(); if(!cur) return;
+  const r=guidedResult(cur.g,cur.k); r.skipped=true; r.done=false;
+  guidedMove(1);
+}
+function guidedSummary(){
+  const g=guidedState(), cards=guidedCards(g), values=cards.map(c=>guidedResult(g,c.k));
+  const done=values.filter(r=>r.committed).length, skipped=values.filter(r=>r.skipped&&!r.committed).length;
+  const mins=Math.max(1,Math.round((Date.now()-g.started)/60000));
+  return {g:g,cards:cards,done:done,skipped:skipped,mins:mins};
+}
+function finishGuided(){
+  const s=guidedSummary(); if(!s.done){ toast("Complete at least one card before logging the session."); return; }
+  const tier=s.g.tier;
+  delete S.guided; save(); closeGuided(); updateGuidedNav();
+  completeSession(tier);
+}
+function renderGuided(){
+  const g=guidedState(); if(!g) return;
+  const app=document.getElementById("guidedApp"), main=document.getElementById("gwMain");
+  document.getElementById("gwMeta").textContent=TIER_NAME[g.tier]+" · "+dayName(g.tier,g.day);
+  const cards=guidedCards(g);
+  document.getElementById("gwProgress").innerHTML=cards.map((c,n)=>{
+    const r=guidedResult(g,c.k), cls=r.committed?"done":r.skipped?"skipped":n===g.idx?"current":"";
+    return '<span class="'+cls+'" aria-label="Exercise '+(n+1)+(r.committed?" complete":r.skipped?" skipped":"")+'"></span>';
+  }).join("");
+  if(g.idx>=cards.length){
+    const s=guidedSummary();
+    main.innerHTML='<div class="gw-complete"><div class="gw-complete-mark">ARC LOGGED</div>'+
+      '<h2 id="gwTitle">SESSION READY</h2><p>Your cards are saved. Finish to bank the session, rotate the split, and open the recovery check-in.</p>'+
+      '<div class="gw-summary"><div><b>'+s.done+'</b><span>CARDS LOGGED</span></div><div><b>'+s.skipped+'</b><span>SKIPPED</span></div><div><b>+'+(s.g.xpEarned||0)+'</b><span>CARD XP</span></div></div>'+
+      '<p>Elapsed time: <b>'+s.mins+' min</b>. The session XP is added when you finish.</p>'+
+      '<button type="button" class="btn" id="gwFinish" '+(s.done?"":"disabled")+'>FINISH &amp; LOG SESSION</button>'+
+      '<div class="gw-foot"><button type="button" class="btn ghost" id="gwSummaryBack">← REVIEW LAST CARD</button></div></div>';
+    document.getElementById("gwFinish").onclick=finishGuided;
+    document.getElementById("gwSummaryBack").onclick=()=>guidedMove(-1);
+    stopGuidedRest(); return;
+  }
+  const cur=guidedCurrent(), r=guidedResult(g,cur.k), last=buildLastMap()[cur.k];
+  const subs=subsFor(cur.node[0]), flags=screenFlags(cur.node[0]);
+  const unit=cur.pr.secs!=null?"seconds":cur.pr.reps!=null?"reps":"result";
+  const setNum=Math.min(r.sets.length+1,cur.required);
+  const next=cards[g.idx+1]?TREES[g.tier][cards[g.idx+1].i][2][0][0]:"session summary";
+  main.innerHTML=(r.committed?
+    '<div class="gw-complete"><div class="gw-complete-mark">CARD LOGGED</div><h2 id="gwTitle">'+esc(cur.mv.name)+'</h2>'+
+    '<p>'+r.sets.length+' sets recorded · <b>'+esc(r.quality.toUpperCase())+'</b>'+(r.xp?' · +'+r.xp+' XP':' · already cleared today')+'</p>'+
+    '<button type="button" class="btn" id="gwNext">NEXT: '+esc(next).toUpperCase()+' →</button></div>'
+  :
+    '<div class="gw-kicker">EXERCISE '+(g.idx+1)+' OF '+cards.length+' · FORM '+(cur.p.n+1)+'/'+cur.tr[2].length+'</div>'+
+    '<h1 class="gw-name" id="gwTitle">'+esc(cur.mv.name)+'</h1>'+
+    '<div class="gw-rx">'+esc(cur.eff.rx)+'</div>'+
+    '<div class="gw-last">'+(last?'Last time: <b>'+esc(fmtSets(last.sets))+'</b> · '+esc(last.quality||"grindy"):'First logged attempt — leave 1–3 reps in reserve for a CLEAN clear.')+'</div>'+
+    (flags.length?'<div class="gw-flag">Training-screen flag: '+esc(flags.join(", "))+'. Consider a substitution below.</div>':"")+
+    '<details class="gw-cues"><summary>FORM &amp; TECHNIQUE</summary><div class="cuebody">'+cueHtml(cur.mv.name)+'</div></details>'+
+    (subs.length?'<div class="gw-sub"><label for="gwSub">MOVEMENT SUBSTITUTION</label><select id="gwSub"><option value="">As prescribed — '+esc(cur.node[0])+'</option>'+subs.map(x=>'<option value="'+esc(x[0])+'" '+(S.subs[cur.k]===x[0]?"selected":"")+'>'+esc(x[1])+' — '+esc(x[0])+'</option>').join("")+'</select></div>':"")+
+    '<div class="gw-sethead"><div class="gw-settitle">SET '+setNum+'</div><div class="gw-setcount">'+r.sets.length+' / '+cur.required+' LOGGED</div></div>'+
+    '<div class="gw-setpips">'+Array.from({length:cur.required},(_,n)=>'<span class="gw-setpip '+(n<r.sets.length?"hit":n===r.sets.length?"now":"")+'">S'+(n+1)+(n<r.sets.length?' · '+esc(r.sets[n]):"")+'</span>').join("")+'</div>'+
+    '<div class="gw-entry"><div class="gw-inputwrap"><label for="gwSetInput">SET '+setNum+' · '+unit.toUpperCase()+'</label><input id="gwSetInput" type="number" inputmode="decimal" min="0.1" max="99999" step="any" autocomplete="off" placeholder="0"></div><button type="button" class="btn gw-log" id="gwLogSet">LOG SET</button></div>'+
+    '<div class="gw-error" id="gwError" role="alert"></div>'+
+    '<div class="gw-quality" aria-label="Overall card quality">'+["clean","grindy","failed"].map(q=>'<button type="button" data-q="'+q+'" aria-pressed="'+(r.quality===q)+'">'+q.toUpperCase()+'</button>').join("")+'</div>'+
+    '<div class="gw-secondary">'+(cur.pr.secs?'<button type="button" class="btn ghost" id="gwWork">START '+cur.pr.secs+'s WORK TIMER</button>':"")+
+    '<button type="button" class="btn ghost" id="gwRestNow">REST '+(cur.rest.sec||60)+'s</button></div>'
+  );
+  if(r.committed){
+    document.getElementById("gwNext").onclick=()=>guidedMove(1);
+  }else{
+    document.getElementById("gwLogSet").onclick=guidedLogSet;
+    const input=document.getElementById("gwSetInput");
+    input.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); guidedLogSet(); } });
+    document.querySelectorAll(".gw-quality button").forEach(b=>b.onclick=()=>guidedSetQuality(b.dataset.q));
+    const sub=document.getElementById("gwSub");
+    if(sub) sub.onchange=()=>{ if(sub.value) S.subs[cur.k]=sub.value; else delete S.subs[cur.k]; save(); renderGuided(); renderGrids(); };
+    const work=document.getElementById("gwWork"); if(work) work.onclick=()=>startTimer(cur.pr.secs,"WORK · "+cur.mv.name.toUpperCase());
+    document.getElementById("gwRestNow").onclick=()=>{ g.restTotal=cur.rest.sec||60; g.restEnd=Date.now()+g.restTotal*1000; save(); startGuidedRest(); };
+  }
+  main.insertAdjacentHTML("beforeend",'<div class="gw-foot"><button type="button" class="btn ghost" id="gwBack" '+(g.idx===0?"disabled":"")+'>← PREVIOUS</button><button type="button" class="btn ghost" id="gwSkip">SKIP EXERCISE</button></div>');
+  document.getElementById("gwBack").onclick=()=>guidedMove(-1);
+  document.getElementById("gwSkip").onclick=guidedSkip;
+  if(g.restEnd>Date.now()) startGuidedRest(); else { g.restEnd=0; stopGuidedRest(); }
+}
+function paintGuidedRest(){
+  const g=guidedState(); if(!g){ stopGuidedRest(); return; }
+  const left=Math.max(0,Math.ceil((g.restEnd-Date.now())/1000)), total=Math.max(1,g.restTotal||1);
+  const elapsed=Math.max(0,Math.min(1,1-left/total));
+  document.getElementById("gwTime").textContent=mmss(left);
+  document.getElementById("gwRing").style.setProperty("--rest-pct",(elapsed*360)+"deg");
+  if(left<=0){
+    g.restEnd=0; g.restTotal=0; save(); stopGuidedRest(); beepEnd();
+    const cur=guidedCurrent();
+    if(cur&&!guidedResult(g,cur.k).committed) setTimeout(()=>{ const i=document.getElementById("gwSetInput"); if(i) i.focus(); },0);
+  }
+}
+function startGuidedRest(){
+  const g=guidedState(); if(!g||g.restEnd<=Date.now()){ stopGuidedRest(); return; }
+  const cur=guidedCurrent(), cards=guidedCards(g), r=cur?guidedResult(g,cur.k):null;
+  const next=cur&&r&&!r.done?"Set "+(r.sets.length+1)+" · "+cur.mv.name:(cards[g.idx+1]?TREES[g.tier][cards[g.idx+1].i][2][0][0]:"session summary");
+  document.getElementById("gwRestNext").textContent="Next: "+next;
+  document.getElementById("gwRest").classList.add("show");
+  clearInterval(GW.restInt); paintGuidedRest(); GW.restInt=setInterval(paintGuidedRest,250);
+  document.getElementById("gwRestSkip").focus();
+}
+function stopGuidedRest(){
+  clearInterval(GW.restInt); GW.restInt=null;
+  const el=document.getElementById("gwRest"); if(el) el.classList.remove("show");
+}
+function initGuided(){
+  document.querySelectorAll(".session-btn[data-tier]").forEach(b=>{
+    if(b.parentNode.querySelector(".guided-launch")) return;
+    const launch=document.createElement("button"); launch.type="button"; launch.className="btn guided-launch";
+    launch.textContent="START GUIDED WORKOUT"; launch.dataset.tier=b.dataset.tier;
+    launch.onclick=()=>{ const t=+launch.dataset.tier; if(readinessToday()) startGuided(t,true); else openReadiness(t,()=>startGuided(t,true)); };
+    b.parentNode.insertBefore(launch,b);
+  });
+  document.getElementById("gwExit").onclick=closeGuided;
+  document.getElementById("gwRestAdd").onclick=()=>{ const g=guidedState(); if(!g) return; g.restEnd+=30000; g.restTotal+=30; save(); paintGuidedRest(); };
+  document.getElementById("gwRestSkip").onclick=()=>{ const g=guidedState(); if(!g) return; g.restEnd=0; g.restTotal=0; save(); stopGuidedRest(); const i=document.getElementById("gwSetInput"); if(i) i.focus(); };
+  document.getElementById("gwRest").addEventListener("keydown",e=>{
+    if(e.key==="Escape"){ e.preventDefault(); document.getElementById("gwRestSkip").click(); }
+    if(e.key==="Tab"){
+      const first=document.getElementById("gwRestAdd"), last=document.getElementById("gwRestSkip");
+      if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+    }
+  });
+  document.querySelectorAll("#deepNav [data-nav]").forEach(b=>b.onclick=()=>{
+    const target=b.dataset.nav;
+    if(target==="train"){ openGuided(); return; }
+    const id=target==="today"?"todayWrap":target==="records"?"charts":"tools";
+    const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  document.getElementById("guidedApp").addEventListener("keydown",e=>{
+    if(e.key==="Escape"){ e.preventDefault(); closeGuided(); return; }
+    if(e.key!=="Tab") return;
+    const items=[...document.getElementById("guidedApp").querySelectorAll('button:not([disabled]),input,select,summary,[tabindex="0"]')].filter(x=>x.offsetParent!==null);
+    if(!items.length) return;
+    const first=items[0], last=items[items.length-1];
+    if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+  });
+  updateGuidedNav();
+}
+
+initGuided();
 </script>
 
 <script>
@@ -5439,54 +5821,3 @@ if(!S.onboarded && S.xp===0 && !S.log.length) setTimeout(openOnboarding,700);
 
 </body>
 </html>
-
-{
-  "name": "ANIME FITNESS ASCENSION",
-  "short_name": "ASCENSION",
-  "description": "Anime-themed bodyweight training. Train through the arcs. Saves stay on your device.",
-  "start_url": "./ASCENSION.html",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#07070d",
-  "theme_color": "#07070d",
-  "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ]
-}
-
-/* ANIME FITNESS ASCENSION — offline helper.
-   Network-first: online visits always get the newest page; the cached copy is
-   only used when the network fails. Never touches localStorage, so it can't
-   affect anyone's save. Bump VERSION to drop old caches after a big change. */
-const VERSION = "asc-v5";
-const CORE = ["./ASCENSION.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
-
-self.addEventListener("install", e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
-});
-
-self.addEventListener("activate", e => {
-  e.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k.startsWith("asc-") && k !== VERSION).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener("fetch", e => {
-  const req = e.request;
-  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
-  e.respondWith(
-    fetch(req).then(res => {
-      if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); }
-      return res;
-    }).catch(() =>
-      caches.match(req, { ignoreSearch: true })
-        .then(hit => hit || (req.mode === "navigate" ? caches.match("./ASCENSION.html") : undefined))
-        .then(hit => hit || new Response("Offline and not cached yet.", { status: 503, headers: { "Content-Type": "text/plain" } }))
-    )
-  );
-});
