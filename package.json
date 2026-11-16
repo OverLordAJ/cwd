@@ -1,0 +1,22 @@
+{
+  "name": "netwatch-github-pages",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "update-news": "tsx scripts/update-news.ts",
+    "check": "tsc --noEmit",
+    "serve": "python3 -m http.server 8080"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
