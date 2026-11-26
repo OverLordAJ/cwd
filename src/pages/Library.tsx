@@ -1,0 +1,29 @@
+import { useMemo, useState } from 'react'
+import * as Dialog from '@radix-ui/react-dialog'
+import { ArrowRight, Search, ShieldCheck, X } from 'lucide-react'
+import { ExerciseDiagram } from '../components/ExerciseDiagram'
+import { PageHeading } from '../components/PageElements'
+import { exerciseCategories, exercises } from '../data/exercises'
+import { domains } from '../data/domains'
+import type { DomainId, Exercise } from '../types'
+
+export function LibraryPage() {
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState<(typeof exerciseCategories)[number]>('All')
+  const [level, setLevel] = useState('All')
+  const [domain, setDomain] = useState<'All' | DomainId>('All')
+  const [selected, setSelected] = useState<Exercise | null>(null)
+  const filtered = useMemo(() => exercises.filter((exercise) => {
+    const text = `${exercise.name} ${exercise.primary.join(' ')} ${exercise.secondary.join(' ')} ${exercise.category}`.toLowerCase()
+    return text.includes(query.trim().toLowerCase()) && (category === 'All' || exercise.category === category) && (level === 'All' || exercise.level === Number(level)) && (domain === 'All' || exercise.domains.includes(domain))
+  }), [query, category, level, domain])
+
+  return <div className="page library-page"><PageHeading eyebrow={`EXERCISE LIBRARY · ${exercises.length} MOVEMENTS`} title="Technique before intensity.">Search by movement, muscle or category. Every entry includes regressions, progressions, technique cues, common mistakes and safety guidance.</PageHeading>
+    <div className="library-controls"><label className="search-field"><span className="sr-only">Search exercises</span><Search size={19} /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search push-up, glutes, mobility…" /></label><label>Domain<select value={domain} onChange={(event) => setDomain(event.target.value as typeof domain)}><option>All</option>{domains.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label><label>Category<select value={category} onChange={(event) => setCategory(event.target.value as typeof category)}>{exerciseCategories.map((item) => <option key={item}>{item}</option>)}</select></label><label>Difficulty<select value={level} onChange={(event) => setLevel(event.target.value)}><option>All</option><option value="1">Level 1 · Origin</option><option value="2">Level 2 · Training</option><option value="3">Level 3 · Legendary</option></select></label></div>
+    <div className="library-result-line"><span>{filtered.length} movements found</span>{(query || domain !== 'All' || category !== 'All' || level !== 'All') && <button className="text-button" type="button" onClick={() => { setQuery(''); setDomain('All'); setCategory('All'); setLevel('All') }}>Clear filters</button>}</div>
+    {filtered.length === 0 ? <div className="empty-state"><strong>No exact movement matches.</strong><p>Try a broader muscle or category. The generator only uses exercises tagged for your domain.</p><button className="text-link" type="button" onClick={() => { setQuery(''); setDomain('All'); setCategory('All'); setLevel('All') }}>Show all exercises <ArrowRight size={16} /></button></div> : <div className="exercise-library-grid">{filtered.map((exercise) => <article className="library-card" key={exercise.id}><ExerciseDiagram kind={exercise.demo} name={exercise.name} compact /><div className="library-card-copy"><span>{exercise.category} · LEVEL {exercise.level}</span><h2>{exercise.name}</h2><p>{exercise.primary.join(' · ')}</p><div><strong>{exercise.recommendedSets}</strong><strong>{exercise.prescription}</strong></div><button className="text-link" type="button" onClick={() => setSelected(exercise)}>Technique and progressions <ArrowRight size={15} /></button></div></article>)}</div>}
+    <aside className="truth-note"><ShieldCheck size={22} /><div><strong>What floor-only training cannot fully replace</strong><p>Prone upper-back movements and self-resisted isometrics are useful for activation and control. They do not provide the same resistance or hypertrophy stimulus as loaded rows or pull-ups, so complete back and biceps development is limited without external resistance.</p></div></aside>
+
+    <Dialog.Root open={Boolean(selected)} onOpenChange={(open) => { if (!open) setSelected(null) }}><Dialog.Portal><Dialog.Overlay className="dialog-overlay" /><Dialog.Content className="dialog-content exercise-dialog">{selected && <><div className="dialog-heading"><div><p className="eyebrow">{selected.category} · LEVEL {selected.level}</p><Dialog.Title>{selected.name}</Dialog.Title></div><Dialog.Close className="icon-button" aria-label="Close exercise details"><X size={20} /></Dialog.Close></div><Dialog.Description>{selected.primary.join(', ')} · secondary: {selected.secondary.join(', ')}</Dialog.Description><ExerciseDiagram kind={selected.demo} name={selected.name} /><div className="exercise-dose-grid"><div><span>SETS</span><strong>{selected.recommendedSets}</strong></div><div><span>VOLUME</span><strong>{selected.prescription}</strong></div><div><span>REST</span><strong>{selected.restSeconds || 'As needed'} seconds</strong></div></div><div className="variation-table"><div><span>EASIER</span><strong>{selected.easierVariation}</strong></div><div><span>START HERE</span><strong>{selected.startingVariation}</strong></div><div><span>HARDER</span><strong>{selected.harderVariation}</strong></div></div><div className="detail-columns"><div><h3>Technique</h3><ol>{selected.technique.map((cue) => <li key={cue}>{cue}</li>)}</ol></div><div><h3>Common mistakes</h3><ul>{selected.mistakes.map((mistake) => <li key={mistake}>{mistake}</li>)}</ul></div></div><div className="exercise-dialog-notes"><p><strong>Safety</strong>{selected.safety}</p><p><strong>Progression criteria</strong>{selected.progression}</p></div></>}</Dialog.Content></Dialog.Portal></Dialog.Root>
+  </div>
+}
